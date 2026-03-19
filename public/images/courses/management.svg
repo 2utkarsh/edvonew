@@ -1,0 +1,24 @@
+<svg width="1200" height="720" viewBox="0 0 1200 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="720" rx="40" fill="#111827"/>
+  <rect x="40" y="40" width="1120" height="640" rx="32" fill="url(#bg)"/>
+  <circle cx="1030" cy="122" r="122" fill="#FBBF24" fill-opacity="0.18"/>
+  <circle cx="226" cy="578" r="186" fill="#FB7185" fill-opacity="0.16"/>
+  <rect x="118" y="146" width="360" height="220" rx="26" fill="#111827" fill-opacity="0.38" stroke="#FDE68A" stroke-opacity="0.4"/>
+  <rect x="160" y="190" width="170" height="18" rx="9" fill="#FFF7ED"/>
+  <rect x="160" y="226" width="230" height="16" rx="8" fill="#FED7AA"/>
+  <rect x="160" y="258" width="210" height="16" rx="8" fill="#FDBA74" fill-opacity="0.8"/>
+  <rect x="160" y="308" width="110" height="36" rx="12" fill="#EA580C"/>
+  <rect x="620" y="150" width="430" height="360" rx="30" fill="#111827" fill-opacity="0.3" stroke="#FED7AA" stroke-opacity="0.45"/>
+  <rect x="670" y="220" width="90" height="220" rx="24" fill="#F59E0B"/>
+  <rect x="800" y="282" width="90" height="158" rx="24" fill="#FB7185"/>
+  <rect x="930" y="188" width="90" height="252" rx="24" fill="#FDBA74"/>
+  <path d="M690 188L975 188" stroke="#FFF7ED" stroke-width="12" stroke-linecap="round"/>
+  <text x="118" y="500" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="54" font-weight="700">Management</text>
+  <text x="118" y="560" fill="#FDE68A" font-family="Segoe UI, Arial, sans-serif" font-size="28">Business strategy, finance, leadership, and decision-making skills.</text>
+  <defs>
+    <linearGradient id="bg" x1="64" y1="64" x2="1106" y2="656" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F59E0B"/>
+      <stop offset="1" stop-color="#E11D48"/>
+    </linearGradient>
+  </defs>
+</svg>

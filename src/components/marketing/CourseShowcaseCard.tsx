@@ -77,6 +77,8 @@ interface CourseShowcaseCardProps {
   ctaLabel?: string;
   palette?: Palette;
   className?: string;
+  imageSrc?: string;
+  imageAlt?: string;
 }
 
 function StatChip({ icon, text, chipClass, iconClass }: { icon: React.ReactNode; text: string; chipClass: string; iconClass: string }) {
@@ -107,8 +109,11 @@ export default function CourseShowcaseCard({
   ctaLabel = 'Explore Now',
   palette = 'blue',
   className,
+  imageSrc,
+  imageAlt,
 }: CourseShowcaseCardProps) {
   const styles = paletteMap[palette];
+  const resolvedImage = imageSrc || getCourseImage(title, category);
 
   return (
     <Link href={href} className="block h-full">
@@ -143,14 +148,20 @@ export default function CourseShowcaseCard({
             ) : null}
           </div>
 
-          <div className="relative mt-8 rounded-[24px] border border-white/15 bg-slate-950/35 p-4 backdrop-blur-sm">
-            <div className="flex items-center gap-3">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20">
+          <div className="relative mt-8 overflow-hidden rounded-[24px] border border-white/15 bg-slate-950/35 backdrop-blur-sm">
+            <img
+              src={resolvedImage}
+              alt={imageAlt || title}
+              className="h-48 w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/25 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 p-4">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20 backdrop-blur-sm">
                 <BookOpen className="h-7 w-7 text-white" />
               </div>
               <div>
                 <p className="text-sm font-semibold text-white/90">EDVO Signature Track</p>
-                <p className="mt-1 text-xs leading-5 text-white/65">Built for outcomes, projects, and visible career proof.</p>
+                <p className="mt-1 text-xs leading-5 text-white/70">Practical projects, mentor support, and career-ready outcomes.</p>
               </div>
             </div>
           </div>
@@ -211,4 +222,34 @@ export default function CourseShowcaseCard({
       </motion.article>
     </Link>
   );
+}
+
+function getCourseImage(title: string, category: string) {
+  const token = `${title} ${category}`.toLowerCase();
+
+  if (token.includes('mba') || token.includes('management') || token.includes('business')) {
+    return '/images/courses/management.svg';
+  }
+
+  if (token.includes('computer science') || token.includes('cs') || token.includes('algorithm') || token.includes('data structure')) {
+    return '/images/courses/computer-science.svg';
+  }
+
+  if (token.includes('web')) {
+    return '/images/courses/web-development.svg';
+  }
+
+  if (token.includes('data science') || token.includes('machine learning') || token.includes('analytics') || token.includes('python')) {
+    return '/images/courses/data-science.svg';
+  }
+
+  if (token.includes('cloud') || token.includes('devops')) {
+    return '/images/courses/cloud-devops.svg';
+  }
+
+  if (token.includes('mobile') || token.includes('android') || token.includes('ios')) {
+    return '/images/courses/mobile-development.svg';
+  }
+
+  return '/images/courses/computer-science.svg';
 }

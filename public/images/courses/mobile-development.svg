@@ -1,0 +1,21 @@
+<svg width="1200" height="720" viewBox="0 0 1200 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="720" rx="40" fill="#111827"/>
+  <rect x="40" y="40" width="1120" height="640" rx="32" fill="url(#bg)"/>
+  <circle cx="1000" cy="140" r="120" fill="#FDE68A" fill-opacity="0.18"/>
+  <rect x="124" y="140" width="390" height="430" rx="30" fill="#111827" fill-opacity="0.34" stroke="#FDE68A" stroke-opacity="0.42"/>
+  <rect x="178" y="202" width="118" height="18" rx="9" fill="#FFF7ED"/>
+  <rect x="178" y="240" width="214" height="14" rx="7" fill="#FED7AA"/>
+  <rect x="178" y="272" width="180" height="14" rx="7" fill="#FDBA74" fill-opacity="0.8"/>
+  <rect x="664" y="176" width="228" height="394" rx="36" fill="#FFF7ED" fill-opacity="0.16" stroke="#FDE68A" stroke-opacity="0.46"/>
+  <rect x="704" y="240" width="148" height="20" rx="10" fill="#FFF7ED"/>
+  <rect x="726" y="292" width="104" height="150" rx="22" fill="#FB923C"/>
+  <circle cx="778" cy="488" r="18" fill="#FFF7ED"/>
+  <text x="124" y="624" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="54" font-weight="700">Mobile Development</text>
+  <text x="124" y="676" fill="#FFEDD5" font-family="Segoe UI, Arial, sans-serif" font-size="28">Cross-platform app design, mobile UI, and launch-ready experiences.</text>
+  <defs>
+    <linearGradient id="bg" x1="40" y1="40" x2="1160" y2="680" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F59E0B"/>
+      <stop offset="1" stop-color="#FB7185"/>
+    </linearGradient>
+  </defs>
+</svg>

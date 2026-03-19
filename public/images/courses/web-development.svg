@@ -1,0 +1,21 @@
+<svg width="1200" height="720" viewBox="0 0 1200 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="720" rx="40" fill="#0F172A"/>
+  <rect x="40" y="40" width="1120" height="640" rx="32" fill="url(#bg)"/>
+  <rect x="116" y="130" width="968" height="460" rx="32" fill="#020617" fill-opacity="0.28" stroke="#A7F3D0" stroke-opacity="0.35"/>
+  <rect x="170" y="182" width="370" height="252" rx="24" fill="#111827" stroke="#99F6E4" stroke-opacity="0.4"/>
+  <rect x="204" y="216" width="150" height="18" rx="9" fill="#D1FAE5"/>
+  <rect x="204" y="252" width="286" height="14" rx="7" fill="#A7F3D0" fill-opacity="0.8"/>
+  <rect x="204" y="282" width="228" height="14" rx="7" fill="#A7F3D0" fill-opacity="0.55"/>
+  <rect x="654" y="196" width="278" height="188" rx="20" fill="#ECFDF5" fill-opacity="0.14" stroke="#99F6E4" stroke-opacity="0.45"/>
+  <path d="M700 348L760 284L820 330L890 246" stroke="#CCFBF1" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="760" cy="284" r="15" fill="#5EEAD4"/>
+  <circle cx="892" cy="246" r="15" fill="#2DD4BF"/>
+  <text x="118" y="520" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="54" font-weight="700">Web Development</text>
+  <text x="118" y="580" fill="#D1FAE5" font-family="Segoe UI, Arial, sans-serif" font-size="28">Frontend, backend, APIs, and deployment-ready product building.</text>
+  <defs>
+    <linearGradient id="bg" x1="40" y1="40" x2="1160" y2="680" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#059669"/>
+      <stop offset="1" stop-color="#0F766E"/>
+    </linearGradient>
+  </defs>
+</svg>
