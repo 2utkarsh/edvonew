@@ -3,6 +3,7 @@
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import { Linkedin, Youtube, ArrowRight } from 'lucide-react';
+import { getProfileArtwork } from '@/lib/marketing-images';
 
 const InstructorsSection = () => {
   const instructors = [
@@ -10,7 +11,6 @@ const InstructorsSection = () => {
       name: 'Dhaval Patel',
       title: 'Data Entrepreneur (12+ Years), Youtuber, Ex - Bloomberg, NVIDIA',
       bio: 'I have 17 years of experience in programming and data science working for big tech companies like NVIDIA and Bloomberg. I also run a famous youtube channel called EDVO where I pursue my passion for teaching.',
-      image: '/images/instructors/dhaval.jpg',
       linkedin: '#',
       youtube: '#',
     },
@@ -18,7 +18,6 @@ const InstructorsSection = () => {
       name: 'Hemanand Vadivel',
       title: 'Ex- Data Analytics Manager, 8+ Years in Europe, Microsoft Certified, Certified Supply Chain Professional',
       bio: 'I\'m a Mechanical Engineer who transitioned to a full-time Data & Analytics Manager in the UK & Germany. I have delivered 30+ analytics projects over 15+ countries and trained professionals at different levels to equip them with valuable analytics skills.',
-      image: '/images/instructors/hemanand.jpg',
       linkedin: '#',
       instagram: '#',
     },
@@ -40,9 +39,11 @@ const InstructorsSection = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           {instructors.map((instructor, index) => (
             <div key={index} className="flex gap-6">
-              <div className="flex h-32 w-32 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500 to-violet-500 text-3xl font-bold text-white shadow-lg shadow-primary-500/20">
-                {instructor.name.split(' ').map(n => n[0]).join('')}
-              </div>
+              <img
+                src={getProfileArtwork(instructor.name)}
+                alt={instructor.name}
+                className="h-32 w-32 flex-shrink-0 rounded-2xl object-cover object-center shadow-lg shadow-primary-500/20"
+              />
               <div className="flex-1">
                 <h3 className="mb-2 text-xl font-bold text-slate-950 dark:text-white">{instructor.name}</h3>
                 <p className="mb-3 text-sm font-medium text-primary-600 dark:text-primary-300">{instructor.title}</p>
@@ -77,5 +78,3 @@ const InstructorsSection = () => {
 };
 
 export default InstructorsSection;
-
-

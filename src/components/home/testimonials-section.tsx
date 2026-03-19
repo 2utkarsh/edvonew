@@ -1,9 +1,9 @@
 'use client';
 
 import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import { Quote, Linkedin, Play } from 'lucide-react';
+import { getProfileArtwork } from '@/lib/marketing-images';
 
 const TestimonialsSection = () => {
   const testimonials = [
@@ -13,7 +13,6 @@ const TestimonialsSection = () => {
       role: 'Data Scientist',
       badge: 'Landed A Job',
       quote: 'Before enrolling in the course, my computer skills were extremely basic. It took me five months to complete the course, and after that, I began my job search. I dedicated myself to working on Power BI projects as if it were my...',
-      image: '/images/testimonials/rabin.jpg',
       linkedin: '#',
     },
     {
@@ -21,7 +20,6 @@ const TestimonialsSection = () => {
       name: 'Omkar Prakash Gosavi',
       role: 'BI Analyst',
       quote: 'I am amazed with the contents that are included in this bootcamp. The effort that have been taken to help so many students and professionals to grow in the field of Data Science/Data can be seen through the initial...',
-      image: '/images/testimonials/omkar.jpg',
       linkedin: '#',
     },
     {
@@ -30,7 +28,6 @@ const TestimonialsSection = () => {
       role: 'BI Reporting Analyst - III',
       badge: 'Landed A Job',
       quote: 'The practical approach and real-world projects helped me transition smoothly into my new role. The mentorship was exceptional!',
-      image: '/images/testimonials/pratik.jpg',
       linkedin: '#',
       video: true,
     },
@@ -59,7 +56,7 @@ const TestimonialsSection = () => {
                   </Badge>
                 </div>
               )}
-              
+
               <div className="relative mb-8">
                 <Quote className="absolute -left-4 -top-4 h-12 w-12 text-primary-100 dark:text-primary-900/20" />
                 <p className="relative z-10 text-base leading-relaxed text-slate-700 dark:text-slate-300 italic">
@@ -68,9 +65,11 @@ const TestimonialsSection = () => {
               </div>
               <div className="mt-8 flex items-center gap-4 border-t border-slate-100 dark:border-slate-800/50 pt-6">
                 <div className="relative">
-                  <div className="w-14 h-14 bg-gradient-to-br from-primary-400 to-indigo-600 rounded-full flex items-center justify-center text-white text-lg font-black shadow-lg">
-                    {testimonial.name.charAt(0)}
-                  </div>
+                  <img
+                    src={getProfileArtwork(testimonial.name)}
+                    alt={testimonial.name}
+                    className="w-14 h-14 rounded-full object-cover object-center shadow-lg"
+                  />
                   {testimonial.video && (
                     <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-red-600 border-2 border-white dark:border-slate-900 rounded-full flex items-center justify-center shadow-lg">
                       <Play className="w-3.5 h-3.5 text-white fill-white" />
@@ -96,4 +95,3 @@ const TestimonialsSection = () => {
 };
 
 export default TestimonialsSection;
-

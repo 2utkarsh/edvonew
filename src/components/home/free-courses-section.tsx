@@ -5,6 +5,7 @@ import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import { ArrowRight, Users } from 'lucide-react';
 import Link from 'next/link';
+import { getCourseArtwork } from '@/lib/marketing-images';
 
 const FreeCoursesSection = () => {
   const freeCourses = [
@@ -12,26 +13,22 @@ const FreeCoursesSection = () => {
       id: 1,
       title: 'Object-oriented Programming Python Tutorial',
       enrolled: '1,484',
-      image: '/images/courses/oop-python.jpg',
     },
     {
       id: 2,
       title: 'Potato Disease Classification Free Course',
       enrolled: '3,287',
       badge: 'Deep Learning Project',
-      image: '/images/courses/potato-disease.jpg',
     },
     {
       id: 3,
       title: 'End-to-End Data Analytics Project with Power BI | Hospitality Domain',
       enrolled: '479',
-      image: '/images/courses/powerbi-project.jpg',
     },
     {
       id: 4,
       title: 'Why You Should Learn Python - Hindi Tutorial',
       enrolled: '1,480',
-      image: '/images/courses/python-hindi.jpg',
     },
   ];
 
@@ -48,15 +45,17 @@ const FreeCoursesSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {freeCourses.map((course) => (
             <Card key={course.id} className="overflow-hidden group cursor-pointer hover:shadow-lg transition-all">
-              <div className="relative aspect-video bg-gradient-to-br from-blue-100 to-purple-100">
+              <div className="relative aspect-video overflow-hidden bg-slate-900">
                 {course.badge && (
-                  <Badge className="absolute top-2 left-2 bg-accent-300 text-accent-900 dark:bg-accent-500 dark:text-white">
+                  <Badge className="absolute top-2 left-2 z-10 bg-accent-300 text-accent-900 dark:bg-accent-500 dark:text-white">
                     {course.badge}
                   </Badge>
                 )}
-                <div className="absolute inset-0 flex items-center justify-center text-4xl">
-                  📚
-                </div>
+                <img
+                  src={getCourseArtwork(course.title)}
+                  alt={course.title}
+                  className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                />
               </div>
               <div className="p-4">
                 <h3 className="mb-3 line-clamp-2 text-sm font-semibold text-slate-950 dark:text-white">{course.title}</h3>
@@ -77,8 +76,8 @@ const FreeCoursesSection = () => {
             </Button>
           </Link>
           <div className="flex gap-2">
-            <Button variant="outline" size="icon">←</Button>
-            <Button variant="outline" size="icon">→</Button>
+            <Button variant="outline" size="icon">Left</Button>
+            <Button variant="outline" size="icon">Right</Button>
           </div>
         </div>
       </div>
@@ -87,4 +86,3 @@ const FreeCoursesSection = () => {
 };
 
 export default FreeCoursesSection;
-

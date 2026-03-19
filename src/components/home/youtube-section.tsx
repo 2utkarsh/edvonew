@@ -2,32 +2,14 @@
 
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
-import Badge from '@/components/ui/Badge';
 import { Play, Youtube, ExternalLink } from 'lucide-react';
+import { getCourseArtwork } from '@/lib/marketing-images';
 
 const YouTubeSection = () => {
   const videos = [
-    {
-      id: 1,
-      title: 'AI Engineer Roadmap | How I\'d Learn AI in 2026',
-      thumbnail: '/images/youtube/ai-roadmap.jpg',
-      views: '700K+',
-      duration: '45:30',
-    },
-    {
-      id: 2,
-      title: 'Python Pandas | Introduction & Installation',
-      thumbnail: '/images/youtube/pandas-intro.jpg',
-      views: '700K+',
-      duration: '32:15',
-    },
-    {
-      id: 3,
-      title: 'How to become an expert in Python',
-      thumbnail: '/images/youtube/python-expert.jpg',
-      views: '700K+',
-      duration: '28:45',
-    },
+    { id: 1, title: 'AI Engineer Roadmap | How I\'d Learn AI in 2026', views: '700K+', duration: '45:30' },
+    { id: 2, title: 'Python Pandas | Introduction & Installation', views: '700K+', duration: '32:15' },
+    { id: 3, title: 'How to become an expert in Python', views: '700K+', duration: '28:45' },
   ];
 
   return (
@@ -44,12 +26,14 @@ const YouTubeSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {videos.map((video) => (
             <Card key={video.id} className="overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow">
-              <div className="relative aspect-video bg-gray-900">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-6xl">🎬</div>
-                </div>
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center">
+              <div className="relative aspect-video overflow-hidden bg-gray-900">
+                <img
+                  src={getCourseArtwork(video.title)}
+                  alt={video.title}
+                  className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-slate-950/25">
+                  <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center shadow-lg">
                     <Play className="w-8 h-8 text-white fill-white" />
                   </div>
                 </div>
@@ -66,11 +50,7 @@ const YouTubeSection = () => {
         </div>
 
         <div className="text-center mt-8">
-          <a 
-            href="https://youtube.com/@edvo" 
-            target="_blank" 
-            rel="noopener noreferrer"
-          >
+          <a href="https://youtube.com/@edvo" target="_blank" rel="noopener noreferrer">
             <Button variant="outline" size="lg">
               Open Channel <ExternalLink className="w-4 h-4 ml-2" />
             </Button>
@@ -82,4 +62,3 @@ const YouTubeSection = () => {
 };
 
 export default YouTubeSection;
-

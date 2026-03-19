@@ -4,6 +4,7 @@ import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import { ExternalLink, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { getProfileArtwork } from '@/lib/marketing-images';
 
 const JobReadyPortfoliosSection = () => {
   const portfolios = [
@@ -12,35 +13,32 @@ const JobReadyPortfoliosSection = () => {
       name: 'NISHU KUMAR',
       role: 'AI Engineer',
       skills: [
-        { icon: '🐍', count: 2 },
-        { icon: '🤖', count: 1 },
-        { icon: '🧠', count: 3 },
+        { icon: 'PY', count: 2 },
+        { icon: 'AI', count: 1 },
+        { icon: 'ML', count: 3 },
       ],
-      image: '/images/portfolios/nishu.jpg',
     },
     {
       id: 2,
       name: 'Sreerag CR',
       role: 'Data Engineer',
       skills: [
-        { icon: '📊', count: 1 },
-        { icon: '⚡', count: 2 },
-        { icon: '☁️', count: 1 },
-        { icon: '🔍', count: 1 },
+        { icon: 'BI', count: 1 },
+        { icon: 'ETL', count: 2 },
+        { icon: 'CL', count: 1 },
+        { icon: 'QA', count: 1 },
       ],
-      image: '/images/portfolios/sreerag.jpg',
     },
     {
       id: 3,
       name: 'Rajyvardhan Singh Parmar',
       role: 'Data Analyst',
       skills: [
-        { icon: '📈', count: 1 },
-        { icon: '📊', count: 7 },
-        { icon: '🎯', count: 2 },
-        { icon: '🗂️', count: 1 },
+        { icon: 'DA', count: 1 },
+        { icon: 'BI', count: 7 },
+        { icon: 'KR', count: 2 },
+        { icon: 'PM', count: 1 },
       ],
-      image: '/images/portfolios/rajyvardhan.jpg',
     },
   ];
 
@@ -58,19 +56,21 @@ const JobReadyPortfoliosSection = () => {
           {portfolios.map((portfolio) => (
             <Card key={portfolio.id} className="p-6 transition-shadow hover:shadow-lg">
               <div className="flex items-start gap-4 mb-4">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-violet-500 text-xl font-bold text-white shadow-lg shadow-primary-500/20">
-                  {portfolio.name.charAt(0)}
-                </div>
+                <img
+                  src={getProfileArtwork(portfolio.name)}
+                  alt={portfolio.name}
+                  className="h-16 w-16 rounded-full object-cover object-center shadow-lg shadow-primary-500/20"
+                />
                 <div>
                   <h3 className="text-lg font-bold text-slate-950 dark:text-white">{portfolio.name}</h3>
                   <p className="font-medium text-primary-600 dark:text-primary-300">{portfolio.role}</p>
                 </div>
               </div>
 
-              <div className="flex gap-3 mb-4">
+              <div className="flex gap-3 mb-4 flex-wrap">
                 {portfolio.skills.map((skill, index) => (
                   <div key={index} className="flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-800">
-                    <span className="text-lg">{skill.icon}</span>
+                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">{skill.icon}</span>
                     <span className="text-sm font-medium text-slate-700 dark:text-slate-200">{skill.count}</span>
                   </div>
                 ))}
@@ -92,8 +92,8 @@ const JobReadyPortfoliosSection = () => {
             </Button>
           </Link>
           <div className="flex gap-2">
-            <Button variant="outline" size="icon">←</Button>
-            <Button variant="outline" size="icon">→</Button>
+            <Button variant="outline" size="icon">Left</Button>
+            <Button variant="outline" size="icon">Right</Button>
           </div>
         </div>
       </div>
@@ -102,4 +102,3 @@ const JobReadyPortfoliosSection = () => {
 };
 
 export default JobReadyPortfoliosSection;
-
