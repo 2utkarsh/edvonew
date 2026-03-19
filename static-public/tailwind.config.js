@@ -1,0 +1,163 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  darkMode: 'class',
+  content: [
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    '../src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    '../src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    '../src/lib/**/*.{js,ts,jsx,tsx,mdx}',
+    '../src/store/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        background: 'hsl(var(--background) / <alpha-value>)',
+        foreground: 'hsl(var(--foreground) / <alpha-value>)',
+        border: 'hsl(var(--border) / <alpha-value>)',
+        input: 'hsl(var(--input) / <alpha-value>)',
+        ring: 'hsl(var(--ring) / <alpha-value>)',
+        card: {
+          DEFAULT: 'hsl(var(--card) / <alpha-value>)',
+          foreground: 'hsl(var(--card-foreground) / <alpha-value>)',
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover) / <alpha-value>)',
+          foreground: 'hsl(var(--popover-foreground) / <alpha-value>)',
+        },
+        primary: {
+          DEFAULT: 'hsl(var(--primary) / <alpha-value>)',
+          foreground: 'hsl(var(--primary-foreground) / <alpha-value>)',
+          25: '#f8fbff',
+          50: '#f0f9ff',
+          100: '#e0f2fe',
+          200: '#bae6fd',
+          300: '#7dd3fc',
+          400: '#38bdf8',
+          500: '#0ea5e9',
+          600: '#0284c7',
+          700: '#0369a1',
+          800: '#075985',
+          900: '#0c4a6e',
+          950: '#082f49',
+        },
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary) / <alpha-value>)',
+          foreground: 'hsl(var(--secondary-foreground) / <alpha-value>)',
+          light: 'hsl(var(--secondary-light) / <alpha-value>)',
+          lighter: 'hsl(var(--secondary-lighter) / <alpha-value>)',
+          dark: 'hsl(var(--secondary-dark) / <alpha-value>)',
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted) / <alpha-value>)',
+          foreground: 'hsl(var(--muted-foreground) / <alpha-value>)',
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent-surface) / <alpha-value>)',
+          foreground: 'hsl(var(--accent-foreground) / <alpha-value>)',
+          50: '#fff7ed',
+          100: '#ffedd5',
+          200: '#fed7aa',
+          300: '#fdba74',
+          400: '#fb923c',
+          500: '#f97316',
+          600: '#ea580c',
+          700: '#c2410c',
+          900: '#7c2d12',
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive) / <alpha-value>)',
+          foreground: 'hsl(var(--destructive-foreground) / <alpha-value>)',
+        },
+        sidebar: {
+          DEFAULT: 'hsl(var(--sidebar-background))',
+          foreground: 'hsl(var(--sidebar-foreground))',
+          primary: 'hsl(var(--sidebar-primary))',
+          'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+          accent: 'hsl(var(--sidebar-accent))',
+          'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+          border: 'hsl(var(--sidebar-border))',
+          ring: 'hsl(var(--sidebar-ring))',
+        },
+        dark: {
+          900: '#0f172a',
+          800: '#1e293b',
+          700: '#334155',
+          600: '#475569',
+        },
+        brand: {
+          dark: '#0f172a',
+          light: '#ffffff',
+          yellow: '#fde047',
+          purple: '#7c3aed',
+          blue: '#2563eb',
+          orange: '#f97316',
+        },
+      },
+      fontFamily: {
+        sans: ['"Inter"', '"Segoe UI"', 'system-ui', 'sans-serif'],
+        heading: ['"Poppins"', '"Segoe UI"', 'system-ui', 'sans-serif'],
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.5s ease-in-out',
+        'slide-up': 'slideUp 0.5s ease-out',
+        'slide-down': 'slideDown 0.5s ease-out',
+        'slide-in-left': 'slideInLeft 0.5s ease-out',
+        'slide-in-right': 'slideInRight 0.5s ease-out',
+        'scale-up': 'scaleUp 0.3s ease-out',
+        'bounce-slow': 'bounce 3s infinite',
+        'pulse-slow': 'pulse 3s infinite',
+        'float': 'float 6s ease-in-out infinite',
+        'glow': 'glow 2s ease-in-out infinite alternate',
+        'shimmer': 'shimmer 2s linear infinite',
+        'marquee': 'marquee 40s linear infinite',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        slideUp: {
+          '0%': { transform: 'translateY(20px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        slideDown: {
+          '0%': { transform: 'translateY(-20px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        slideInLeft: {
+          '0%': { transform: 'translateX(-50px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        slideInRight: {
+          '0%': { transform: 'translateX(50px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        scaleUp: {
+          '0%': { transform: 'scale(0.9)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-20px)' },
+        },
+        glow: {
+          '0%': { boxShadow: '0 0 5px rgba(124, 58, 237, 0.5), 0 0 10px rgba(124, 58, 237, 0.3)' },
+          '100%': { boxShadow: '0 0 20px rgba(124, 58, 237, 0.8), 0 0 30px rgba(124, 58, 237, 0.5)' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-1000px 0' },
+          '100%': { backgroundPosition: '1000px 0' },
+        },
+        marquee: {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(calc(-100% - 2rem))' },
+        },
+      },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-codebasics': 'linear-gradient(to right, #7c3aed, #3b82f6)',
+      },
+    },
+  },
+  plugins: [],
+};

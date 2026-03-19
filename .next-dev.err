@@ -1,0 +1,2040 @@
+(node:12144) Warning: Setting the NODE_TLS_REJECT_UNAUTHORIZED environment variable to '0' makes TLS connections and HTTPS requests insecure by disabling certificate verification.
+(Use `node --trace-warnings ...` to show where the warning was created)
+⚠ Cross origin request detected from intranet-coaches-mini-savannah.trycloudflare.com to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Skeleton.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Skeleton.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Skeleton.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Skeleton.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Skeleton.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Skeleton.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Skeleton.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Skeleton.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Badge.tsx [Client Component Browser]
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Badge.tsx [Client Component SSR]
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Badge.tsx [Client Component Browser]
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Badge.tsx [Client Component SSR]
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Badge.tsx [Client Component Browser]
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Badge.tsx [Client Component SSR]
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Badge.tsx [Client Component Browser]
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Badge.tsx [Client Component SSR]
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/layout/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/layout/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/layout/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/layout/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/layout/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/layout/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/layout/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/layout/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Skeleton.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Skeleton.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Skeleton.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Skeleton.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Skeleton.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Skeleton.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Skeleton.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Skeleton.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Skeleton.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Skeleton.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Skeleton.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Skeleton.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Skeleton.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Skeleton.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Skeleton.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Skeleton.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/layout/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/layout/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/layout/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/layout/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/layout/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/layout/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/layout/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/layout/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/layout/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/layout/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/layout/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/layout/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/layout/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/layout/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/layout/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/layout/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Badge.tsx [Client Component Browser]
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Badge.tsx [Client Component SSR]
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Badge.tsx [Client Component Browser]
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Badge.tsx [Client Component SSR]
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Badge.tsx [Client Component Browser]
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Badge.tsx [Client Component SSR]
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Badge.tsx [Client Component Browser]
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Badge.tsx [Client Component SSR]
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Badge.tsx [Client Component Browser]
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Badge.tsx [Client Component SSR]
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Badge.tsx [Client Component Browser]
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Badge.tsx [Client Component SSR]
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Badge.tsx [Client Component Browser]
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Badge.tsx [Client Component SSR]
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Badge.tsx [Client Component Browser]
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Badge.tsx [Client Component SSR]
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/layout/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/layout/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/layout/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/layout/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/layout/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/layout/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/layout/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/layout/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Skeleton.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Skeleton.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Skeleton.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Skeleton.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Skeleton.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Skeleton.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Skeleton.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Skeleton.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Badge.tsx [Client Component Browser]
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Badge.tsx [Client Component SSR]
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Badge.tsx [Client Component Browser]
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Badge.tsx [Client Component SSR]
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Badge.tsx [Client Component Browser]
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Badge.tsx [Client Component SSR]
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Badge.tsx [Client Component Browser]
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Badge.tsx [Client Component SSR]
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/layout/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/layout/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/layout/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/layout/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/layout/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/layout/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/layout/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/layout/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Badge.tsx [Client Component Browser]
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Badge.tsx [Client Component SSR]
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Badge.tsx [Client Component Browser]
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Badge.tsx [Client Component SSR]
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Badge.tsx [Client Component Browser]
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Badge.tsx [Client Component SSR]
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Badge.tsx [Client Component Browser]
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Badge.tsx [Client Component SSR]
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Skeleton.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Skeleton.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Skeleton.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Skeleton.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Skeleton.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Skeleton.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Skeleton.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Skeleton.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Skeleton.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Skeleton.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+
+./src/app/courses/page.tsx:14:1
+Export CardSkeleton doesn't exist in target module
+[0m [90m 12 |[39m [36mimport[39m [33mInput[39m [36mfrom[39m [32m'@/components/ui/Input'[39m[33m;[39m
+ [90m 13 |[39m [36mimport[39m [33mButton[39m [36mfrom[39m [32m'@/components/ui/Button'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 14 |[39m [36mimport[39m { [33mCardSkeleton[39m } [36mfrom[39m [32m'@/components/ui/Skeleton'[39m[33m;[39m
+ [90m    |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 15 |[39m [36mimport[39m { [33mFadeIn[39m } [36mfrom[39m [32m'@/components/animations'[39m[33m;[39m
+ [90m 16 |[39m [36mimport[39m { [33mCourse[39m } [36mfrom[39m [32m'@/types'[39m[33m;[39m
+ [90m 17 |[39m[0m
+
+The export CardSkeleton was not found in module [project]/src/components/ui/Skeleton.tsx [app-client] (ecmascript).
+Did you mean to import Skeleton?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+
+
+./src/app/courses/page.tsx:14:1
+Export CardSkeleton doesn't exist in target module
+[0m [90m 12 |[39m [36mimport[39m [33mInput[39m [36mfrom[39m [32m'@/components/ui/Input'[39m[33m;[39m
+ [90m 13 |[39m [36mimport[39m [33mButton[39m [36mfrom[39m [32m'@/components/ui/Button'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 14 |[39m [36mimport[39m { [33mCardSkeleton[39m } [36mfrom[39m [32m'@/components/ui/Skeleton'[39m[33m;[39m
+ [90m    |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 15 |[39m [36mimport[39m { [33mFadeIn[39m } [36mfrom[39m [32m'@/components/animations'[39m[33m;[39m
+ [90m 16 |[39m [36mimport[39m { [33mCourse[39m } [36mfrom[39m [32m'@/types'[39m[33m;[39m
+ [90m 17 |[39m[0m
+
+The export CardSkeleton was not found in module [project]/src/components/ui/Skeleton.tsx [app-ssr] (ecmascript).
+Did you mean to import Skeleton?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Skeleton.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Skeleton.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+
+./src/app/courses/page.tsx:14:1
+Export CardSkeleton doesn't exist in target module
+[0m [90m 12 |[39m [36mimport[39m [33mInput[39m [36mfrom[39m [32m'@/components/ui/Input'[39m[33m;[39m
+ [90m 13 |[39m [36mimport[39m [33mButton[39m [36mfrom[39m [32m'@/components/ui/Button'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 14 |[39m [36mimport[39m { [33mCardSkeleton[39m } [36mfrom[39m [32m'@/components/ui/Skeleton'[39m[33m;[39m
+ [90m    |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 15 |[39m [36mimport[39m { [33mFadeIn[39m } [36mfrom[39m [32m'@/components/animations'[39m[33m;[39m
+ [90m 16 |[39m [36mimport[39m { [33mCourse[39m } [36mfrom[39m [32m'@/types'[39m[33m;[39m
+ [90m 17 |[39m[0m
+
+The export CardSkeleton was not found in module [project]/src/components/ui/Skeleton.tsx [app-client] (ecmascript).
+Did you mean to import Skeleton?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+
+
+./src/app/courses/page.tsx:14:1
+Export CardSkeleton doesn't exist in target module
+[0m [90m 12 |[39m [36mimport[39m [33mInput[39m [36mfrom[39m [32m'@/components/ui/Input'[39m[33m;[39m
+ [90m 13 |[39m [36mimport[39m [33mButton[39m [36mfrom[39m [32m'@/components/ui/Button'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 14 |[39m [36mimport[39m { [33mCardSkeleton[39m } [36mfrom[39m [32m'@/components/ui/Skeleton'[39m[33m;[39m
+ [90m    |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 15 |[39m [36mimport[39m { [33mFadeIn[39m } [36mfrom[39m [32m'@/components/animations'[39m[33m;[39m
+ [90m 16 |[39m [36mimport[39m { [33mCourse[39m } [36mfrom[39m [32m'@/types'[39m[33m;[39m
+ [90m 17 |[39m[0m
+
+The export CardSkeleton was not found in module [project]/src/components/ui/Skeleton.tsx [app-ssr] (ecmascript).
+Did you mean to import Skeleton?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/layout/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/layout/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/layout/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/layout/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/layout/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/layout/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/layout/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component Browser]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/layout/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Client Component SSR]
+    ./src/app/dashboard/admin/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Skeleton.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Skeleton.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+
+./src/app/courses/page.tsx:14:1
+Export CardSkeleton doesn't exist in target module
+[0m [90m 12 |[39m [36mimport[39m [33mInput[39m [36mfrom[39m [32m'@/components/ui/Input'[39m[33m;[39m
+ [90m 13 |[39m [36mimport[39m [33mButton[39m [36mfrom[39m [32m'@/components/ui/Button'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 14 |[39m [36mimport[39m { [33mCardSkeleton[39m } [36mfrom[39m [32m'@/components/ui/Skeleton'[39m[33m;[39m
+ [90m    |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 15 |[39m [36mimport[39m { [33mFadeIn[39m } [36mfrom[39m [32m'@/components/animations'[39m[33m;[39m
+ [90m 16 |[39m [36mimport[39m { [33mCourse[39m } [36mfrom[39m [32m'@/types'[39m[33m;[39m
+ [90m 17 |[39m[0m
+
+The export CardSkeleton was not found in module [project]/src/components/ui/Skeleton.tsx [app-client] (ecmascript).
+Did you mean to import Skeleton?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+
+
+./src/app/courses/page.tsx:14:1
+Export CardSkeleton doesn't exist in target module
+[0m [90m 12 |[39m [36mimport[39m [33mInput[39m [36mfrom[39m [32m'@/components/ui/Input'[39m[33m;[39m
+ [90m 13 |[39m [36mimport[39m [33mButton[39m [36mfrom[39m [32m'@/components/ui/Button'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 14 |[39m [36mimport[39m { [33mCardSkeleton[39m } [36mfrom[39m [32m'@/components/ui/Skeleton'[39m[33m;[39m
+ [90m    |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 15 |[39m [36mimport[39m { [33mFadeIn[39m } [36mfrom[39m [32m'@/components/animations'[39m[33m;[39m
+ [90m 16 |[39m [36mimport[39m { [33mCourse[39m } [36mfrom[39m [32m'@/types'[39m[33m;[39m
+ [90m 17 |[39m[0m
+
+The export CardSkeleton was not found in module [project]/src/components/ui/Skeleton.tsx [app-ssr] (ecmascript).
+Did you mean to import Skeleton?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+
+⨯ ./src/lib/utils.ts:1:1
+Module not found: Can't resolve '@/data/currencies'
+[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m currencies [36mfrom[39m [32m'@/data/currencies'[39m[33m;[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 2 |[39m [36mimport[39m { type [33mClassValue[39m[33m,[39m clsx } [36mfrom[39m [32m'clsx'[39m[33m;[39m
+ [90m 3 |[39m [36mimport[39m { twMerge } [36mfrom[39m [32m'tailwind-merge'[39m[33m;[39m
+ [90m 4 |[39m[0m
+
+Import map: aliased to relative './src/data/currencies' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/lib/utils.ts [Client Component Browser]
+    ./src/components/ui/Skeleton.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/lib/utils.ts [Client Component SSR]
+    ./src/components/ui/Skeleton.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+
+./src/app/courses/page.tsx:14:1
+Export CardSkeleton doesn't exist in target module
+[0m [90m 12 |[39m [36mimport[39m [33mInput[39m [36mfrom[39m [32m'@/components/ui/Input'[39m[33m;[39m
+ [90m 13 |[39m [36mimport[39m [33mButton[39m [36mfrom[39m [32m'@/components/ui/Button'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 14 |[39m [36mimport[39m { [33mCardSkeleton[39m } [36mfrom[39m [32m'@/components/ui/Skeleton'[39m[33m;[39m
+ [90m    |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 15 |[39m [36mimport[39m { [33mFadeIn[39m } [36mfrom[39m [32m'@/components/animations'[39m[33m;[39m
+ [90m 16 |[39m [36mimport[39m { [33mCourse[39m } [36mfrom[39m [32m'@/types'[39m[33m;[39m
+ [90m 17 |[39m[0m
+
+The export CardSkeleton was not found in module [project]/src/components/ui/Skeleton.tsx [app-client] (ecmascript).
+Did you mean to import Skeleton?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+
+
+./src/app/courses/page.tsx:14:1
+Export CardSkeleton doesn't exist in target module
+[0m [90m 12 |[39m [36mimport[39m [33mInput[39m [36mfrom[39m [32m'@/components/ui/Input'[39m[33m;[39m
+ [90m 13 |[39m [36mimport[39m [33mButton[39m [36mfrom[39m [32m'@/components/ui/Button'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 14 |[39m [36mimport[39m { [33mCardSkeleton[39m } [36mfrom[39m [32m'@/components/ui/Skeleton'[39m[33m;[39m
+ [90m    |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 15 |[39m [36mimport[39m { [33mFadeIn[39m } [36mfrom[39m [32m'@/components/animations'[39m[33m;[39m
+ [90m 16 |[39m [36mimport[39m { [33mCourse[39m } [36mfrom[39m [32m'@/types'[39m[33m;[39m
+ [90m 17 |[39m[0m
+
+The export CardSkeleton was not found in module [project]/src/components/ui/Skeleton.tsx [app-ssr] (ecmascript).
+Did you mean to import Skeleton?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/courses/page.tsx [Client Component Browser]
+    ./src/app/courses/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/courses/page.tsx [Client Component SSR]
+    ./src/app/courses/page.tsx [Server Component]
+
+

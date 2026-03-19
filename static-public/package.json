@@ -1,0 +1,9 @@
+{
+  "name": "edvo-static-public",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "prepare-upload": "node scripts/prepare-upload.mjs",
+    "build:upload": "next build && npm run prepare-upload"
+  }
+}

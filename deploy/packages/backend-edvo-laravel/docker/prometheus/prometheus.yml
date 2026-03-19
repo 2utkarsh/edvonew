@@ -1,0 +1,74 @@
+# Prometheus Configuration for Mentor LMS
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Laravel Application Metrics
+  - job_name: 'mentor-lms-app'
+    static_configs:
+      - targets: ['app:8000']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # MySQL Exporter
+  - job_name: 'mysql'
+    static_configs:
+      - targets: ['mysql-exporter:9104']
+
+  # Redis Exporter
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+
+  # Node Exporter (system metrics)
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+  # Elasticsearch Exporter
+  - job_name: 'elasticsearch'
+    static_configs:
+      - targets: ['elasticsearch-exporter:9114']
+
+  # Kafka Exporter
+  - job_name: 'kafka'
+    static_configs:
+      - targets: ['kafka-exporter:9308']
+
+  # RabbitMQ Exporter
+  - job_name: 'rabbitmq'
+    static_configs:
+      - targets: ['rabbitmq-exporter:9419']
+
+  # MongoDB Exporter
+  - job_name: 'mongodb'
+    static_configs:
+      - targets: ['mongodb-exporter:9216']
+
+  # Nginx Exporter
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx-exporter:9113']
+
+  # Grafana
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['grafana:3000']
+    metrics_path: '/metrics'
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093

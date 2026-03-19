@@ -1,0 +1,472 @@
+version: '3.8'
+
+services:
+  # Main Laravel Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mentor-lms-app
+    ports:
+      - "8000:80"
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - DB_HOST=mysql
+      - DB_DATABASE=mentor_lms
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+      - REDIS_HOST=redis
+      - CACHE_DRIVER=redis
+      - SESSION_DRIVER=redis
+      - QUEUE_CONNECTION=redis
+    volumes:
+      - .:/var/www/html
+      - ./storage:/var/www/html/storage
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - mentor-lms-network
+
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: mentor-lms-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mentor_lms
+      MYSQL_USER: mentor
+      MYSQL_PASSWORD: mentor123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+    networks:
+      - mentor-lms-network
+
+  # Redis Cache and Queue
+  redis:
+    image: redis:7-alpine
+    container_name: mentor-lms-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - mentor-lms-network
+
+  # Nginx Reverse Proxy (Optional - for production)
+  nginx:
+    image: nginx:alpine
+    container_name: mentor-lms-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/sites-available:/etc/nginx/sites-available
+      - ./docker/nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - app
+    networks:
+      - mentor-lms-network
+
+  # Elasticsearch (for search functionality)
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: mentor-lms-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - mentor-lms-network
+
+  # MinIO S3 Compatible Storage
+  minio:
+    image: minio/minio:latest
+    container_name: mentor-lms-minio
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - mentor-lms-network
+
+  # PhpMyAdmin (for database management)
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: mentor-lms-phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: root
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
+    networks:
+      - mentor-lms-network
+
+  # Redis Commander (for Redis management)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: mentor-lms-redis-commander
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    networks:
+      - mentor-lms-network
+
+  # MailHog (for email testing in development)
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: mentor-lms-mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - mentor-lms-network
+
+  # Laravel Horizon (for queue monitoring)
+  horizon:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mentor-lms-horizon
+    command: php artisan horizon
+    environment:
+      - APP_ENV=local
+      - DB_HOST=mysql
+      - REDIS_HOST=redis
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - mentor-lms-network
+
+  # Laravel Scheduler
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mentor-lms-scheduler
+    command: sh -c "while true; do php artisan schedule:run; sleep 60; done"
+    environment:
+      - APP_ENV=local
+      - DB_HOST=mysql
+      - REDIS_HOST=redis
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - mentor-lms-network
+
+  # PostgreSQL Database (alternative to MySQL)
+  postgres:
+    image: postgres:15-alpine
+    container_name: mentor-lms-postgres
+    environment:
+      POSTGRES_DB: mentor_lms
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+    networks:
+      - mentor-lms-network
+
+  # MongoDB (for analytics and logging)
+  mongodb:
+    image: mongo:7
+    container_name: mentor-lms-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+      MONGO_INITDB_DATABASE: mentor_lms_analytics
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./docker/mongodb/mongod.conf:/etc/mongod.conf
+    networks:
+      - mentor-lms-network
+
+  # RabbitMQ (alternative to Redis for queues)
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: mentor-lms-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - ./docker/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    networks:
+      - mentor-lms-network
+
+  # Apache Kafka (for event streaming)
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: mentor-lms-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    volumes:
+      - zookeeper_data:/var/lib/zookeeper/data
+    networks:
+      - mentor-lms-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: mentor-lms-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9101:9101"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    networks:
+      - mentor-lms-network
+
+  # Grafana (for monitoring and analytics)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: mentor-lms-grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - elasticsearch
+    networks:
+      - mentor-lms-network
+
+  # Prometheus (for metrics collection)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: mentor-lms-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus_data:/prometheus
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - mentor-lms-network
+
+  # Kibana (for Elasticsearch visualization)
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: mentor-lms-kibana
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+      XPACK_SECURITY_ENABLED: false
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - mentor-lms-network
+
+  # Jaeger (for distributed tracing)
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: mentor-lms-jaeger
+    environment:
+      COLLECTOR_OTLP_ENABLED: true
+    ports:
+      - "16686:16686"
+      - "14268:14268"
+    networks:
+      - mentor-lms-network
+
+  # Selenium Grid (for automated testing)
+  selenium-hub:
+    image: selenium/hub:4.15.0
+    container_name: mentor-lms-selenium-hub
+    ports:
+      - "4444:4444"
+    networks:
+      - mentor-lms-network
+
+  selenium-chrome:
+    image: selenium/node-chrome:4.15.0
+    container_name: mentor-lms-selenium-chrome
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+    depends_on:
+      - selenium-hub
+    networks:
+      - mentor-lms-network
+
+  # Jupyter Notebook (for data science courses)
+  jupyter:
+    image: jupyter/scipy-notebook:latest
+    container_name: mentor-lms-jupyter
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+    ports:
+      - "8888:8888"
+    volumes:
+      - jupyter_data:/home/jovyan/work
+      - ./docker/jupyter/jupyter_notebook_config.py:/etc/jupyter/jupyter_notebook_config.py
+    networks:
+      - mentor-lms-network
+
+  # VS Code Server (for coding exercises)
+  vscode:
+    image: codercom/code-server:latest
+    container_name: mentor-lms-vscode
+    environment:
+      - PASSWORD=vscode123
+    ports:
+      - "8080:8080"
+    volumes:
+      - vscode_data:/home/coder/project
+    networks:
+      - mentor-lms-network
+
+  # WordPress (for blog integration)
+  wordpress:
+    image: wordpress:latest
+    container_name: mentor-lms-wordpress
+    environment:
+      WORDPRESS_DB_HOST: mysql:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress123
+      WORDPRESS_DB_NAME: mentor_lms_blog
+    ports:
+      - "8082:80"
+    volumes:
+      - wordpress_data:/var/www/html
+    depends_on:
+      - mysql
+    networks:
+      - mentor-lms-network
+
+  # Strapi (for CMS/headless content)
+  strapi:
+    image: strapi/strapi:latest
+    container_name: mentor-lms-strapi
+    environment:
+      DATABASE_CLIENT: mysql
+      DATABASE_HOST: mysql
+      DATABASE_PORT: 3306
+      DATABASE_NAME: mentor_lms_strapi
+      DATABASE_USERNAME: strapi
+      DATABASE_PASSWORD: strapi123
+    ports:
+      - "1337:1337"
+    volumes:
+      - strapi_data:/opt/app
+    depends_on:
+      - mysql
+    networks:
+      - mentor-lms-network
+
+  # Next.js (for frontend microservice)
+  nextjs:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: mentor-lms-nextjs
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+      - API_URL=http://app:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - mentor-lms-network
+
+  # N8N (for workflow automation)
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: mentor-lms-n8n
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=n8n123
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      - postgres
+    networks:
+      - mentor-lms-network
+
+volumes:
+  mysql_data:
+  redis_data:
+  elasticsearch_data:
+  minio_data:
+  postgres_data:
+  mongodb_data:
+  rabbitmq_data:
+  zookeeper_data:
+  kafka_data:
+  grafana_data:
+  prometheus_data:
+  jupyter_data:
+  vscode_data:
+  wordpress_data:
+  strapi_data:
+  n8n_data:
+
+networks:
+  mentor-lms-network:
+    driver: bridge

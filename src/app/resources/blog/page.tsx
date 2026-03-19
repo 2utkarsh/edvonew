@@ -1,0 +1,287 @@
+'use client';
+
+import { useState, useMemo } from 'react';
+import { Search, Filter, BookOpen, ChevronDown, GraduationCap, Code, Database, Brain, Rocket, MessageSquare, ArrowRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import { FadeIn, StaggerGrid } from '@/components/animations';
+import BlogCard from '@/components/blog/BlogCard';
+import { cn } from '@/lib/utils';
+
+// --- Types ---
+interface BlogPost {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  author: string;
+  date: string;
+  readTime: string;
+  thumbnail: string;
+}
+
+// --- Mock Data ---
+const BLOG_CATEGORIES = [
+  { id: 'all', label: 'All Articles', icon: BookOpen },
+  { id: 'Roadmaps', label: 'Roadmaps', icon: Rocket },
+  { id: 'Data Science', label: 'Data Science', icon: Database },
+  { id: 'AI & ML', label: 'AI & ML', icon: Brain },
+  { id: 'Programming', label: 'Coding', icon: Code },
+  { id: 'Career Tips', label: 'Soft Skills', icon: GraduationCap },
+];
+
+const MOCK_BLOGS: BlogPost[] = [
+  {
+    id: '1',
+    title: 'Software Engineer to AI Engineer: The Most Effective Path (2026)',
+    description: 'Transitioning from traditional software engineering to AI engineering requires a strategic shift in both mindset and skills. This roadmap covers everything from math fundamentals to deploying LLM applications.',
+    category: 'Roadmaps',
+    author: 'Dhaval Patel',
+    date: 'March 10, 2026',
+    readTime: '12 min read',
+    thumbnail: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800',
+  },
+  {
+    id: '2',
+    title: 'Top 20 Data Engineering Interview Questions with Practical Solutions',
+    description: 'Master the most frequently asked questions about ETL pipelines, data warehousing, and big data processing frameworks like Spark and Flink.',
+    category: 'Career Tips',
+    author: 'Hema Patel',
+    date: 'March 8, 2026',
+    readTime: '15 min read',
+    thumbnail: 'https://images.unsplash.com/photo-1551288049-bbbda536ad0a?auto=format&fit=crop&q=80&w=800',
+  },
+  {
+    id: '3',
+    title: 'Mastering SQL for Data Analytics: Beyond Basic SELECT Queries',
+    description: 'Learn window functions, CTEs, and query optimization techniques that distinguish a junior analyst from a senior professional.',
+    category: 'Data Science',
+    author: 'Arjun Reddy',
+    date: 'March 5, 2026',
+    readTime: '10 min read',
+    thumbnail: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?auto=format&fit=crop&q=80&w=800',
+  },
+  {
+    id: '4',
+    title: 'Building Your First AI Agent with LangChain and Python',
+    description: 'Step-by-step guide to creating an autonomous agent that can browse the web, execute code, and solve complex tasks using GPT-4.',
+    category: 'AI & ML',
+    author: 'Sneha Gupta',
+    date: 'March 2, 2026',
+    readTime: '18 min read',
+    thumbnail: 'https://images.unsplash.com/photo-1593508512255-86ab42a8e620?auto=format&fit=crop&q=80&w=800',
+  },
+  {
+    id: '5',
+    title: 'The Future of Web Development: Next.js 16 and Beyond',
+    description: 'Explore the latest features in modern web frameworks and how server components are changing the way we build user interfaces.',
+    category: 'Programming',
+    author: 'Karan Singh',
+    date: 'Feb 28, 2026',
+    readTime: '8 min read',
+    thumbnail: 'https://images.unsplash.com/photo-1627398242454-45a1465c2479?auto=format&fit=crop&q=80&w=800',
+  },
+  {
+    id: '6',
+    title: 'Context Engineering: The Most Important Skill for AI Era',
+    description: 'Why managing context is more important than prompt engineering when building scalable production AI systems.',
+    category: 'AI & ML',
+    author: 'Dhaval Patel',
+    date: 'Feb 25, 2026',
+    readTime: '14 min read',
+    thumbnail: 'https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&q=80&w=800',
+  },
+];
+
+export default function BlogPage() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [showFilters, setShowFilters] = useState(false);
+
+  const filteredBlogs = useMemo(() => {
+    return MOCK_BLOGS.filter(blog => {
+      const matchesSearch = blog.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                           blog.description.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = selectedCategory === 'all' || blog.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [searchTerm, selectedCategory]);
+
+  return (
+    <main className="min-h-screen bg-white dark:bg-slate-950 pt-16 pb-24 transition-colors duration-300">
+      {/* --- Page Header --- */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
+          <FadeIn>
+            <div>
+              <Badge variant="gradient" className="mb-6 px-4 py-1.5 text-xs font-black uppercase tracking-widest">EDVO Resources</Badge>
+              <h1 className="text-6xl md:text-7xl font-black mb-8 text-slate-900 dark:text-white leading-[1.05] tracking-tighter">
+                Knowledge for <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 via-indigo-600 to-purple-600 dark:from-primary-400 dark:via-indigo-400 dark:to-purple-400">Career Growth.</span>
+              </h1>
+              <p className="text-xl text-slate-600 dark:text-slate-400 max-w-xl leading-relaxed font-medium">
+                Deep dives into AI, Data Engineering, and software development from experts who’ve built what you're learning.
+              </p>
+            </div>
+          </FadeIn>
+          
+          <FadeIn delay={0.2}>
+             <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary-500 to-purple-600 rounded-[2.5rem] blur opacity-15 group-hover:opacity-25 transition duration-500" />
+                <div className="relative bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] p-8 lg:p-10 shadow-2xl">
+                  <div className="flex flex-col gap-8">
+                    <div>
+                      <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-2">Find what you need</h2>
+                      <p className="text-sm text-slate-500 dark:text-slate-400">Search 100+ articles and roadmaps</p>
+                    </div>
+                    
+                    <div className="relative">
+                      <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-primary-500 transition-colors" />
+                      <input
+                        type="text"
+                        placeholder="Search by topic, skill, or roadmap..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-14 pr-6 py-5 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary-500/10 transition-all font-bold text-slate-900 dark:text-white"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                       <Rocket className="w-3.5 h-3.5" />
+                       Trending: AI Engineer, Python, SQL Mastery
+                    </div>
+                  </div>
+                </div>
+             </div>
+          </FadeIn>
+        </div>
+
+        {/* --- Category Tabs --- */}
+        <div className="mb-12 border-b border-slate-100 dark:border-slate-800">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-8 overflow-x-auto scrollbar-hide">
+              {BLOG_CATEGORIES.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={cn(
+                    "relative py-5 text-xs lg:text-sm font-black uppercase tracking-widest transition-all whitespace-nowrap",
+                    selectedCategory === cat.id
+                      ? "text-primary-600 dark:text-primary-400"
+                      : "text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300"
+                  )}
+                >
+                  <span className="flex items-center gap-2">
+                    <cat.icon className="w-4 h-4" />
+                    {cat.label}
+                  </span>
+                  {selectedCategory === cat.id && (
+                    <motion.div 
+                      layoutId="activeCategory"
+                      className="absolute bottom-0 left-0 right-0 h-1 bg-primary-600 dark:bg-primary-400 rounded-full"
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* --- Results Header --- */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+             <div className="w-1.5 h-1.5 rounded-full bg-primary-600" />
+             <span className="text-sm font-bold text-slate-500 dark:text-slate-400">
+               {filteredBlogs.length} {filteredBlogs.length === 1 ? 'Article' : 'Articles'} Found
+             </span>
+          </div>
+          <div className="flex items-center gap-3 text-xs font-black text-slate-400 uppercase tracking-widest cursor-pointer hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+            Sort by: Latest <ChevronDown className="w-3.5 h-3.5" />
+          </div>
+        </div>
+
+        {/* --- Blog Grid --- */}
+        <AnimatePresence mode="wait">
+          {filteredBlogs.length > 0 ? (
+            <motion.div
+              key="grid"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4 }}
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
+                {filteredBlogs.map((blog) => (
+                  <BlogCard key={blog.id} {...blog} />
+                ))}
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-32 bg-slate-50/50 dark:bg-slate-900/30 rounded-[3rem] border-2 border-dashed border-slate-100 dark:border-slate-800"
+            >
+              <div className="w-20 h-20 bg-white dark:bg-slate-800 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl border border-slate-100 dark:border-slate-700">
+                <BookOpen className="w-10 h-10 text-slate-300 dark:text-slate-600" />
+              </div>
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-2">No matches found</h3>
+              <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-xs mx-auto">We couldn't find any articles matching your search terms. Try different keywords.</p>
+              <Button 
+                variant="primary" 
+                onClick={() => { setSearchTerm(''); setSelectedCategory('all'); }}
+                className="!rounded-2xl !px-10 !py-4 shadow-xl"
+              >
+                Reset Filters
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* --- Newsletter --- */}
+        <div className="relative mt-20">
+          <div className="absolute inset-0 bg-primary-600 rounded-[4rem] blur-[100px] opacity-10 pointer-events-none" />
+          <div className="relative rounded-[4rem] bg-slate-950 p-12 lg:p-24 text-white overflow-hidden">
+            <div className="absolute top-0 right-0 p-24 opacity-10 pointer-events-none transform translate-x-1/2 -translate-y-1/2">
+              <MessageSquare className="w-96 h-96" />
+            </div>
+            
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
+              <div>
+                <Badge className="bg-primary-500/20 text-primary-400 border-none mb-6">Newsletter</Badge>
+                <h2 className="text-5xl md:text-6xl font-black mb-8 leading-[1.1] tracking-tighter">
+                  Insights to build your <br /><span className="text-primary-500">dream career.</span>
+                </h2>
+                <p className="text-xl text-slate-400 max-w-lg leading-relaxed">
+                  Join 100,000+ professionals receiving weekly guides on AI, Data Engineering, and high-growth engineering roles.
+                </p>
+              </div>
+
+              <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 lg:p-10 backdrop-blur-xl">
+                 <form className="space-y-6">
+                    <div className="space-y-2">
+                       <label className="text-sm font-bold text-slate-400 uppercase tracking-widest pl-2">Email Address</label>
+                       <input 
+                         type="email" 
+                         placeholder="you@example.com" 
+                         className="w-full bg-white/10 border border-white/20 rounded-2xl px-6 py-5 focus:outline-none focus:ring-4 focus:ring-primary-500/30 text-white font-bold placeholder:text-slate-500"
+                       />
+                    </div>
+                    <Button className="w-full !rounded-2xl !py-6 !text-lg !font-black shadow-2xl shadow-primary-500/30">
+                      Join the Newsletter
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
+                    <p className="text-center text-xs text-slate-500 font-medium">
+                       Zero spam. High signal. Unsubscribe anytime.
+                    </p>
+                 </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}

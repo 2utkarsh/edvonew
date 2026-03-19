@@ -1,0 +1,5 @@
+1:"$Sreact.fragment"
+2:I[97367,["/_next/static/chunks/420a0a9e87830eff.js","/_next/static/chunks/5ebe9e820a7f9429.js","/_next/static/chunks/03dde0a8220b16a5.js","/_next/static/chunks/4491611faeb359e6.js","/_next/static/chunks/d2be314c3ece3fbe.js"],"OutletBoundary"]
+3:"$Sreact.suspense"
+0:{"buildId":"nilxqpd-45IEayeHkP9py","rsc":["$","$1","c",{"children":[["$","main",null,{"className":"mx-auto flex min-h-[60vh] max-w-3xl flex-col items-center justify-center px-6 text-center","children":[["$","h1",null,{"className":"text-4xl font-black","children":"Page not found"}],["$","p",null,{"className":"mt-4 text-slate-600 dark:text-slate-400","children":"This static public build only includes the uploadable marketing site."}]]}],null,["$","$L2",null,{"children":["$","$3",null,{"name":"Next.MetadataOutlet","children":"$@4"}]}]]}],"loading":null,"isPartial":false}
+4:null

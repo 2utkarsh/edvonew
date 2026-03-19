@@ -1,0 +1,169 @@
+version: '3.8'
+
+services:
+  # Next.js Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: edvo-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://localhost:3000
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - edvo-network
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: edvo-postgres
+    environment:
+      POSTGRES_DB: edvo_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - edvo-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: edvo-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - edvo-network
+
+  # MongoDB (for analytics)
+  mongodb:
+    image: mongo:7
+    container_name: edvo-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - edvo-network
+
+  # Elasticsearch (for search)
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: edvo-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - edvo-network
+
+  # MinIO (S3-compatible storage)
+  minio:
+    image: minio/minio:latest
+    container_name: edvo-minio
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - edvo-network
+
+  # Grafana (monitoring)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: edvo-grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - edvo-network
+
+  # Prometheus (metrics)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: edvo-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus_data:/prometheus
+    networks:
+      - edvo-network
+
+  # RabbitMQ (message queue)
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: edvo-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - edvo-network
+
+  # Nginx (reverse proxy)
+  nginx:
+    image: nginx:alpine
+    container_name: edvo-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - app
+    networks:
+      - edvo-network
+
+  # Jupyter Notebook (for data science)
+  jupyter:
+    image: jupyter/scipy-notebook:latest
+    container_name: edvo-jupyter
+    ports:
+      - "8888:8888"
+    volumes:
+      - jupyter_data:/home/jovyan/work
+    networks:
+      - edvo-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  mongodb_data:
+  elasticsearch_data:
+  minio_data:
+  grafana_data:
+  prometheus_data:
+  rabbitmq_data:
+  jupyter_data:
+
+networks:
+  edvo-network:
+    driver: bridge

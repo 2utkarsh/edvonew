@@ -1,0 +1,45 @@
+interface Course extends TableCommon {
+   title: string;
+   slug: string;
+   short_description: string;
+   course_type: string;
+   status: 'draft' | 'upcoming' | 'pending' | 'rejected' | 'approved';
+   level: string;
+   language?: string;
+   pricing_type: string;
+   price: number;
+   discount?: number;
+   discount_price?: number;
+   drip_content: number;
+   meta_title?: string;
+   meta_keywords?: string;
+   meta_description?: string;
+   og_title?: string;
+   og_description?: string;
+   thumbnail?: string;
+   banner?: string;
+   preview?: string;
+   reviews_count?: number;
+   average_rating?: number;
+   expiry_type?: 'lifetime' | 'limited_time';
+   expiry_duration?: string;
+   description?: string;
+   requirements?: CourseRequirement[];
+   outcomes?: CourseOutcome[];
+   faqs?: CourseFaq[];
+   user_id: number | string;
+   reviews: CourseReview[];
+   sections: CourseSection[];
+   instructor: Instructor;
+   enrollments: Enrollment[];
+   enrollments_count?: number;
+   instructor_id: number | string;
+   live_classes: CourseLiveClass[];
+   assignments: CourseAssignment[];
+   course_category: CourseCategory;
+   course_category_child?: CourseCategoryChild;
+   course_category_id: number | string;
+   course_category_child_id: number | string;
+   [key: string]: any;
+}
+
