@@ -22,7 +22,7 @@ export default function CoursesPage() {
   const [sortBy, setSortBy] = useState('popular');
   const [showFilters, setShowFilters] = useState(false);
 
-  const categories = ['all', 'Programming', 'Physics', 'Web Development', 'Mathematics'];
+  const categories = ['all', 'Computer Science', 'Management'];
   const levels = ['all', 'beginner', 'intermediate', 'advanced'];
 
   useEffect(() => {
@@ -33,7 +33,6 @@ export default function CoursesPage() {
     try {
       setLoading(true);
       const params: Record<string, string> = { sort: sortBy };
-      if (selectedCategory !== 'all') params.category = selectedCategory;
       if (selectedLevel !== 'all') params.level = selectedLevel;
       if (searchTerm) params.search = searchTerm;
 
@@ -147,7 +146,7 @@ export default function CoursesPage() {
           <FadeIn>
             <div className="flex items-center justify-between mb-8">
               <p className="text-gray-600 dark:text-gray-400">
-                Showing <span className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">{courses.length}</span> courses
+                Showing <span className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">{getVisibleCourses(courses, selectedCategory).length}</span> courses
               </p>
             </div>
           </FadeIn>
@@ -159,8 +158,8 @@ export default function CoursesPage() {
             [...Array(6)].map((_, i) => (
               <CardSkeleton key={i} />
             ))
-          ) : courses.length > 0 ? (
-            courses.map((course, index) => (
+          ) : getVisibleCourses(courses, selectedCategory).length > 0 ? (
+            getVisibleCourses(courses, selectedCategory).map((course, index) => (
               <FadeIn key={course.id} delay={index * 0.1}>
                 <CourseCard course={course} />
               </FadeIn>
@@ -191,11 +190,10 @@ export default function CoursesPage() {
 }
 
 function CourseCard({ course }: { course: Course }) {
+  const displayCategory = getDisplayCategory(course.category);
   const paletteMap: Record<string, 'blue' | 'violet' | 'emerald' | 'amber'> = {
-    Programming: 'blue',
-    Physics: 'violet',
-    'Web Development': 'emerald',
-    Mathematics: 'amber',
+    'Computer Science': 'blue',
+    Management: 'amber',
   };
 
   const levelLabel =
@@ -215,7 +213,7 @@ function CourseCard({ course }: { course: Course }) {
       href={`/courses/${course.id}`}
       title={course.title}
       subtitle={course.description}
-      category={course.category}
+      category={displayCategory}
       levelLabel={levelLabel}
       rating={course.rating.toFixed(1)}
       reviewsText={formatCompact(course.reviewCount)}
@@ -225,9 +223,9 @@ function CourseCard({ course }: { course: Course }) {
       discountLabel={course.discount ? `${course.discount}% OFF` : undefined}
       duration={course.duration}
       lectures={`${course.lectures} lessons`}
-      projects={course.category === 'Physics' ? '18 practice sets' : course.category === 'Mathematics' ? '12 drills' : '8 projects'}
+      projects={displayCategory === 'Management' ? '8 case studies' : '12 coding projects'}
       badge={course.discount ? 'Hot Deal' : 'Featured'}
-      palette={paletteMap[course.category] || 'blue'}
+      palette={paletteMap[displayCategory] || 'blue'}
       ctaLabel="Explore Program"
     />
   );
@@ -237,4 +235,23 @@ function CourseCard({ course }: { course: Course }) {
 
 
 
+
+
+function getDisplayCategory(category?: string) {
+  const normalized = (category || '').trim().toLowerCase();
+
+  if (['management', 'mba', 'business', 'finance', 'operations', 'leadership'].includes(normalized)) {
+    return 'Management';
+  }
+
+  return 'Computer Science';
+}
+
+function getVisibleCourses(courses: Course[], selectedCategory: string) {
+  if (selectedCategory === 'all') {
+    return courses;
+  }
+
+  return courses.filter((course) => getDisplayCategory(course.category) === selectedCategory);
+}
 

@@ -142,11 +142,11 @@ export default function HomePage() {
 
   const topCourses = [
     {
-      title: 'Complete Python Programming',
-      subtitle: 'Build automation scripts, APIs, and data workflows with one practical roadmap.',
-      category: 'Programming',
-      levelLabel: 'Beginner to Pro',
-      instructor: 'Dr. Rajesh Kumar',
+      title: 'MBA Career Accelerator',
+      subtitle: 'Build business strategy, finance, operations, and leadership skills with practical case-based learning.',
+      category: 'MBA',
+      levelLabel: 'Career Track',
+      instructor: 'Dr. Radhika Mehta',
       rating: '4.8',
       reviewsText: '4.2k',
       studentsText: '89,543 enrolled',
@@ -155,16 +155,16 @@ export default function HomePage() {
       discountLabel: '63% OFF',
       duration: '24 weeks',
       lectures: '62 lessons',
-      projects: '8 projects',
+      projects: '8 case studies',
       badge: 'Bestseller',
       palette: 'blue' as const,
     },
     {
-      title: 'JEE Advanced Physics',
-      subtitle: 'Concept-rich prep with problem solving drills and mentor-guided revision loops.',
-      category: 'Physics',
-      levelLabel: 'Exam Intensive',
-      instructor: 'Prof. Alakh Pandey',
+      title: 'Computer Science Foundations',
+      subtitle: 'Cover programming, data structures, algorithms, systems, and core problem-solving for modern tech roles.',
+      category: 'CS',
+      levelLabel: 'Beginner to Advanced',
+      instructor: 'Prof. Arjun Nair',
       rating: '4.9',
       reviewsText: '6.1k',
       studentsText: '125,000 enrolled',
@@ -173,27 +173,9 @@ export default function HomePage() {
       discountLabel: '61% OFF',
       duration: '32 weeks',
       lectures: '96 lessons',
-      projects: '18 practice sets',
+      projects: '18 coding labs',
       badge: 'Popular',
       palette: 'violet' as const,
-    },
-    {
-      title: 'Full Stack Web Development',
-      subtitle: 'Ship frontend, backend, auth, dashboards, and deployment-ready portfolio apps.',
-      category: 'Web Development',
-      levelLabel: 'Career Track',
-      instructor: 'Angela Yu',
-      rating: '4.7',
-      reviewsText: '3.8k',
-      studentsText: '67,800 enrolled',
-      price: '₹3,499',
-      originalPrice: '₹9,999',
-      discountLabel: '65% OFF',
-      duration: '28 weeks',
-      lectures: '74 lessons',
-      projects: '10 builds',
-      badge: 'New',
-      palette: 'emerald' as const,
     },
   ];
 
@@ -465,4 +447,5 @@ export default function HomePage() {
     </main>
   );
 }
+
 
