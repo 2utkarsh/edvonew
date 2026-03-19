@@ -3,10 +3,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 
-// Required for static export — actual data is fetched client-side via useParams
-export function generateStaticParams() {
-  return [];
-}
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Play, Lock, ChevronRight, ChevronDown, Download, Star,
@@ -980,3 +976,4 @@ function StatCard({ icon, value, label }: { icon: React.ReactNode; value: string
     </div>
   );
 }
+
