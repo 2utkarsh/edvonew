@@ -18,6 +18,7 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [announcementDismissed, setAnnouncementDismissed] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authUser, setAuthUser] = useState<AuthUser>(null);
   const pathname = usePathname();
   const dropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -43,12 +44,25 @@ export default function Navbar() {
         const token = localStorage.getItem('auth_token');
         const storedUser = localStorage.getItem('auth_user');
         if (!token) {
-          setAuthUser(null);
+          setIsAuthenticated(false);
+          setIsAuthenticated(false);
+    setAuthUser(null);
           return;
         }
 
-        setAuthUser(storedUser ? JSON.parse(storedUser) : { name: 'Student' });
+        setIsAuthenticated(true);
+        if (!storedUser) {
+          setAuthUser({ name: 'Student' });
+          return;
+        }
+
+        try {
+          setAuthUser(JSON.parse(storedUser));
+        } catch {
+          setAuthUser({ name: 'Student' });
+        }
       } catch {
+        setIsAuthenticated(false);
         setAuthUser(null);
       }
     };
@@ -204,11 +218,11 @@ export default function Navbar() {
                     )}
                   </button>
                 )}
-{authUser ? (
+{isAuthenticated ? (
                   <>
                     <div className="flex items-center gap-2 rounded-full border border-border/70 bg-white/80 px-3 py-2 text-sm font-medium text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
                       <UserCircle className="h-4 w-4" />
-                      <span>{authUser.name || authUser.email || 'Student'}</span>
+                      <span>{authUser?.name || authUser?.email || 'Student'}</span>
                     </div>
                     <Link
                       href="/dashboard/student"

@@ -68,7 +68,10 @@ export default function LoginPage() {
       window.dispatchEvent(new Event('auth-changed'));
 
       setSubmitSuccess(payload?.message || 'Login successful. Redirecting...');
-      setTimeout(() => router.push('/'), 500);
+      setTimeout(() => {
+        router.replace('/');
+        router.refresh();
+      }, 300);
     } catch (error: any) {
       console.error('Login error:', error);
       setSubmitError(error?.message || 'Login failed');
