@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/backend/admin/login",
+      "permanent": false
+    }
+  ]
+}
