@@ -3,9 +3,9 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ChevronDown, Sun, Moon } from 'lucide-react';
+import { Menu, X, ChevronDown, Sun, Moon, LayoutDashboard, LogOut, UserCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useHeaderStore, NavLink } from '@/store/useHeaderStore';
 import { useThemeStore } from '@/store/useThemeStore';
@@ -15,6 +15,7 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [announcementDismissed, setAnnouncementDismissed] = useState(false);
+  const [authUser, setAuthUser] = useState<AuthUser>(null);
   const pathname = usePathname();
   const dropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { config } = useHeaderStore();
@@ -165,18 +166,43 @@ export default function Navbar() {
                     )}
                   </button>
                 )}
-                <Link
-                  href="/auth/login"
-                  className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-secondary-lighter hover:text-slate-950 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
-                >
-                  {config.loginText}
-                </Link>
-                <Link
-                  href="/auth/register"
-                  className="rounded-full bg-accent-500 px-5 py-2 text-sm font-semibold text-white transition-all duration-300 hover:scale-[1.05] hover:bg-accent-600 hover:shadow-lg hover:shadow-accent-500/25 active:scale-[0.98]"
-                >
-                  {config.registerText}
-                </Link>
+{authUser ? (
+                  <>
+                    <div className="flex items-center gap-2 rounded-full border border-border/70 bg-white/80 px-3 py-2 text-sm font-medium text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
+                      <UserCircle className="h-4 w-4" />
+                      <span>{authUser.name || authUser.email || 'Student'}</span>
+                    </div>
+                    <Link
+                      href="/dashboard/student"
+                      className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-secondary-lighter hover:text-slate-950 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+                    >
+                      <LayoutDashboard className="h-4 w-4" />
+                      Dashboard
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="rounded-full bg-accent-500 px-5 py-2 text-sm font-semibold text-white transition-all duration-300 hover:scale-[1.05] hover:bg-accent-600 hover:shadow-lg hover:shadow-accent-500/25 active:scale-[0.98]"
+                    >
+                      <span className="inline-flex items-center gap-1.5"><LogOut className="h-4 w-4" />Logout</span>
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/auth/login"
+                      className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-secondary-lighter hover:text-slate-950 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+                    >
+                      {config.loginText}
+                    </Link>
+                    <Link
+                      href="/auth/register"
+                      className="rounded-full bg-accent-500 px-5 py-2 text-sm font-semibold text-white transition-all duration-300 hover:scale-[1.05] hover:bg-accent-600 hover:shadow-lg hover:shadow-accent-500/25 active:scale-[0.98]"
+                    >
+                      {config.registerText}
+                    </Link>
+                  </>
+                )}
               </div>
 
               {/* Mobile: dark toggle + hamburger */}
