@@ -12,6 +12,24 @@ import { useThemeStore } from '@/store/useThemeStore';
 
 type AuthUser = { name?: string; email?: string } | null;
 
+function readStoredAuthToken() {
+  if (typeof window === 'undefined') return false;
+  return Boolean(window.localStorage.getItem('auth_token'));
+}
+
+function readStoredAuthUser(): AuthUser {
+  if (typeof window === 'undefined') return null;
+
+  const storedUser = window.localStorage.getItem('auth_user');
+  if (!storedUser) return { name: 'Student' };
+
+  try {
+    return JSON.parse(storedUser);
+  } catch {
+    return { name: 'Student' };
+  }
+}
+
 export default function Navbar() {
   const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -456,5 +474,6 @@ function MobileNavItem({ link, isActive }: { link: NavLink; isActive: boolean })
     </div>
   );
 }
+
 
 
