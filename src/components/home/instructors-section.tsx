@@ -13,13 +13,13 @@ const instructors = [
     name: 'Akanksha Singh',
     title: 'Mentor, EDVO | Marketing & Growth Architect | AI Marketing Strategist',
     bio: 'Akanksha Singh is a Marketing & Growth Architect with 10+ years of experience in performance marketing, brand strategy, and digital business growth. She has guided 120+ startups across 20+ different domains, helping founders and learners build strong digital presence, execute growth strategies, and achieve market visibility. With expertise in AI marketing, Google Ads, and analytics, she focuses on bridging the gap between learning and real-world execution. At EDVO, she builds industry-ready skills aligned with modern digital trends.',
-    image: '/images/profiles/priya-bhatia.svg',
+    image: '/images/profiles/akanksha-singh.jpeg',
   },
   {
     name: 'Krishna Bhushan Mishra',
     title: 'Mentor, EDVO | Marketing Engineer | Performance & Growth Strategist',
     bio: 'Krishna Bhushan Mishra is a Marketing Engineer and Performance & Growth Strategist with 8+ years of experience in performance marketing, data-driven strategy, and growth systems. He has guided 80+ startups across multiple domains and mentored 1,800+ learners, helping them develop practical, execution-focused skills and structured digital strategies. With a strong foundation in engineering and business, he specializes in building scalable marketing systems and simplifying complex concepts into actionable frameworks. At EDVO, he focuses on making learners job-ready with real-world digital expertise.',
-    image: '/images/profiles/krishna.jpg',
+    image: '/images/profiles/krishna-bhushan-mishra.jpeg',
   },
 ];
 
@@ -60,6 +60,7 @@ const InstructorsSection = () => {
 };
 
 export default InstructorsSection;
+
 
 
 
