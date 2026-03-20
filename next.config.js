@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const backendBaseUrl = (process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001').replace(/\/$/, '');
+
 const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react'],
@@ -25,7 +27,14 @@ const nextConfig = {
       }
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/backend/:path*',
+        destination: `${backendBaseUrl}/:path*`,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
-

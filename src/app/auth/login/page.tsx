@@ -5,12 +5,16 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, GraduationCap } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
+
+const defaultApiBase = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '/backend';
 
 export default function LoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [submitSuccess, setSubmitSuccess] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -41,22 +45,32 @@ export default function LoginPage() {
     if (!validateForm()) return;
 
     setIsLoading(true);
+    setSubmitError('');
+    setSubmitSuccess('');
+
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-      const res = await fetch(`${apiUrl}/api/auth/login`, {
+      const res = await fetch(`${defaultApiBase}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({ email: formData.email, password: formData.password }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error((data as any)?.message || 'Login failed');
-      // store token if returned
-      if ((data as any)?.token) {
-        localStorage.setItem('auth_token', (data as any).token);
+      const payload = (data as any)?.data || data;
+      if (!res.ok) throw new Error(payload?.message || (data as any)?.message || 'Login failed');
+
+      const token = payload?.token;
+      if (!token) throw new Error('Login token was not returned by the backend');
+
+      localStorage.setItem('auth_token', token);
+      if (payload?.user) {
+        localStorage.setItem('auth_user', JSON.stringify(payload.user));
       }
-      router.push('/');
+
+      setSubmitSuccess(payload?.message || 'Login successful. Redirecting...');
+      setTimeout(() => router.push('/'), 500);
     } catch (error: any) {
       console.error('Login error:', error);
+      setSubmitError(error?.message || 'Login failed');
     } finally {
       setIsLoading(false);
     }
@@ -64,9 +78,7 @@ export default function LoginPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40 dark:from-slate-950 dark:via-slate-900 dark:to-primary-950/50 flex">
-      {/* Left Panel - Branding */}
       <div className="hidden lg:flex lg:w-[45%] xl:w-[42%] flex-col items-center justify-center relative overflow-hidden bg-gradient-to-br from-slate-50 to-blue-50/50 dark:from-slate-900 dark:to-primary-950/50 px-12 border-r border-gray-100 dark:border-slate-800 transition-colors">
-        {/* Decorative background circles */}
         <div className="absolute top-20 left-10 w-64 h-64 bg-blue-100/40 dark:bg-primary-900/20 rounded-full blur-3xl transition-colors" />
         <div className="absolute bottom-20 right-10 w-48 h-48 bg-indigo-100/40 dark:bg-indigo-950/20 rounded-full blur-3xl transition-colors" />
 
@@ -76,7 +88,6 @@ export default function LoginPage() {
           transition={{ duration: 0.6 }}
           className="relative z-10 text-center"
         >
-          {/* Logo */}
           <div className="flex items-center justify-center mb-6">
             <Image
               src="/images/edvo-official-logo-v10.png"
@@ -87,10 +98,8 @@ export default function LoginPage() {
             />
           </div>
 
-          {/* Tagline */}
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">Enabling Careers</h2>
 
-          {/* Illustration */}
           <div className="my-8">
             <Image
               src="/images/student-illustration.png"
@@ -102,14 +111,12 @@ export default function LoginPage() {
             />
           </div>
 
-          {/* Description */}
           <p className="text-gray-500 dark:text-gray-400 text-sm max-w-xs mx-auto leading-relaxed">
             Upscaling your career was never this easy. To stay updated with us, please log in with your information.
           </p>
         </motion.div>
       </div>
 
-      {/* Right Panel - Form */}
       <div className="flex-1 flex items-center justify-center px-6 py-10 lg:px-12">
         <motion.div
           initial={{ opacity: 0, x: 20 }}
@@ -117,7 +124,6 @@ export default function LoginPage() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="w-full max-w-md"
         >
-          {/* Header */}
           <div className="flex items-center justify-between mb-2">
             <p className="text-gray-600 dark:text-gray-400">
               Welcome to <span className="text-primary-600 dark:text-primary-400 font-semibold">EDVO</span>
@@ -132,7 +138,6 @@ export default function LoginPage() {
 
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Log in</h1>
 
-          {/* Social Login Buttons */}
           <div className="flex gap-3 mb-8">
             <button
               type="button"
@@ -157,9 +162,7 @@ export default function LoginPage() {
             </button>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Email Address
@@ -177,7 +180,6 @@ export default function LoginPage() {
               {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
             </div>
 
-            {/* Password */}
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -212,7 +214,6 @@ export default function LoginPage() {
               {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password}</p>}
             </div>
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={isLoading}
@@ -227,9 +228,11 @@ export default function LoginPage() {
                 'Login'
               )}
             </button>
+
+            {submitError ? <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300">{submitError}</div> : null}
+            {submitSuccess ? <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-300">{submitSuccess}</div> : null}
           </form>
 
-          {/* Footer Terms */}
           <p className="mt-6 text-center text-xs text-gray-500 dark:text-gray-400">
             By signing up, you agree to our{' '}
             <Link href="/terms" className="text-gray-700 dark:text-gray-300 font-semibold hover:underline">Terms and Conditions</Link>
