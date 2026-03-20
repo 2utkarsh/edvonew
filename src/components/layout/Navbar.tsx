@@ -13,6 +13,7 @@ import { useThemeStore } from '@/store/useThemeStore';
 type AuthUser = { name?: string; email?: string } | null;
 
 export default function Navbar() {
+  const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -35,6 +36,36 @@ export default function Navbar() {
     setIsMobileMenuOpen(false);
     setOpenDropdown(null);
   }, [pathname]);
+
+  useEffect(() => {
+    const syncAuth = () => {
+      try {
+        const token = localStorage.getItem('auth_token');
+        const storedUser = localStorage.getItem('auth_user');
+        if (!token) {
+          setAuthUser(null);
+          return;
+        }
+
+        setAuthUser(storedUser ? JSON.parse(storedUser) : { name: 'Student' });
+      } catch {
+        setAuthUser(null);
+      }
+    };
+
+    syncAuth();
+    window.addEventListener('storage', syncAuth);
+    return () => window.removeEventListener('storage', syncAuth);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_user');
+    setAuthUser(null);
+    setIsMobileMenuOpen(false);
+    router.push('/');
+    router.refresh();
+  };
 
   const handleMouseEnter = (label: string) => {
     if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
@@ -406,4 +437,5 @@ function MobileNavItem({ link, isActive }: { link: NavLink; isActive: boolean })
     </div>
   );
 }
+
 
