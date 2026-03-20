@@ -78,6 +78,7 @@ const defaultConfig: HeaderConfig = {
         { href: '/testimonials/success-stories', label: 'Job Success Stories' },
       ],
     },
+    { href: '/our-team', label: 'Our Team' },
     { href: '/hire-talent', label: 'Hire Talent' },
   ],
   announcement: {
@@ -113,3 +114,4 @@ export const useHeaderStore = create<HeaderStore>((set) => ({
       config: { ...state.config, logoText: text },
     })),
 }));
+

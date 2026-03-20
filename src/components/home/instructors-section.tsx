@@ -5,9 +5,9 @@ import Badge from '@/components/ui/Badge';
 const instructors = [
   {
     name: 'Alok Pandey',
-    title: 'Mentor, EDVO | Mentor of Change, NITI Aayog | Startup & MSME Growth Catalyst',
+    title: 'Chief Mentor, EDVO | Mentor of Change, NITI Aayog | Startup & MSME Growth Catalyst',
     bio: 'Alok Pandey is an experienced entrepreneurship mentor and ecosystem builder with 17+ years of expertise in innovation, startup development, and MSME growth. As a Mentor of Change with NITI Aayog, he has guided thousands of individuals, institutions, and emerging entrepreneurs. His work spans advanced domains such as quantum computing, chip design, and large-scale capacity-building programs. With strong expertise in CSR, research, and social impact, he brings strategic depth and real-world execution to EDVO\'s learning ecosystem.',
-    image: '/images/profiles/ajay-kumar-gupta.svg',
+    image: '/images/profiles/alok-pandey.png',
   },
   {
     name: 'Akanksha Singh',
@@ -16,10 +16,10 @@ const instructors = [
     image: '/images/profiles/priya-bhatia.svg',
   },
   {
-    name: 'Arishna Bhushan Mishra',
+    name: 'Krishna Bhushan Mishra',
     title: 'Mentor, EDVO | Marketing Engineer | Performance & Growth Strategist',
-    bio: 'Arishna Bhushan Mishra is a Marketing Engineer and Performance & Growth Strategist with 8+ years of experience in performance marketing, data-driven strategy, and growth systems. He has guided 80+ startups across multiple domains and mentored 1,800+ learners, helping them develop practical, execution-focused skills and structured digital strategies. With a strong foundation in engineering and business, he specializes in building scalable marketing systems and simplifying complex concepts into actionable frameworks. At EDVO, he focuses on making learners job-ready with real-world digital expertise.',
-    image: '/images/profiles/rohan-singh.svg',
+    bio: 'Krishna Bhushan Mishra is a Marketing Engineer and Performance & Growth Strategist with 8+ years of experience in performance marketing, data-driven strategy, and growth systems. He has guided 80+ startups across multiple domains and mentored 1,800+ learners, helping them develop practical, execution-focused skills and structured digital strategies. With a strong foundation in engineering and business, he specializes in building scalable marketing systems and simplifying complex concepts into actionable frameworks. At EDVO, he focuses on making learners job-ready with real-world digital expertise.',
+    image: '/images/profiles/krishna.jpg',
   },
 ];
 
@@ -28,7 +28,7 @@ const InstructorsSection = () => {
     <section className="bg-gradient-to-b from-slate-50 to-white px-4 py-16 dark:from-slate-950 dark:to-slate-900">
       <div className="mx-auto max-w-7xl">
         <div className="mb-4 text-center">
-          <Badge variant="secondary" className="mb-4">Practitioners Who Teach</Badge>
+          <Badge variant="secondary" className="mb-4 inline-flex px-6 py-2 text-sm font-semibold uppercase tracking-[0.22em] md:text-base">Our Team</Badge>
         </div>
         <h2 className="mb-4 text-center text-3xl font-bold text-slate-950 dark:text-white md:text-4xl">
           Learn from AI & Data Experts <span className="text-primary-600 dark:text-primary-300">with Real Industry Experience</span>
@@ -60,3 +60,8 @@ const InstructorsSection = () => {
 };
 
 export default InstructorsSection;
+
+
+
+
+
