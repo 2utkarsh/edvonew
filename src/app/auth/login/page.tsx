@@ -65,6 +65,7 @@ export default function LoginPage() {
       if (payload?.user) {
         localStorage.setItem('auth_user', JSON.stringify(payload.user));
       }
+      window.dispatchEvent(new Event('auth-changed'));
 
       setSubmitSuccess(payload?.message || 'Login successful. Redirecting...');
       setTimeout(() => router.push('/'), 500);

@@ -55,12 +55,17 @@ export default function Navbar() {
 
     syncAuth();
     window.addEventListener('storage', syncAuth);
-    return () => window.removeEventListener('storage', syncAuth);
-  }, []);
+    window.addEventListener('auth-changed', syncAuth);
+    return () => {
+      window.removeEventListener('storage', syncAuth);
+      window.removeEventListener('auth-changed', syncAuth);
+    };
+  }, [pathname]);
 
   const handleLogout = () => {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('auth_user');
+    window.dispatchEvent(new Event('auth-changed'));
     setAuthUser(null);
     setIsMobileMenuOpen(false);
     router.push('/');
