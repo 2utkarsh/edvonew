@@ -4,6 +4,10 @@ import type { FormEvent } from 'react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '/backend';
+const adminPath = `${basePath}/admin`;
+const loginApiPath = `${basePath}/api/auth/login`;
+
 export default function BackendAdminLoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('admin@edvo.local');
@@ -16,7 +20,7 @@ export default function BackendAdminLoginPage() {
   useEffect(() => {
     const savedToken = localStorage.getItem('backend_auth_token');
     if (savedToken) {
-      router.replace('/admin');
+      router.replace(adminPath);
       return;
     }
     setCheckingSession(false);
@@ -28,7 +32,7 @@ export default function BackendAdminLoginPage() {
     setMessage('');
 
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch(loginApiPath, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -50,7 +54,7 @@ export default function BackendAdminLoginPage() {
       localStorage.setItem('backend_auth_token', nextToken);
       setToken(nextToken);
       setMessage('Login successful. Redirecting to admin dashboard...');
-      router.replace('/admin');
+      router.replace(adminPath);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Login failed');
     } finally {

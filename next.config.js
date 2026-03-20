@@ -31,7 +31,7 @@ const nextConfig = {
     return [
       {
         source: '/backend/:path*',
-        destination: `${backendBaseUrl}/:path*`,
+        destination: `${backendBaseUrl}/backend/:path*`,
       },
     ];
   },

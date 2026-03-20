@@ -7,6 +7,9 @@ import { useRouter } from 'next/navigation';
 type TabKey = 'overview' | 'people' | 'instructors' | 'categories' | 'content' | 'cms' | 'messages' | 'settings';
 type Box<T> = { data: T; error: string };
 
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '/backend';
+const adminLoginPath = `${basePath}/admin/login`;
+
 const shell = { padding: 24, fontFamily: 'Arial, sans-serif', background: 'linear-gradient(180deg, #eef2ff 0%, #f8fafc 28%, #ffffff 100%)', minHeight: '100vh' } as const;
 const card = { background: '#fff', borderRadius: 18, padding: 20, boxShadow: '0 16px 40px rgba(15,23,42,0.08)' } as const;
 const tabs: TabKey[] = ['overview', 'people', 'instructors', 'categories', 'content', 'cms', 'messages', 'settings'];
@@ -20,7 +23,8 @@ const parseNavItems = (value: string) => value.split('\n').map((line) => line.tr
 const navItemsToText = (items?: any[]) => (items || []).map((item) => `${item.title || ''}|${item.value || ''}|${item.type || 'link'}|${item.active === false ? 'false' : 'true'}`).join('\n');
 
 async function api<T>(path: string, token: string, method = 'GET', body?: unknown): Promise<T> {
-  const response = await fetch(path, { method, headers: { Authorization: `Bearer ${token}`, Accept: 'application/json', 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
+  const resolvedPath = path.startsWith('/') ? `${basePath}${path}` : path;
+  const response = await fetch(resolvedPath, { method, headers: { Authorization: `Bearer ${token}`, Accept: 'application/json', 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
   const json = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error((json && (json.message || json.error)) || `Request failed: ${response.status}`);
   return (json.data ?? json) as T;
@@ -67,7 +71,7 @@ export default function BackendAdminPage() {
 
   useEffect(() => {
     const saved = localStorage.getItem('backend_auth_token') || '';
-    if (!saved) { router.replace('/admin/login'); return; }
+    if (!saved) { router.replace(adminLoginPath); return; }
     setToken(saved); setReady(true);
   }, [router]);
 
@@ -98,7 +102,7 @@ export default function BackendAdminPage() {
     } catch (error) {
       const msg = error instanceof Error ? error.message : 'Failed to load backend data';
       setMessage(msg);
-      if (msg.toLowerCase().includes('unauthorized') || msg.toLowerCase().includes('forbidden')) { localStorage.removeItem('backend_auth_token'); router.replace('/admin/login'); }
+      if (msg.toLowerCase().includes('unauthorized') || msg.toLowerCase().includes('forbidden')) { localStorage.removeItem('backend_auth_token'); router.replace(adminLoginPath); }
     }
   }
 
@@ -163,7 +167,7 @@ export default function BackendAdminPage() {
           </div>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
             <button type="button" onClick={() => refreshAll()} style={{ padding: '12px 18px', borderRadius: 12, border: 0, background: '#0f172a', color: '#fff', fontWeight: 700, cursor: 'pointer' }}>Refresh</button>
-            <button type="button" onClick={() => { localStorage.removeItem('backend_auth_token'); router.replace('/admin/login'); }} style={{ padding: '12px 18px', borderRadius: 12, border: '1px solid #fecaca', background: '#fff1f2', color: '#b91c1c', fontWeight: 700, cursor: 'pointer' }}>Logout</button>
+            <button type="button" onClick={() => { localStorage.removeItem('backend_auth_token'); router.replace(adminLoginPath); }} style={{ padding: '12px 18px', borderRadius: 12, border: '1px solid #fecaca', background: '#fff1f2', color: '#b91c1c', fontWeight: 700, cursor: 'pointer' }}>Logout</button>
           </div>
         </div>
 
