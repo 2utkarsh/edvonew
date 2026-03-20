@@ -18,8 +18,8 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [announcementDismissed, setAnnouncementDismissed] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authUser, setAuthUser] = useState<AuthUser>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => readStoredAuthToken());
+  const [authUser, setAuthUser] = useState<AuthUser>(() => (readStoredAuthToken() ? readStoredAuthUser() : null));
   const pathname = usePathname();
   const dropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { config } = useHeaderStore();
@@ -218,7 +218,7 @@ export default function Navbar() {
                     )}
                   </button>
                 )}
-{isAuthenticated ? (
+{(isAuthenticated || !!authUser) ? (
                   <>
                     <div className="flex items-center gap-2 rounded-full border border-border/70 bg-white/80 px-3 py-2 text-sm font-medium text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
                       <UserCircle className="h-4 w-4" />
