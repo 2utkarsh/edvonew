@@ -1,32 +1,31 @@
 'use client';
 
-import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
-import { Linkedin, Youtube, ArrowRight } from 'lucide-react';
 import { getProfileArtwork } from '@/lib/marketing-images';
 
-const InstructorsSection = () => {
-  const instructors = [
-    {
-      name: 'Dhaval Patel',
-      title: 'Data Entrepreneur (12+ Years), Youtuber, Ex - Bloomberg, NVIDIA',
-      bio: 'I have 17 years of experience in programming and data science working for big tech companies like NVIDIA and Bloomberg. I also run a famous youtube channel called EDVO where I pursue my passion for teaching.',
-      linkedin: '#',
-      youtube: '#',
-    },
-    {
-      name: 'Hemanand Vadivel',
-      title: 'Ex- Data Analytics Manager, 8+ Years in Europe, Microsoft Certified, Certified Supply Chain Professional',
-      bio: 'I\'m a Mechanical Engineer who transitioned to a full-time Data & Analytics Manager in the UK & Germany. I have delivered 30+ analytics projects over 15+ countries and trained professionals at different levels to equip them with valuable analytics skills.',
-      linkedin: '#',
-      instagram: '#',
-    },
-  ];
+const instructors = [
+  {
+    name: 'Alok Pandey',
+    title: 'Mentor, EDVO | Mentor of Change, NITI Aayog | Startup & MSME Growth Catalyst',
+    bio: 'Alok Pandey is an experienced entrepreneurship mentor and ecosystem builder with 17+ years of expertise in innovation, startup development, and MSME growth. As a Mentor of Change with NITI Aayog, he has guided thousands of individuals, institutions, and emerging entrepreneurs. His work spans advanced domains such as quantum computing, chip design, and large-scale capacity-building programs. With strong expertise in CSR, research, and social impact, he brings strategic depth and real-world execution to EDVO\'s learning ecosystem.',
+  },
+  {
+    name: 'Akanksha Singh',
+    title: 'Mentor, EDVO | Marketing & Growth Architect | AI Marketing Strategist',
+    bio: 'Akanksha Singh is a Marketing & Growth Architect with 10+ years of experience in performance marketing, brand strategy, and digital business growth. She has guided 120+ startups across 20+ different domains, helping founders and learners build strong digital presence, execute growth strategies, and achieve market visibility. With expertise in AI marketing, Google Ads, and analytics, she focuses on bridging the gap between learning and real-world execution. At EDVO, she builds industry-ready skills aligned with modern digital trends.',
+  },
+  {
+    name: 'Arishna Bhushan Mishra',
+    title: 'Mentor, EDVO | Marketing Engineer | Performance & Growth Strategist',
+    bio: 'Arishna Bhushan Mishra is a Marketing Engineer and Performance & Growth Strategist with 8+ years of experience in performance marketing, data-driven strategy, and growth systems. He has guided 80+ startups across multiple domains and mentored 1,800+ learners, helping them develop practical, execution-focused skills and structured digital strategies. With a strong foundation in engineering and business, he specializes in building scalable marketing systems and simplifying complex concepts into actionable frameworks. At EDVO, he focuses on making learners job-ready with real-world digital expertise.',
+  },
+];
 
+const InstructorsSection = () => {
   return (
-    <section className="px-4 py-16 bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-4">
+    <section className="bg-gradient-to-b from-slate-50 to-white px-4 py-16 dark:from-slate-950 dark:to-slate-900">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-4 text-center">
           <Badge variant="secondary" className="mb-4">Practitioners Who Teach</Badge>
         </div>
         <h2 className="mb-4 text-center text-3xl font-bold text-slate-950 dark:text-white md:text-4xl">
@@ -36,40 +35,21 @@ const InstructorsSection = () => {
           Industry experience meets the art of teaching, making complex concepts feel simple.
         </p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-          {instructors.map((instructor, index) => (
-            <div key={index} className="flex gap-6">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          {instructors.map((instructor) => (
+            <article
+              key={instructor.name}
+              className="flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-6 shadow-lg shadow-slate-200/60 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20"
+            >
               <img
                 src={getProfileArtwork(instructor.name)}
                 alt={instructor.name}
-                className="h-32 w-32 flex-shrink-0 rounded-2xl object-cover object-center shadow-lg shadow-primary-500/20"
+                className="mb-5 h-40 w-40 rounded-2xl object-cover object-center shadow-lg shadow-primary-500/20"
               />
-              <div className="flex-1">
-                <h3 className="mb-2 text-xl font-bold text-slate-950 dark:text-white">{instructor.name}</h3>
-                <p className="mb-3 text-sm font-medium text-primary-600 dark:text-primary-300">{instructor.title}</p>
-                <p className="mb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{instructor.bio}</p>
-                <div className="flex gap-3">
-                  {instructor.linkedin && (
-                    <a href={instructor.linkedin} className="text-primary-600 transition-colors hover:text-primary-700 dark:text-primary-300 dark:hover:text-primary-200">
-                      <Linkedin className="w-5 h-5" />
-                    </a>
-                  )}
-                  {instructor.youtube && (
-                    <a href={instructor.youtube} className="text-red-600 transition-colors hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
-                      <Youtube className="w-5 h-5" />
-                    </a>
-                  )}
-                  {instructor.instagram && (
-                    <a href={instructor.instagram} className="text-pink-600 transition-colors hover:text-pink-700 dark:text-pink-400 dark:hover:text-pink-300">
-                      <span className="text-lg">IG</span>
-                    </a>
-                  )}
-                </div>
-                <Button variant="link" className="mt-2 gap-1 text-primary-600 dark:text-primary-300">
-                  Read More <ArrowRight className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
+              <h3 className="mb-2 text-2xl font-bold text-slate-950 dark:text-white">{instructor.name}</h3>
+              <p className="mb-4 text-sm font-medium leading-6 text-primary-600 dark:text-primary-300">{instructor.title}</p>
+              <p className="text-sm leading-7 text-slate-600 dark:text-slate-300">{instructor.bio}</p>
+            </article>
           ))}
         </div>
       </div>
