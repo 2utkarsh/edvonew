@@ -10,6 +10,8 @@ import { cn } from '@/lib/utils';
 import { useHeaderStore, NavLink } from '@/store/useHeaderStore';
 import { useThemeStore } from '@/store/useThemeStore';
 
+type AuthUser = { name?: string; email?: string } | null;
+
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -404,3 +406,4 @@ function MobileNavItem({ link, isActive }: { link: NavLink; isActive: boolean })
     </div>
   );
 }
+
