@@ -36,14 +36,14 @@ export function fail(message: string, code: string = 'INTERNAL_ERROR', details?:
   return response;
 }
 
-export function handleError(error: any): ApiResponse<null> & { status: number } {
+export function handleError(error: any): Response {
   console.error('Error:', error);
-  return fail(
+  return toResponse(fail(
     error.message || 'Internal server error',
     'INTERNAL_ERROR',
     undefined,
     500
-  );
+  ));
 }
 
 export function parseJson(data: any): any {

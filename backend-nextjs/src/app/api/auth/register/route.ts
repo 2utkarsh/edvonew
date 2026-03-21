@@ -1,19 +1,19 @@
 ﻿import { connectToDatabase } from '@/lib/db';
-import { created, fail, handleError, parseJson } from '@/lib/http';
+import { created, fail, handleError, parseJson, toResponse } from '@/lib/http';
 import { hashPassword, signAccessToken } from '@/lib/auth';
 import { validateRegisterInput, RegisterInput } from '@/lib/validators';
 import { UserModel } from '@/models/User';
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<Response> {
   try {
     const body = await parseJson<RegisterInput>(request);
     const validationError = validateRegisterInput(body);
-    if (validationError) return fail(validationError, 422);
+    if (validationError) return toResponse(fail(validationError, 422));
 
     await connectToDatabase();
 
     const existingUser = await UserModel.findOne({ email: body.email!.toLowerCase() });
-    if (existingUser) return fail('Email is already registered', 409);
+    if (existingUser) return toResponse(fail('Email is already registered', 409));
 
     const passwordHash = await hashPassword(body.password!);
     const user = await UserModel.create({
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
       name: user.name,
     });
 
-    return created({
+    return toResponse(created({
       token,
       user: {
         id: user.id,
