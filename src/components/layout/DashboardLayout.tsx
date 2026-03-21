@@ -287,7 +287,7 @@ export default function DashboardLayout({
                 <div className="text-xs text-gray-500 dark:text-gray-400 capitalize">{userRole}</div>
               </div>
               <div className="w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-700 rounded-full flex items-center justify-center text-white font-medium">
-                {userName.charAt(0)}
+                {(userName || 'U').charAt(0)}
               </div>
             </div>
           </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   BookOpen, Clock, Award, TrendingUp, Play, Calendar, Target, 
@@ -12,8 +12,48 @@ import Badge from '@/components/ui/Badge';
 import { FadeIn, StaggerGrid } from '@/components/animations';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 
+type StoredAuthUser = {
+  name?: string;
+};
+
+function readStoredUserName() {
+  if (typeof window === 'undefined') {
+    return 'Student';
+  }
+
+  try {
+    const storedUser = window.localStorage.getItem('auth_user');
+    if (!storedUser) {
+      return 'Student';
+    }
+
+    const parsedUser = JSON.parse(storedUser) as StoredAuthUser | null;
+    const nextName = parsedUser?.name?.trim();
+
+    return nextName || 'Student';
+  } catch {
+    return 'Student';
+  }
+}
+
 export default function StudentDashboard() {
   const [activeTab, setActiveTab] = useState('courses');
+  const [userName, setUserName] = useState('Student');
+
+  useEffect(() => {
+    const syncUserName = () => {
+      setUserName(readStoredUserName());
+    };
+
+    syncUserName();
+    window.addEventListener('storage', syncUserName);
+    window.addEventListener('auth-change', syncUserName as EventListener);
+
+    return () => {
+      window.removeEventListener('storage', syncUserName);
+      window.removeEventListener('auth-change', syncUserName as EventListener);
+    };
+  }, []);
 
   const enrolledCourses = [
     {
@@ -72,7 +112,7 @@ export default function StudentDashboard() {
   ];
 
   return (
-    <DashboardLayout userRole="student" userName="Arnav">
+    <DashboardLayout userRole="student" userName={userName}>
       <div className="min-h-screen bg-gray-50 dark:bg-slate-950 pt-8 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Welcome Section */}
@@ -89,8 +129,7 @@ export default function StudentDashboard() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5 }}
                   >
-                    Welcome back, Arnav! 👋
-                  </motion.h1>
+                    Welcome back, {userName}! </motion.h1>
                   <p className="text-xl text-white/90">
                     Ready to continue your learning journey?
                   </p>
