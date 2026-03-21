@@ -1,8 +1,8 @@
 import { connectToDatabase } from '@/lib/db';
-import { created, handleError, parseJson } from '@/lib/http';
+import { created, handleError, parseJson, toResponse } from '@/lib/http';
 import { ContactMessageModel } from '@/models/ContactMessage';
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<Response> {
   try {
     await connectToDatabase();
     const body = await parseJson<Record<string, unknown>>(request);
@@ -15,7 +15,7 @@ export async function POST(request: Request) {
       ip: request.headers.get('x-forwarded-for') || '',
       userAgent: request.headers.get('user-agent') || '',
     });
-    return created(item);
+    return toResponse(created(item));
   } catch (error) {
     return handleError(error);
   }
