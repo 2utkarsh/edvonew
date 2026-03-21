@@ -10,6 +10,7 @@ import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import { FadeIn, StaggerGrid } from '@/components/animations';
+import DashboardLayout from '@/components/layout/DashboardLayout';
 
 export default function StudentDashboard() {
   const [activeTab, setActiveTab] = useState('courses');
@@ -71,7 +72,8 @@ export default function StudentDashboard() {
   ];
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-slate-950 pt-8 transition-colors duration-300">
+    <DashboardLayout userRole="student" userName="Arnav">
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-950 pt-8 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Welcome Section */}
         <FadeIn>
@@ -324,6 +326,7 @@ export default function StudentDashboard() {
           </div>
         </div>
       </div>
-    </main>
+      </div>
+    </DashboardLayout>
   );
 }
