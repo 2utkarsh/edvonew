@@ -29,7 +29,8 @@
       ]
     },
     "noImplicitAny": false,
-    "strictNullChecks": false
+    "strictNullChecks": false,
+    "strictFunctionTypes": false
   },
   "include": [
     "next-env.d.ts",
@@ -39,23 +40,6 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
-    "src/app/api/admin/**/*",
-    "src/app/api/auth/**/*",
-    "src/app/api/blog-categories/**/*",
-    "src/app/api/blogs/**/*",
-    "src/app/api/contact-messages/**/*",
-    "src/app/api/course-categories/**/*",
-    "src/app/api/course-category-children/**/*",
-    "src/app/api/courses/**/*",
-    "src/app/api/dashboard/**/*",
-    "src/app/api/exam-categories/**/*",
-    "src/app/api/exams/**/*",
-    "src/app/api/footers/**/*",
-    "src/app/api/instructors/**/*",
-    "src/app/api/jobs/**/*",
-    "src/app/api/navbars/**/*",
-    "src/app/api/newsletters/**/*",
-    "src/app/api/subscribes/**/*"
+    "node_modules"
   ]
 }
