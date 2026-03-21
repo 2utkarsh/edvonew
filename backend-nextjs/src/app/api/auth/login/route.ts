@@ -39,7 +39,7 @@ export async function POST(request: Request): Promise<Response> {
         updatedAt: user.updatedAt,
       },
       message: 'Login successful',
-    });
+    }));
   } catch (error) {
     return handleError(error);
   }

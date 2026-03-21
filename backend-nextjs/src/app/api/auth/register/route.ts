@@ -43,7 +43,7 @@ export async function POST(request: Request): Promise<Response> {
         updatedAt: user.updatedAt,
       },
       message: 'Registration successful',
-    });
+    }));
   } catch (error) {
     return handleError(error);
   }
