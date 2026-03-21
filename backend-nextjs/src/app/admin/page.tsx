@@ -8,7 +8,7 @@ type TabKey = 'overview' | 'people' | 'instructors' | 'categories' | 'content' |
 type Box<T> = { data: T; error: string };
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '/backend';
-const adminLoginPath = `${basePath}/admin/login`;
+const adminLoginPath = '/admin/login';
 
 const shell = { padding: 24, fontFamily: 'Arial, sans-serif', background: 'linear-gradient(180deg, #eef2ff 0%, #f8fafc 28%, #ffffff 100%)', minHeight: '100vh' } as const;
 const card = { background: '#fff', borderRadius: 18, padding: 20, boxShadow: '0 16px 40px rgba(15,23,42,0.08)' } as const;

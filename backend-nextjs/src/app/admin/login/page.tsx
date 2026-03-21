@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '/backend';
-const adminPath = `${basePath}/admin`;
+const adminPath = '/admin';
 const loginApiPath = `${basePath}/api/auth/login`;
 
 export default function BackendAdminLoginPage() {
