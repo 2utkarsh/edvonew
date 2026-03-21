@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Search, BookOpen, ChevronDown, GraduationCap, Code, Database, Brain, Rocket, MessageSquare, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Badge from '@/components/ui/Badge';
@@ -8,7 +8,7 @@ import Button from '@/components/ui/Button';
 import { FadeIn } from '@/components/animations';
 import BlogCard from '@/components/blog/BlogCard';
 import { cn } from '@/lib/utils';
-import { BLOG_CATEGORIES, MOCK_BLOGS } from './data';
+import { BLOG_CATEGORIES, BlogPost, fetchBlogs } from './data';
 
 const CATEGORY_ICONS = {
   all: BookOpen,
@@ -20,18 +20,49 @@ const CATEGORY_ICONS = {
 } as const;
 
 export default function BlogPage() {
+  const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadBlogs() {
+      try {
+        setIsLoading(true);
+        setLoadError('');
+        const items = await fetchBlogs();
+        if (!cancelled) {
+          setBlogs(items);
+        }
+      } catch (error: any) {
+        if (!cancelled) {
+          setLoadError(error?.message || 'Unable to load blogs right now.');
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    loadBlogs();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const filteredBlogs = useMemo(() => {
-    return MOCK_BLOGS.filter((blog) => {
+    return blogs.filter((blog) => {
       const matchesSearch =
         blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         blog.description.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === 'all' || blog.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
-  }, [searchTerm, selectedCategory]);
+  }, [blogs, searchTerm, selectedCategory]);
 
   return (
     <main className="min-h-screen bg-white dark:bg-slate-950 pt-16 pb-24 transition-colors duration-300">
@@ -57,7 +88,7 @@ export default function BlogPage() {
                 <div className="flex flex-col gap-8">
                   <div>
                     <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-2">Find what you need</h2>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Search 100+ articles and roadmaps</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Search across the live resource blog library</p>
                   </div>
 
                   <div className="relative">
@@ -73,7 +104,7 @@ export default function BlogPage() {
 
                   <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
                     <Rocket className="w-3.5 h-3.5" />
-                    Trending: AI Engineer, Python, SQL Mastery
+                    Live blog feed synced from the backend admin source
                   </div>
                 </div>
               </div>
@@ -118,13 +149,25 @@ export default function BlogPage() {
               {filteredBlogs.length} {filteredBlogs.length === 1 ? 'Article' : 'Articles'} Found
             </span>
           </div>
-          <div className="flex items-center gap-3 text-xs font-black text-slate-400 uppercase tracking-widest cursor-pointer hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+          <div className="flex items-center gap-3 text-xs font-black text-slate-400 uppercase tracking-widest">
             Sort by: Latest <ChevronDown className="w-3.5 h-3.5" />
           </div>
         </div>
 
+        {loadError ? (
+          <div className="mb-10 rounded-3xl border border-red-200 bg-red-50 px-6 py-5 text-sm font-medium text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-300">
+            {loadError}
+          </div>
+        ) : null}
+
         <AnimatePresence mode="wait">
-          {filteredBlogs.length > 0 ? (
+          {isLoading ? (
+            <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div key={index} className="h-[420px] animate-pulse rounded-[2.5rem] border border-slate-100 bg-slate-50 dark:border-slate-800 dark:bg-slate-900" />
+              ))}
+            </motion.div>
+          ) : filteredBlogs.length > 0 ? (
             <motion.div key="grid" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4 }}>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
                 {filteredBlogs.map((blog) => (

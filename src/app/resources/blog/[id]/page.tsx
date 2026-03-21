@@ -1,26 +1,92 @@
+'use client';
+
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
+import { useParams } from 'next/navigation';
 import { ArrowLeft, ArrowRight, Calendar, Clock, User } from 'lucide-react';
 import Badge from '@/components/ui/Badge';
-import { getBlogById, MOCK_BLOGS } from '../data';
+import { BlogPost, fetchBlogs } from '../data';
 
-interface BlogDetailPageProps {
-  params: Promise<{ id: string }>;
-}
+export default function BlogDetailPage() {
+  const params = useParams<{ id: string }>();
+  const blogId = typeof params?.id === 'string' ? params.id : '';
+  const [blogs, setBlogs] = useState<BlogPost[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
 
-export async function generateStaticParams() {
-  return MOCK_BLOGS.map((blog) => ({ id: blog.id }));
-}
+  useEffect(() => {
+    let cancelled = false;
 
-export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
-  const { id } = await params;
-  const blog = getBlogById(id);
+    async function loadBlogs() {
+      try {
+        setIsLoading(true);
+        setLoadError('');
+        const items = await fetchBlogs();
+        if (!cancelled) {
+          setBlogs(items);
+        }
+      } catch (error: any) {
+        if (!cancelled) {
+          setLoadError(error?.message || 'Unable to load this blog right now.');
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    }
 
-  if (!blog) {
-    notFound();
+    loadBlogs();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const blog = useMemo(() => blogs.find((item) => item.id === blogId || item.slug === blogId), [blogs, blogId]);
+  const relatedBlogs = useMemo(() => blogs.filter((item) => blog && item.id !== blog.id && item.category === blog.category).slice(0, 3), [blogs, blog]);
+
+  if (isLoading) {
+    return (
+      <main className="min-h-screen bg-white dark:bg-slate-950 pt-12 pb-24 transition-colors duration-300">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="h-10 w-40 animate-pulse rounded-full bg-slate-100 dark:bg-slate-800" />
+          <div className="mt-8 h-[420px] animate-pulse rounded-[2rem] bg-slate-100 dark:bg-slate-800" />
+        </div>
+      </main>
+    );
   }
 
-  const relatedBlogs = MOCK_BLOGS.filter((item) => item.id !== blog.id && item.category === blog.category).slice(0, 3);
+  if (loadError) {
+    return (
+      <main className="min-h-screen bg-white dark:bg-slate-950 pt-12 pb-24 transition-colors duration-300">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+          <Link href="/resources/blog" className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-slate-500 transition hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400">
+            <ArrowLeft className="h-4 w-4" />
+            Back to all articles
+          </Link>
+          <div className="rounded-[2rem] border border-red-200 bg-red-50 px-6 py-8 text-sm font-medium text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-300">
+            {loadError}
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  if (!blog) {
+    return (
+      <main className="min-h-screen bg-white dark:bg-slate-950 pt-12 pb-24 transition-colors duration-300">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+          <Link href="/resources/blog" className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-slate-500 transition hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400">
+            <ArrowLeft className="h-4 w-4" />
+            Back to all articles
+          </Link>
+          <div className="rounded-[2rem] border border-slate-200 bg-slate-50 px-6 py-8 text-sm font-medium text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
+            This blog article could not be found.
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-white dark:bg-slate-950 pt-12 pb-24 transition-colors duration-300">
