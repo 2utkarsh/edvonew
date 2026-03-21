@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - EDVO Admin</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #667eea;
+      --primary-dark: #5a67d8;
+      --secondary: #764ba2;
+      --success: #48bb78;
+      --warning: #ed8936;
+      --danger: #f56565;
+      --dark: #1a202c;
+      --gray: #718096;
+      --light: #f7fafc;
+      --white: #ffffff;
+      --sidebar-width: 280px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--light);
+      color: var(--dark);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: var(--sidebar-width);
+      background: linear-gradient(180deg, var(--dark) 0%, #2d3748 100%);
+      color: white;
+      padding: 30px 20px;
+      overflow-y: auto;
+      z-index: 100;
+    }
+
+    .sidebar-logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 40px;
+      padding: 0 15px;
+    }
+
+    .sidebar-logo span {
+      color: var(--primary);
+    }
+
+    .nav-section {
+      margin-bottom: 30px;
+    }
+
+    .nav-section-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 15px;
+      padding: 0 15px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 14px 15px;
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .nav-item:hover {
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+
+    .nav-item.active {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+    }
+
+    .nav-icon {
+      width: 24px;
+      height: 24px;
+      margin-right: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .nav-label {
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-left: var(--sidebar-width);
+      min-height: 100vh;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      background: var(--white);
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .page-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--dark);
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .user-avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .user-info {
+      text-align: right;
+    }
+
+    .user-name {
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .user-role {
+      font-size: 0.85rem;
+      color: var(--gray);
+    }
+
+    /* Dashboard Content */
+    .dashboard-content {
+      padding: 40px;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: var(--white);
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .stat-info h3 {
+      font-size: 0.9rem;
+      color: var(--gray);
+      font-weight: 500;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--dark);
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .stat-change {
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .stat-change.positive {
+      color: var(--success);
+    }
+
+    .stat-change.negative {
+      color: var(--danger);
+    }
+
+    .stat-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+    }
+
+    .stat-icon.blue { background: rgba(102, 126, 234, 0.1); }
+    .stat-icon.purple { background: rgba(118, 75, 162, 0.1); }
+    .stat-icon.green { background: rgba(72, 187, 120, 0.1); }
+    .stat-icon.orange { background: rgba(237, 137, 54, 0.1); }
+
+    /* Tables */
+    .table-container {
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .table-header {
+      padding: 24px 30px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .table-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: var(--light);
+      padding: 16px 30px;
+      text-align: left;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--gray);
+    }
+
+    td {
+      padding: 18px 30px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 0.95rem;
+    }
+
+    tr:hover td {
+      background: var(--light);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .badge-success {
+      background: rgba(72, 187, 120, 0.1);
+      color: var(--success);
+    }
+
+    .badge-warning {
+      background: rgba(237, 137, 54, 0.1);
+      color: var(--warning);
+    }
+
+    .badge-info {
+      background: rgba(102, 126, 234, 0.1);
+      color: var(--primary);
+    }
+
+    .action-btns {
+      display: flex;
+      gap: 8px;
+    }
+
+    .action-btn {
+      padding: 8px 14px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+
+    .action-btn.edit {
+      background: rgba(102, 126, 234, 0.1);
+      color: var(--primary);
+    }
+
+    .action-btn.delete {
+      background: rgba(245, 101, 101, 0.1);
+      color: var(--danger);
+    }
+
+    .action-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s;
+      }
+      .main-content {
+        margin-left: 0;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      .dashboard-content {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo"><span>ED</span>VO Admin</div>
+    
+    <div class="nav-section">
+      <div class="nav-section-title">Main Menu</div>
+      <a href="/admin" class="nav-item">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Dashboard</span>
+      </a>
+      <a href="/admin/courses" class="nav-item">
+        <span class="nav-icon">📚</span>
+        <span class="nav-label">Courses</span>
+      </a>
+      <a href="/admin/users" class="nav-item">
+        <span class="nav-icon">👥</span>
+        <span class="nav-label">Users</span>
+      </a>
+      <a href="/admin/exams" class="nav-item">
+        <span class="nav-icon">📝</span>
+        <span class="nav-label">Exams</span>
+      </a>
+      <a href="/admin/jobs" class="nav-item">
+        <span class="nav-icon">💼</span>
+        <span class="nav-label">Jobs</span>
+      </a>
+    </div>
+    
+    <div class="nav-section">
+      <div class="nav-section-title">Settings</div>
+      <a href="#" class="nav-item">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-label">Settings</span>
+      </a>
+      <a href="#" class="nav-item" onclick="logout()">
+        <span class="nav-icon">🚪</span>
+        <span class="nav-label">Logout</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <h1 class="page-title">Dashboard Overview</h1>
+      <div class="user-menu">
+        <div class="user-info">
+          <div class="user-name">Admin User</div>
+          <div class="user-role">Administrator</div>
+        </div>
+        <div class="user-avatar">A</div>
+      </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-content">
+      <!-- Stats Grid -->
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>Total Users</h3>
+            <div class="stat-value" id="totalUsers">0</div>
+            <div class="stat-change positive">↑ 12% from last month</div>
+          </div>
+          <div class="stat-icon blue">👥</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>Total Courses</h3>
+            <div class="stat-value" id="totalCourses">0</div>
+            <div class="stat-change positive">↑ 8% from last month</div>
+          </div>
+          <div class="stat-icon purple">📚</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>Enrollments</h3>
+            <div class="stat-value" id="totalEnrollments">0</div>
+            <div class="stat-change positive">↑ 23% from last month</div>
+          </div>
+          <div class="stat-icon green">🎓</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>Revenue</h3>
+            <div class="stat-value" id="totalRevenue">₹0</div>
+            <div class="stat-change positive">↑ 15% from last month</div>
+          </div>
+          <div class="stat-icon orange">💰</div>
+        </div>
+      </div>
+
+      <!-- Recent Courses Table -->
+      <div class="table-container">
+        <div class="table-header">
+          <h2 class="table-title">Recent Courses</h2>
+          <button class="btn btn-primary" onclick="window.location.href='/admin/courses'">View All</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Course Name</th>
+              <th>Category</th>
+              <th>Students</th>
+              <th>Price</th>
+              <th>Rating</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="coursesTableBody">
+            <tr>
+              <td colspan="7" style="text-align: center; color: #718096; padding: 40px;">
+                Loading courses...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Check if logged in (demo mode)
+    if (!localStorage.getItem('adminLoggedIn')) {
+      window.location.href = '/admin';
+    }
+
+    // Demo data since we don't have database
+    const demoStats = {
+      totalUsers: 1250,
+      totalCourses: 48,
+      totalEnrollments: 3420,
+      totalRevenue: 1250000,
+    };
+
+    const demoCourses = [
+      {
+        id: '1',
+        title: 'Complete Python Bootcamp',
+        category: 'Programming',
+        instructorName: 'John Smith',
+        studentsEnrolled: 1250,
+        price: 4999,
+        rating: 4.8,
+        reviewCount: 320,
+        status: 'published',
+        thumbnail: '',
+      },
+      {
+        id: '2',
+        title: 'React JS - The Complete Guide',
+        category: 'Web Development',
+        instructorName: 'Sarah Johnson',
+        studentsEnrolled: 980,
+        price: 5999,
+        rating: 4.7,
+        reviewCount: 245,
+        status: 'published',
+        thumbnail: '',
+      },
+      {
+        id: '3',
+        title: 'Machine Learning A-Z',
+        category: 'Data Science',
+        instructorName: 'Mike Wilson',
+        studentsEnrolled: 756,
+        price: 7999,
+        rating: 4.9,
+        reviewCount: 412,
+        status: 'published',
+        thumbnail: '',
+      },
+    ];
+
+    // Update stats
+    document.getElementById('totalUsers').textContent = demoStats.totalUsers.toLocaleString();
+    document.getElementById('totalCourses').textContent = demoStats.totalCourses.toLocaleString();
+    document.getElementById('totalEnrollments').textContent = demoStats.totalEnrollments.toLocaleString();
+    document.getElementById('totalRevenue').textContent = '₹' + (demoStats.totalRevenue / 100000).toFixed(1) + 'L';
+
+    // Display courses
+    displayCourses(demoCourses);
+
+    function displayCourses(courses) {
+      const tbody = document.getElementById('coursesTableBody');
+      
+      if (courses.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; color: #718096; padding: 40px;">
+              No courses available. Create your first course!
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = courses.map(course => `
+        <tr>
+          <td>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              ${course.thumbnail ? `<img src="${course.thumbnail}" style="width: 50px; height: 50px; border-radius: 10px; object-fit: cover;" />` : 
+                '<div style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">' + course.title.charAt(0) + '</div>'}
+              <div>
+                <div style="font-weight: 600;">${course.title}</div>
+                <div style="font-size: 0.85rem; color: #718096;">${course.instructorName}</div>
+              </div>
+            </div>
+          </td>
+          <td><span class="badge badge-info">${course.category}</span></td>
+          <td>${course.studentsEnrolled.toLocaleString()}</td>
+          <td>₹${course.price.toLocaleString()}</td>
+          <td>⭐ ${course.rating.toFixed(1)} (${course.reviewCount})</td>
+          <td><span class="badge badge-success">${course.status}</span></td>
+          <td>
+            <div class="action-btns">
+              <button class="action-btn edit">Edit</button>
+              <button class="action-btn delete">Delete</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function logout() {
+      localStorage.removeItem('adminLoggedIn');
+      localStorage.removeItem('adminEmail');
+      window.location.href = '/admin';
+    }
+  </script>
+</body>
+</html>

@@ -1,35 +1,45 @@
 import { Model, model, models, Schema } from 'mongoose';
 
-const footerItemSchema = new Schema(
-  {
-    sort: { type: Number, default: 1 },
-    type: String,
-    slug: String,
-    title: String,
-    items: { type: [Schema.Types.Mixed] as any, default: [] },
-    active: { type: Boolean, default: true },
-  },
-  { _id: true }
-);
-
 export interface FooterDocument {
-  title: string;
-  slug: string;
-  active: boolean;
-  items: unknown[];
+  name: string;
+  sections: Array<{
+    title: string;
+    links: Array<{
+      label: string;
+      href: string;
+    }>;
+  }>;
+  socialLinks: Array<{
+    platform: string;
+    url: string;
+    icon?: string;
+  }>;
+  copyright: string;
+  isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
 
 const footerSchema = new Schema<FooterDocument>(
   {
-    title: { type: String, required: true },
-    slug: { type: String, required: true, unique: true },
-    active: { type: Boolean, default: false },
-    items: { type: [footerItemSchema], default: [] },
+    name: { type: String, required: true },
+    sections: [{
+      title: { type: String, required: true },
+      links: [{
+        label: { type: String, required: true },
+        href: { type: String, required: true },
+      }],
+    }],
+    socialLinks: [{
+      platform: String,
+      url: String,
+      icon: String,
+    }],
+    copyright: String,
+    isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
 );
 
-export const FooterModel = (models.Footer as Model<FooterDocument>) || model<FooterDocument>('Footer', footerSchema);
-
+export const FooterModel = (models.Footer as Model<FooterDocument>) || 
+  model<FooterDocument>('Footer', footerSchema);

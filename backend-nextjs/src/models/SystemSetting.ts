@@ -1,42 +1,33 @@
 import { Model, model, models, Schema } from 'mongoose';
 
 export interface SystemSettingDocument {
-  siteName: string;
-  siteDescription?: string;
-  logoUrl?: string;
-  header: Record<string, unknown>;
-  footer: Record<string, unknown>;
-  contact: Record<string, unknown>;
-  socialLinks: Array<{ label: string; href: string }>;
+  key: string;
+  value: any;
+  category: string;
+  description?: string;
+  type: 'string' | 'number' | 'boolean' | 'object' | 'array';
+  isPublic: boolean;
+  isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
 
 const systemSettingSchema = new Schema<SystemSettingDocument>(
   {
-    siteName: { type: String, required: true, default: 'EDVO' },
-    siteDescription: String,
-    logoUrl: String,
-    header: { type: Schema.Types.Mixed as any, default: {} },
-    footer: { type: Schema.Types.Mixed as any, default: {} },
-    contact: { type: Schema.Types.Mixed as any, default: {} },
-    socialLinks: {
-      type: [
-        new Schema(
-          {
-            label: String,
-            href: String,
-          },
-          { _id: false }
-        ),
-      ],
-      default: [],
+    key: { type: String, required: true, unique: true },
+    value: { type: Schema.Types.Mixed, required: true },
+    category: { type: String, default: 'general' },
+    description: String,
+    type: { 
+      type: String, 
+      enum: ['string', 'number', 'boolean', 'object', 'array'],
+      default: 'string'
     },
+    isPublic: { type: Boolean, default: false },
+    isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
 );
 
-export const SystemSettingModel =
-  (models.SystemSetting as Model<SystemSettingDocument>) || model<SystemSettingDocument>('SystemSetting', systemSettingSchema);
-
-
+export const SystemSettingModel = (models.SystemSetting as Model<SystemSettingDocument>) || 
+  model<SystemSettingDocument>('SystemSetting', systemSettingSchema);

@@ -1,12 +1,14 @@
-﻿import { connectToDatabase } from '@/lib/db';
-import { ok, handleError } from '@/lib/http';
+﻿import { NextRequest } from 'next/server';
+import { success } from '@/lib/http';
 
+// GET health check
 export async function GET() {
-  try {
-    await connectToDatabase();
-    return ok({ status: 'ok', service: 'edvo-nextjs-backend' });
-  } catch (error) {
-    return handleError(error);
-  }
+  return Response.json(success(
+    {
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+    },
+    'Service is healthy'
+  ));
 }
-

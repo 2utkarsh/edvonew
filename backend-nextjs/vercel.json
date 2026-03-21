@@ -2,7 +2,7 @@
   "redirects": [
     {
       "source": "/",
-      "destination": "/backend/admin/login",
+      "destination": "/admin/login",
       "permanent": false
     }
   ]
