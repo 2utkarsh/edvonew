@@ -10,7 +10,7 @@ import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import { FadeIn, StaggerGrid } from '@/components/animations';
-import DashboardLayout from '@/components/layout/DashboardLayout';
+import { Navbar, Footer } from '@/components/layout';
 
 type StoredAuthUser = {
   name?: string;
@@ -112,8 +112,10 @@ export default function StudentDashboard() {
   ];
 
   return (
-    <DashboardLayout userRole="student" userName={userName}>
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-950 pt-8 transition-colors duration-300">
+    <>
+      <Navbar />
+      <main className="flex-1">
+        <div className="min-h-screen bg-gray-50 dark:bg-slate-950 pt-8 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Welcome Section */}
         <FadeIn>
@@ -365,7 +367,9 @@ export default function StudentDashboard() {
           </div>
         </div>
       </div>
-      </div>
-    </DashboardLayout>
+        </div>
+      </main>
+      <Footer />
+    </>
   );
 }
