@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Courses - EDVO Admin</title>
-  <link rel="stylesheet" href="/admin/styles.css" />
+  <link rel="stylesheet" href="/backend/admin/styles.css" />
   <style>
     /* Reuse dashboard styles and add specific ones */
     .filters {
@@ -43,23 +43,23 @@
     
     <div class="nav-section">
       <div class="nav-section-title">Main Menu</div>
-      <a href="/admin" class="nav-item">
+      <a href="/backend/admin" class="nav-item">
         <span class="nav-icon">🏠</span>
         <span class="nav-label">Dashboard</span>
       </a>
-      <a href="/admin/courses" class="nav-item active">
+      <a href="/backend/admin/courses" class="nav-item active">
         <span class="nav-icon">📚</span>
         <span class="nav-label">Courses</span>
       </a>
-      <a href="/admin/users" class="nav-item">
+      <a href="/backend/admin/users" class="nav-item">
         <span class="nav-icon">👥</span>
         <span class="nav-label">Users</span>
       </a>
-      <a href="/admin/exams" class="nav-item">
+      <a href="/backend/admin/exams" class="nav-item">
         <span class="nav-icon">📝</span>
         <span class="nav-label">Exams</span>
       </a>
-      <a href="/admin/jobs" class="nav-item">
+      <a href="/backend/admin/jobs" class="nav-item">
         <span class="nav-icon">💼</span>
         <span class="nav-label">Jobs</span>
       </a>
@@ -157,12 +157,12 @@
     </div>
   </div>
 
-  <script src="/admin/admin.js"></script>
+  <script src="/backend/admin/admin.js"></script>
   <script>
     // Fetch and display courses
     async function loadCourses() {
       try {
-        const response = await fetch('/api/v1/courses');
+        const response = await fetch('/backend/api/v1/courses');
         const data = await response.json();
         
         if (data.success) {
@@ -246,3 +246,4 @@
   </script>
 </body>
 </html>
+

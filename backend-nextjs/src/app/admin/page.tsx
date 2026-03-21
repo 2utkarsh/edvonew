@@ -1,11 +1,7 @@
-import { NextResponse } from 'next/server';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-export function GET() {
+export default function AdminLoginPage() {
   const html = readFileSync(join(process.cwd(), 'public/admin/login.html'), 'utf-8');
-  return new NextResponse(html, {
-    headers: { 'content-type': 'text/html' },
-  });
+  return <div dangerouslySetInnerHTML={{ __html: html }} />;
 }
-

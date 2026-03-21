@@ -2,16 +2,20 @@
 
 function logout() {
   localStorage.removeItem('adminToken');
-  window.location.href = '/admin';
+  localStorage.removeItem('adminLoggedIn');
+  localStorage.removeItem('adminEmail');
+  window.location.href = '/backend/admin';
 }
 
 // Check authentication on page load
 function checkAuth() {
   const token = localStorage.getItem('adminToken');
+  const isLoggedIn = localStorage.getItem('adminLoggedIn');
   const currentPage = window.location.pathname;
-  
-  if (!token && !currentPage.includes('/admin')) {
-    window.location.href = '/admin';
+  const isLoginPage = currentPage === '/admin' || currentPage === '/backend/admin' || currentPage === '/backend/admin/login';
+
+  if (!token && !isLoggedIn && !isLoginPage) {
+    window.location.href = '/backend/admin';
   }
 }
 
@@ -32,23 +36,23 @@ function formatDate(dateString) {
 // Show toast notification
 function showToast(message, type = 'info') {
   const toast = document.createElement('div');
-  toast.className = `toast toast-${type}`;
+  toast.className = 	oast toast-;
   toast.textContent = message;
-  toast.style.cssText = `
+  toast.style.cssText = 
     position: fixed;
     top: 20px;
     right: 20px;
     padding: 16px 24px;
     border-radius: 10px;
-    background: ${type === 'success' ? '#48bb78' : type === 'error' ? '#f56565' : '#667eea'};
+    background: ;
     color: white;
     font-weight: 500;
     z-index: 9999;
     animation: slideIn 0.3s ease;
-  `;
-  
+  ;
+
   document.body.appendChild(toast);
-  
+
   setTimeout(() => {
     toast.style.animation = 'slideOut 0.3s ease';
     setTimeout(() => toast.remove(), 300);
@@ -57,7 +61,7 @@ function showToast(message, type = 'info') {
 
 // Add animation styles
 const style = document.createElement('style');
-style.textContent = `
+style.textContent = 
   @keyframes slideIn {
     from { transform: translateX(400px); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
@@ -66,7 +70,7 @@ style.textContent = `
     from { transform: translateX(0); opacity: 1; }
     to { transform: translateX(400px); opacity: 0; }
   }
-`;
+;
 document.head.appendChild(style);
 
 // Initialize auth check

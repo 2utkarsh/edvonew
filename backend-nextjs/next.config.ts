@@ -6,20 +6,31 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Admin panel routes
   async rewrites() {
     return [
       {
-        source: '/admin',
-        destination: '/admin/page.html',
+        source: '/backend/api/:path*',
+        destination: '/api/:path*',
       },
       {
-        source: '/admin/dashboard',
-        destination: '/admin/dashboard/page.html',
+        source: '/backend/admin',
+        destination: '/admin',
       },
       {
-        source: '/admin/courses',
-        destination: '/admin/courses/page.html',
+        source: '/backend/admin/login',
+        destination: '/admin',
+      },
+      {
+        source: '/backend/admin/dashboard',
+        destination: '/admin/dashboard',
+      },
+      {
+        source: '/backend/admin/courses',
+        destination: '/admin/courses',
+      },
+      {
+        source: '/backend/admin/:path*',
+        destination: '/admin/:path*',
       },
     ];
   },

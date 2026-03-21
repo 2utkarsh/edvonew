@@ -262,7 +262,7 @@
       if (email === 'admin@edvo.com' && password === 'admin123') {
         localStorage.setItem('adminLoggedIn', 'true');
         localStorage.setItem('adminEmail', email);
-        window.location.href = '/admin/dashboard';
+        window.location.href = '/backend/admin/dashboard';
       } else {
         errorDiv.textContent = 'Invalid credentials. Use: admin@edvo.com / admin123';
         errorDiv.style.display = 'block';
@@ -271,3 +271,4 @@
   </script>
 </body>
 </html>
+

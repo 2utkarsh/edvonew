@@ -378,23 +378,23 @@
     
     <div class="nav-section">
       <div class="nav-section-title">Main Menu</div>
-      <a href="/admin" class="nav-item">
+      <a href="/backend/admin" class="nav-item">
         <span class="nav-icon">🏠</span>
         <span class="nav-label">Dashboard</span>
       </a>
-      <a href="/admin/courses" class="nav-item">
+      <a href="/backend/admin/courses" class="nav-item">
         <span class="nav-icon">📚</span>
         <span class="nav-label">Courses</span>
       </a>
-      <a href="/admin/users" class="nav-item">
+      <a href="/backend/admin/users" class="nav-item">
         <span class="nav-icon">👥</span>
         <span class="nav-label">Users</span>
       </a>
-      <a href="/admin/exams" class="nav-item">
+      <a href="/backend/admin/exams" class="nav-item">
         <span class="nav-icon">📝</span>
         <span class="nav-label">Exams</span>
       </a>
-      <a href="/admin/jobs" class="nav-item">
+      <a href="/backend/admin/jobs" class="nav-item">
         <span class="nav-icon">💼</span>
         <span class="nav-label">Jobs</span>
       </a>
@@ -469,7 +469,7 @@
       <div class="table-container">
         <div class="table-header">
           <h2 class="table-title">Recent Courses</h2>
-          <button class="btn btn-primary" onclick="window.location.href='/admin/courses'">View All</button>
+          <button class="btn btn-primary" onclick="window.location.href='/backend/admin/courses'">View All</button>
         </div>
         <table>
           <thead>
@@ -498,7 +498,7 @@
   <script>
     // Check if logged in (demo mode)
     if (!localStorage.getItem('adminLoggedIn')) {
-      window.location.href = '/admin';
+      window.location.href = '/backend/admin';
     }
 
     // Demo data since we don't have database
@@ -601,8 +601,9 @@
     function logout() {
       localStorage.removeItem('adminLoggedIn');
       localStorage.removeItem('adminEmail');
-      window.location.href = '/admin';
+      window.location.href = '/backend/admin';
     }
   </script>
 </body>
 </html>
+
