@@ -1,25 +1,27 @@
-﻿import { connectToDatabase } from '@/lib/db';
+import { connectToDatabase } from '@/lib/db';
 import { created, fail, handleError, parseJson, toResponse } from '@/lib/http';
 import { hashPassword, signAccessToken } from '@/lib/auth';
-import { validateRegisterInput, RegisterInput } from '@/lib/validators';
+import { registerSchema, RegisterInput } from '@/lib/validators';
 import { UserModel } from '@/models/User';
 
 export async function POST(request: Request): Promise<Response> {
   try {
-    const body = await parseJson<RegisterInput>(request);
-    const validationError = validateRegisterInput(body);
-    if (validationError) return toResponse(fail(validationError, 422));
+    const body = parseJson<RegisterInput>(await request.text());
+    const validationResult = registerSchema.safeParse(body);
+    if (!validationResult.success) {
+      return toResponse(fail(validationResult.error.issues[0]?.message || 'Validation failed', 'VALIDATION_ERROR', validationResult.error.issues, 422));
+    }
 
     await connectToDatabase();
 
-    const existingUser = await UserModel.findOne({ email: body.email!.toLowerCase() });
+    const existingUser = await UserModel.findOne({ email: validationResult.data.email.toLowerCase() });
     if (existingUser) return toResponse(fail('Email is already registered', 409));
 
-    const passwordHash = await hashPassword(body.password!);
+    const passwordHash = await hashPassword(validationResult.data.password);
     const user = await UserModel.create({
-      name: body.name!.trim(),
-      email: body.email!.toLowerCase(),
-      mobile: body.mobile,
+      name: validationResult.data.name.trim(),
+      email: validationResult.data.email.toLowerCase(),
+      mobile: validationResult.data.mobile,
       passwordHash,
       role: 'student',
     });
@@ -48,4 +50,3 @@ export async function POST(request: Request): Promise<Response> {
     return handleError(error);
   }
 }
-

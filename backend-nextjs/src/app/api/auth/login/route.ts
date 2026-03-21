@@ -1,21 +1,23 @@
-﻿import { connectToDatabase } from '@/lib/db';
+import { connectToDatabase } from '@/lib/db';
 import { fail, handleError, ok, parseJson, toResponse } from '@/lib/http';
 import { comparePassword, signAccessToken } from '@/lib/auth';
-import { LoginInput, validateLoginInput } from '@/lib/validators';
+import { loginSchema, LoginInput } from '@/lib/validators';
 import { UserModel } from '@/models/User';
 
 export async function POST(request: Request): Promise<Response> {
   try {
-    const body = await parseJson<LoginInput>(request);
-    const validationError = validateLoginInput(body);
-    if (validationError) return toResponse(fail(validationError, 422));
+    const body = parseJson<LoginInput>(await request.text());
+    const validationResult = loginSchema.safeParse(body);
+    if (!validationResult.success) {
+      return toResponse(fail(validationResult.error.issues[0]?.message || 'Validation failed', 'VALIDATION_ERROR', validationResult.error.issues, 422));
+    }
 
     await connectToDatabase();
 
-    const user = await UserModel.findOne({ email: body.email!.toLowerCase() });
+    const user = await UserModel.findOne({ email: validationResult.data.email.toLowerCase() });
     if (!user) return toResponse(fail('Invalid credentials', 401));
 
-    const passwordMatches = await comparePassword(body.password!, user.passwordHash);
+    const passwordMatches = await comparePassword(validationResult.data.password, user.passwordHash);
     if (!passwordMatches) return toResponse(fail('Invalid credentials', 401));
 
     const token = signAccessToken({
@@ -44,4 +46,3 @@ export async function POST(request: Request): Promise<Response> {
     return handleError(error);
   }
 }
-
