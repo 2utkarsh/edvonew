@@ -4,7 +4,7 @@ export interface PublicTeamMember {
   title: string;
   bio: string;
   image: string;
-  status: 'active';
+  status: 'active' | 'inactive';
 }
 
 export const MOCK_TEAM_MEMBERS: PublicTeamMember[] = [
@@ -34,17 +34,13 @@ export const MOCK_TEAM_MEMBERS: PublicTeamMember[] = [
   },
 ];
 
-export function mapInstructorToTeamMember(item: any): PublicTeamMember {
-  const user = typeof item.userId === 'object' && item.userId ? item.userId : null;
-  const name = user?.name ? String(user.name) : String(item.name || 'EDVO Mentor');
-  const socialLinks = item.socialLinks && typeof item.socialLinks === 'object' ? item.socialLinks : {};
-
+export function mapTeamMemberToPublicTeamMember(item: any): PublicTeamMember {
   return {
-    id: String(item._id || item.id || name.toLowerCase().replace(/\s+/g, '-')),
-    name,
-    title: String(item.headline || item.designation || item.experience || 'Mentor, EDVO'),
-    bio: String(item.bio || item.biography || item.education || 'Experienced mentor guiding learners with practical, industry-focused knowledge.'),
-    image: String(user?.photo || item.image || '/images/edvo-official-logo-v10.png'),
-    status: 'active',
+    id: String(item._id || item.id || item.slug),
+    name: String(item.name || 'EDVO Mentor'),
+    title: String(item.title || 'Mentor, EDVO'),
+    bio: String(item.bio || 'Experienced mentor guiding learners with practical, industry-focused knowledge.'),
+    image: String(item.image || '/images/edvo-official-logo-v10.png'),
+    status: item.status === 'inactive' ? 'inactive' : 'active',
   };
 }

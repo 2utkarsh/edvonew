@@ -7,7 +7,6 @@ function logout() {
   window.location.href = '/backend/admin';
 }
 
-// Check authentication on page load
 function checkAuth() {
   const token = localStorage.getItem('adminToken');
   const isLoggedIn = localStorage.getItem('adminLoggedIn');
@@ -19,37 +18,43 @@ function checkAuth() {
   }
 }
 
-// Format currency
-function formatCurrency(amount) {
-  return '₹' + parseFloat(amount).toLocaleString('en-IN');
-}
+async function adminFetch(url, options = {}) {
+  const headers = {
+    Accept: 'application/json',
+    'X-Admin-Demo': 'true',
+    ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+    ...(options.headers || {}),
+  };
 
-// Format date
-function formatDate(dateString) {
-  return new Date(dateString).toLocaleDateString('en-IN', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
+  const response = await fetch(url, {
+    ...options,
+    headers,
   });
+
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(payload?.error?.message || payload?.message || 'Request failed');
+  }
+
+  return payload;
 }
 
-// Show toast notification
 function showToast(message, type = 'info') {
   const toast = document.createElement('div');
-  toast.className = 	oast toast-;
+  toast.className = `toast toast-${type}`;
   toast.textContent = message;
-  toast.style.cssText = 
+  toast.style.cssText = `
     position: fixed;
     top: 20px;
     right: 20px;
     padding: 16px 24px;
     border-radius: 10px;
-    background: ;
+    background: ${type === 'success' ? '#48bb78' : type === 'error' ? '#f56565' : '#667eea'};
     color: white;
     font-weight: 500;
     z-index: 9999;
     animation: slideIn 0.3s ease;
-  ;
+  `;
 
   document.body.appendChild(toast);
 
@@ -59,9 +64,8 @@ function showToast(message, type = 'info') {
   }, 3000);
 }
 
-// Add animation styles
 const style = document.createElement('style');
-style.textContent = 
+style.textContent = `
   @keyframes slideIn {
     from { transform: translateX(400px); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
@@ -70,8 +74,7 @@ style.textContent =
     from { transform: translateX(0); opacity: 1; }
     to { transform: translateX(400px); opacity: 0; }
   }
-;
+`;
 document.head.appendChild(style);
 
-// Initialize auth check
 checkAuth();

@@ -1,18 +1,13 @@
 import { connectToDatabase } from '@/lib/db';
 import { ok, toResponse } from '@/lib/http';
-import { InstructorModel } from '@/models/Instructor';
-import { mapInstructorToTeamMember, MOCK_TEAM_MEMBERS } from '@/lib/team-data';
+import { TeamMemberModel } from '@/models/TeamMember';
+import { ensureSeededContent } from '@/lib/content-seeder';
+import { mapTeamMemberToPublicTeamMember } from '@/lib/team-data';
 
 export async function GET() {
-  try {
-    await connectToDatabase();
-    const items = await InstructorModel.find().populate('userId', 'name photo').sort({ updatedAt: -1 }).lean();
-    if (items.length > 0) {
-      return toResponse(ok(items.map(mapInstructorToTeamMember)));
-    }
-  } catch (error) {
-    console.warn('Falling back to mock team data:', error);
-  }
+  await connectToDatabase();
+  await ensureSeededContent();
 
-  return toResponse(ok(MOCK_TEAM_MEMBERS));
+  const items = await TeamMemberModel.find({ status: 'active' }).sort({ updatedAt: -1 }).lean();
+  return toResponse(ok(items.map(mapTeamMemberToPublicTeamMember)));
 }
