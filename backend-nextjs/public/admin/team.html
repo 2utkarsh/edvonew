@@ -17,6 +17,7 @@
     .search-input, .form-input, .form-textarea, .form-select { width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #cbd5e0; font-size: 0.95rem; }
     .form-textarea { min-height: 120px; resize: vertical; }
     .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+    .form-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
     .member-card { background: white; border-radius: 24px; border: 1px solid #e2e8f0; box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06); overflow: hidden; display: flex; flex-direction: column; }
     .member-card img { width: 100%; height: 240px; object-fit: cover; background: #edf2f7; }
@@ -27,9 +28,10 @@
     .badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 6px 12px; font-size: 0.78rem; font-weight: 700; }
     .badge-status-active { background: rgba(72, 187, 120, 0.14); color: #2f855a; }
     .badge-status-inactive { background: rgba(113, 128, 150, 0.14); color: #4a5568; }
-    .card-actions { display: flex; gap: 10px; align-items: center; justify-content: space-between; margin-top: 18px; }
+    .card-actions { display: flex; gap: 10px; align-items: center; justify-content: space-between; margin-top: 18px; flex-wrap: wrap; }
     .btn { border: none; border-radius: 10px; padding: 10px 14px; font-weight: 700; cursor: pointer; }
     .btn-primary { background: #667eea; color: white; }
+    .btn-secondary { background: #edf2f7; color: #1a202c; }
     .btn-danger { background: #f56565; color: white; }
     .empty-state { padding: 48px 24px; border-radius: 24px; text-align: center; color: #718096; border: 1px dashed #cbd5e0; background: white; }
   </style>
@@ -64,8 +66,8 @@
         <section class="panel">
           <div class="toolbar" style="margin-bottom:16px;">
             <div>
-              <div class="table-title">Create Team Member</div>
-              <div style="color:#718096;font-size:0.92rem;margin-top:4px;">Create Mongo-backed team members used by the frontend Our Team page.</div>
+              <div class="table-title" id="formTitle">Create Team Member</div>
+              <div style="color:#718096;font-size:0.92rem;margin-top:4px;" id="formDescription">Create Mongo-backed team members used by the frontend Our Team page.</div>
             </div>
           </div>
           <form id="teamForm" class="page-shell">
@@ -79,7 +81,10 @@
               </select>
             </div>
             <textarea id="bio" class="form-textarea" placeholder="Bio" required></textarea>
-            <div><button class="btn btn-primary" type="submit">Create Team Member</button></div>
+            <div class="form-actions">
+              <button id="submitButton" class="btn btn-primary" type="submit">Create Team Member</button>
+              <button id="cancelEditButton" class="btn btn-secondary" type="button" style="display:none;">Cancel Edit</button>
+            </div>
           </form>
         </section>
 
@@ -87,7 +92,7 @@
           <div class="toolbar" style="margin-bottom:16px;">
             <div>
               <div class="table-title">Manage Team</div>
-              <div style="color:#718096;font-size:0.92rem;margin-top:4px;">Status changes and deletes update Mongo data used by both admin and frontend.</div>
+              <div style="color:#718096;font-size:0.92rem;margin-top:4px;">Status changes, edits, and deletes update Mongo data used by both admin and frontend.</div>
             </div>
             <input id="searchInput" class="search-input" type="search" placeholder="Search team members..." />
           </div>
@@ -99,15 +104,71 @@
   <script src="/backend/admin/admin.js"></script>
   <script>
     let members = [];
+    let editingMemberId = null;
+
+    const formTitle = document.getElementById('formTitle');
+    const formDescription = document.getElementById('formDescription');
+    const submitButton = document.getElementById('submitButton');
+    const cancelEditButton = document.getElementById('cancelEditButton');
+    const teamForm = document.getElementById('teamForm');
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     function updateStats(items) {
       document.getElementById('totalMembers').textContent = items.length;
       document.getElementById('activeMembers').textContent = items.filter((item) => item.status === 'active').length;
       document.getElementById('inactiveMembers').textContent = items.filter((item) => item.status === 'inactive').length;
     }
+
+    function resetTeamForm() {
+      editingMemberId = null;
+      teamForm.reset();
+      document.getElementById('status').value = 'active';
+      formTitle.textContent = 'Create Team Member';
+      formDescription.textContent = 'Create Mongo-backed team members used by the frontend Our Team page.';
+      submitButton.textContent = 'Create Team Member';
+      cancelEditButton.style.display = 'none';
+    }
+
+    function populateTeamForm(member) {
+      document.getElementById('name').value = member.name || '';
+      document.getElementById('title').value = member.title || '';
+      document.getElementById('image').value = member.image || '';
+      document.getElementById('status').value = member.status || 'active';
+      document.getElementById('bio').value = member.bio || '';
+    }
+
+    function startEditMember(id) {
+      const member = members.find((item) => item.id === id);
+      if (!member) {
+        showToast('Team member not found', 'error');
+        return;
+      }
+      editingMemberId = id;
+      populateTeamForm(member);
+      formTitle.textContent = 'Edit Team Member';
+      formDescription.textContent = 'Update the selected Mongo-backed team member.';
+      submitButton.textContent = 'Update Team Member';
+      cancelEditButton.style.display = 'inline-flex';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     function filteredMembers() {
       const query = document.getElementById('searchInput').value.trim().toLowerCase();
-      return members.filter((member) => member.name.toLowerCase().includes(query) || member.title.toLowerCase().includes(query) || member.bio.toLowerCase().includes(query));
+      return members.filter((member) =>
+        member.name.toLowerCase().includes(query) ||
+        member.title.toLowerCase().includes(query) ||
+        member.bio.toLowerCase().includes(query)
+      );
     }
+
     async function loadMembers() {
       try {
         const payload = await adminFetch('/backend/api/admin/team');
@@ -119,6 +180,7 @@
         document.getElementById('membersGrid').innerHTML = '<div class="empty-state">Unable to load the team right now.</div>';
       }
     }
+
     async function updateTeamStatus(id, status) {
       try {
         await adminFetch(`/backend/api/admin/team/${id}`, { method: 'PATCH', body: JSON.stringify({ status }) });
@@ -128,16 +190,19 @@
         showToast(error.message || 'Failed to update status', 'error');
       }
     }
+
     async function deleteTeamMember(id) {
       if (!confirm('Delete this team member?')) return;
       try {
         await adminFetch(`/backend/api/admin/team/${id}`, { method: 'DELETE' });
+        if (editingMemberId === id) resetTeamForm();
         showToast('Team member deleted', 'success');
         await loadMembers();
       } catch (error) {
         showToast(error.message || 'Failed to delete team member', 'error');
       }
     }
+
     function renderMembers(items) {
       const grid = document.getElementById('membersGrid');
       if (!items.length) {
@@ -146,24 +211,26 @@
       }
       grid.innerHTML = items.map((member) => `
         <article class="member-card">
-          <img src="${member.image}" alt="${member.name}" />
+          <img src="${escapeHtml(member.image)}" alt="${escapeHtml(member.name)}" />
           <div class="member-content">
-            <div class="member-name">${member.name}</div>
-            <div class="member-title">${member.title}</div>
-            <div class="member-bio">${member.bio}</div>
+            <div class="member-name">${escapeHtml(member.name)}</div>
+            <div class="member-title">${escapeHtml(member.title)}</div>
+            <div class="member-bio">${escapeHtml(member.bio)}</div>
             <div class="card-actions">
               <select class="form-select" style="max-width:140px;" onchange="updateTeamStatus('${member.id}', this.value)">
                 <option value="active" ${member.status === 'active' ? 'selected' : ''}>Active</option>
                 <option value="inactive" ${member.status === 'inactive' ? 'selected' : ''}>Inactive</option>
               </select>
-              <span class="badge badge-status-${member.status}">${member.status}</span>
-              <button class="btn btn-danger" onclick="deleteTeamMember('${member.id}')">Delete</button>
+              <span class="badge badge-status-${member.status}">${escapeHtml(member.status)}</span>
+              <button class="btn btn-secondary" type="button" onclick="startEditMember('${member.id}')">Edit</button>
+              <button class="btn btn-danger" type="button" onclick="deleteTeamMember('${member.id}')">Delete</button>
             </div>
           </div>
         </article>
       `).join('');
     }
-    document.getElementById('teamForm').addEventListener('submit', async (event) => {
+
+    teamForm.addEventListener('submit', async (event) => {
       event.preventDefault();
       const payload = {
         name: document.getElementById('name').value,
@@ -173,16 +240,24 @@
         bio: document.getElementById('bio').value,
       };
       try {
-        await adminFetch('/backend/api/admin/team', { method: 'POST', body: JSON.stringify(payload) });
-        showToast('Team member created', 'success');
-        event.target.reset();
-        document.getElementById('status').value = 'active';
+        if (editingMemberId) {
+          await adminFetch(`/backend/api/admin/team/${editingMemberId}`, { method: 'PATCH', body: JSON.stringify(payload) });
+          showToast('Team member updated', 'success');
+        } else {
+          await adminFetch('/backend/api/admin/team', { method: 'POST', body: JSON.stringify(payload) });
+          showToast('Team member created', 'success');
+        }
+        resetTeamForm();
         await loadMembers();
       } catch (error) {
-        showToast(error.message || 'Failed to create team member', 'error');
+        showToast(error.message || 'Failed to save team member', 'error');
       }
     });
+
+    cancelEditButton.addEventListener('click', resetTeamForm);
     document.getElementById('searchInput').addEventListener('input', () => renderMembers(filteredMembers()));
+
+    resetTeamForm();
     loadMembers();
   </script>
 </body>

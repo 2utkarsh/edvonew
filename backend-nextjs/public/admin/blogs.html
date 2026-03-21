@@ -17,6 +17,7 @@
     .search-input, .form-input, .form-textarea, .form-select { width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #cbd5e0; font-size: 0.95rem; }
     .form-textarea { min-height: 120px; resize: vertical; }
     .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+    .form-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
     .table-wrapper { overflow-x: auto; }
     .badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 6px 12px; font-size: 0.78rem; font-weight: 700; }
     .badge-category { background: rgba(102, 126, 234, 0.12); color: #5a67d8; }
@@ -26,7 +27,7 @@
     .blog-title { font-weight: 700; color: #1a202c; margin-bottom: 4px; }
     .blog-description { color: #718096; font-size: 0.9rem; line-height: 1.5; max-width: 420px; }
     .empty-state { padding: 48px 24px; text-align: center; color: #718096; }
-    .actions { display: flex; gap: 8px; align-items: center; }
+    .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     .btn { border: none; border-radius: 10px; padding: 10px 14px; font-weight: 700; cursor: pointer; }
     .btn-primary { background: #667eea; color: white; }
     .btn-danger { background: #f56565; color: white; }
@@ -63,8 +64,8 @@
         <section class="panel">
           <div class="toolbar" style="margin-bottom:16px;">
             <div>
-              <div class="table-title">Create Blog</div>
-              <div style="color:#718096;font-size:0.92rem;margin-top:4px;">Create Mongo-backed fake or custom blog entries from admin.</div>
+              <div class="table-title" id="formTitle">Create Blog</div>
+              <div style="color:#718096;font-size:0.92rem;margin-top:4px;" id="formDescription">Create Mongo-backed fake or custom blog entries from admin.</div>
             </div>
           </div>
           <form id="blogForm" class="page-shell">
@@ -82,7 +83,10 @@
             </div>
             <textarea id="description" class="form-textarea" placeholder="Short description" required></textarea>
             <textarea id="content" class="form-textarea" placeholder="Full content" required></textarea>
-            <div><button class="btn btn-primary" type="submit">Create Blog</button></div>
+            <div class="form-actions">
+              <button id="submitButton" class="btn btn-primary" type="submit">Create Blog</button>
+              <button id="cancelEditButton" class="btn btn-secondary" type="button" style="display:none;">Cancel Edit</button>
+            </div>
           </form>
         </section>
 
@@ -90,7 +94,7 @@
           <div class="toolbar" style="margin-bottom:16px;">
             <div>
               <div class="table-title">Manage Blogs</div>
-              <div style="color:#718096;font-size:0.92rem;margin-top:4px;">Status changes and deletes update Mongo data used by both admin and frontend.</div>
+              <div style="color:#718096;font-size:0.92rem;margin-top:4px;">Status changes, edits, and deletes update Mongo data used by both admin and frontend.</div>
             </div>
             <input id="searchInput" class="search-input" type="search" placeholder="Search blogs by title, category, or author..." />
           </div>
@@ -117,14 +121,70 @@
   <script src="/backend/admin/admin.js"></script>
   <script>
     let blogs = [];
+    let editingBlogId = null;
+
+    const formTitle = document.getElementById('formTitle');
+    const formDescription = document.getElementById('formDescription');
+    const submitButton = document.getElementById('submitButton');
+    const cancelEditButton = document.getElementById('cancelEditButton');
+    const blogForm = document.getElementById('blogForm');
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     function updateStats(items) {
       document.getElementById('totalBlogs').textContent = items.length;
       document.getElementById('publishedBlogs').textContent = items.filter((item) => item.status === 'published').length;
       document.getElementById('otherBlogs').textContent = items.filter((item) => item.status !== 'published').length;
     }
+
     function statusBadge(status) {
-      return `<span class="badge badge-status-${status}">${status}</span>`;
+      return `<span class="badge badge-status-${status}">${escapeHtml(status)}</span>`;
     }
+
+    function resetBlogForm() {
+      editingBlogId = null;
+      blogForm.reset();
+      document.getElementById('readTime').value = '5';
+      document.getElementById('status').value = 'published';
+      formTitle.textContent = 'Create Blog';
+      formDescription.textContent = 'Create Mongo-backed fake or custom blog entries from admin.';
+      submitButton.textContent = 'Create Blog';
+      cancelEditButton.style.display = 'none';
+    }
+
+    function populateBlogForm(blog) {
+      document.getElementById('title').value = blog.title || '';
+      document.getElementById('author').value = blog.author || '';
+      document.getElementById('category').value = blog.category || '';
+      document.getElementById('thumbnail').value = blog.thumbnail || '';
+      document.getElementById('readTime').value = blog.readTime || 5;
+      document.getElementById('status').value = blog.status || 'published';
+      document.getElementById('description').value = blog.description || '';
+      document.getElementById('content').value = blog.content || '';
+    }
+
+    function startEditBlog(id) {
+      const blog = blogs.find((item) => item.id === id);
+      if (!blog) {
+        showToast('Blog not found', 'error');
+        return;
+      }
+      editingBlogId = id;
+      populateBlogForm(blog);
+      formTitle.textContent = 'Edit Blog';
+      formDescription.textContent = 'Update the selected Mongo-backed blog entry.';
+      submitButton.textContent = 'Update Blog';
+      cancelEditButton.style.display = 'inline-flex';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     function renderBlogs(items) {
       const tbody = document.getElementById('blogsTableBody');
       if (!items.length) {
@@ -133,10 +193,10 @@
       }
       tbody.innerHTML = items.map((blog) => `
         <tr>
-          <td><div class="blog-title">${blog.title}</div><div class="blog-description">${blog.description}</div></td>
-          <td><span class="badge badge-category">${blog.category}</span></td>
-          <td>${blog.author}</td>
-          <td>${blog.readTime}</td>
+          <td><div class="blog-title">${escapeHtml(blog.title)}</div><div class="blog-description">${escapeHtml(blog.description)}</div></td>
+          <td><span class="badge badge-category">${escapeHtml(blog.category)}</span></td>
+          <td>${escapeHtml(blog.author)}</td>
+          <td>${escapeHtml(blog.readTime)}</td>
           <td>
             <select class="form-select" style="min-width:130px;" onchange="updateBlogStatus('${blog.id}', this.value)">
               <option value="published" ${blog.status === 'published' ? 'selected' : ''}>Published</option>
@@ -147,15 +207,22 @@
           <td><a href="/resources/blog/${blog.slug || blog.id}" target="_blank" rel="noreferrer">Open</a></td>
           <td class="actions">
             ${statusBadge(blog.status)}
-            <button class="btn btn-danger" onclick="deleteBlog('${blog.id}')">Delete</button>
+            <button class="btn btn-secondary" type="button" onclick="startEditBlog('${blog.id}')">Edit</button>
+            <button class="btn btn-danger" type="button" onclick="deleteBlog('${blog.id}')">Delete</button>
           </td>
         </tr>
       `).join('');
     }
+
     function filteredBlogs() {
       const query = document.getElementById('searchInput').value.trim().toLowerCase();
-      return blogs.filter((blog) => blog.title.toLowerCase().includes(query) || blog.category.toLowerCase().includes(query) || blog.author.toLowerCase().includes(query));
+      return blogs.filter((blog) =>
+        blog.title.toLowerCase().includes(query) ||
+        blog.category.toLowerCase().includes(query) ||
+        blog.author.toLowerCase().includes(query)
+      );
     }
+
     async function loadBlogs() {
       try {
         const payload = await adminFetch('/backend/api/admin/blogs');
@@ -167,6 +234,7 @@
         document.getElementById('blogsTableBody').innerHTML = '<tr><td colspan="7" class="empty-state">Unable to load blogs right now.</td></tr>';
       }
     }
+
     async function updateBlogStatus(id, status) {
       try {
         await adminFetch(`/backend/api/admin/blogs/${id}`, { method: 'PATCH', body: JSON.stringify({ status }) });
@@ -176,17 +244,20 @@
         showToast(error.message || 'Failed to update status', 'error');
       }
     }
+
     async function deleteBlog(id) {
       if (!confirm('Delete this blog?')) return;
       try {
         await adminFetch(`/backend/api/admin/blogs/${id}`, { method: 'DELETE' });
+        if (editingBlogId === id) resetBlogForm();
         showToast('Blog deleted', 'success');
         await loadBlogs();
       } catch (error) {
         showToast(error.message || 'Failed to delete blog', 'error');
       }
     }
-    document.getElementById('blogForm').addEventListener('submit', async (event) => {
+
+    blogForm.addEventListener('submit', async (event) => {
       event.preventDefault();
       const payload = {
         title: document.getElementById('title').value,
@@ -199,17 +270,24 @@
         content: document.getElementById('content').value,
       };
       try {
-        await adminFetch('/backend/api/admin/blogs', { method: 'POST', body: JSON.stringify(payload) });
-        showToast('Blog created', 'success');
-        event.target.reset();
-        document.getElementById('readTime').value = '5';
-        document.getElementById('status').value = 'published';
+        if (editingBlogId) {
+          await adminFetch(`/backend/api/admin/blogs/${editingBlogId}`, { method: 'PATCH', body: JSON.stringify(payload) });
+          showToast('Blog updated', 'success');
+        } else {
+          await adminFetch('/backend/api/admin/blogs', { method: 'POST', body: JSON.stringify(payload) });
+          showToast('Blog created', 'success');
+        }
+        resetBlogForm();
         await loadBlogs();
       } catch (error) {
-        showToast(error.message || 'Failed to create blog', 'error');
+        showToast(error.message || 'Failed to save blog', 'error');
       }
     });
+
+    cancelEditButton.addEventListener('click', resetBlogForm);
     document.getElementById('searchInput').addEventListener('input', () => renderBlogs(filteredBlogs()));
+
+    resetBlogForm();
     loadBlogs();
   </script>
 </body>

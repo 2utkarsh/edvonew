@@ -5,6 +5,7 @@ import { BlogModel } from '@/models/Blog';
 import { ensureSeededContent } from '@/lib/content-seeder';
 import { requireAdminOrDemo } from '@/lib/demo-admin';
 import { mapBlogDocumentToPublicBlog } from '@/lib/blog-data';
+import { UserModel } from '@/models/User';
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const denied = await requireAdminOrDemo(request);
@@ -33,6 +34,32 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (body.title) {
     update.title = String(body.title);
     update.slug = String(body.slug || slugify(String(body.title)));
+  }
+  if (body.author) {
+    const authorName = String(body.author);
+    const authorEmail = `${authorName.toLowerCase().replace(/[^a-z0-9]+/g, '.').replace(/^\.+|\.+$/g, '')}@edvo.local`;
+    const author = await UserModel.findOneAndUpdate(
+      { email: authorEmail },
+      {
+        $set: {
+          name: authorName,
+          email: authorEmail,
+          role: 'instructor',
+          isActive: true,
+          passwordHash: 'demo-admin',
+        },
+        $setOnInsert: {
+          socialLinks: [],
+          skills: [],
+          enrolledCourses: [],
+          enrolledExams: [],
+          createdCourses: [],
+          createdExams: [],
+        },
+      },
+      { upsert: true, new: true }
+    );
+    update.author = author._id;
   }
   if (body.description) update.excerpt = String(body.description);
   if (body.content) update.content = String(body.content);
