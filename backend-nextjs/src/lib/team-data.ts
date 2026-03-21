@@ -1,10 +1,11 @@
-export interface PublicTeamMember {
+﻿export interface PublicTeamMember {
   id: string;
   name: string;
   title: string;
   bio: string;
   image: string;
   status: 'active' | 'inactive';
+  order?: number;
 }
 
 export const MOCK_TEAM_MEMBERS: PublicTeamMember[] = [
@@ -42,5 +43,7 @@ export function mapTeamMemberToPublicTeamMember(item: any): PublicTeamMember {
     bio: String(item.bio || 'Experienced mentor guiding learners with practical, industry-focused knowledge.'),
     image: String(item.image || '/images/edvo-official-logo-v10.png'),
     status: item.status === 'inactive' ? 'inactive' : 'active',
+    order: Number(item.order || 0),
   };
 }
+

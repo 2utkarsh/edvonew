@@ -1,4 +1,4 @@
-import { connectToDatabase } from '@/lib/db';
+﻿import { connectToDatabase } from '@/lib/db';
 import { fail, ok, parseJson, toResponse } from '@/lib/http';
 import { slugify } from '@/lib/query';
 import { BlogModel } from '@/models/Blog';
@@ -17,7 +17,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   const { id } = await params;
   const item = await BlogModel.findById(id).populate('author', 'name').lean();
   if (!item) return toResponse(fail('Blog not found', 'NOT_FOUND', undefined, 404));
-  return toResponse(ok({ ...mapBlogDocumentToPublicBlog(item), status: item.status || 'draft' }));
+  return toResponse(ok({ ...mapBlogDocumentToPublicBlog(item), status: item.status || 'draft', order: item.order || 0 }));
 }
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -61,19 +61,20 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     );
     update.author = author._id;
   }
-  if (body.description) update.excerpt = String(body.description);
-  if (body.content) update.content = String(body.content);
+  if (body.description !== undefined) update.excerpt = String(body.description || '');
+  if (body.content !== undefined) update.content = String(body.content || '');
   if (body.category) {
     update.category = String(body.category);
     update.tags = [String(body.category)];
   }
   if (body.thumbnail) update.featuredImage = String(body.thumbnail);
   if (body.status) update.status = String(body.status);
-  if (body.readTime) update.readTime = parseInt(String(body.readTime), 10) || 5;
+  if (body.readTime !== undefined) update.readTime = parseInt(String(body.readTime), 10) || 5;
+  if (body.order !== undefined) update.order = parseInt(String(body.order), 10) || 0;
 
   const item = await BlogModel.findByIdAndUpdate(id, update, { new: true }).populate('author', 'name').lean();
   if (!item) return toResponse(fail('Blog not found', 'NOT_FOUND', undefined, 404));
-  return toResponse(ok({ ...mapBlogDocumentToPublicBlog(item), status: item.status || 'draft' }));
+  return toResponse(ok({ ...mapBlogDocumentToPublicBlog(item), status: item.status || 'draft', order: item.order || 0 }));
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {

@@ -1,4 +1,4 @@
-import { Model, model, models, Schema } from 'mongoose';
+﻿import { Model, model, models, Schema } from 'mongoose';
 
 export interface TeamMemberDocument {
   name: string;
@@ -7,6 +7,7 @@ export interface TeamMemberDocument {
   bio: string;
   image: string;
   status: 'active' | 'inactive';
+  order: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -19,8 +20,10 @@ const teamMemberSchema = new Schema<TeamMemberDocument>(
     bio: { type: String, required: true, trim: true },
     image: { type: String, required: true, trim: true },
     status: { type: String, enum: ['active', 'inactive'], default: 'active' },
+    order: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
 
 export const TeamMemberModel = (models.TeamMember as Model<TeamMemberDocument>) || model<TeamMemberDocument>('TeamMember', teamMemberSchema);
+

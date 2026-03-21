@@ -1,4 +1,4 @@
-import { connectToDatabase } from '@/lib/db';
+﻿import { connectToDatabase } from '@/lib/db';
 import { fail, ok, parseJson, toResponse } from '@/lib/http';
 import { TeamMemberModel } from '@/models/TeamMember';
 import { ensureSeededContent } from '@/lib/content-seeder';
@@ -21,6 +21,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (body.bio) update.bio = String(body.bio);
   if (body.image) update.image = String(body.image);
   if (body.status) update.status = String(body.status);
+  if (body.order !== undefined) update.order = parseInt(String(body.order), 10) || 0;
 
   const item = await TeamMemberModel.findByIdAndUpdate(id, update, { new: true }).lean();
   if (!item) return toResponse(fail('Team member not found', 'NOT_FOUND', undefined, 404));

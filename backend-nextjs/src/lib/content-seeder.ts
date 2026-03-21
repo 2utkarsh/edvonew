@@ -1,9 +1,12 @@
-import { hashPassword } from '@/lib/auth';
-import { BlogModel } from '@/models/Blog';
+﻿import { hashPassword } from '@/lib/auth';
+import { BlogCategoryModel, BlogModel } from '@/models/Blog';
 import { TeamMemberModel } from '@/models/TeamMember';
 import { UserModel } from '@/models/User';
 import { MOCK_BLOGS } from '@/lib/blog-data';
 import { MOCK_TEAM_MEMBERS } from '@/lib/team-data';
+import { MOCK_GUIDES, MOCK_TUTORIALS } from '@/lib/resource-data';
+import { ResourceItemModel } from '@/models/ResourceItem';
+import { slugify } from '@/lib/query';
 
 declare global {
   var __edvoContentSeeded: boolean | undefined;
@@ -51,7 +54,24 @@ export async function ensureSeededContent() {
     authorIds.set(blog.author, String(user._id));
   }
 
-  for (const blog of MOCK_BLOGS) {
+  const orderedBlogCategories = Array.from(new Set(MOCK_BLOGS.map((blog) => blog.category)));
+  for (const [index, category] of orderedBlogCategories.entries()) {
+    await BlogCategoryModel.findOneAndUpdate(
+      { slug: slugify(category) },
+      {
+        $set: {
+          name: category,
+          slug: slugify(category),
+          description: `${category} blog posts`,
+          isActive: true,
+          order: index + 1,
+        },
+      },
+      { upsert: true, new: true }
+    );
+  }
+
+  for (const [index, blog] of MOCK_BLOGS.entries()) {
     await BlogModel.findOneAndUpdate(
       { slug: blog.slug },
       {
@@ -65,6 +85,7 @@ export async function ensureSeededContent() {
           tags: [blog.category],
           author: authorIds.get(blog.author),
           status: 'published',
+          order: index + 1,
           readTime: parseInt(blog.readTime, 10) || 5,
           publishedAt: new Date(blog.date),
           metaTitle: blog.title,
@@ -75,7 +96,7 @@ export async function ensureSeededContent() {
     );
   }
 
-  for (const member of MOCK_TEAM_MEMBERS) {
+  for (const [index, member] of MOCK_TEAM_MEMBERS.entries()) {
     await TeamMemberModel.findOneAndUpdate(
       { slug: member.id },
       {
@@ -86,6 +107,52 @@ export async function ensureSeededContent() {
           bio: member.bio,
           image: member.image,
           status: 'active',
+          order: index + 1,
+        },
+      },
+      { upsert: true, new: true }
+    );
+  }
+
+  for (const tutorial of MOCK_TUTORIALS) {
+    await ResourceItemModel.findOneAndUpdate(
+      { slug: tutorial.slug },
+      {
+        $set: {
+          type: 'tutorial',
+          title: tutorial.title,
+          slug: tutorial.slug,
+          description: tutorial.description,
+          thumbnail: tutorial.thumbnail,
+          category: tutorial.category,
+          tool: tutorial.tool,
+          duration: tutorial.duration,
+          level: tutorial.level,
+          status: tutorial.status,
+          order: tutorial.order,
+        },
+      },
+      { upsert: true, new: true }
+    );
+  }
+
+  for (const guide of MOCK_GUIDES) {
+    await ResourceItemModel.findOneAndUpdate(
+      { slug: guide.slug },
+      {
+        $set: {
+          type: 'guide',
+          title: guide.title,
+          slug: guide.slug,
+          description: guide.description,
+          thumbnail: guide.thumbnail,
+          category: guide.track,
+          track: guide.track,
+          steps: guide.steps,
+          highlight: guide.highlight,
+          icon: guide.icon,
+          status: guide.status,
+          order: guide.order,
         },
       },
       { upsert: true, new: true }

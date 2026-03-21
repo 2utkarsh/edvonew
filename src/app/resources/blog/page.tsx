@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useMemo, useState } from 'react';
 import { Search, BookOpen, ChevronDown, GraduationCap, Code, Database, Brain, Rocket, MessageSquare, ArrowRight } from 'lucide-react';
@@ -8,7 +8,7 @@ import Button from '@/components/ui/Button';
 import { FadeIn } from '@/components/animations';
 import BlogCard from '@/components/blog/BlogCard';
 import { cn } from '@/lib/utils';
-import { BLOG_CATEGORIES, BlogPost, fetchBlogs } from './data';
+import { BlogCategoryOption, BlogPost, fetchBlogCategories, fetchBlogs } from './data';
 
 const CATEGORY_ICONS = {
   all: BookOpen,
@@ -21,6 +21,7 @@ const CATEGORY_ICONS = {
 
 export default function BlogPage() {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
+  const [categories, setCategories] = useState<BlogCategoryOption[]>([{ id: 'all', label: 'All Articles' }]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
@@ -33,9 +34,10 @@ export default function BlogPage() {
       try {
         setIsLoading(true);
         setLoadError('');
-        const items = await fetchBlogs();
+        const [items, categoryItems] = await Promise.all([fetchBlogs(), fetchBlogCategories()]);
         if (!cancelled) {
           setBlogs(items);
+          setCategories(categoryItems);
         }
       } catch (error: any) {
         if (!cancelled) {
@@ -115,8 +117,8 @@ export default function BlogPage() {
         <div className="mb-12 border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-8 overflow-x-auto scrollbar-hide">
-              {BLOG_CATEGORIES.map((cat) => {
-                const Icon = CATEGORY_ICONS[cat.id as keyof typeof CATEGORY_ICONS];
+              {categories.map((cat) => {
+                const Icon = CATEGORY_ICONS[cat.id as keyof typeof CATEGORY_ICONS] || BookOpen;
                 return (
                   <button
                     key={cat.id}
@@ -150,7 +152,7 @@ export default function BlogPage() {
             </span>
           </div>
           <div className="flex items-center gap-3 text-xs font-black text-slate-400 uppercase tracking-widest">
-            Sort by: Latest <ChevronDown className="w-3.5 h-3.5" />
+            Sort by: Admin Order <ChevronDown className="w-3.5 h-3.5" />
           </div>
         </div>
 
@@ -176,12 +178,7 @@ export default function BlogPage() {
               </div>
             </motion.div>
           ) : (
-            <motion.div
-              key="empty"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-32 bg-slate-50/50 dark:bg-slate-900/30 rounded-[3rem] border-2 border-dashed border-slate-100 dark:border-slate-800"
-            >
+            <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-32 bg-slate-50/50 dark:bg-slate-900/30 rounded-[3rem] border-2 border-dashed border-slate-100 dark:border-slate-800">
               <div className="w-20 h-20 bg-white dark:bg-slate-800 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl border border-slate-100 dark:border-slate-700">
                 <BookOpen className="w-10 h-10 text-slate-300 dark:text-slate-600" />
               </div>

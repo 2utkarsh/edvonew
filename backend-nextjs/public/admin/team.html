@@ -1,294 +1,31 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Team - EDVO Admin</title>
-  <link rel="stylesheet" href="/backend/admin/styles.css" />
-  <style>
-    .page-shell { display: flex; flex-direction: column; gap: 24px; }
-    .panel, .stat-card { background: white; border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06); }
-    .panel { padding: 24px; }
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
-    .stat-card { padding: 24px; }
-    .stat-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: #718096; margin-bottom: 10px; font-weight: 700; }
-    .stat-value { font-size: 2rem; font-weight: 800; color: #1a202c; }
-    .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
-    .search-input, .form-input, .form-textarea, .form-select, .form-file { width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #cbd5e0; font-size: 0.95rem; background: white; }
-    .form-textarea { min-height: 120px; resize: vertical; }
-    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
-    .form-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
-    .member-card { background: white; border-radius: 24px; border: 1px solid #e2e8f0; box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06); overflow: hidden; display: flex; flex-direction: column; }
-    .member-card img { width: 100%; height: 240px; object-fit: cover; background: #edf2f7; }
-    .member-content { padding: 24px; }
-    .member-name { font-size: 1.35rem; font-weight: 800; color: #1a202c; margin-bottom: 8px; }
-    .member-title { color: #5a67d8; font-weight: 700; line-height: 1.6; margin-bottom: 14px; }
-    .member-bio { color: #718096; line-height: 1.7; font-size: 0.94rem; }
-    .badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 6px 12px; font-size: 0.78rem; font-weight: 700; }
-    .badge-status-active { background: rgba(72, 187, 120, 0.14); color: #2f855a; }
-    .badge-status-inactive { background: rgba(113, 128, 150, 0.14); color: #4a5568; }
-    .card-actions { display: flex; gap: 10px; align-items: center; justify-content: space-between; margin-top: 18px; flex-wrap: wrap; }
-    .btn { border: none; border-radius: 10px; padding: 10px 14px; font-weight: 700; cursor: pointer; }
-    .btn-primary { background: #667eea; color: white; }
-    .btn-secondary { background: #edf2f7; color: #1a202c; }
-    .btn-danger { background: #f56565; color: white; }
-    .empty-state { padding: 48px 24px; border-radius: 24px; text-align: center; color: #718096; border: 1px dashed #cbd5e0; background: white; }
-    .image-preview { width: 100%; max-width: 220px; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 18px; border: 1px solid #e2e8f0; background: #f8fafc; }
-    .help-text { color: #718096; font-size: 0.88rem; }
-  </style>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Team - EDVO Admin</title><link rel="stylesheet" href="/backend/admin/styles.css" />
+  <style>.stack{display:flex;flex-direction:column;gap:24px}.panel,.stat{background:#fff;border:1px solid #e2e8f0;border-radius:20px;box-shadow:0 8px 30px rgba(15,23,42,.06);padding:24px}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}.label{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:#718096;margin-bottom:8px;font-weight:700}.value{font-size:2rem;font-weight:800}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.input,.textarea,.select,.file{width:100%;padding:12px 16px;border:1px solid #cbd5e0;border-radius:12px;font-size:.95rem;background:#fff}.textarea{min-height:120px;resize:vertical}.actions,.table-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.toolbar{display:flex;justify-content:space-between;gap:16px;align-items:center}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}.card{background:#fff;border-radius:24px;border:1px solid #e2e8f0;box-shadow:0 8px 30px rgba(15,23,42,.06);overflow:hidden}.card img{width:100%;height:220px;object-fit:cover;background:#edf2f7}.content{padding:20px}.name{font-size:1.2rem;font-weight:800}.title{color:#5a67d8;font-weight:700;margin:8px 0 12px}.bio{color:#718096;line-height:1.6}.badge{display:inline-flex;align-items:center;border-radius:999px;padding:6px 12px;font-size:.78rem;font-weight:700}.badge-status-active{background:rgba(72,187,120,.14);color:#2f855a}.badge-status-inactive{background:rgba(113,128,150,.14);color:#4a5568}.btn{border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}.btn-primary{background:#667eea;color:#fff}.btn-secondary{background:#edf2f7;color:#1a202c}.btn-danger{background:#f56565;color:#fff}.preview{width:180px;height:180px;border-radius:20px;object-fit:cover;border:1px solid #e2e8f0;background:#f8fafc}.help{color:#718096;font-size:.88rem}</style>
 </head>
 <body>
-  <aside class="sidebar">
-    <div class="sidebar-logo"><span>ED</span>VO Admin</div>
-    <div class="nav-section">
-      <div class="nav-section-title">Main Menu</div>
-      <a href="/backend/admin" class="nav-item"><span class="nav-label">Dashboard</span></a>
-      <a href="/backend/admin/courses" class="nav-item"><span class="nav-label">Courses</span></a>
-      <a href="/backend/admin/blogs" class="nav-item"><span class="nav-label">Blogs</span></a>
-      <a href="/backend/admin/team" class="nav-item active"><span class="nav-label">Team</span></a>
-      <a href="/backend/admin/users" class="nav-item"><span class="nav-label">Users</span></a>
-      <a href="/backend/admin/jobs" class="nav-item"><span class="nav-label">Jobs</span></a>
-    </div>
-    <div class="nav-section">
-      <div class="nav-section-title">Settings</div>
-      <a href="#" class="nav-item" onclick="logout()"><span class="nav-label">Logout</span></a>
-    </div>
-  </aside>
-  <main class="main-content">
-    <div class="top-bar"><h1 class="page-title">Our Team</h1><div class="user-avatar">A</div></div>
-    <div class="dashboard-content">
-      <div class="page-shell">
-        <div class="stats-grid">
-          <div class="stat-card"><div class="stat-label">Team Members</div><div class="stat-value" id="totalMembers">0</div></div>
-          <div class="stat-card"><div class="stat-label">Active</div><div class="stat-value" id="activeMembers">0</div></div>
-          <div class="stat-card"><div class="stat-label">Inactive</div><div class="stat-value" id="inactiveMembers">0</div></div>
-        </div>
-
-        <section class="panel">
-          <div class="toolbar" style="margin-bottom:16px;">
-            <div>
-              <div class="table-title" id="formTitle">Create Team Member</div>
-              <div style="color:#718096;font-size:0.92rem;margin-top:4px;" id="formDescription">Create Mongo-backed team members used by the frontend Our Team page.</div>
-            </div>
-          </div>
-          <form id="teamForm" class="page-shell">
-            <div class="form-grid">
-              <input id="name" class="form-input" placeholder="Full name" required />
-              <input id="title" class="form-input" placeholder="Role / title" required />
-              <input id="imageFile" class="form-file" type="file" accept="image/*" />
-              <select id="status" class="form-select">
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </select>
-            </div>
-            <div class="help-text">Choose an image file instead of pasting a link. Editing keeps the current image unless you pick a new one.</div>
-            <img id="imagePreview" class="image-preview" alt="Selected team member preview" src="/images/edvo-official-logo-v10.png" />
-            <textarea id="bio" class="form-textarea" placeholder="Bio" required></textarea>
-            <div class="form-actions">
-              <button id="submitButton" class="btn btn-primary" type="submit">Create Team Member</button>
-              <button id="cancelEditButton" class="btn btn-secondary" type="button" style="display:none;">Cancel Edit</button>
-            </div>
-          </form>
-        </section>
-
-        <section class="panel">
-          <div class="toolbar" style="margin-bottom:16px;">
-            <div>
-              <div class="table-title">Manage Team</div>
-              <div style="color:#718096;font-size:0.92rem;margin-top:4px;">Status changes, edits, and deletes update Mongo data used by both admin and frontend.</div>
-            </div>
-            <input id="searchInput" class="search-input" type="search" placeholder="Search team members..." />
-          </div>
-          <div id="membersGrid" class="grid"></div>
-        </section>
-      </div>
-    </div>
-  </main>
-  <script src="/backend/admin/admin.js"></script>
-  <script>
-    let members = [];
-    let editingMemberId = null;
-    let currentImageValue = '/images/edvo-official-logo-v10.png';
-
-    const formTitle = document.getElementById('formTitle');
-    const formDescription = document.getElementById('formDescription');
-    const submitButton = document.getElementById('submitButton');
-    const cancelEditButton = document.getElementById('cancelEditButton');
-    const teamForm = document.getElementById('teamForm');
-    const imageFileInput = document.getElementById('imageFile');
-    const imagePreview = document.getElementById('imagePreview');
-
-    function escapeHtml(value) {
-      return String(value ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
-
-    function updateStats(items) {
-      document.getElementById('totalMembers').textContent = items.length;
-      document.getElementById('activeMembers').textContent = items.filter((item) => item.status === 'active').length;
-      document.getElementById('inactiveMembers').textContent = items.filter((item) => item.status === 'inactive').length;
-    }
-
-    function setImagePreview(src) {
-      currentImageValue = src || '/images/edvo-official-logo-v10.png';
-      imagePreview.src = currentImageValue;
-    }
-
-    function resetTeamForm() {
-      editingMemberId = null;
-      teamForm.reset();
-      document.getElementById('status').value = 'active';
-      setImagePreview('/images/edvo-official-logo-v10.png');
-      formTitle.textContent = 'Create Team Member';
-      formDescription.textContent = 'Create Mongo-backed team members used by the frontend Our Team page.';
-      submitButton.textContent = 'Create Team Member';
-      cancelEditButton.style.display = 'none';
-    }
-
-    function populateTeamForm(member) {
-      document.getElementById('name').value = member.name || '';
-      document.getElementById('title').value = member.title || '';
-      document.getElementById('status').value = member.status || 'active';
-      document.getElementById('bio').value = member.bio || '';
-      setImagePreview(member.image || '/images/edvo-official-logo-v10.png');
-      imageFileInput.value = '';
-    }
-
-    function startEditMember(id) {
-      const member = members.find((item) => item.id === id);
-      if (!member) {
-        showToast('Team member not found', 'error');
-        return;
-      }
-      editingMemberId = id;
-      populateTeamForm(member);
-      formTitle.textContent = 'Edit Team Member';
-      formDescription.textContent = 'Update the selected Mongo-backed team member.';
-      submitButton.textContent = 'Update Team Member';
-      cancelEditButton.style.display = 'inline-flex';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function filteredMembers() {
-      const query = document.getElementById('searchInput').value.trim().toLowerCase();
-      return members.filter((member) =>
-        member.name.toLowerCase().includes(query) ||
-        member.title.toLowerCase().includes(query) ||
-        member.bio.toLowerCase().includes(query)
-      );
-    }
-
-    async function loadMembers() {
-      try {
-        const payload = await adminFetch('/backend/api/admin/team');
-        members = Array.isArray(payload.data) ? payload.data : [];
-        updateStats(members);
-        renderMembers(filteredMembers());
-      } catch (error) {
-        showToast(error.message || 'Failed to load team', 'error');
-        document.getElementById('membersGrid').innerHTML = '<div class="empty-state">Unable to load the team right now.</div>';
-      }
-    }
-
-    async function updateTeamStatus(id, status) {
-      try {
-        await adminFetch(`/backend/api/admin/team/${id}`, { method: 'PATCH', body: JSON.stringify({ status }) });
-        showToast('Team member status updated', 'success');
-        await loadMembers();
-      } catch (error) {
-        showToast(error.message || 'Failed to update status', 'error');
-      }
-    }
-
-    async function deleteTeamMember(id) {
-      if (!confirm('Delete this team member?')) return;
-      try {
-        await adminFetch(`/backend/api/admin/team/${id}`, { method: 'DELETE' });
-        if (editingMemberId === id) resetTeamForm();
-        showToast('Team member deleted', 'success');
-        await loadMembers();
-      } catch (error) {
-        showToast(error.message || 'Failed to delete team member', 'error');
-      }
-    }
-
-    function renderMembers(items) {
-      const grid = document.getElementById('membersGrid');
-      if (!items.length) {
-        grid.innerHTML = '<div class="empty-state">No team members matched your search.</div>';
-        return;
-      }
-      grid.innerHTML = items.map((member) => `
-        <article class="member-card">
-          <img src="${escapeHtml(member.image)}" alt="${escapeHtml(member.name)}" />
-          <div class="member-content">
-            <div class="member-name">${escapeHtml(member.name)}</div>
-            <div class="member-title">${escapeHtml(member.title)}</div>
-            <div class="member-bio">${escapeHtml(member.bio)}</div>
-            <div class="card-actions">
-              <select class="form-select" style="max-width:140px;" onchange="updateTeamStatus('${member.id}', this.value)">
-                <option value="active" ${member.status === 'active' ? 'selected' : ''}>Active</option>
-                <option value="inactive" ${member.status === 'inactive' ? 'selected' : ''}>Inactive</option>
-              </select>
-              <span class="badge badge-status-${member.status}">${escapeHtml(member.status)}</span>
-              <button class="btn btn-secondary" type="button" onclick="startEditMember('${member.id}')">Edit</button>
-              <button class="btn btn-danger" type="button" onclick="deleteTeamMember('${member.id}')">Delete</button>
-            </div>
-          </div>
-        </article>
-      `).join('');
-    }
-
-    imageFileInput.addEventListener('change', () => {
-      const [file] = imageFileInput.files || [];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === 'string') {
-          setImagePreview(reader.result);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
-
-    teamForm.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      if (!currentImageValue) {
-        showToast('Please choose a photo', 'error');
-        return;
-      }
-      const payload = {
-        name: document.getElementById('name').value,
-        title: document.getElementById('title').value,
-        image: currentImageValue,
-        status: document.getElementById('status').value,
-        bio: document.getElementById('bio').value,
-      };
-      try {
-        if (editingMemberId) {
-          await adminFetch(`/backend/api/admin/team/${editingMemberId}`, { method: 'PATCH', body: JSON.stringify(payload) });
-          showToast('Team member updated', 'success');
-        } else {
-          await adminFetch('/backend/api/admin/team', { method: 'POST', body: JSON.stringify(payload) });
-          showToast('Team member created', 'success');
-        }
-        resetTeamForm();
-        await loadMembers();
-      } catch (error) {
-        showToast(error.message || 'Failed to save team member', 'error');
-      }
-    });
-
-    cancelEditButton.addEventListener('click', resetTeamForm);
-    document.getElementById('searchInput').addEventListener('input', () => renderMembers(filteredMembers()));
-
-    resetTeamForm();
-    loadMembers();
-  </script>
+<aside class="sidebar"><div class="sidebar-logo"><span>ED</span>VO Admin</div><div class="nav-section"><div class="nav-section-title">Main Menu</div><a href="/backend/admin" class="nav-item"><span class="nav-label">Dashboard</span></a><a href="/backend/admin/courses" class="nav-item"><span class="nav-label">Courses</span></a><a href="/backend/admin/blogs" class="nav-item"><span class="nav-label">Blogs</span></a><a href="/backend/admin/tutorials" class="nav-item"><span class="nav-label">Tutorials</span></a><a href="/backend/admin/guides" class="nav-item"><span class="nav-label">Guides</span></a><a href="/backend/admin/team" class="nav-item active"><span class="nav-label">Team</span></a></div><div class="nav-section"><div class="nav-section-title">Settings</div><a href="#" class="nav-item" onclick="logout()"><span class="nav-label">Logout</span></a></div></aside>
+<main class="main-content"><div class="top-bar"><h1 class="page-title">Our Team</h1><div class="user-avatar">A</div></div><div class="dashboard-content"><div class="stack">
+<div class="stats"><div class="stat"><div class="label">Team Members</div><div class="value" id="totalMembers">0</div></div><div class="stat"><div class="label">Active</div><div class="value" id="activeMembers">0</div></div><div class="stat"><div class="label">Inactive</div><div class="value" id="inactiveMembers">0</div></div></div>
+<section class="panel"><div class="toolbar"><div><div class="table-title" id="formTitle">Create Team Member</div><div class="help">Uploaded photos and order changes affect the frontend team section.</div></div></div><form id="teamForm" class="stack"><div class="grid"><input id="name" class="input" placeholder="Full name" required /><input id="title" class="input" placeholder="Role / title" required /><input id="order" class="input" type="number" min="0" value="0" placeholder="Display order" /><select id="status" class="select"><option value="active">Active</option><option value="inactive">Inactive</option></select><input id="imageFile" class="file" type="file" accept="image/*" /></div><img id="imagePreview" class="preview" src="/images/edvo-official-logo-v10.png" alt="Team preview" /><textarea id="bio" class="textarea" placeholder="Bio" required></textarea><div class="actions"><button id="submitButton" class="btn btn-primary" type="submit">Create Team Member</button><button id="cancelEdit" class="btn btn-secondary" type="button" style="display:none">Cancel Edit</button></div></form></section>
+<section class="panel"><div class="toolbar"><div><div class="table-title">Manage Team</div><div class="help">Use Up and Down to reorder cards on the frontend.</div></div><input id="searchInput" class="input" type="search" placeholder="Search team members" /></div><div id="memberCards" class="cards"></div></section>
+</div></div></main>
+<script src="/backend/admin/admin.js"></script>
+<script>
+let members=[];let editingId=null;let imageValue='/images/edvo-official-logo-v10.png';const form=document.getElementById('teamForm');
+function e(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+function updateStats(){document.getElementById('totalMembers').textContent=members.length;document.getElementById('activeMembers').textContent=members.filter(x=>x.status==='active').length;document.getElementById('inactiveMembers').textContent=members.filter(x=>x.status==='inactive').length}
+function resetForm(){editingId=null;form.reset();document.getElementById('status').value='active';document.getElementById('order').value='0';imageValue='/images/edvo-official-logo-v10.png';document.getElementById('imagePreview').src=imageValue;document.getElementById('formTitle').textContent='Create Team Member';document.getElementById('submitButton').textContent='Create Team Member';document.getElementById('cancelEdit').style.display='none'}
+function startEdit(id){const item=members.find(x=>x.id===id);if(!item)return;editingId=id;document.getElementById('name').value=item.name||'';document.getElementById('title').value=item.title||'';document.getElementById('bio').value=item.bio||'';document.getElementById('status').value=item.status||'active';document.getElementById('order').value=item.order||0;imageValue=item.image||imageValue;document.getElementById('imagePreview').src=imageValue;document.getElementById('imageFile').value='';document.getElementById('formTitle').textContent='Edit Team Member';document.getElementById('submitButton').textContent='Update Team Member';document.getElementById('cancelEdit').style.display='inline-flex';window.scrollTo({top:0,behavior:'smooth'})}
+async function loadMembers(){const payload=await adminFetch('/backend/api/admin/team');members=Array.isArray(payload.data)?payload.data:[];members.sort((a,b)=>(a.order||0)-(b.order||0));updateStats();renderMembers()}
+function renderMembers(){const q=document.getElementById('searchInput').value.trim().toLowerCase();const items=members.filter((m)=>!q||m.name.toLowerCase().includes(q)||m.title.toLowerCase().includes(q)||m.bio.toLowerCase().includes(q));document.getElementById('memberCards').innerHTML=items.length?items.map((m,i)=>`<article class="card"><img src="${e(m.image)}" alt="${e(m.name)}" /><div class="content"><div class="name">${e(m.name)}</div><div class="title">${e(m.title)}</div><div class="bio">${e(m.bio)}</div><div class="actions" style="margin-top:16px"><select class="select" style="max-width:140px" onchange="updateMember('${m.id}',{status:this.value})"><option value="active" ${m.status==='active'?'selected':''}>Active</option><option value="inactive" ${m.status==='inactive'?'selected':''}>Inactive</option></select><span class="badge badge-status-${m.status}">${e(m.status)}</span><button class="btn btn-secondary" type="button" onclick="moveMember('${m.id}',-1)">Up</button><button class="btn btn-secondary" type="button" onclick="moveMember('${m.id}',1)">Down</button><button class="btn btn-secondary" type="button" onclick="startEdit('${m.id}')">Edit</button><button class="btn btn-danger" type="button" onclick="deleteMember('${m.id}')">Delete</button></div></div></article>`).join(''):'<div class="help">No team members found.</div>'}
+async function updateMember(id,patch){await adminFetch(`/backend/api/admin/team/${id}`,{method:'PATCH',body:JSON.stringify(patch)});await loadMembers();showToast('Team member updated','success')}
+async function moveMember(id,dir){const idx=members.findIndex(x=>x.id===id);const swap=idx+dir;if(idx<0||swap<0||swap>=members.length)return;const a=members[idx],b=members[swap];await adminFetch(`/backend/api/admin/team/${a.id}`,{method:'PATCH',body:JSON.stringify({order:b.order||swap})});await adminFetch(`/backend/api/admin/team/${b.id}`,{method:'PATCH',body:JSON.stringify({order:a.order||idx})});await loadMembers();showToast('Team order updated','success')}
+async function deleteMember(id){if(!confirm('Delete this team member?'))return;await adminFetch(`/backend/api/admin/team/${id}`,{method:'DELETE'});if(editingId===id)resetForm();await loadMembers();showToast('Team member deleted','success')}
+document.getElementById('imageFile').addEventListener('change',()=>{const file=document.getElementById('imageFile').files?.[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{if(typeof reader.result==='string'){imageValue=reader.result;document.getElementById('imagePreview').src=imageValue;}};reader.readAsDataURL(file)});
+form.addEventListener('submit',async(e)=>{e.preventDefault();const payload={name:document.getElementById('name').value,title:document.getElementById('title').value,bio:document.getElementById('bio').value,status:document.getElementById('status').value,order:document.getElementById('order').value,image:imageValue};if(editingId){await adminFetch(`/backend/api/admin/team/${editingId}`,{method:'PATCH',body:JSON.stringify(payload)});showToast('Team member updated','success')}else{await adminFetch('/backend/api/admin/team',{method:'POST',body:JSON.stringify(payload)});showToast('Team member created','success')}resetForm();await loadMembers()});
+document.getElementById('cancelEdit').addEventListener('click',resetForm);document.getElementById('searchInput').addEventListener('input',renderMembers);loadMembers().then(resetForm)
+</script>
 </body>
 </html>

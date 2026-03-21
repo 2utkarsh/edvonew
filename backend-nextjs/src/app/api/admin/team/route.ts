@@ -1,4 +1,4 @@
-import { connectToDatabase } from '@/lib/db';
+﻿import { connectToDatabase } from '@/lib/db';
 import { created, ok, parseJson, toResponse } from '@/lib/http';
 import { TeamMemberModel } from '@/models/TeamMember';
 import { ensureSeededContent } from '@/lib/content-seeder';
@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   await connectToDatabase();
   await ensureSeededContent();
 
-  const items = await TeamMemberModel.find().sort({ updatedAt: -1 }).lean();
+  const items = await TeamMemberModel.find().sort({ order: 1, updatedAt: -1 }).lean();
   return toResponse(ok(items.map(mapTeamMemberToPublicTeamMember)));
 }
 
@@ -34,6 +34,7 @@ export async function POST(request: Request) {
     bio: String(body.bio || 'Experienced mentor guiding learners with practical, industry-focused knowledge.'),
     image: String(body.image || '/images/edvo-official-logo-v10.png'),
     status: body.status === 'inactive' ? 'inactive' : 'active',
+    order: parseInt(String(body.order || 0), 10) || 0,
   });
 
   return toResponse(created(mapTeamMemberToPublicTeamMember(item)));

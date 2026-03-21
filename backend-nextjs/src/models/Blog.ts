@@ -1,4 +1,4 @@
-import { Model, model, models, Schema, Types } from 'mongoose';
+﻿import { Model, model, models, Schema, Types } from 'mongoose';
 
 export interface BlogDocument {
   title: string;
@@ -10,6 +10,7 @@ export interface BlogDocument {
   tags: string[];
   author: Types.ObjectId;
   status: 'draft' | 'published' | 'archived';
+  order: number;
   views: number;
   readTime: number; // minutes
   metaTitle?: string;
@@ -34,6 +35,7 @@ const blogSchema = new Schema<BlogDocument>(
       enum: ['draft', 'published', 'archived'], 
       default: 'draft' 
     },
+    order: { type: Number, default: 0 },
     views: { type: Number, default: 0 },
     readTime: Number,
     metaTitle: String,
@@ -70,3 +72,4 @@ const blogCategorySchema = new Schema<BlogCategoryDocument>(
 
 export const BlogCategoryModel = (models.BlogCategory as Model<BlogCategoryDocument>) ||
   model<BlogCategoryDocument>('BlogCategory', blogCategorySchema);
+

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -6,83 +6,92 @@
   <title>Courses - EDVO Admin</title>
   <link rel="stylesheet" href="/backend/admin/styles.css" />
   <style>
-    /* Reuse dashboard styles and add specific ones */
     .filters {
       display: flex;
       gap: 12px;
       margin-bottom: 24px;
+      flex-wrap: wrap;
     }
 
-    .filter-input {
-      padding: 12px 18px;
-      border: 2px solid #e2e8f0;
-      border-radius: 10px;
-      font-size: 0.95rem;
-      min-width: 250px;
-    }
-
-    .filter-input:focus {
-      outline: none;
-      border-color: #667eea;
-    }
-
+    .filter-input,
     .filter-select {
+      min-height: 46px;
       padding: 12px 18px;
       border: 2px solid #e2e8f0;
       border-radius: 10px;
       font-size: 0.95rem;
       background: white;
+    }
+
+    .filter-input {
+      flex: 1 1 260px;
+      min-width: 220px;
+    }
+
+    .filter-select {
+      flex: 0 1 220px;
       cursor: pointer;
+    }
+
+    .filter-input:focus,
+    .filter-select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .course-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 260px;
+    }
+
+    .course-thumb,
+    .course-fallback {
+      width: 50px;
+      height: 50px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      object-fit: cover;
+    }
+
+    .course-fallback {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      .filters > * {
+        width: 100%;
+        flex-basis: 100%;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Sidebar (same as dashboard) -->
   <aside class="sidebar">
     <div class="sidebar-logo"><span>ED</span>VO Admin</div>
-    
+
     <div class="nav-section">
       <div class="nav-section-title">Main Menu</div>
-      <a href="/backend/admin" class="nav-item">
-        <span class="nav-icon">🏠</span>
-        <span class="nav-label">Dashboard</span>
-      </a>
-      <a href="/backend/admin/courses" class="nav-item active">
-        <span class="nav-icon">📚</span>
-        <span class="nav-label">Courses</span>
-      </a>
-      <a href="/backend/admin/blogs" class="nav-item">
-        <span class="nav-icon">??</span>
-        <span class="nav-label">Blogs</span>
-      </a>
-      <a href="/backend/admin/users" class="nav-item">
-        <span class="nav-icon">👥</span>
-        <span class="nav-label">Users</span>
-      </a>
-      <a href="/backend/admin/exams" class="nav-item">
-        <span class="nav-icon">📝</span>
-        <span class="nav-label">Exams</span>
-      </a>
-      <a href="/backend/admin/jobs" class="nav-item">
-        <span class="nav-icon">💼</span>
-        <span class="nav-label">Jobs</span>
-      </a>
+      <a href="/backend/admin" class="nav-item"><span class="nav-label">Dashboard</span></a>
+      <a href="/backend/admin/courses" class="nav-item active"><span class="nav-label">Courses</span></a>
+      <a href="/backend/admin/blogs" class="nav-item"><span class="nav-label">Blogs</span></a><a href="/backend/admin/tutorials" class="nav-item"><span class="nav-label">Tutorials</span></a><a href="/backend/admin/guides" class="nav-item"><span class="nav-label">Guides</span></a>
+      <a href="/backend/admin/team" class="nav-item"><span class="nav-label">Team</span></a>
+      <a href="/backend/admin/users" class="nav-item"><span class="nav-label">Users</span></a>
+      <a href="/backend/admin/jobs" class="nav-item"><span class="nav-label">Jobs</span></a>
     </div>
-    
+
     <div class="nav-section">
       <div class="nav-section-title">Settings</div>
-      <a href="#" class="nav-item">
-        <span class="nav-icon">⚙️</span>
-        <span class="nav-label">Settings</span>
-      </a>
-      <a href="#" class="nav-item" onclick="logout()">
-        <span class="nav-icon">🚪</span>
-        <span class="nav-label">Logout</span>
-      </a>
+      <a href="#" class="nav-item" onclick="logout()"><span class="nav-label">Logout</span></a>
     </div>
   </aside>
 
-  <!-- Main Content -->
   <main class="main-content">
     <div class="top-bar">
       <h1 class="page-title">Courses Management</h1>
@@ -96,9 +105,8 @@
     </div>
 
     <div class="dashboard-content">
-      <!-- Filters -->
       <div class="filters">
-        <input type="text" class="filter-input" placeholder="🔍 Search courses..." id="searchInput" />
+        <input type="text" class="filter-input" placeholder="Search courses..." id="searchInput" />
         <select class="filter-select" id="categoryFilter">
           <option value="">All Categories</option>
           <option value="Programming">Programming</option>
@@ -112,42 +120,42 @@
           <option value="draft">Draft</option>
           <option value="archived">Archived</option>
         </select>
-        <button class="btn btn-primary" onclick="showAddModal()">+ Add Course</button>
+        <button class="btn btn-primary" onclick="showAddModal()">Add Course</button>
       </div>
 
-      <!-- Courses Table -->
       <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Course</th>
-              <th>Instructor</th>
-              <th>Category</th>
-              <th>Students</th>
-              <th>Price</th>
-              <th>Rating</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="coursesTableBody">
-            <tr>
-              <td colspan="8" style="text-align: center; padding: 40px; color: #718096;">
-                Loading courses...
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Course</th>
+                <th>Instructor</th>
+                <th>Category</th>
+                <th>Students</th>
+                <th>Price</th>
+                <th>Rating</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="coursesTableBody">
+              <tr>
+                <td colspan="8" style="text-align: center; padding: 40px; color: #718096;">
+                  Loading courses...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </main>
 
-  <!-- Add Course Modal -->
   <div id="addModal" class="modal" style="display: none;">
     <div class="modal-content">
       <div class="modal-header">
         <h2>Add New Course</h2>
-        <button class="modal-close" onclick="closeModal()">×</button>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
       </div>
       <div class="modal-body">
         <p style="text-align: center; color: #718096; padding: 40px;">
@@ -163,12 +171,11 @@
 
   <script src="/backend/admin/admin.js"></script>
   <script>
-    // Fetch and display courses
     async function loadCourses() {
       try {
         const response = await fetch('/backend/api/v1/courses');
         const data = await response.json();
-        
+
         if (data.success) {
           displayCourses(data.data.courses);
         }
@@ -179,7 +186,7 @@
 
     function displayCourses(courses) {
       const tbody = document.getElementById('coursesTableBody');
-      
+
       if (courses.length === 0) {
         tbody.innerHTML = `
           <tr>
@@ -194,9 +201,10 @@
       tbody.innerHTML = courses.map(course => `
         <tr>
           <td>
-            <div style="display: flex; align-items: center; gap: 12px;">
-              ${course.thumbnail ? `<img src="${course.thumbnail}" style="width: 50px; height: 50px; border-radius: 10px; object-fit: cover;" />` : 
-                '<div style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">' + course.title.charAt(0) + '</div>'}
+            <div class="course-cell">
+              ${course.thumbnail
+                ? `<img src="${course.thumbnail}" alt="${course.title}" class="course-thumb" />`
+                : `<div class="course-fallback">${course.title.charAt(0)}</div>`}
               <div>
                 <div style="font-weight: 600;">${course.title}</div>
                 <div style="font-size: 0.85rem; color: #718096;">${course.shortDescription || ''}</div>
@@ -206,8 +214,8 @@
           <td>${course.instructorName || 'Unknown'}</td>
           <td><span class="badge badge-info">${course.category}</span></td>
           <td>${course.studentsEnrolled.toLocaleString()}</td>
-          <td>₹${course.price.toLocaleString()}</td>
-          <td>⭐ ${course.rating.toFixed(1)} (${course.reviewCount})</td>
+          <td>INR ${course.price.toLocaleString()}</td>
+          <td>${course.rating.toFixed(1)} (${course.reviewCount})</td>
           <td><span class="badge badge-${course.status === 'published' ? 'success' : 'warning'}">${course.status}</span></td>
           <td>
             <div class="action-btns">
@@ -220,7 +228,7 @@
     }
 
     function showAddModal() {
-      document.getElementById('addModal').style.display = 'block';
+      document.getElementById('addModal').style.display = 'flex';
     }
 
     function closeModal() {
@@ -237,19 +245,15 @@
       }
     }
 
-    // Close modal on outside click
     window.onclick = function(event) {
       const modal = document.getElementById('addModal');
-      if (event.target == modal) {
+      if (event.target === modal) {
         closeModal();
       }
-    }
+    };
 
-    // Initialize
     loadCourses();
   </script>
 </body>
 </html>
-
-
 
