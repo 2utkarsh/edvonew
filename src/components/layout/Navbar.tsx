@@ -318,20 +318,44 @@ export default function Navbar() {
                     isActive={pathname === link.href}
                   />
                 ))}
-                <div className="mt-4 flex gap-3 border-t border-border pt-4 dark:border-white/10">
-                  <Link
-                    href="/auth/login"
-                    className="flex-1 rounded-lg border border-border py-2.5 text-center text-sm font-medium text-slate-700 transition-colors hover:bg-secondary-lighter dark:border-white/10 dark:text-slate-200 dark:hover:bg-white/10"
-                  >
-                    {config.loginText}
-                  </Link>
-                  <Link
-                    href="/auth/register"
-                    className="flex-1 text-center text-white py-2.5 rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity bg-accent-500"
-                  >
-                    {config.registerText}
-                  </Link>
-                </div>
+                {(isAuthenticated || !!authUser) ? (
+                  <div className="mt-4 space-y-3 border-t border-border pt-4 dark:border-white/10">
+                    <div className="flex items-center gap-2 rounded-lg bg-secondary-lighter px-3 py-2 text-sm font-medium text-slate-700 dark:bg-white/10 dark:text-slate-200">
+                      <UserCircle className="h-4 w-4" />
+                      <span>{authUser?.name || authUser?.email || 'Student'}</span>
+                    </div>
+                    <div className="flex gap-3">
+                      <Link
+                        href="/dashboard/student"
+                        className="flex-1 rounded-lg border border-border py-2.5 text-center text-sm font-medium text-slate-700 transition-colors hover:bg-secondary-lighter dark:border-white/10 dark:text-slate-200 dark:hover:bg-white/10"
+                      >
+                        Dashboard
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="flex-1 rounded-lg bg-accent-500 py-2.5 text-center text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-4 flex gap-3 border-t border-border pt-4 dark:border-white/10">
+                    <Link
+                      href="/auth/login"
+                      className="flex-1 rounded-lg border border-border py-2.5 text-center text-sm font-medium text-slate-700 transition-colors hover:bg-secondary-lighter dark:border-white/10 dark:text-slate-200 dark:hover:bg-white/10"
+                    >
+                      {config.loginText}
+                    </Link>
+                    <Link
+                      href="/auth/register"
+                      className="flex-1 text-center text-white py-2.5 rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity bg-accent-500"
+                    >
+                      {config.registerText}
+                    </Link>
+                  </div>
+                )}
               </div>
             </motion.div>
           )}
