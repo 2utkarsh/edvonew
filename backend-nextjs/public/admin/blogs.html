@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -32,6 +32,10 @@
     .btn-primary { background: #667eea; color: white; }
     .btn-danger { background: #f56565; color: white; }
     .btn-secondary { background: #edf2f7; color: #1a202c; }
+    .category-list { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    .category-pill { display: inline-flex; align-items: center; gap: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 999px; padding: 8px 12px; }
+    .category-pill button { border: none; background: transparent; color: #f56565; cursor: pointer; font-weight: 700; }
+    .help-text { color: #718096; font-size: 0.88rem; }
   </style>
 </head>
 <body>
@@ -64,6 +68,25 @@
         <section class="panel">
           <div class="toolbar" style="margin-bottom:16px;">
             <div>
+              <div class="table-title">Blog Categories</div>
+              <div style="color:#718096;font-size:0.92rem;margin-top:4px;">Create categories first, then pick them from the blog form dropdown.</div>
+            </div>
+          </div>
+          <form id="categoryForm" class="page-shell">
+            <div class="form-grid">
+              <input id="categoryName" class="form-input" placeholder="Category name" required />
+              <input id="categoryDescription" class="form-input" placeholder="Short description (optional)" />
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-primary" type="submit">Add Category</button>
+            </div>
+          </form>
+          <div id="categoriesList" class="category-list"></div>
+        </section>
+
+        <section class="panel">
+          <div class="toolbar" style="margin-bottom:16px;">
+            <div>
               <div class="table-title" id="formTitle">Create Blog</div>
               <div style="color:#718096;font-size:0.92rem;margin-top:4px;" id="formDescription">Create Mongo-backed fake or custom blog entries from admin.</div>
             </div>
@@ -72,7 +95,9 @@
             <div class="form-grid">
               <input id="title" class="form-input" placeholder="Blog title" required />
               <input id="author" class="form-input" placeholder="Author name" required />
-              <input id="category" class="form-input" placeholder="Category" required />
+              <select id="category" class="form-select" required>
+                <option value="">Select a category</option>
+              </select>
               <input id="thumbnail" class="form-input" placeholder="Thumbnail URL or /images/..." required />
               <input id="readTime" class="form-input" type="number" min="1" placeholder="Read time in minutes" value="5" required />
               <select id="status" class="form-select">
@@ -81,6 +106,7 @@
                 <option value="archived">Archived</option>
               </select>
             </div>
+            <div class="help-text" id="categoryHelp">Add a category above if the dropdown is empty.</div>
             <textarea id="description" class="form-textarea" placeholder="Short description" required></textarea>
             <textarea id="content" class="form-textarea" placeholder="Full content" required></textarea>
             <div class="form-actions">
@@ -121,6 +147,7 @@
   <script src="/backend/admin/admin.js"></script>
   <script>
     let blogs = [];
+    let categories = [];
     let editingBlogId = null;
 
     const formTitle = document.getElementById('formTitle');
@@ -128,6 +155,8 @@
     const submitButton = document.getElementById('submitButton');
     const cancelEditButton = document.getElementById('cancelEditButton');
     const blogForm = document.getElementById('blogForm');
+    const categorySelect = document.getElementById('category');
+    const categoryHelp = document.getElementById('categoryHelp');
 
     function escapeHtml(value) {
       return String(value ?? '')
@@ -136,6 +165,79 @@
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
+    }
+
+    function normalizeCategoryName(value) {
+      return String(value || '').trim();
+    }
+
+    function categoryExists(name) {
+      return categories.some((item) => item.name.toLowerCase() === name.toLowerCase());
+    }
+
+    function syncCategoriesFromBlogs() {
+      blogs.forEach((blog) => {
+        const name = normalizeCategoryName(blog.category);
+        if (name && !categoryExists(name)) {
+          categories.push({ id: `derived-${name.toLowerCase()}`, name, description: '', isDerived: true });
+        }
+      });
+      categories.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    function renderCategoryOptions(selectedValue = '') {
+      categorySelect.innerHTML = ['<option value="">Select a category</option>']
+        .concat(categories.map((category) => `<option value="${escapeHtml(category.name)}">${escapeHtml(category.name)}</option>`))
+        .join('');
+      categorySelect.value = selectedValue || '';
+      categoryHelp.textContent = categories.length
+        ? 'Choose one of the saved categories for this blog.'
+        : 'Add a category above if the dropdown is empty.';
+    }
+
+    function renderCategories() {
+      const list = document.getElementById('categoriesList');
+      if (!categories.length) {
+        list.innerHTML = '<div class="help-text">No categories yet.</div>';
+        return;
+      }
+
+      list.innerHTML = categories.map((category) => `
+        <div class="category-pill">
+          <span>${escapeHtml(category.name)}</span>
+          ${category.isDerived ? '<span class="help-text">seeded</span>' : `<button type="button" onclick="deleteCategory('${category.id}')">Delete</button>`}
+        </div>
+      `).join('');
+    }
+
+    async function loadCategories() {
+      try {
+        const payload = await adminFetch('/backend/api/admin/blog-categories');
+        categories = Array.isArray(payload.data)
+          ? payload.data.map((item) => ({
+              id: item._id || item.id,
+              name: item.name,
+              description: item.description || '',
+              isDerived: false,
+            }))
+          : [];
+        syncCategoriesFromBlogs();
+        renderCategories();
+        renderCategoryOptions(categorySelect.value);
+      } catch (error) {
+        showToast(error.message || 'Failed to load categories', 'error');
+      }
+    }
+
+    async function deleteCategory(id) {
+      if (!confirm('Delete this category?')) return;
+      try {
+        await adminFetch(`/backend/api/admin/blog-categories/${id}`, { method: 'DELETE' });
+        showToast('Category deleted', 'success');
+        await loadCategories();
+      } catch (error) {
+        showToast(error.message || 'Failed to delete category', 'error');
+      }
     }
 
     function updateStats(items) {
@@ -153,6 +255,7 @@
       blogForm.reset();
       document.getElementById('readTime').value = '5';
       document.getElementById('status').value = 'published';
+      renderCategoryOptions();
       formTitle.textContent = 'Create Blog';
       formDescription.textContent = 'Create Mongo-backed fake or custom blog entries from admin.';
       submitButton.textContent = 'Create Blog';
@@ -162,12 +265,12 @@
     function populateBlogForm(blog) {
       document.getElementById('title').value = blog.title || '';
       document.getElementById('author').value = blog.author || '';
-      document.getElementById('category').value = blog.category || '';
+      renderCategoryOptions(blog.category || '');
       document.getElementById('thumbnail').value = blog.thumbnail || '';
-      document.getElementById('readTime').value = blog.readTime || 5;
+      document.getElementById('readTime').value = parseInt(blog.readTime, 10) || 5;
       document.getElementById('status').value = blog.status || 'published';
       document.getElementById('description').value = blog.description || '';
-      document.getElementById('content').value = blog.content || '';
+      document.getElementById('content').value = Array.isArray(blog.content) ? blog.content.join('\n\n') : (blog.content || '');
     }
 
     function startEditBlog(id) {
@@ -228,6 +331,9 @@
         const payload = await adminFetch('/backend/api/admin/blogs');
         blogs = Array.isArray(payload.data) ? payload.data : [];
         updateStats(blogs);
+        syncCategoriesFromBlogs();
+        renderCategories();
+        renderCategoryOptions(categorySelect.value);
         renderBlogs(filteredBlogs());
       } catch (error) {
         showToast(error.message || 'Failed to load blogs', 'error');
@@ -257,6 +363,22 @@
       }
     }
 
+    document.getElementById('categoryForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const payload = {
+        name: document.getElementById('categoryName').value,
+        description: document.getElementById('categoryDescription').value,
+      };
+      try {
+        await adminFetch('/backend/api/admin/blog-categories', { method: 'POST', body: JSON.stringify(payload) });
+        showToast('Category created', 'success');
+        event.target.reset();
+        await loadCategories();
+      } catch (error) {
+        showToast(error.message || 'Failed to create category', 'error');
+      }
+    });
+
     blogForm.addEventListener('submit', async (event) => {
       event.preventDefault();
       const payload = {
@@ -269,6 +391,10 @@
         description: document.getElementById('description').value,
         content: document.getElementById('content').value,
       };
+      if (!payload.category) {
+        showToast('Please select a category first', 'error');
+        return;
+      }
       try {
         if (editingBlogId) {
           await adminFetch(`/backend/api/admin/blogs/${editingBlogId}`, { method: 'PATCH', body: JSON.stringify(payload) });
@@ -288,7 +414,7 @@
     document.getElementById('searchInput').addEventListener('input', () => renderBlogs(filteredBlogs()));
 
     resetBlogForm();
-    loadBlogs();
+    loadBlogs().then(loadCategories);
   </script>
 </body>
 </html>
