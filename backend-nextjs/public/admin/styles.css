@@ -1,4 +1,4 @@
-/* Shared Admin Styles */
+﻿/* Shared Admin Styles */
 * {
   margin: 0;
   padding: 0;
@@ -19,10 +19,19 @@
   --sidebar-width: 280px;
 }
 
+html {
+  overflow-x: hidden;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: var(--light);
   color: var(--dark);
+  overflow-x: hidden;
+}
+
+body.sidebar-open {
+  overflow: hidden;
 }
 
 /* Sidebar */
@@ -37,6 +46,7 @@ body {
   padding: 30px 20px;
   overflow-y: auto;
   z-index: 100;
+  transition: transform 0.3s ease;
 }
 
 .sidebar-logo {
@@ -104,6 +114,7 @@ body {
 .main-content {
   margin-left: var(--sidebar-width);
   min-height: 100vh;
+  width: calc(100% - var(--sidebar-width));
 }
 
 /* Top Bar */
@@ -113,16 +124,47 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   position: sticky;
   top: 0;
   z-index: 50;
 }
 
+.top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
 .page-title {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--dark);
+}
+
+.sidebar-toggle {
+  display: none;
+  width: 42px;
+  height: 42px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--dark);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.sidebar-toggle span {
+  width: 18px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
 }
 
 .user-menu {
@@ -142,6 +184,7 @@ body {
   color: white;
   font-weight: 600;
   font-size: 1.1rem;
+  flex-shrink: 0;
 }
 
 .user-info {
@@ -177,6 +220,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
 }
 
 .table-title {
@@ -205,8 +249,14 @@ body {
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
+.table-wrapper,
+.table-container {
+  overflow-x: auto;
+}
+
 table {
   width: 100%;
+  min-width: 720px;
   border-collapse: collapse;
 }
 
@@ -219,12 +269,14 @@ th {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--gray);
+  white-space: nowrap;
 }
 
 td {
   padding: 18px 30px;
   border-top: 1px solid #e2e8f0;
   font-size: 0.95rem;
+  vertical-align: top;
 }
 
 tr:hover td {
@@ -247,6 +299,7 @@ tr:hover td {
 .action-btns {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .action-btn {
@@ -277,6 +330,7 @@ tr:hover td {
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 20px;
 }
 
 .modal-content {
@@ -294,6 +348,7 @@ tr:hover td {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
 }
 
 .modal-header h2 {
@@ -322,13 +377,120 @@ tr:hover td {
   gap: 12px;
 }
 
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+  z-index: 90;
+}
+
+.sidebar-overlay.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
+  .top-bar,
+  .dashboard-content {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  th,
+  td {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+@media (max-width: 992px) {
+  .sidebar-toggle {
+    display: inline-flex;
+  }
+
   .sidebar {
     transform: translateX(-100%);
-    transition: transform 0.3s;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.28);
   }
+
+  .sidebar.is-open {
+    transform: translateX(0);
+  }
+
   .main-content {
     margin-left: 0;
+    width: 100%;
+  }
+
+  .top-bar {
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+
+  .page-title {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .top-bar,
+  .dashboard-content,
+  .modal-header,
+  .modal-body,
+  .modal-footer,
+  .table-header {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .top-bar {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .top-bar-left,
+  .user-menu {
+    width: 100%;
+  }
+
+  .user-menu {
+    justify-content: space-between;
+  }
+
+  .user-info {
+    text-align: left;
+  }
+
+  .dashboard-content {
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+
+  .table-header,
+  .modal-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn,
+  .action-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  th,
+  td {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  table {
+    min-width: 640px;
   }
 }
