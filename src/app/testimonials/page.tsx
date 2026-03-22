@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Search, Star, Quote, Clock3, ChevronDown, Award } from 'lucide-react';
+import { Search, Star, Quote, Clock3, ChevronDown, Award, ExternalLink } from 'lucide-react';
 import Badge from '@/components/ui/Badge';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
@@ -40,7 +40,12 @@ function ReviewCard({ review }: { review: CourseReviewItem }) {
     >
       <div className="flex items-center justify-between gap-4 mb-5">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.2em] font-black text-primary-600 dark:text-primary-400 mb-2">{review.category}</div>
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            <div className="text-[10px] uppercase tracking-[0.2em] font-black text-primary-600 dark:text-primary-400">{review.category}</div>
+            <span className={cn('rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em]', review.sourceType === 'manual' ? 'bg-violet-50 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300' : 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-300')}>
+              {review.sourceType === 'manual' ? 'External' : 'EDVO'}
+            </span>
+          </div>
           <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight">{review.courseName}</h3>
         </div>
         <div className="flex text-yellow-400">
@@ -54,6 +59,18 @@ function ReviewCard({ review }: { review: CourseReviewItem }) {
         <Quote className="absolute -top-2 -left-1 w-8 h-8 text-slate-100 dark:text-slate-800/60 -z-10" />
         <p className="text-gray-700 dark:text-slate-300 leading-relaxed">{review.comment || 'This learner left a rating for the course.'}</p>
       </div>
+
+      {review.externalUrl ? (
+        <a
+          href={review.externalUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="mb-5 inline-flex w-fit items-center gap-2 rounded-2xl border border-slate-200 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-slate-600 transition hover:border-primary-500 hover:text-primary-600 dark:border-slate-700 dark:text-slate-300 dark:hover:border-primary-400 dark:hover:text-primary-300"
+        >
+          {review.sourceLabel || 'Open Review'}
+          <ExternalLink className="h-3.5 w-3.5" />
+        </a>
+      ) : null}
 
       <div className="mt-auto border-t border-gray-100 dark:border-slate-800/70 pt-5 flex items-center gap-4">
         <div className="relative w-12 h-12 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0">
@@ -111,7 +128,8 @@ export default function TestimonialsPage() {
       const matchSearch =
         review.reviewerName.toLowerCase().includes(query) ||
         review.comment.toLowerCase().includes(query) ||
-        review.courseName.toLowerCase().includes(query);
+        review.courseName.toLowerCase().includes(query) ||
+        review.sourceLabel.toLowerCase().includes(query);
       const matchCategory = selectedCategory === 'all' || review.category === selectedCategory;
       return matchSearch && matchCategory;
     });
@@ -124,10 +142,10 @@ export default function TestimonialsPage() {
           <div className="text-center mb-16">
             <Badge variant="gradient" className="mb-4">Course Reviews</Badge>
             <h1 className="text-5xl md:text-6xl font-black mb-6 text-slate-900 dark:text-white tracking-tight">
-              Learner Feedback. <span className="gradient-text">Live From Courses.</span>
+              Learner Feedback. <span className="gradient-text">From EDVO And Beyond.</span>
             </h1>
             <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
-              These reviews come directly from course review submissions, so the testimonials page always reflects the latest approved learner feedback.
+              Explore approved EDVO learner reviews alongside selected testimonials sourced from external platforms and managed in admin.
             </p>
           </div>
         </FadeIn>
@@ -139,7 +157,7 @@ export default function TestimonialsPage() {
                 <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
                 <Input
                   type="text"
-                  placeholder="Search by learner, review, or course..."
+                  placeholder="Search by learner, review, course, or source..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-14 !py-5 !text-lg !rounded-3xl border-gray-100 dark:border-slate-800 focus:ring-4 focus:ring-primary-500/10 transition-all"
@@ -152,7 +170,7 @@ export default function TestimonialsPage() {
                   className="w-full appearance-none bg-gray-50 dark:bg-slate-800 border-2 border-slate-100 dark:border-transparent hover:border-gray-200 dark:hover:border-slate-700 dark:text-gray-300 rounded-2xl px-6 py-5 pr-12 focus:outline-none focus:border-primary-500 transition-all cursor-pointer font-medium text-sm"
                 >
                   {categories.map((category) => (
-                    <option key={category.id} value={category.id}>{category.label}</option>
+                    <option key={category.id} value={category.label}>{category.label}</option>
                   ))}
                 </select>
                 <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none group-hover:text-primary-500 transition-colors" />

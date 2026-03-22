@@ -1,6 +1,7 @@
 import { hashPassword } from '@/lib/auth';
 import { MOCK_BLOGS } from '@/lib/blog-data';
 import { MOCK_CHALLENGES } from '@/lib/challenge-data';
+import { MOCK_COURSE_REVIEWS } from '@/lib/course-review-data';
 import { MOCK_EVENTS } from '@/lib/event-data';
 import { MOCK_GUIDES, MOCK_TUTORIALS } from '@/lib/resource-data';
 import { MOCK_SUCCESS_STORIES } from '@/lib/success-story-data';
@@ -8,6 +9,7 @@ import { MOCK_TEAM_MEMBERS } from '@/lib/team-data';
 import { slugify } from '@/lib/query';
 import { BlogCategoryModel, BlogModel } from '@/models/Blog';
 import { ChallengeCategoryModel, ChallengeItemModel } from '@/models/ChallengeItem';
+import { CourseReviewCategoryModel, CourseReviewItemModel } from '@/models/CourseReviewItem';
 import { EventCategoryModel, EventItemModel } from '@/models/EventItem';
 import { ResourceItemModel } from '@/models/ResourceItem';
 import { SuccessStoryCategoryModel, SuccessStoryModel } from '@/models/SuccessStory';
@@ -73,6 +75,23 @@ export async function ensureSeededContent() {
 
   for (const guide of MOCK_GUIDES) {
     await ResourceItemModel.findOneAndUpdate({ slug: guide.slug }, { $set: { type: 'guide', title: guide.title, slug: guide.slug, description: guide.description, thumbnail: guide.thumbnail, category: guide.track, track: guide.track, steps: guide.steps, highlight: guide.highlight, icon: guide.icon, status: guide.status, order: guide.order } }, { upsert: true, new: true });
+  }
+
+  const courseReviewCategories = Array.from(new Set(MOCK_COURSE_REVIEWS.map((review) => review.category)));
+  for (const [index, category] of courseReviewCategories.entries()) {
+    await CourseReviewCategoryModel.findOneAndUpdate(
+      { slug: slugify(category) },
+      { $set: { name: category, slug: slugify(category), description: `${category} course reviews`, isActive: true, order: index + 1 } },
+      { upsert: true, new: true }
+    );
+  }
+
+  for (const [index, review] of MOCK_COURSE_REVIEWS.entries()) {
+    await CourseReviewItemModel.findOneAndUpdate(
+      { reviewerName: review.reviewerName, courseName: review.courseName, sourceLabel: review.sourceLabel },
+      { $set: { ...review, sourceType: 'manual', order: review.order || index + 1 } },
+      { upsert: true, new: true }
+    );
   }
 
   const storyCategories = Array.from(new Set(MOCK_SUCCESS_STORIES.map((story) => story.category)));

@@ -1,29 +1,9 @@
 import { connectToDatabase } from '@/lib/db';
-import { ok, toResponse } from '@/lib/http';
-import { ensureSeededContent } from '@/lib/content-seeder';
+import { created, fail, ok, parseJson, toResponse } from '@/lib/http';
 import { requireAdminOrDemo } from '@/lib/demo-admin';
-import { ReviewModel } from '@/models/Review';
-
-function formatReview(item: any) {
-  const course = item.courseId || {};
-  const user = item.userId || {};
-  return {
-    id: String(item._id),
-    rating: Number(item.rating || 0),
-    comment: String(item.comment || ''),
-    helpful: Number(item.helpful || 0),
-    order: Number(item.order || 0),
-    isApproved: item.isApproved === false ? false : true,
-    category: String(course.category || 'General'),
-    courseName: String(course.title || 'EDVO Course'),
-    courseSlug: String(course.slug || ''),
-    reviewerName: String(user.name || 'EDVO Learner'),
-    reviewerAvatar: String(user.photo || user.avatar || '/images/edvo-official-logo-v10.png'),
-    reviewerRole: String(user.headline || 'Learner'),
-    createdAt: item.createdAt,
-    updatedAt: item.updatedAt,
-  };
-}
+import { ensureSeededContent } from '@/lib/content-seeder';
+import { fetchManualCourseReviews, fetchSubmittedCourseReviews, formatManualCourseReview } from '@/lib/course-review-utils';
+import { CourseReviewItemModel } from '@/models/CourseReviewItem';
 
 export async function GET(request: Request) {
   const denied = await requireAdminOrDemo(request);
@@ -32,11 +12,45 @@ export async function GET(request: Request) {
   await connectToDatabase();
   await ensureSeededContent();
 
-  const items = await ReviewModel.find()
-    .populate('courseId', 'title slug category')
-    .populate('userId', 'name photo avatar headline')
-    .sort({ order: 1, updatedAt: -1 })
-    .lean();
+  const [submitted, manual] = await Promise.all([fetchSubmittedCourseReviews(), fetchManualCourseReviews()]);
+  const items = submitted.concat(manual).sort((a, b) => (a.order || 0) - (b.order || 0) || new Date(b.updatedAt || 0).getTime() - new Date(a.updatedAt || 0).getTime());
 
-  return toResponse(ok(items.map(formatReview)));
+  return toResponse(ok(items));
+}
+
+export async function POST(request: Request) {
+  const denied = await requireAdminOrDemo(request);
+  if (denied) return denied;
+
+  await connectToDatabase();
+  await ensureSeededContent();
+
+  const body = parseJson<Record<string, unknown>>(await request.text()) || {};
+  const reviewerName = String(body.reviewerName || '').trim();
+  const courseName = String(body.courseName || '').trim();
+  const category = String(body.category || '').trim();
+  const comment = String(body.comment || '').trim();
+  const reviewerAvatar = String(body.reviewerAvatar || '').trim() || '/images/edvo-official-logo-v10.png';
+
+  if (!reviewerName || !courseName || !category || !comment) {
+    return toResponse(fail('Reviewer name, course name, category, and review are required', 'VALIDATION_ERROR', undefined, 400));
+  }
+
+  const item = await CourseReviewItemModel.create({
+    reviewerName,
+    reviewerAvatar,
+    reviewerRole: String(body.reviewerRole || 'Learner').trim() || 'Learner',
+    courseName,
+    courseSlug: String(body.courseSlug || '').trim(),
+    category,
+    rating: Math.max(1, Math.min(5, parseInt(String(body.rating || 5), 10) || 5)),
+    comment,
+    helpful: parseInt(String(body.helpful || 0), 10) || 0,
+    externalUrl: String(body.externalUrl || '').trim(),
+    sourceLabel: String(body.sourceLabel || 'External Review').trim() || 'External Review',
+    status: String(body.status || 'active') === 'inactive' ? 'inactive' : 'active',
+    order: parseInt(String(body.order || 0), 10) || 0,
+  });
+
+  return toResponse(created(formatManualCourseReview(item.toObject())));
 }

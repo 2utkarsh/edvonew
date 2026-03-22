@@ -5,6 +5,7 @@ export interface CourseReviewItem {
   helpful: number;
   order: number;
   status: 'active' | 'inactive';
+  sourceType: 'submitted' | 'manual';
   category: string;
   courseId: string;
   courseName: string;
@@ -12,6 +13,8 @@ export interface CourseReviewItem {
   reviewerName: string;
   reviewerAvatar: string;
   reviewerRole: string;
+  externalUrl: string;
+  sourceLabel: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -42,6 +45,7 @@ export async function fetchCourseReviews(): Promise<CourseReviewItem[]> {
     helpful: Number(item.helpful || 0),
     order: Number(item.order || 0),
     status: item.status === 'inactive' ? 'inactive' : 'active',
+    sourceType: item.sourceType === 'manual' ? 'manual' : 'submitted',
     category: String(item.category || 'General'),
     courseId: String(item.courseId || ''),
     courseName: String(item.courseName || 'EDVO Course'),
@@ -49,6 +53,8 @@ export async function fetchCourseReviews(): Promise<CourseReviewItem[]> {
     reviewerName: String(item.reviewerName || 'EDVO Learner'),
     reviewerAvatar: String(item.reviewerAvatar || '/images/edvo-official-logo-v10.png'),
     reviewerRole: String(item.reviewerRole || 'Learner'),
+    externalUrl: String(item.externalUrl || ''),
+    sourceLabel: String(item.sourceLabel || ''),
     createdAt: String(item.createdAt || ''),
     updatedAt: String(item.updatedAt || item.createdAt || ''),
   }));
