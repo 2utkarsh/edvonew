@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home Content - EDVO Admin</title>
+  <link rel="stylesheet" href="/backend/admin/styles.css" />
+  <style>
+    .stack{display:flex;flex-direction:column;gap:24px}.panel{background:#fff;border:1px solid #e2e8f0;border-radius:20px;box-shadow:0 8px 30px rgba(15,23,42,.06);padding:24px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.input,.textarea{width:100%;padding:12px 16px;border:1px solid #cbd5e0;border-radius:12px;font-size:.95rem;background:#fff}.textarea{min-height:160px;resize:vertical}.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.btn{border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}.btn-primary{background:#667eea;color:#fff}.help{color:#718096;font-size:.88rem}.section-title{font-size:1.05rem;font-weight:800;margin-bottom:6px}.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+  </style>
+</head>
+<body>
+  <aside class="sidebar"><div class="sidebar-logo"><span>ED</span>VO Admin</div><div class="nav-section"><div class="nav-section-title">Main Menu</div><a href="/backend/admin" class="nav-item"><span class="nav-label">Dashboard</span></a><a href="/backend/admin/home-content" class="nav-item active"><span class="nav-label">Home Content</span></a><a href="/backend/admin/courses" class="nav-item"><span class="nav-label">Courses</span></a><a href="/backend/admin/blogs" class="nav-item"><span class="nav-label">Blogs</span></a><a href="/backend/admin/tutorials" class="nav-item"><span class="nav-label">Tutorials</span></a><a href="/backend/admin/guides" class="nav-item"><span class="nav-label">Guides</span></a><a href="/backend/admin/team" class="nav-item"><span class="nav-label">Team</span></a><a href="/backend/admin/course-reviews" class="nav-item"><span class="nav-label">Course Reviews</span></a><a href="/backend/admin/job-success-stories" class="nav-item"><span class="nav-label">Job Success Stories</span></a><a href="/backend/admin/events" class="nav-item"><span class="nav-label">Events</span></a><a href="/backend/admin/challenges" class="nav-item"><span class="nav-label">Challenges</span></a></div><div class="nav-section"><div class="nav-section-title">Settings</div><a href="#" class="nav-item" onclick="logout()"><span class="nav-label">Logout</span></a></div></aside>
+  <main class="main-content"><div class="top-bar"><h1 class="page-title">Home Content</h1><div class="user-avatar">A</div></div><div class="dashboard-content"><form id="homeContentForm" class="stack">
+    <section class="panel"><div class="section-title">About This Page</div><div class="help">This manages the homepage sections except the course-focused sections. Keep the JSON shape intact and edit values only.</div></section>
+    <section class="panel"><div class="section-title">Hero Slides</div><div class="help">Array of hero cards shown at the top of the homepage.</div><textarea id="heroSlides" class="textarea mono"></textarea></section>
+    <section class="panel"><div class="section-title">Social Stats</div><div class="help">Supports icons like <span class="mono">Youtube</span>, <span class="mono">Users</span>, <span class="mono">GraduationCap</span>, <span class="mono">Star</span>.</div><textarea id="socialStats" class="textarea mono"></textarea></section>
+    <section class="panel"><div class="section-title">Why Choose EDVO</div><textarea id="features" class="textarea mono"></textarea></section>
+    <section class="panel"><div class="section-title">Career Transformations</div><textarea id="careerTransformations" class="textarea mono"></textarea></section>
+    <section class="panel"><div class="section-title">Instructors Intro</div><textarea id="instructorsIntro" class="textarea mono"></textarea></section>
+    <section class="panel"><div class="section-title">Cinematic Section</div><textarea id="cinematicSection" class="textarea mono"></textarea></section>
+    <section class="panel"><div class="section-title">Portfolio Intro</div><textarea id="portfoliosIntro" class="textarea mono"></textarea></section>
+    <section class="panel"><div class="section-title">Portfolios</div><textarea id="portfolios" class="textarea mono"></textarea></section>
+    <section class="panel"><div class="section-title">YouTube Intro</div><textarea id="youtubeSection" class="textarea mono"></textarea></section>
+    <section class="panel"><div class="section-title">YouTube Videos</div><textarea id="youtubeVideos" class="textarea mono"></textarea></section>
+    <section class="panel"><div class="section-title">Hiring Partners Intro</div><textarea id="hiringPartnersSection" class="textarea mono"></textarea></section>
+    <section class="panel"><div class="section-title">Hiring Partners</div><textarea id="hiringPartners" class="textarea mono"></textarea></section>
+    <section class="panel"><div class="section-title">Testimonials Intro</div><textarea id="testimonialsIntro" class="textarea mono"></textarea></section>
+    <section class="panel"><div class="section-title">Home Testimonials</div><textarea id="homeTestimonials" class="textarea mono"></textarea></section>
+    <section class="panel"><div class="section-title">Bottom CTA</div><textarea id="ctaSection" class="textarea mono"></textarea></section>
+    <section class="panel"><div class="actions"><button class="btn btn-primary" type="submit">Save Home Content</button></div></section>
+  </form></div></main>
+  <script src="/backend/admin/admin.js"></script>
+  <script>
+    const fieldIds=['heroSlides','socialStats','features','careerTransformations','instructorsIntro','cinematicSection','portfoliosIntro','portfolios','youtubeSection','youtubeVideos','hiringPartnersSection','hiringPartners','testimonialsIntro','homeTestimonials','ctaSection'];
+    function pretty(value){return JSON.stringify(value??(Array.isArray(value)?[]:{}),null,2)}
+    async function loadContent(){const payload=await adminFetch('/backend/api/admin/home-content');const item=payload.data||{};fieldIds.forEach((id)=>{document.getElementById(id).value=pretty(item[id])})}
+    document.getElementById('homeContentForm').addEventListener('submit',async(e)=>{e.preventDefault();try{const payload={};fieldIds.forEach((id)=>{payload[id]=JSON.parse(document.getElementById(id).value||'null')});await adminFetch('/backend/api/admin/home-content',{method:'PATCH',body:JSON.stringify(payload)});showToast('Home content updated','success')}catch(error){showToast(error.message||'Invalid JSON in one of the sections','error')}});
+    loadContent();
+  </script>
+</body>
+</html>
