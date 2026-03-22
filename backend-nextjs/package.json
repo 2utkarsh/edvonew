@@ -10,7 +10,8 @@
     "lint": "next lint",
     "seed:admin": "npx tsx scripts/seed-admin.ts",
     "seed:courses": "npx tsx scripts/seed-courses.ts",
-    "seed:all": "npm run seed:admin && npm run seed:courses",
+    "seed:events": "npx tsx scripts/seed-events.ts",
+    "seed:all": "npm run seed:admin && npm run seed:courses && npm run seed:events",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
