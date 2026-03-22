@@ -31,13 +31,13 @@ export interface EventCategoryOption {
   label: string;
 }
 
-const apiBase = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
+const apiBase = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '/backend';
 
 export async function fetchEvents(type?: EventType): Promise<EventItem[]> {
   const url = type ? `${apiBase}/api/v1/events?type=${type}` : `${apiBase}/api/v1/events`;
-  const response = await fetch(url, { 
-    headers: { Accept: 'application/json' }, 
-    cache: 'no-store' 
+  const response = await fetch(url, {
+    headers: { Accept: 'application/json' },
+    cache: 'no-store'
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(payload?.error?.message || payload?.message || 'Failed to load events');
