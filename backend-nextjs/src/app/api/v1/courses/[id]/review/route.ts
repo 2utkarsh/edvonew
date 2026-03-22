@@ -9,7 +9,6 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-// POST add review to course
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
     await connectToDatabase();
@@ -23,13 +22,11 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const body = await request.json();
     const { rating, comment } = body;
 
-    // Verify course exists
     const course = await CourseModel.findById(courseId);
     if (!course) {
       return notFound('Course');
     }
 
-    // Check if user already reviewed
     const existingReview = await ReviewModel.findOne({
       courseId,
       userId,
@@ -39,15 +36,16 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       return fail('You have already reviewed this course', 'REVIEW_EXISTS', undefined, 409);
     }
 
-    // Create review
+    const currentCount = await ReviewModel.countDocuments();
+
     const review = await ReviewModel.create({
       courseId,
       userId,
       rating,
       comment: comment || '',
+      order: currentCount + 1,
     });
 
-    // Update course rating
     const stats = await ReviewModel.aggregate([
       { $match: { courseId: course._id } },
       {

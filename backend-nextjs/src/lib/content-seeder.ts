@@ -1,11 +1,13 @@
-﻿import { hashPassword } from '@/lib/auth';
+import { hashPassword } from '@/lib/auth';
 import { BlogCategoryModel, BlogModel } from '@/models/Blog';
 import { TeamMemberModel } from '@/models/TeamMember';
 import { UserModel } from '@/models/User';
 import { MOCK_BLOGS } from '@/lib/blog-data';
 import { MOCK_TEAM_MEMBERS } from '@/lib/team-data';
 import { MOCK_GUIDES, MOCK_TUTORIALS } from '@/lib/resource-data';
+import { MOCK_SUCCESS_STORIES } from '@/lib/success-story-data';
 import { ResourceItemModel } from '@/models/ResourceItem';
+import { SuccessStoryCategoryModel, SuccessStoryModel } from '@/models/SuccessStory';
 import { slugify } from '@/lib/query';
 
 declare global {
@@ -153,6 +155,46 @@ export async function ensureSeededContent() {
           icon: guide.icon,
           status: guide.status,
           order: guide.order,
+        },
+      },
+      { upsert: true, new: true }
+    );
+  }
+
+  const storyCategories = Array.from(new Set(MOCK_SUCCESS_STORIES.map((story) => story.category)));
+  for (const [index, category] of storyCategories.entries()) {
+    await SuccessStoryCategoryModel.findOneAndUpdate(
+      { slug: slugify(category) },
+      {
+        $set: {
+          name: category,
+          slug: slugify(category),
+          description: `${category} career transitions`,
+          isActive: true,
+          order: index + 1,
+        },
+      },
+      { upsert: true, new: true }
+    );
+  }
+
+  for (const [index, story] of MOCK_SUCCESS_STORIES.entries()) {
+    await SuccessStoryModel.findOneAndUpdate(
+      { slug: story.id },
+      {
+        $set: {
+          name: story.name,
+          slug: story.id,
+          location: story.location,
+          beforeRole: story.beforeRole,
+          afterRole: story.afterRole,
+          companyLogo: story.companyLogo,
+          avatar: story.avatar,
+          linkedinUrl: story.linkedinUrl,
+          category: story.category,
+          tags: story.tags,
+          status: story.status,
+          order: story.order || index + 1,
         },
       },
       { upsert: true, new: true }

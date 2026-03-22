@@ -7,6 +7,7 @@ export interface ReviewDocument {
   comment?: string;
   isApproved: boolean;
   helpful: number;
+  order: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -19,11 +20,11 @@ const reviewSchema = new Schema<ReviewDocument>(
     comment: String,
     isApproved: { type: Boolean, default: true },
     helpful: { type: Number, default: 0 },
+    order: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
 
-// Compound index to prevent duplicate reviews
 reviewSchema.index({ courseId: 1, userId: 1 }, { unique: true });
 
 export const ReviewModel = (models.Review as Model<ReviewDocument>) || 
