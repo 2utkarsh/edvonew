@@ -43,6 +43,8 @@ export interface ChallengeItemDocument {
   statusNote: string;
   eligibility: string[];
   rules: string[];
+  quizDurationMinutes: number;
+  prizeDistribution: string[];
   questions: ChallengeQuestionDocument[];
   createdAt: Date;
   updatedAt: Date;
@@ -102,6 +104,8 @@ const challengeItemSchema = new Schema<ChallengeItemDocument>(
     statusNote: { type: String, default: '', trim: true },
     eligibility: { type: [String], default: [] },
     rules: { type: [String], default: [] },
+    quizDurationMinutes: { type: Number, default: 45 },
+    prizeDistribution: { type: [String], default: [] },
     questions: { type: [challengeQuestionSchema], default: [] },
   },
   { timestamps: true }

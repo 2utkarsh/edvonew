@@ -2,7 +2,7 @@
 import { ensureSeededContent } from '@/lib/content-seeder';
 import { requireAdminOrDemo } from '@/lib/demo-admin';
 import { created, fail, ok, parseJson, toResponse } from '@/lib/http';
-import { buildDefaultChallengeQuestions, mapChallengeDocumentToPublicChallenge } from '@/lib/challenge-data';
+import { buildDefaultChallengeQuestions, ensurePrizeDistribution, mapChallengeDocumentToPublicChallenge } from '@/lib/challenge-data';
 import { slugify } from '@/lib/query';
 import { ChallengeItemModel } from '@/models/ChallengeItem';
 
@@ -61,6 +61,7 @@ export async function POST(request: Request) {
   const parsedTools = parseList(body.tools);
   const parsedDeliverables = parseList(body.deliverables);
   const parsedQuestions = parseQuestions(body.questions);
+  const parsedPrizeDistribution = parseList(body.prizeDistribution);
 
   const item = await ChallengeItemModel.create({
     title,
@@ -94,6 +95,10 @@ export async function POST(request: Request) {
     statusNote: String(body.statusNote || ''),
     eligibility: parseList(body.eligibility),
     rules: parseList(body.rules),
+    quizDurationMinutes: Math.max(1, parseInt(String(body.quizDurationMinutes || 45), 10) || 45),
+    prizeDistribution: parsedPrizeDistribution.length
+      ? parsedPrizeDistribution
+      : ensurePrizeDistribution({ prize: String(body.prize || '') }),
     questions: parsedQuestions.length
       ? parsedQuestions
       : buildDefaultChallengeQuestions({

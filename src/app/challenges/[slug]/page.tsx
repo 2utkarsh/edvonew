@@ -91,7 +91,7 @@ export default function ChallengeDetailPage() {
   }
 
   const primaryLabel = challenge.phase === 'ongoing' ? 'Start Competition' : 'Start Practice';
-  const primaryHref = '#challenge-quiz';
+  const primaryHref = `/challenges/${challenge.slug}/start`;
   const secondaryLabel = challenge.phase === 'ongoing' ? 'Explore Courses' : 'Back to Challenges';
   const secondaryHref = challenge.phase === 'ongoing' ? '/courses' : '/challenges';
   const quizTitle = challenge.phase === 'ongoing' ? 'Competition Quiz' : 'Practice Quiz';
@@ -281,3 +281,6 @@ export default function ChallengeDetailPage() {
     </main>
   );
 }
+
+
+

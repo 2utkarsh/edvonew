@@ -41,7 +41,18 @@ export interface PublicChallengeRecord {
   statusNote: string;
   eligibility: string[];
   rules: string[];
+  quizDurationMinutes: number;
+  prizeDistribution: string[];
   questions: ChallengeQuestionRecord[];
+}
+
+function buildDefaultPrizeDistribution(prize: string) {
+  const totalPrize = String(prize || 'Recognition and certificates').trim();
+  return [
+    `Winner: ${totalPrize}`,
+    'Runner-up: Merit certificate and portfolio spotlight',
+    'Top performers: Community feature and shortlist visibility',
+  ];
 }
 
 function toQuestionRecord(question: any): ChallengeQuestionRecord | null {
@@ -103,6 +114,11 @@ export function ensureChallengeQuestions(item: Partial<PublicChallengeRecord> & 
   return mapped.length ? mapped : buildDefaultChallengeQuestions(item);
 }
 
+export function ensurePrizeDistribution(item: Partial<PublicChallengeRecord> & { prizeDistribution?: unknown; prize?: unknown }) {
+  const mapped = Array.isArray(item.prizeDistribution) ? item.prizeDistribution.map((entry) => String(entry || '').trim()).filter(Boolean) : [];
+  return mapped.length ? mapped : buildDefaultPrizeDistribution(String(item.prize || ''));
+}
+
 export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
   {
     id: 'databricks-2',
@@ -137,28 +153,12 @@ export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
     statusNote: 'Live and accepting submissions now.',
     eligibility: ['Open to all learners', 'Basic SQL and dashboard skills recommended', 'One final submission per participant'],
     rules: ['Submit original work only', 'Share a public portfolio or post link', 'Late submissions are not ranked'],
+    quizDurationMinutes: 60,
+    prizeDistribution: ['Winner: Rs 1,00,000', '1st Runner-up: Rs 60,000', '2nd Runner-up: Rs 40,000'],
     questions: [
-      {
-        prompt: 'What should you do first before building your Databricks challenge output?',
-        options: ['Understand the challenge brief and business goal', 'Design the final certificate', 'Skip data exploration', 'Only copy a public dashboard'],
-        correctAnswer: 'Understand the challenge brief and business goal',
-        explanation: 'Strong competition work starts by grounding the analysis in the business objective and expected outcome.',
-        points: 5,
-      },
-      {
-        prompt: 'Which stack is most aligned with this challenge?',
-        options: ['SQL + Power BI', 'Only Photoshop', 'Only Figma', 'Only Premiere Pro'],
-        correctAnswer: 'SQL + Power BI',
-        explanation: 'The challenge emphasizes analytical work with SQL and dashboard storytelling.',
-        points: 5,
-      },
-      {
-        prompt: 'Which deliverable is expected for submission?',
-        options: ['Insight summary PDF', 'A blank slide deck', 'Only a profile photo', 'No final output'],
-        correctAnswer: 'Insight summary PDF',
-        explanation: 'The challenge deliverables include an insight summary PDF together with the core analysis assets.',
-        points: 5,
-      },
+      { prompt: 'What should you do first before building your Databricks challenge output?', options: ['Understand the challenge brief and business goal', 'Design the final certificate', 'Skip data exploration', 'Only copy a public dashboard'], correctAnswer: 'Understand the challenge brief and business goal', explanation: 'Strong competition work starts by grounding the analysis in the business objective and expected outcome.', points: 5 },
+      { prompt: 'Which stack is most aligned with this challenge?', options: ['SQL + Power BI', 'Only Photoshop', 'Only Figma', 'Only Premiere Pro'], correctAnswer: 'SQL + Power BI', explanation: 'The challenge emphasizes analytical work with SQL and dashboard storytelling.', points: 5 },
+      { prompt: 'Which deliverable is expected for submission?', options: ['Insight summary PDF', 'A blank slide deck', 'Only a profile photo', 'No final output'], correctAnswer: 'Insight summary PDF', explanation: 'The challenge deliverables include an insight summary PDF together with the core analysis assets.', points: 5 },
     ],
   },
   {
@@ -193,28 +193,12 @@ export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
     statusNote: 'Competition closed. Available now as a guided practice challenge.',
     eligibility: ['Open as a practice case study', 'Recommended for analytics learners'],
     rules: ['Use it for learning and portfolio building', 'No live ranking for archived challenges'],
+    quizDurationMinutes: 35,
+    prizeDistribution: ['Top score benchmark: 15/15', 'Portfolio-ready practice completion certificate', 'Featured practice submissions in community recap'],
     questions: [
-      {
-        prompt: 'Which area is the strongest first lens for this recovery case?',
-        options: ['Retention and repeat orders', 'Changing the logo', 'Ignoring operations', 'Posting random ads'],
-        correctAnswer: 'Retention and repeat orders',
-        explanation: 'Recovery analysis should start by understanding where repeat demand is breaking down.',
-        points: 5,
-      },
-      {
-        prompt: 'Which tool is appropriate for this practice challenge?',
-        options: ['Excel', 'Only Illustrator', 'Only After Effects', 'Only Blender'],
-        correctAnswer: 'Excel',
-        explanation: 'The practice stack includes spreadsheet analysis for structured business data review.',
-        points: 5,
-      },
-      {
-        prompt: 'What should you complete by the end of practice?',
-        options: ['Practice analysis workbook', 'A random meme post', 'No deliverable', 'A color palette only'],
-        correctAnswer: 'Practice analysis workbook',
-        explanation: 'The workbook is one of the intended practice outputs for this challenge.',
-        points: 5,
-      },
+      { prompt: 'Which area is the strongest first lens for this recovery case?', options: ['Retention and repeat orders', 'Changing the logo', 'Ignoring operations', 'Posting random ads'], correctAnswer: 'Retention and repeat orders', explanation: 'Recovery analysis should start by understanding where repeat demand is breaking down.', points: 5 },
+      { prompt: 'Which tool is appropriate for this practice challenge?', options: ['Excel', 'Only Illustrator', 'Only After Effects', 'Only Blender'], correctAnswer: 'Excel', explanation: 'The practice stack includes spreadsheet analysis for structured business data review.', points: 5 },
+      { prompt: 'What should you complete by the end of practice?', options: ['Practice analysis workbook', 'A random meme post', 'No deliverable', 'A color palette only'], correctAnswer: 'Practice analysis workbook', explanation: 'The workbook is one of the intended practice outputs for this challenge.', points: 5 },
     ],
   },
   {
@@ -249,28 +233,12 @@ export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
     statusNote: 'Archived challenge now open for portfolio practice.',
     eligibility: ['Open to aspiring analysts and strategists'],
     rules: ['Cite assumptions clearly', 'Keep recommendations business-focused'],
+    quizDurationMinutes: 40,
+    prizeDistribution: ['Top score benchmark: 15/15', 'Best strategy deck feature', 'Top insight summary spotlight'],
     questions: [
-      {
-        prompt: 'What should you evaluate first in this newsroom challenge?',
-        options: ['Audience and revenue trends', 'The office paint color', 'Only the homepage font', 'Nothing before final recommendations'],
-        correctAnswer: 'Audience and revenue trends',
-        explanation: 'The challenge focuses on sustainable digital growth, so audience and revenue signals come first.',
-        points: 5,
-      },
-      {
-        prompt: 'Which deliverable best matches this challenge?',
-        options: ['Growth recommendation deck', 'A wedding album', 'Only a company slogan', 'No presentation at all'],
-        correctAnswer: 'Growth recommendation deck',
-        explanation: 'The recommended output includes a deck that translates analysis into strategic action.',
-        points: 5,
-      },
-      {
-        prompt: 'Which working style fits this challenge setup?',
-        options: ['Team or Individual', 'Only multiplayer gaming', 'Video editing only', 'No analysis workflow'],
-        correctAnswer: 'Team or Individual',
-        explanation: 'This archived challenge was designed for either team-based or solo problem solving.',
-        points: 5,
-      },
+      { prompt: 'What should you evaluate first in this newsroom challenge?', options: ['Audience and revenue trends', 'The office paint color', 'Only the homepage font', 'Nothing before final recommendations'], correctAnswer: 'Audience and revenue trends', explanation: 'The challenge focuses on sustainable digital growth, so audience and revenue signals come first.', points: 5 },
+      { prompt: 'Which deliverable best matches this challenge?', options: ['Growth recommendation deck', 'A wedding album', 'Only a company slogan', 'No presentation at all'], correctAnswer: 'Growth recommendation deck', explanation: 'The recommended output includes a deck that translates analysis into strategic action.', points: 5 },
+      { prompt: 'Which working style fits this challenge setup?', options: ['Team or Individual', 'Only multiplayer gaming', 'Video editing only', 'No analysis workflow'], correctAnswer: 'Team or Individual', explanation: 'This archived challenge was designed for either team-based or solo problem solving.', points: 5 },
     ],
   },
   {
@@ -305,28 +273,12 @@ export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
     statusNote: 'Archived challenge now open for product analytics practice.',
     eligibility: ['Open to product and market research learners'],
     rules: ['Support conclusions with data', 'Keep your recommendation concise and actionable'],
+    quizDurationMinutes: 45,
+    prizeDistribution: ['Top score benchmark: 15/15', 'Best product research summary spotlight', 'Top opportunity sizing sheet feature'],
     questions: [
-      {
-        prompt: 'What should anchor your first analysis pass here?',
-        options: ['AQI data and customer demand signals', 'Only product color ideas', 'Random slogans', 'Skipping the market context'],
-        correctAnswer: 'AQI data and customer demand signals',
-        explanation: 'This challenge is about product-market fit, so demand and AQI evidence should lead the analysis.',
-        points: 5,
-      },
-      {
-        prompt: 'Which deliverable is a direct fit for this practice?',
-        options: ['Opportunity sizing sheet', 'Only a wallpaper image', 'No written output', 'A party invitation'],
-        correctAnswer: 'Opportunity sizing sheet',
-        explanation: 'Opportunity sizing is one of the central outputs in this product research challenge.',
-        points: 5,
-      },
-      {
-        prompt: 'Which tool is part of the intended workflow?',
-        options: ['Python', 'Only audio editing', 'Only 3D modeling', 'Only poster design'],
-        correctAnswer: 'Python',
-        explanation: 'Python is part of the recommended stack for analyzing AQI and product opportunity data.',
-        points: 5,
-      },
+      { prompt: 'What should anchor your first analysis pass here?', options: ['AQI data and customer demand signals', 'Only product color ideas', 'Random slogans', 'Skipping the market context'], correctAnswer: 'AQI data and customer demand signals', explanation: 'This challenge is about product-market fit, so demand and AQI evidence should lead the analysis.', points: 5 },
+      { prompt: 'Which deliverable is a direct fit for this practice?', options: ['Opportunity sizing sheet', 'Only a wallpaper image', 'No written output', 'A party invitation'], correctAnswer: 'Opportunity sizing sheet', explanation: 'Opportunity sizing is one of the central outputs in this product research challenge.', points: 5 },
+      { prompt: 'Which tool is part of the intended workflow?', options: ['Python', 'Only audio editing', 'Only 3D modeling', 'Only poster design'], correctAnswer: 'Python', explanation: 'Python is part of the recommended stack for analyzing AQI and product opportunity data.', points: 5 },
     ],
   },
 ];
@@ -365,6 +317,8 @@ export function mapChallengeDocumentToPublicChallenge(item: any): PublicChalleng
     statusNote: String(item.statusNote || ''),
     eligibility: Array.isArray(item.eligibility) ? item.eligibility.map((entry: unknown) => String(entry || '')).filter(Boolean) : [],
     rules: Array.isArray(item.rules) ? item.rules.map((entry: unknown) => String(entry || '')).filter(Boolean) : [],
+    quizDurationMinutes: Math.max(1, Number(item.quizDurationMinutes || 45) || 45),
+    prizeDistribution: ensurePrizeDistribution(item),
     questions: ensureChallengeQuestions(item),
   };
 }

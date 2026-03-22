@@ -2,7 +2,7 @@
 import { ensureSeededContent } from '@/lib/content-seeder';
 import { requireAdminOrDemo } from '@/lib/demo-admin';
 import { fail, ok, parseJson, toResponse } from '@/lib/http';
-import { buildDefaultChallengeQuestions, mapChallengeDocumentToPublicChallenge } from '@/lib/challenge-data';
+import { buildDefaultChallengeQuestions, ensurePrizeDistribution, mapChallengeDocumentToPublicChallenge } from '@/lib/challenge-data';
 import { slugify } from '@/lib/query';
 import { ChallengeItemModel } from '@/models/ChallengeItem';
 
@@ -62,6 +62,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (body.difficulty !== undefined) update.difficulty = String(body.difficulty || 'Intermediate');
   const parsedTools = body.tools !== undefined ? parseList(body.tools) : undefined;
   const parsedDeliverables = body.deliverables !== undefined ? parseList(body.deliverables) : undefined;
+  const parsedPrizeDistribution = body.prizeDistribution !== undefined ? parseList(body.prizeDistribution) : undefined;
   if (parsedTools !== undefined) update.tools = parsedTools;
   if (parsedDeliverables !== undefined) update.deliverables = parsedDeliverables;
   if (body.steps !== undefined) update.steps = parseList(body.steps);
@@ -78,6 +79,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (body.statusNote !== undefined) update.statusNote = String(body.statusNote || '');
   if (body.eligibility !== undefined) update.eligibility = parseList(body.eligibility);
   if (body.rules !== undefined) update.rules = parseList(body.rules);
+  if (body.quizDurationMinutes !== undefined) update.quizDurationMinutes = Math.max(1, parseInt(String(body.quizDurationMinutes), 10) || 45);
+  if (parsedPrizeDistribution !== undefined) update.prizeDistribution = parsedPrizeDistribution.length ? parsedPrizeDistribution : ensurePrizeDistribution({ prize: String(body.prize || '') });
   if (body.questions !== undefined) {
     const parsedQuestions = parseQuestions(body.questions);
     update.questions = parsedQuestions.length

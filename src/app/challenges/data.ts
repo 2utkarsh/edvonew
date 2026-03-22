@@ -39,6 +39,8 @@ export interface ChallengeItem {
   statusNote: string;
   eligibility: string[];
   rules: string[];
+  quizDurationMinutes: number;
+  prizeDistribution: string[];
   questions: ChallengeQuestion[];
 }
 
@@ -78,6 +80,8 @@ function mapChallenge(item: Record<string, unknown>): ChallengeItem {
     statusNote: String(item.statusNote || ''),
     eligibility: Array.isArray(item.eligibility) ? item.eligibility.map((entry) => String(entry || '')).filter(Boolean) : [],
     rules: Array.isArray(item.rules) ? item.rules.map((entry) => String(entry || '')).filter(Boolean) : [],
+    quizDurationMinutes: Math.max(1, Number(item.quizDurationMinutes || 45) || 45),
+    prizeDistribution: Array.isArray(item.prizeDistribution) ? item.prizeDistribution.map((entry) => String(entry || '')).filter(Boolean) : [],
     questions: Array.isArray(item.questions)
       ? item.questions
           .map((entry) => {
