@@ -1,4 +1,4 @@
-import { hashPassword } from '@/lib/auth';
+﻿import { hashPassword } from '@/lib/auth';
 import { MOCK_BLOGS } from '@/lib/blog-data';
 import { MOCK_CHALLENGES } from '@/lib/challenge-data';
 import { MOCK_COURSE_REVIEWS } from '@/lib/course-review-data';
@@ -155,6 +155,7 @@ export async function ensureSeededContent() {
           statusNote: challenge.statusNote,
           eligibility: challenge.eligibility,
           rules: challenge.rules,
+          questions: challenge.questions,
         },
       },
       { upsert: true, new: true }
@@ -163,3 +164,4 @@ export async function ensureSeededContent() {
 
   global.__edvoContentSeeded = true;
 }
+

@@ -1,3 +1,11 @@
+﻿export interface ChallengeQuestion {
+  prompt: string;
+  type: 'text' | 'textarea' | 'select';
+  options: string[];
+  required: boolean;
+  placeholder: string;
+}
+
 export interface ChallengeItem {
   id: string;
   slug: string;
@@ -31,6 +39,7 @@ export interface ChallengeItem {
   statusNote: string;
   eligibility: string[];
   rules: string[];
+  questions: ChallengeQuestion[];
 }
 
 const apiBase = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '/backend';
@@ -69,6 +78,22 @@ function mapChallenge(item: Record<string, unknown>): ChallengeItem {
     statusNote: String(item.statusNote || ''),
     eligibility: Array.isArray(item.eligibility) ? item.eligibility.map((entry) => String(entry || '')).filter(Boolean) : [],
     rules: Array.isArray(item.rules) ? item.rules.map((entry) => String(entry || '')).filter(Boolean) : [],
+    questions: Array.isArray(item.questions)
+      ? item.questions
+          .map((entry) => {
+            const record = entry as Record<string, unknown>;
+            const rawType = String(record.type || 'textarea');
+            const type: ChallengeQuestion['type'] = rawType === 'text' || rawType === 'select' ? rawType : 'textarea';
+            return {
+              prompt: String(record.prompt || ''),
+              type,
+              options: Array.isArray(record.options) ? record.options.map((option) => String(option || '')).filter(Boolean) : [],
+              required: record.required !== false,
+              placeholder: String(record.placeholder || ''),
+            };
+          })
+          .filter((entry) => entry.prompt)
+      : [],
   };
 }
 
@@ -86,3 +111,4 @@ export async function fetchChallengeBySlug(slug: string): Promise<ChallengeItem>
   if (!response.ok) throw new Error(payload?.error?.message || payload?.message || 'Failed to load challenge');
   return mapChallenge((payload?.data || {}) as Record<string, unknown>);
 }
+

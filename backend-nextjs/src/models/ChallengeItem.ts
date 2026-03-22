@@ -3,6 +3,14 @@ import { Model, model, models, Schema } from 'mongoose';
 export type ChallengePhase = 'ongoing' | 'completed';
 export type ChallengeVisibility = 'active' | 'inactive';
 
+export interface ChallengeQuestionDocument {
+  prompt: string;
+  type: string;
+  options: string[];
+  required: boolean;
+  placeholder: string;
+}
+
 export interface ChallengeItemDocument {
   title: string;
   slug: string;
@@ -35,6 +43,7 @@ export interface ChallengeItemDocument {
   statusNote: string;
   eligibility: string[];
   rules: string[];
+  questions: ChallengeQuestionDocument[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -48,6 +57,17 @@ export interface ChallengeCategoryDocument {
   createdAt: Date;
   updatedAt: Date;
 }
+
+const challengeQuestionSchema = new Schema<ChallengeQuestionDocument>(
+  {
+    prompt: { type: String, required: true, trim: true },
+    type: { type: String, default: 'textarea', trim: true },
+    options: { type: [String], default: [] },
+    required: { type: Boolean, default: true },
+    placeholder: { type: String, default: '', trim: true },
+  },
+  { _id: false }
+);
 
 const challengeItemSchema = new Schema<ChallengeItemDocument>(
   {
@@ -82,6 +102,7 @@ const challengeItemSchema = new Schema<ChallengeItemDocument>(
     statusNote: { type: String, default: '', trim: true },
     eligibility: { type: [String], default: [] },
     rules: { type: [String], default: [] },
+    questions: { type: [challengeQuestionSchema], default: [] },
   },
   { timestamps: true }
 );

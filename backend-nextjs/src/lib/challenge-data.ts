@@ -1,5 +1,13 @@
 import { slugify } from '@/lib/query';
 
+export interface ChallengeQuestionRecord {
+  prompt: string;
+  type: string;
+  options: string[];
+  required: boolean;
+  placeholder: string;
+}
+
 export interface PublicChallengeRecord {
   id: string;
   slug: string;
@@ -33,6 +41,7 @@ export interface PublicChallengeRecord {
   statusNote: string;
   eligibility: string[];
   rules: string[];
+  questions: ChallengeQuestionRecord[];
 }
 
 export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
@@ -69,6 +78,11 @@ export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
     statusNote: 'Live and accepting submissions now.',
     eligibility: ['Open to all learners', 'Basic SQL and dashboard skills recommended', 'One final submission per participant'],
     rules: ['Submit original work only', 'Share a public portfolio or post link', 'Late submissions are not ranked'],
+    questions: [
+      { prompt: 'Share your solution summary', type: 'textarea', options: [], required: true, placeholder: 'Briefly explain your approach and key insights.' },
+      { prompt: 'What tool stack did you use?', type: 'select', options: ['SQL + Power BI', 'Python + Notebook', 'Excel + Presentation', 'Mixed stack'], required: true, placeholder: '' },
+      { prompt: 'Paste your portfolio or submission link', type: 'text', options: [], required: true, placeholder: 'https://...' },
+    ],
   },
   {
     id: 'food-delivery',
@@ -102,6 +116,10 @@ export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
     statusNote: 'Competition closed. Available now as a guided practice challenge.',
     eligibility: ['Open as a practice case study', 'Recommended for analytics learners'],
     rules: ['Use it for learning and portfolio building', 'No live ranking for archived challenges'],
+    questions: [
+      { prompt: 'What is the first metric you would investigate?', type: 'textarea', options: [], required: true, placeholder: 'Explain why this metric matters.' },
+      { prompt: 'Which area is the biggest recovery lever?', type: 'select', options: ['Retention', 'Delivery operations', 'Marketing efficiency', 'Restaurant supply'], required: true, placeholder: '' },
+    ],
   },
   {
     id: 'newspaper',
@@ -135,6 +153,10 @@ export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
     statusNote: 'Archived challenge now open for portfolio practice.',
     eligibility: ['Open to aspiring analysts and strategists'],
     rules: ['Cite assumptions clearly', 'Keep recommendations business-focused'],
+    questions: [
+      { prompt: 'Which growth lever would you prioritize first?', type: 'textarea', options: [], required: true, placeholder: 'Describe your reasoning.' },
+      { prompt: 'What output would you create first?', type: 'select', options: ['Retention cohort analysis', 'Revenue trend model', 'Executive summary deck', 'Content performance dashboard'], required: true, placeholder: '' },
+    ],
   },
   {
     id: 'air-purifier',
@@ -168,6 +190,10 @@ export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
     statusNote: 'Archived challenge now open for product analytics practice.',
     eligibility: ['Open to product and market research learners'],
     rules: ['Support conclusions with data', 'Keep your recommendation concise and actionable'],
+    questions: [
+      { prompt: 'Which segment would you analyze first?', type: 'textarea', options: [], required: true, placeholder: 'Explain your choice.' },
+      { prompt: 'What kind of deliverable will you build?', type: 'select', options: ['Market sizing sheet', 'Research memo', 'Recommendation deck', 'Dashboard'], required: true, placeholder: '' },
+    ],
   },
 ];
 
@@ -205,5 +231,14 @@ export function mapChallengeDocumentToPublicChallenge(item: any): PublicChalleng
     statusNote: String(item.statusNote || ''),
     eligibility: Array.isArray(item.eligibility) ? item.eligibility.map((entry: unknown) => String(entry || '')).filter(Boolean) : [],
     rules: Array.isArray(item.rules) ? item.rules.map((entry: unknown) => String(entry || '')).filter(Boolean) : [],
+    questions: Array.isArray(item.questions)
+      ? item.questions.map((question: any) => ({
+          prompt: String(question?.prompt || ''),
+          type: String(question?.type || 'textarea'),
+          options: Array.isArray(question?.options) ? question.options.map((option: unknown) => String(option || '')).filter(Boolean) : [],
+          required: question?.required === false ? false : true,
+          placeholder: String(question?.placeholder || ''),
+        })).filter((question: ChallengeQuestionRecord) => question.prompt)
+      : [],
   };
 }

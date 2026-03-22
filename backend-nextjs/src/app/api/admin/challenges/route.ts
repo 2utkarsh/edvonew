@@ -11,6 +11,20 @@ function parseList(value: unknown) {
   return String(value || '').split(/\r?\n|,/).map((item) => item.trim()).filter(Boolean);
 }
 
+function parseQuestions(value: unknown) {
+  const source = Array.isArray(value) ? value : parseJson(String(value || '[]'));
+  if (!Array.isArray(source)) return [];
+  return source
+    .map((question: any) => ({
+      prompt: String(question?.prompt || '').trim(),
+      type: String(question?.type || 'textarea').trim() || 'textarea',
+      options: Array.isArray(question?.options) ? question.options.map((option: unknown) => String(option || '').trim()).filter(Boolean) : [],
+      required: question?.required === false ? false : true,
+      placeholder: String(question?.placeholder || '').trim(),
+    }))
+    .filter((question) => question.prompt);
+}
+
 export async function GET(request: Request) {
   const denied = await requireAdminOrDemo(request);
   if (denied) return denied;
@@ -69,6 +83,7 @@ export async function POST(request: Request) {
     statusNote: String(body.statusNote || ''),
     eligibility: parseList(body.eligibility),
     rules: parseList(body.rules),
+    questions: parseQuestions(body.questions),
   });
 
   return toResponse(created(mapChallengeDocumentToPublicChallenge(item)));

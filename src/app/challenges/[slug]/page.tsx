@@ -1,8 +1,8 @@
-'use client';
+﻿'use client';
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { ArrowRight, CalendarDays, CheckCircle2, Clock3, FileText, Layers3, ShieldCheck, Target, Trophy, Users2 } from 'lucide-react';
 import Badge from '@/components/ui/Badge';
@@ -23,6 +23,8 @@ export default function ChallengeDetailPage() {
   const [challenge, setChallenge] = useState<ChallengeItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [completionMessage, setCompletionMessage] = useState('');
 
   useEffect(() => {
     let cancelled = false;
@@ -39,8 +41,17 @@ export default function ChallengeDetailPage() {
       try {
         setIsLoading(true);
         setLoadError('');
+        setCompletionMessage('');
         const item = await fetchChallengeBySlug(slug);
-        if (!cancelled) setChallenge(item);
+        if (!cancelled) {
+          setChallenge(item);
+          setAnswers(
+            item.questions.reduce<Record<string, string>>((accumulator, _question, index) => {
+              accumulator[`question-${index}`] = '';
+              return accumulator;
+            }, {})
+          );
+        }
       } catch (error: any) {
         if (!cancelled) setLoadError(error?.message || 'Challenge not found');
       } finally {
@@ -69,9 +80,28 @@ export default function ChallengeDetailPage() {
   }
 
   const primaryLabel = challenge.phase === 'ongoing' ? 'Start Competition' : 'Start Practice';
-  const primaryHref = challenge.phase === 'ongoing' ? (challenge.actionUrl || '/courses') : '#challenge-workspace';
+  const primaryHref = '#challenge-questionnaire';
   const secondaryLabel = challenge.phase === 'ongoing' ? 'Explore Courses' : 'Back to Challenges';
   const secondaryHref = challenge.phase === 'ongoing' ? '/courses' : '/challenges';
+  const questionnaireTitle = challenge.phase === 'ongoing' ? 'Competition Questionnaire' : 'Practice Questionnaire';
+  const questionnaireDescription =
+    challenge.phase === 'ongoing'
+      ? 'Complete the questions below before you begin the competition. Admin can fully control this form for each challenge.'
+      : 'Practice challenges stay open, and this questionnaire can be updated from admin whenever you want to refine the practice flow.';
+
+  function updateAnswer(key: string, value: string) {
+    setAnswers((current) => ({ ...current, [key]: value }));
+  }
+
+  function handleQuestionnaireSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!challenge) return;
+    setCompletionMessage(
+      challenge.phase === 'ongoing'
+        ? 'Competition questionnaire completed. You can now continue with the challenge instructions below.'
+        : 'Practice questionnaire saved for this session. You can keep practicing anytime from this page.'
+    );
+  }
 
   return (
     <main className="min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -117,7 +147,7 @@ export default function ChallengeDetailPage() {
           <div className="space-y-8">
             <div className="rounded-[2rem] border border-slate-200 bg-white p-8 dark:border-slate-800 dark:bg-slate-900">
               <div className="mb-4 flex items-center gap-3"><Target className="h-5 w-5 text-primary-600 dark:text-primary-400" /><h2 className="text-2xl font-black text-slate-900 dark:text-white">Challenge Objective</h2></div>
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed">{challenge.objective || challenge.description}</p>
+              <p className="leading-relaxed text-slate-600 dark:text-slate-300">{challenge.objective || challenge.description}</p>
             </div>
             <div className="grid gap-6 sm:grid-cols-2">
               <div className="rounded-[2rem] border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900"><div className="mb-3 flex items-center gap-3"><Clock3 className="h-5 w-5 text-primary-600 dark:text-primary-400" /><div className="text-sm font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Duration</div></div><div className="text-xl font-black text-slate-900 dark:text-white">{challenge.duration}</div></div>
@@ -133,6 +163,62 @@ export default function ChallengeDetailPage() {
             </div>
           </div>
           <div className="space-y-8">
+            <div className="rounded-[2rem] border border-slate-200 bg-white p-8 dark:border-slate-800 dark:bg-slate-900">
+              <div id="challenge-questionnaire" className="mb-5 flex items-center gap-3"><CheckCircle2 className="h-5 w-5 text-primary-600 dark:text-primary-400" /><h2 className="text-2xl font-black text-slate-900 dark:text-white">{questionnaireTitle}</h2></div>
+              <p className="mb-6 text-slate-600 dark:text-slate-300">{questionnaireDescription}</p>
+              <form className="space-y-5" onSubmit={handleQuestionnaireSubmit}>
+                {challenge.questions.length ? challenge.questions.map((question, index) => {
+                  const fieldKey = `question-${index}`;
+                  const baseClassName = 'w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-primary-500 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:bg-slate-900';
+                  return (
+                    <label key={fieldKey} className="block">
+                      <div className="mb-2 text-sm font-black uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+                        {question.prompt} {question.required ? '*' : '(Optional)'}
+                      </div>
+                      {question.type === 'select' ? (
+                        <select
+                          value={answers[fieldKey] || ''}
+                          onChange={(event) => updateAnswer(fieldKey, event.target.value)}
+                          required={question.required}
+                          className={baseClassName}
+                        >
+                          <option value="">{question.placeholder || 'Select an option'}</option>
+                          {question.options.map((option) => <option key={option} value={option}>{option}</option>)}
+                        </select>
+                      ) : question.type === 'text' ? (
+                        <input
+                          type="text"
+                          value={answers[fieldKey] || ''}
+                          onChange={(event) => updateAnswer(fieldKey, event.target.value)}
+                          required={question.required}
+                          placeholder={question.placeholder || question.prompt}
+                          className={baseClassName}
+                        />
+                      ) : (
+                        <textarea
+                          value={answers[fieldKey] || ''}
+                          onChange={(event) => updateAnswer(fieldKey, event.target.value)}
+                          required={question.required}
+                          placeholder={question.placeholder || question.prompt}
+                          className={`${baseClassName} min-h-[140px] resize-y`}
+                        />
+                      )}
+                    </label>
+                  );
+                }) : <div className="rounded-2xl bg-slate-50 px-4 py-4 text-slate-500 dark:bg-slate-800/70 dark:text-slate-400">No questionnaire has been added from admin yet.</div>}
+                <div className="flex flex-wrap gap-4">
+                  <Button type="submit" variant="primary" size="lg" className="h-14 !rounded-full px-8">
+                    {challenge.phase === 'ongoing' ? 'Submit and Start' : 'Save Practice Answers'}
+                  </Button>
+                  {challenge.actionUrl ? (
+                    <Link href={challenge.actionUrl}>
+                      <Button variant="outline" size="lg" className="h-14 !rounded-full px-8">Open Submission Link</Button>
+                    </Link>
+                  ) : null}
+                </div>
+                {completionMessage ? <div className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">{completionMessage}</div> : null}
+              </form>
+            </div>
             <div className="rounded-[2rem] border border-slate-200 bg-white p-8 dark:border-slate-800 dark:bg-slate-900">
               <div className="mb-5 flex items-center gap-3"><CheckCircle2 className="h-5 w-5 text-primary-600 dark:text-primary-400" /><h2 className="text-2xl font-black text-slate-900 dark:text-white">What You Will Use</h2></div>
               <div className="flex flex-wrap gap-3">{challenge.tools.length ? challenge.tools.map((tool) => <span key={tool} className="rounded-full bg-primary-50 px-4 py-2 text-sm font-bold text-primary-700 dark:bg-primary-500/10 dark:text-primary-300">{tool}</span>) : <span className="text-slate-500 dark:text-slate-400">Tools will be shared in the challenge brief.</span>}</div>
@@ -164,3 +250,4 @@ export default function ChallengeDetailPage() {
     </main>
   );
 }
+

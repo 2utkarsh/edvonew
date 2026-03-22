@@ -11,6 +11,20 @@ function parseList(value: unknown) {
   return String(value || '').split(/\r?\n|,/).map((item) => item.trim()).filter(Boolean);
 }
 
+function parseQuestions(value: unknown) {
+  const source = Array.isArray(value) ? value : parseJson(String(value || '[]'));
+  if (!Array.isArray(source)) return [];
+  return source
+    .map((question: any) => ({
+      prompt: String(question?.prompt || '').trim(),
+      type: String(question?.type || 'textarea').trim() || 'textarea',
+      options: Array.isArray(question?.options) ? question.options.map((option: unknown) => String(option || '').trim()).filter(Boolean) : [],
+      required: question?.required === false ? false : true,
+      placeholder: String(question?.placeholder || '').trim(),
+    }))
+    .filter((question) => question.prompt);
+}
+
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const denied = await requireAdminOrDemo(request);
   if (denied) return denied;
@@ -51,6 +65,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (body.statusNote !== undefined) update.statusNote = String(body.statusNote || '');
   if (body.eligibility !== undefined) update.eligibility = parseList(body.eligibility);
   if (body.rules !== undefined) update.rules = parseList(body.rules);
+  if (body.questions !== undefined) update.questions = parseQuestions(body.questions);
 
   const item = await ChallengeItemModel.findByIdAndUpdate(id, update, { new: true }).lean();
   if (!item) return toResponse(fail('Challenge not found', 'NOT_FOUND', undefined, 404));
