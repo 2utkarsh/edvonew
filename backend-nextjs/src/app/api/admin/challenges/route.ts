@@ -15,14 +15,22 @@ function parseQuestions(value: unknown) {
   const source = Array.isArray(value) ? value : parseJson(String(value || '[]'));
   if (!Array.isArray(source)) return [];
   return source
-    .map((question: any) => ({
-      prompt: String(question?.prompt || '').trim(),
-      type: String(question?.type || 'textarea').trim() || 'textarea',
-      options: Array.isArray(question?.options) ? question.options.map((option: unknown) => String(option || '').trim()).filter(Boolean) : [],
-      required: question?.required === false ? false : true,
-      placeholder: String(question?.placeholder || '').trim(),
-    }))
-    .filter((question) => question.prompt);
+    .map((question: any) => {
+      const prompt = String(question?.prompt || '').trim();
+      const options = Array.isArray(question?.options)
+        ? question.options.map((option: unknown) => String(option || '').trim()).filter(Boolean)
+        : [];
+      const correctAnswer = String(question?.correctAnswer || '').trim();
+      if (!prompt || options.length < 2 || !correctAnswer || !options.includes(correctAnswer)) return null;
+      return {
+        prompt,
+        options,
+        correctAnswer,
+        explanation: String(question?.explanation || '').trim(),
+        points: Math.max(1, parseInt(String(question?.points || 1), 10) || 1),
+      };
+    })
+    .filter(Boolean);
 }
 
 export async function GET(request: Request) {
@@ -50,6 +58,9 @@ export async function POST(request: Request) {
   const slug = String(body.slug || slugify(title));
   const href = String(body.href || `/challenges/${slug}`);
   const phase = body.phase === 'completed' ? 'completed' : 'ongoing';
+  const parsedTools = parseList(body.tools);
+  const parsedDeliverables = parseList(body.deliverables);
+  const parsedQuestions = parseQuestions(body.questions);
 
   const item = await ChallengeItemModel.create({
     title,
@@ -67,8 +78,8 @@ export async function POST(request: Request) {
     objective: String(body.objective || body.description || ''),
     duration: String(body.duration || (phase === 'completed' ? 'Self-paced practice' : '7 days')),
     difficulty: String(body.difficulty || 'Intermediate'),
-    tools: parseList(body.tools),
-    deliverables: parseList(body.deliverables),
+    tools: parsedTools,
+    deliverables: parsedDeliverables,
     steps: parseList(body.steps),
     actionUrl: String(body.actionUrl || ''),
     startDate: String(body.startDate || ''),
@@ -83,9 +94,18 @@ export async function POST(request: Request) {
     statusNote: String(body.statusNote || ''),
     eligibility: parseList(body.eligibility),
     rules: parseList(body.rules),
-    questions: (() => { const parsedQuestions = parseQuestions(body.questions); return parsedQuestions.length ? parsedQuestions : buildDefaultChallengeQuestions({ title, description: String(body.description || ''), category: String(body.category || 'General'), phase, objective: String(body.objective || body.description || ''), deliverables: parseList(body.deliverables), tools: parseList(body.tools) }); })(),
+    questions: parsedQuestions.length
+      ? parsedQuestions
+      : buildDefaultChallengeQuestions({
+          title,
+          description: String(body.description || ''),
+          category: String(body.category || 'General'),
+          phase,
+          objective: String(body.objective || body.description || ''),
+          deliverables: parsedDeliverables,
+          tools: parsedTools,
+        }),
   });
 
   return toResponse(created(mapChallengeDocumentToPublicChallenge(item)));
 }
-

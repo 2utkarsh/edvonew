@@ -2,10 +2,10 @@
 
 export interface ChallengeQuestionRecord {
   prompt: string;
-  type: string;
   options: string[];
-  required: boolean;
-  placeholder: string;
+  correctAnswer: string;
+  explanation: string;
+  points: number;
 }
 
 export interface PublicChallengeRecord {
@@ -46,13 +46,17 @@ export interface PublicChallengeRecord {
 
 function toQuestionRecord(question: any): ChallengeQuestionRecord | null {
   const prompt = String(question?.prompt || '').trim();
-  if (!prompt) return null;
+  const options = Array.isArray(question?.options)
+    ? question.options.map((option: unknown) => String(option || '').trim()).filter(Boolean)
+    : [];
+  const correctAnswer = String(question?.correctAnswer || '').trim();
+  if (!prompt || options.length < 2 || !correctAnswer || !options.includes(correctAnswer)) return null;
   return {
     prompt,
-    type: String(question?.type || 'textarea').trim() || 'textarea',
-    options: Array.isArray(question?.options) ? question.options.map((option: unknown) => String(option || '').trim()).filter(Boolean) : [],
-    required: question?.required === false ? false : true,
-    placeholder: String(question?.placeholder || '').trim(),
+    options,
+    correctAnswer,
+    explanation: String(question?.explanation || '').trim(),
+    points: Math.max(1, parseInt(String(question?.points || 1), 10) || 1),
   };
 }
 
@@ -60,31 +64,36 @@ export function buildDefaultChallengeQuestions(item: Partial<PublicChallengeReco
   const title = String(item.title || 'this challenge').trim();
   const phase = item.phase === 'completed' ? 'completed' : 'ongoing';
   const category = String(item.category || 'General').trim();
-  const objective = String(item.objective || item.description || '').trim();
-  const deliverable = Array.isArray(item.deliverables) && item.deliverables.length ? String(item.deliverables[0] || '').trim() : 'your final submission';
-  const toolOptions = Array.isArray(item.tools) && item.tools.length ? item.tools.map((tool) => String(tool || '').trim()).filter(Boolean) : ['SQL', 'Python', 'Power BI', 'Excel'];
+  const objective = String(item.objective || item.description || '').trim() || `Work through ${title} with a structured analyst mindset.`;
+  const primaryTool = Array.isArray(item.tools) && item.tools.length ? String(item.tools[0] || 'SQL').trim() : 'SQL';
+  const deliverable = Array.isArray(item.deliverables) && item.deliverables.length ? String(item.deliverables[0] || 'Final submission deck').trim() : 'Final submission deck';
 
   return [
     {
-      prompt: phase === 'ongoing' ? `How will you approach ${title}?` : `What is your practice plan for ${title}?`,
-      type: 'textarea',
-      options: [],
-      required: true,
-      placeholder: objective || `Summarize the steps you will take for ${title}.`,
+      prompt: `What should be your first priority in ${title}?`,
+      options: [
+        'Understand the business problem and success metric',
+        'Jump straight to chart styling',
+        'Skip the dataset and write the final answer',
+        'Submit without validating assumptions',
+      ],
+      correctAnswer: 'Understand the business problem and success metric',
+      explanation: objective,
+      points: 5,
     },
     {
-      prompt: 'Which primary tool or workflow will you use?',
-      type: 'select',
-      options: toolOptions,
-      required: true,
-      placeholder: 'Choose your tool stack',
+      prompt: `Which tool is the best fit to start this ${category} challenge?`,
+      options: [primaryTool, 'Photoshop', 'Canva only', 'Video editor'],
+      correctAnswer: primaryTool,
+      explanation: `The challenge setup already highlights ${primaryTool} in the recommended stack.`,
+      points: 5,
     },
     {
-      prompt: phase === 'ongoing' ? 'Share your submission or portfolio link' : 'What deliverable will you complete during practice?',
-      type: phase === 'ongoing' ? 'text' : 'textarea',
-      options: [],
-      required: true,
-      placeholder: phase === 'ongoing' ? 'https://your-link.com' : `Describe how you will finish ${deliverable} in ${category}.`,
+      prompt: phase === 'ongoing' ? `Which output is expected before you submit ${title}?` : `Which output should you finish while practicing ${title}?`,
+      options: [deliverable, 'A blank notebook', 'Only a social caption', 'No deliverable is needed'],
+      correctAnswer: deliverable,
+      explanation: `The challenge deliverables include ${deliverable}.`,
+      points: 5,
     },
   ];
 }
@@ -129,9 +138,27 @@ export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
     eligibility: ['Open to all learners', 'Basic SQL and dashboard skills recommended', 'One final submission per participant'],
     rules: ['Submit original work only', 'Share a public portfolio or post link', 'Late submissions are not ranked'],
     questions: [
-      { prompt: 'Share your solution summary', type: 'textarea', options: [], required: true, placeholder: 'Briefly explain your approach and key insights.' },
-      { prompt: 'What tool stack did you use?', type: 'select', options: ['SQL + Power BI', 'Python + Notebook', 'Excel + Presentation', 'Mixed stack'], required: true, placeholder: '' },
-      { prompt: 'Paste your portfolio or submission link', type: 'text', options: [], required: true, placeholder: 'https://...' },
+      {
+        prompt: 'What should you do first before building your Databricks challenge output?',
+        options: ['Understand the challenge brief and business goal', 'Design the final certificate', 'Skip data exploration', 'Only copy a public dashboard'],
+        correctAnswer: 'Understand the challenge brief and business goal',
+        explanation: 'Strong competition work starts by grounding the analysis in the business objective and expected outcome.',
+        points: 5,
+      },
+      {
+        prompt: 'Which stack is most aligned with this challenge?',
+        options: ['SQL + Power BI', 'Only Photoshop', 'Only Figma', 'Only Premiere Pro'],
+        correctAnswer: 'SQL + Power BI',
+        explanation: 'The challenge emphasizes analytical work with SQL and dashboard storytelling.',
+        points: 5,
+      },
+      {
+        prompt: 'Which deliverable is expected for submission?',
+        options: ['Insight summary PDF', 'A blank slide deck', 'Only a profile photo', 'No final output'],
+        correctAnswer: 'Insight summary PDF',
+        explanation: 'The challenge deliverables include an insight summary PDF together with the core analysis assets.',
+        points: 5,
+      },
     ],
   },
   {
@@ -167,9 +194,27 @@ export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
     eligibility: ['Open as a practice case study', 'Recommended for analytics learners'],
     rules: ['Use it for learning and portfolio building', 'No live ranking for archived challenges'],
     questions: [
-      { prompt: 'What is the first metric you would investigate?', type: 'textarea', options: [], required: true, placeholder: 'Explain why this metric matters.' },
-      { prompt: 'Which area is the biggest recovery lever?', type: 'select', options: ['Retention', 'Delivery operations', 'Marketing efficiency', 'Restaurant supply'], required: true, placeholder: '' },
-      { prompt: 'How will you turn this into a practice-ready deliverable?', type: 'textarea', options: [], required: true, placeholder: 'Describe the workbook, deck, or summary you will complete.' },
+      {
+        prompt: 'Which area is the strongest first lens for this recovery case?',
+        options: ['Retention and repeat orders', 'Changing the logo', 'Ignoring operations', 'Posting random ads'],
+        correctAnswer: 'Retention and repeat orders',
+        explanation: 'Recovery analysis should start by understanding where repeat demand is breaking down.',
+        points: 5,
+      },
+      {
+        prompt: 'Which tool is appropriate for this practice challenge?',
+        options: ['Excel', 'Only Illustrator', 'Only After Effects', 'Only Blender'],
+        correctAnswer: 'Excel',
+        explanation: 'The practice stack includes spreadsheet analysis for structured business data review.',
+        points: 5,
+      },
+      {
+        prompt: 'What should you complete by the end of practice?',
+        options: ['Practice analysis workbook', 'A random meme post', 'No deliverable', 'A color palette only'],
+        correctAnswer: 'Practice analysis workbook',
+        explanation: 'The workbook is one of the intended practice outputs for this challenge.',
+        points: 5,
+      },
     ],
   },
   {
@@ -205,9 +250,27 @@ export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
     eligibility: ['Open to aspiring analysts and strategists'],
     rules: ['Cite assumptions clearly', 'Keep recommendations business-focused'],
     questions: [
-      { prompt: 'Which growth lever would you prioritize first?', type: 'textarea', options: [], required: true, placeholder: 'Describe your reasoning.' },
-      { prompt: 'What output would you create first?', type: 'select', options: ['Retention cohort analysis', 'Revenue trend model', 'Executive summary deck', 'Content performance dashboard'], required: true, placeholder: '' },
-      { prompt: 'What will your final practice deliverable include?', type: 'textarea', options: [], required: true, placeholder: 'Summarize the analysis, recommendation, and presentation you plan to complete.' },
+      {
+        prompt: 'What should you evaluate first in this newsroom challenge?',
+        options: ['Audience and revenue trends', 'The office paint color', 'Only the homepage font', 'Nothing before final recommendations'],
+        correctAnswer: 'Audience and revenue trends',
+        explanation: 'The challenge focuses on sustainable digital growth, so audience and revenue signals come first.',
+        points: 5,
+      },
+      {
+        prompt: 'Which deliverable best matches this challenge?',
+        options: ['Growth recommendation deck', 'A wedding album', 'Only a company slogan', 'No presentation at all'],
+        correctAnswer: 'Growth recommendation deck',
+        explanation: 'The recommended output includes a deck that translates analysis into strategic action.',
+        points: 5,
+      },
+      {
+        prompt: 'Which working style fits this challenge setup?',
+        options: ['Team or Individual', 'Only multiplayer gaming', 'Video editing only', 'No analysis workflow'],
+        correctAnswer: 'Team or Individual',
+        explanation: 'This archived challenge was designed for either team-based or solo problem solving.',
+        points: 5,
+      },
     ],
   },
   {
@@ -243,9 +306,27 @@ export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
     eligibility: ['Open to product and market research learners'],
     rules: ['Support conclusions with data', 'Keep your recommendation concise and actionable'],
     questions: [
-      { prompt: 'Which segment would you analyze first?', type: 'textarea', options: [], required: true, placeholder: 'Explain your choice.' },
-      { prompt: 'What kind of deliverable will you build?', type: 'select', options: ['Market sizing sheet', 'Research memo', 'Recommendation deck', 'Dashboard'], required: true, placeholder: '' },
-      { prompt: 'What proof points will make your recommendation stronger?', type: 'textarea', options: [], required: true, placeholder: 'List the AQI, market, and customer signals you will highlight.' },
+      {
+        prompt: 'What should anchor your first analysis pass here?',
+        options: ['AQI data and customer demand signals', 'Only product color ideas', 'Random slogans', 'Skipping the market context'],
+        correctAnswer: 'AQI data and customer demand signals',
+        explanation: 'This challenge is about product-market fit, so demand and AQI evidence should lead the analysis.',
+        points: 5,
+      },
+      {
+        prompt: 'Which deliverable is a direct fit for this practice?',
+        options: ['Opportunity sizing sheet', 'Only a wallpaper image', 'No written output', 'A party invitation'],
+        correctAnswer: 'Opportunity sizing sheet',
+        explanation: 'Opportunity sizing is one of the central outputs in this product research challenge.',
+        points: 5,
+      },
+      {
+        prompt: 'Which tool is part of the intended workflow?',
+        options: ['Python', 'Only audio editing', 'Only 3D modeling', 'Only poster design'],
+        correctAnswer: 'Python',
+        explanation: 'Python is part of the recommended stack for analyzing AQI and product opportunity data.',
+        points: 5,
+      },
     ],
   },
 ];

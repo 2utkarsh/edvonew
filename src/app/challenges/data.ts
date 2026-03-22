@@ -1,9 +1,9 @@
 ﻿export interface ChallengeQuestion {
   prompt: string;
-  type: 'text' | 'textarea' | 'select';
   options: string[];
-  required: boolean;
-  placeholder: string;
+  correctAnswer: string;
+  explanation: string;
+  points: number;
 }
 
 export interface ChallengeItem {
@@ -82,17 +82,18 @@ function mapChallenge(item: Record<string, unknown>): ChallengeItem {
       ? item.questions
           .map((entry) => {
             const record = entry as Record<string, unknown>;
-            const rawType = String(record.type || 'textarea');
-            const type: ChallengeQuestion['type'] = rawType === 'text' || rawType === 'select' ? rawType : 'textarea';
+            const options = Array.isArray(record.options) ? record.options.map((option) => String(option || '')).filter(Boolean) : [];
+            const correctAnswer = String(record.correctAnswer || '');
+            if (!String(record.prompt || '').trim() || options.length < 2 || !options.includes(correctAnswer)) return null;
             return {
               prompt: String(record.prompt || ''),
-              type,
-              options: Array.isArray(record.options) ? record.options.map((option) => String(option || '')).filter(Boolean) : [],
-              required: record.required !== false,
-              placeholder: String(record.placeholder || ''),
+              options,
+              correctAnswer,
+              explanation: String(record.explanation || ''),
+              points: Math.max(1, Number(record.points || 1) || 1),
             };
           })
-          .filter((entry) => entry.prompt)
+          .filter((entry): entry is ChallengeQuestion => Boolean(entry))
       : [],
   };
 }
@@ -111,4 +112,3 @@ export async function fetchChallengeBySlug(slug: string): Promise<ChallengeItem>
   if (!response.ok) throw new Error(payload?.error?.message || payload?.message || 'Failed to load challenge');
   return mapChallenge((payload?.data || {}) as Record<string, unknown>);
 }
-

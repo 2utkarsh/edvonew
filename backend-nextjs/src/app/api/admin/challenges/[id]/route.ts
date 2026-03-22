@@ -15,14 +15,22 @@ function parseQuestions(value: unknown) {
   const source = Array.isArray(value) ? value : parseJson(String(value || '[]'));
   if (!Array.isArray(source)) return [];
   return source
-    .map((question: any) => ({
-      prompt: String(question?.prompt || '').trim(),
-      type: String(question?.type || 'textarea').trim() || 'textarea',
-      options: Array.isArray(question?.options) ? question.options.map((option: unknown) => String(option || '').trim()).filter(Boolean) : [],
-      required: question?.required === false ? false : true,
-      placeholder: String(question?.placeholder || '').trim(),
-    }))
-    .filter((question) => question.prompt);
+    .map((question: any) => {
+      const prompt = String(question?.prompt || '').trim();
+      const options = Array.isArray(question?.options)
+        ? question.options.map((option: unknown) => String(option || '').trim()).filter(Boolean)
+        : [];
+      const correctAnswer = String(question?.correctAnswer || '').trim();
+      if (!prompt || options.length < 2 || !correctAnswer || !options.includes(correctAnswer)) return null;
+      return {
+        prompt,
+        options,
+        correctAnswer,
+        explanation: String(question?.explanation || '').trim(),
+        points: Math.max(1, parseInt(String(question?.points || 1), 10) || 1),
+      };
+    })
+    .filter(Boolean);
 }
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -35,7 +43,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const { id } = await params;
   const body = parseJson<Record<string, unknown>>(await request.text()) || {};
   const update: Record<string, unknown> = {};
-  if (body.title) { update.title = String(body.title); update.slug = String(body.slug || slugify(String(body.title))); }
+  if (body.title) {
+    update.title = String(body.title);
+    update.slug = String(body.slug || slugify(String(body.title)));
+  }
   if (body.description !== undefined) update.description = String(body.description || '');
   if (body.image) update.image = String(body.image);
   if (body.category !== undefined) update.category = String(body.category || 'General');
@@ -49,8 +60,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (body.objective !== undefined) update.objective = String(body.objective || '');
   if (body.duration !== undefined) update.duration = String(body.duration || '');
   if (body.difficulty !== undefined) update.difficulty = String(body.difficulty || 'Intermediate');
-  if (body.tools !== undefined) update.tools = parseList(body.tools);
-  if (body.deliverables !== undefined) update.deliverables = parseList(body.deliverables);
+  const parsedTools = body.tools !== undefined ? parseList(body.tools) : undefined;
+  const parsedDeliverables = body.deliverables !== undefined ? parseList(body.deliverables) : undefined;
+  if (parsedTools !== undefined) update.tools = parsedTools;
+  if (parsedDeliverables !== undefined) update.deliverables = parsedDeliverables;
   if (body.steps !== undefined) update.steps = parseList(body.steps);
   if (body.actionUrl !== undefined) update.actionUrl = String(body.actionUrl || '');
   if (body.startDate !== undefined) update.startDate = String(body.startDate || '');
@@ -65,7 +78,20 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (body.statusNote !== undefined) update.statusNote = String(body.statusNote || '');
   if (body.eligibility !== undefined) update.eligibility = parseList(body.eligibility);
   if (body.rules !== undefined) update.rules = parseList(body.rules);
-  if (body.questions !== undefined) { const parsedQuestions = parseQuestions(body.questions); update.questions = parsedQuestions.length ? parsedQuestions : buildDefaultChallengeQuestions({ title: String(body.title || ''), description: String(body.description || ''), category: String(body.category || 'General'), phase: body.phase === 'completed' ? 'completed' : 'ongoing', objective: String(body.objective || body.description || ''), deliverables: parseList(body.deliverables), tools: parseList(body.tools) }); }
+  if (body.questions !== undefined) {
+    const parsedQuestions = parseQuestions(body.questions);
+    update.questions = parsedQuestions.length
+      ? parsedQuestions
+      : buildDefaultChallengeQuestions({
+          title: String(body.title || ''),
+          description: String(body.description || ''),
+          category: String(body.category || 'General'),
+          phase: body.phase === 'completed' ? 'completed' : 'ongoing',
+          objective: String(body.objective || body.description || ''),
+          deliverables: parsedDeliverables || [],
+          tools: parsedTools || [],
+        });
+  }
 
   const item = await ChallengeItemModel.findByIdAndUpdate(id, update, { new: true }).lean();
   if (!item) return toResponse(fail('Challenge not found', 'NOT_FOUND', undefined, 404));
@@ -84,4 +110,3 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
   if (!item) return toResponse(fail('Challenge not found', 'NOT_FOUND', undefined, 404));
   return toResponse(ok({ deleted: true, id }));
 }
-

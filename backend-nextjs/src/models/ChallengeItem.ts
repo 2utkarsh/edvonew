@@ -1,14 +1,14 @@
-import { Model, model, models, Schema } from 'mongoose';
+﻿import { Model, model, models, Schema } from 'mongoose';
 
 export type ChallengePhase = 'ongoing' | 'completed';
 export type ChallengeVisibility = 'active' | 'inactive';
 
 export interface ChallengeQuestionDocument {
   prompt: string;
-  type: string;
   options: string[];
-  required: boolean;
-  placeholder: string;
+  correctAnswer: string;
+  explanation: string;
+  points: number;
 }
 
 export interface ChallengeItemDocument {
@@ -61,10 +61,10 @@ export interface ChallengeCategoryDocument {
 const challengeQuestionSchema = new Schema<ChallengeQuestionDocument>(
   {
     prompt: { type: String, required: true, trim: true },
-    type: { type: String, default: 'textarea', trim: true },
     options: { type: [String], default: [] },
-    required: { type: Boolean, default: true },
-    placeholder: { type: String, default: '', trim: true },
+    correctAnswer: { type: String, required: true, trim: true },
+    explanation: { type: String, default: '', trim: true },
+    points: { type: Number, default: 1 },
   },
   { _id: false }
 );

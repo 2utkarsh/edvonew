@@ -24,7 +24,7 @@ export default function ChallengeDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [completionMessage, setCompletionMessage] = useState('');
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -41,7 +41,7 @@ export default function ChallengeDetailPage() {
       try {
         setIsLoading(true);
         setLoadError('');
-        setCompletionMessage('');
+        setHasSubmitted(false);
         const item = await fetchChallengeBySlug(slug);
         if (!cancelled) {
           setChallenge(item);
@@ -71,6 +71,15 @@ export default function ChallengeDetailPage() {
     return !Number.isNaN(expiry.getTime()) && expiry.getTime() < Date.now();
   }, [challenge]);
 
+  const totalScore = useMemo(() => challenge?.questions.reduce((sum, question) => sum + question.points, 0) || 0, [challenge]);
+  const earnedScore = useMemo(() => {
+    if (!challenge || !hasSubmitted) return 0;
+    return challenge.questions.reduce((sum, question, index) => {
+      const key = `question-${index}`;
+      return sum + (answers[key] === question.correctAnswer ? question.points : 0);
+    }, 0);
+  }, [answers, challenge, hasSubmitted]);
+
   if (isLoading) {
     return <main className="min-h-screen bg-slate-50 dark:bg-slate-950"><div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8"><div className="h-[420px] animate-pulse rounded-[2rem] border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900" /></div></main>;
   }
@@ -83,11 +92,11 @@ export default function ChallengeDetailPage() {
   const primaryHref = '#challenge-questionnaire';
   const secondaryLabel = challenge.phase === 'ongoing' ? 'Explore Courses' : 'Back to Challenges';
   const secondaryHref = challenge.phase === 'ongoing' ? '/courses' : '/challenges';
-  const questionnaireTitle = challenge.phase === 'ongoing' ? 'Competition Questionnaire' : 'Practice Questionnaire';
+  const questionnaireTitle = challenge.phase === 'ongoing' ? 'Competition Quiz' : 'Practice Quiz';
   const questionnaireDescription =
     challenge.phase === 'ongoing'
-      ? 'Complete the questions below before you begin the competition. Admin can fully control this form for each challenge.'
-      : 'Practice challenges stay open, and this questionnaire can be updated from admin whenever you want to refine the practice flow.';
+      ? 'Answer the challenge MCQs below, then check your score and review the correct answers.'
+      : 'Use these MCQs to practice the challenge, then review your score and the correct answers after submission.';
 
   function updateAnswer(key: string, value: string) {
     setAnswers((current) => ({ ...current, [key]: value }));
@@ -95,12 +104,7 @@ export default function ChallengeDetailPage() {
 
   function handleQuestionnaireSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!challenge) return;
-    setCompletionMessage(
-      challenge.phase === 'ongoing'
-        ? 'Competition questionnaire completed. You can now continue with the challenge instructions below.'
-        : 'Practice questionnaire saved for this session. You can keep practicing anytime from this page.'
-    );
+    setHasSubmitted(true);
   }
 
   return (
@@ -169,54 +173,62 @@ export default function ChallengeDetailPage() {
               <form className="space-y-5" onSubmit={handleQuestionnaireSubmit}>
                 {challenge.questions.length ? challenge.questions.map((question, index) => {
                   const fieldKey = `question-${index}`;
-                  const baseClassName = 'w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-primary-500 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:bg-slate-900';
+                  const selectedAnswer = answers[fieldKey] || '';
+                  const isCorrect = selectedAnswer === question.correctAnswer;
                   return (
-                    <label key={fieldKey} className="block">
-                      <div className="mb-2 text-sm font-black uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-                        {question.prompt} {question.required ? '*' : '(Optional)'}
+                    <div key={fieldKey} className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5 dark:border-slate-700 dark:bg-slate-800/60">
+                      <div className="mb-3 flex items-start justify-between gap-4">
+                        <div className="text-base font-black text-slate-900 dark:text-white">{index + 1}. {question.prompt}</div>
+                        <div className="rounded-full bg-primary-50 px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-primary-700 dark:bg-primary-500/10 dark:text-primary-300">{question.points} pts</div>
                       </div>
-                      {question.type === 'select' ? (
-                        <select
-                          value={answers[fieldKey] || ''}
-                          onChange={(event) => updateAnswer(fieldKey, event.target.value)}
-                          required={question.required}
-                          className={baseClassName}
-                        >
-                          <option value="">{question.placeholder || 'Select an option'}</option>
-                          {question.options.map((option) => <option key={option} value={option}>{option}</option>)}
-                        </select>
-                      ) : question.type === 'text' ? (
-                        <input
-                          type="text"
-                          value={answers[fieldKey] || ''}
-                          onChange={(event) => updateAnswer(fieldKey, event.target.value)}
-                          required={question.required}
-                          placeholder={question.placeholder || question.prompt}
-                          className={baseClassName}
-                        />
-                      ) : (
-                        <textarea
-                          value={answers[fieldKey] || ''}
-                          onChange={(event) => updateAnswer(fieldKey, event.target.value)}
-                          required={question.required}
-                          placeholder={question.placeholder || question.prompt}
-                          className={`${baseClassName} min-h-[140px] resize-y`}
-                        />
-                      )}
-                    </label>
+                      <div className="space-y-3">
+                        {question.options.map((option) => {
+                          const checked = selectedAnswer === option;
+                          const showCorrect = hasSubmitted && option === question.correctAnswer;
+                          const showWrong = hasSubmitted && checked && option !== question.correctAnswer;
+                          const className = [
+                            'flex cursor-pointer items-start gap-3 rounded-2xl border px-4 py-3 transition',
+                            showCorrect ? 'border-emerald-500 bg-emerald-50 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-200' : '',
+                            showWrong ? 'border-rose-500 bg-rose-50 text-rose-800 dark:bg-rose-500/10 dark:text-rose-200' : '',
+                            !showCorrect && !showWrong ? 'border-slate-200 bg-white text-slate-700 hover:border-primary-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200' : '',
+                          ].filter(Boolean).join(' ');
+                          return (
+                            <label key={option} className={className}>
+                              <input
+                                type="radio"
+                                name={fieldKey}
+                                value={option}
+                                checked={checked}
+                                onChange={(event) => updateAnswer(fieldKey, event.target.value)}
+                                className="mt-1 h-4 w-4 border-slate-300 text-primary-600 focus:ring-primary-500"
+                              />
+                              <span className="text-sm font-medium">{option}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                      {hasSubmitted ? (
+                        <div className={`mt-4 rounded-2xl px-4 py-3 text-sm font-medium ${isCorrect ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300' : 'bg-amber-50 text-amber-800 dark:bg-amber-500/10 dark:text-amber-200'}`}>
+                          <div>Correct answer: <span className="font-black">{question.correctAnswer}</span></div>
+                          {question.explanation ? <div className="mt-1">{question.explanation}</div> : null}
+                        </div>
+                      ) : null}
+                    </div>
                   );
-                }) : <div className="rounded-2xl bg-slate-50 px-4 py-4 text-slate-500 dark:bg-slate-800/70 dark:text-slate-400">No questionnaire has been added from admin yet.</div>}
+                }) : <div className="rounded-2xl bg-slate-50 px-4 py-4 text-slate-500 dark:bg-slate-800/70 dark:text-slate-400">No quiz has been added from admin yet.</div>}
                 <div className="flex flex-wrap gap-4">
                   <Button type="submit" variant="primary" size="lg" className="h-14 !rounded-full px-8">
-                    {challenge.phase === 'ongoing' ? 'Submit and Start' : 'Save Practice Answers'}
+                    {challenge.phase === 'ongoing' ? 'Check Competition Score' : 'Check Practice Score'}
                   </Button>
-                  {challenge.actionUrl ? (
-                    <Link href={challenge.actionUrl}>
-                      <Button variant="outline" size="lg" className="h-14 !rounded-full px-8">Open Submission Link</Button>
-                    </Link>
-                  ) : null}
+                  {hasSubmitted ? <Button type="button" variant="outline" size="lg" className="h-14 !rounded-full px-8" onClick={() => setHasSubmitted(false)}>Try Again</Button> : null}
                 </div>
-                {completionMessage ? <div className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">{completionMessage}</div> : null}
+                {hasSubmitted ? (
+                  <div className="rounded-[1.5rem] border border-primary-200 bg-primary-50 px-5 py-4 text-primary-900 dark:border-primary-500/20 dark:bg-primary-500/10 dark:text-primary-100">
+                    <div className="text-xs font-black uppercase tracking-[0.18em] text-primary-700 dark:text-primary-300">Score</div>
+                    <div className="mt-2 text-3xl font-black">{earnedScore} / {totalScore}</div>
+                    <div className="mt-2 text-sm font-medium text-primary-800 dark:text-primary-200">{earnedScore === totalScore ? 'Perfect score. Every answer is correct.' : 'Review the highlighted correct answers and try again if you want a better score.'}</div>
+                  </div>
+                ) : null}
               </form>
             </div>
             <div className="rounded-[2rem] border border-slate-200 bg-white p-8 dark:border-slate-800 dark:bg-slate-900">
@@ -250,4 +262,3 @@ export default function ChallengeDetailPage() {
     </main>
   );
 }
-
