@@ -1,14 +1,16 @@
 import { hashPassword } from '@/lib/auth';
-import { BlogCategoryModel, BlogModel } from '@/models/Blog';
-import { TeamMemberModel } from '@/models/TeamMember';
-import { UserModel } from '@/models/User';
 import { MOCK_BLOGS } from '@/lib/blog-data';
-import { MOCK_TEAM_MEMBERS } from '@/lib/team-data';
+import { MOCK_EVENTS } from '@/lib/event-data';
 import { MOCK_GUIDES, MOCK_TUTORIALS } from '@/lib/resource-data';
 import { MOCK_SUCCESS_STORIES } from '@/lib/success-story-data';
+import { MOCK_TEAM_MEMBERS } from '@/lib/team-data';
+import { slugify } from '@/lib/query';
+import { BlogCategoryModel, BlogModel } from '@/models/Blog';
+import { EventCategoryModel, EventItemModel } from '@/models/EventItem';
 import { ResourceItemModel } from '@/models/ResourceItem';
 import { SuccessStoryCategoryModel, SuccessStoryModel } from '@/models/SuccessStory';
-import { slugify } from '@/lib/query';
+import { TeamMemberModel } from '@/models/TeamMember';
+import { UserModel } from '@/models/User';
 
 declare global {
   var __edvoContentSeeded: boolean | undefined;
@@ -195,6 +197,56 @@ export async function ensureSeededContent() {
           tags: story.tags,
           status: story.status,
           order: story.order || index + 1,
+        },
+      },
+      { upsert: true, new: true }
+    );
+  }
+
+  const eventCategories = new Map<string, string[]>();
+  for (const event of MOCK_EVENTS) {
+    eventCategories.set(event.type, [...(eventCategories.get(event.type) || []), event.category]);
+  }
+
+  for (const [type, values] of eventCategories.entries()) {
+    for (const [index, category] of Array.from(new Set(values)).entries()) {
+      await EventCategoryModel.findOneAndUpdate(
+        { slug: slugify(`${type}-${category}`) },
+        {
+          $set: {
+            type,
+            name: category,
+            slug: slugify(`${type}-${category}`),
+            description: `${category} ${type} events`,
+            isActive: true,
+            order: index + 1,
+          },
+        },
+        { upsert: true, new: true }
+      );
+    }
+  }
+
+  for (const event of MOCK_EVENTS) {
+    await EventItemModel.findOneAndUpdate(
+      { slug: event.slug },
+      {
+        $set: {
+          type: event.type,
+          title: event.title,
+          slug: event.slug,
+          description: event.description,
+          category: event.category,
+          image: event.image,
+          date: event.date,
+          time: event.time,
+          location: event.location,
+          status: event.status,
+          visibility: event.visibility,
+          order: event.order,
+          speakers: event.speakers || [],
+          prizes: event.prizes,
+          duration: event.duration,
         },
       },
       { upsert: true, new: true }
