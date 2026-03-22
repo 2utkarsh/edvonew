@@ -1,13 +1,12 @@
-﻿'use client';
+'use client';
 
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { ArrowLeft, Moon, Sun, Trophy } from 'lucide-react';
+import { ArrowLeft, Trophy } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import { fetchChallengeBySlug, type ChallengeItem } from '../../data';
 import NotFoundExperience from '@/components/errors/NotFoundExperience';
-import { useThemeStore } from '@/store/useThemeStore';
 
 function formatTime(totalSeconds: number) {
   const safeSeconds = Math.max(0, totalSeconds);
@@ -27,7 +26,6 @@ export default function ChallengeStartPage() {
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [submissionLocked, setSubmissionLocked] = useState(false);
-  const { config: themeConfig, toggleMode } = useThemeStore();
 
   useEffect(() => {
     let cancelled = false;
@@ -136,16 +134,6 @@ export default function ChallengeStartPage() {
               <div className={`rounded-full px-4 py-2 text-sm font-black ${timeUp ? 'bg-rose-100 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300'}`}>
                 Timer: {formatTime(secondsLeft)}
               </div>
-              {themeConfig.adminDarkModeEnabled ? (
-                <button
-                  type="button"
-                  onClick={toggleMode}
-                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:bg-slate-800"
-                >
-                  {themeConfig.mode === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-                  {themeConfig.mode === 'dark' ? 'Light Mode' : 'Dark Mode'}
-                </button>
-              ) : null}
             </div>
           </div>
         </div>
