@@ -56,6 +56,7 @@ export default function ChallengeDetailPage() {
   }
 
   const primaryLabel = challenge.phase === 'ongoing' ? 'Start Competition' : 'Start Practice';
+  const primaryHref = challenge.phase === 'ongoing' ? (challenge.actionUrl || '/courses') : '#challenge-workspace';
   const secondaryLabel = challenge.phase === 'ongoing' ? 'Explore Courses' : 'Back to Challenges';
   const secondaryHref = challenge.phase === 'ongoing' ? '/courses' : '/challenges';
 
@@ -74,11 +75,11 @@ export default function ChallengeDetailPage() {
               <div className="rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-200">{challenge.duration}</div>
             </div>
             <div className="mt-10 flex flex-wrap gap-4">
-              <Link href={challenge.actionUrl || '/courses'}>
-                <Button variant="primary" size="lg" className="h-13 !rounded-full px-8">{primaryLabel}<ArrowRight className="ml-2 h-5 w-5" /></Button>
+              <Link href={primaryHref}>
+                <Button variant="primary" size="lg" className="h-14 !rounded-full px-8">{primaryLabel}<ArrowRight className="ml-2 h-5 w-5" /></Button>
               </Link>
               <Link href={secondaryHref}>
-                <Button variant="outline" size="lg" className="h-13 !rounded-full px-8">{secondaryLabel}</Button>
+                <Button variant="outline" size="lg" className="h-14 !rounded-full px-8">{secondaryLabel}</Button>
               </Link>
             </div>
           </div>
@@ -93,7 +94,7 @@ export default function ChallengeDetailPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+      <section id="challenge-workspace" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
           <div className="space-y-8">
             <div className="rounded-[2rem] border border-slate-200 bg-white p-8 dark:border-slate-800 dark:bg-slate-900">
