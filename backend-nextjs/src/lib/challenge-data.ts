@@ -21,6 +21,18 @@ export interface PublicChallengeRecord {
   deliverables: string[];
   steps: string[];
   actionUrl: string;
+  startDate: string;
+  startTime: string;
+  endDate: string;
+  endTime: string;
+  registrationDeadline: string;
+  expiryDate: string;
+  competitionMode: string;
+  maxSubmissions: number;
+  teamSize: string;
+  statusNote: string;
+  eligibility: string[];
+  rules: string[];
 }
 
 export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
@@ -45,6 +57,18 @@ export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
     deliverables: ['Insight summary PDF', 'Dashboard or notebook', 'LinkedIn post with key takeaways'],
     steps: ['Download the challenge brief and dataset.', 'Analyze the data and document your logic clearly.', 'Prepare your final dashboard or notebook.', 'Publish your takeaways and submit your solution link.'],
     actionUrl: '/courses',
+    startDate: '2026-03-20',
+    startTime: '09:00',
+    endDate: '2026-03-27',
+    endTime: '23:59',
+    registrationDeadline: '2026-03-24',
+    expiryDate: '2026-03-27',
+    competitionMode: 'Individual',
+    maxSubmissions: 1,
+    teamSize: 'Solo',
+    statusNote: 'Live and accepting submissions now.',
+    eligibility: ['Open to all learners', 'Basic SQL and dashboard skills recommended', 'One final submission per participant'],
+    rules: ['Submit original work only', 'Share a public portfolio or post link', 'Late submissions are not ranked'],
   },
   {
     id: 'food-delivery',
@@ -65,7 +89,19 @@ export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
     tools: ['Excel', 'SQL', 'Power BI'],
     deliverables: ['Practice analysis workbook', 'Recommendation notes', 'Portfolio-ready summary'],
     steps: ['Review the case statement.', 'Explore the provided business metrics.', 'Identify root causes and opportunities.', 'Turn your work into a polished practice project.'],
-    actionUrl: '/courses',
+    actionUrl: '',
+    startDate: '2025-10-01',
+    startTime: '09:00',
+    endDate: '2025-10-08',
+    endTime: '23:59',
+    registrationDeadline: '2025-10-05',
+    expiryDate: '2025-10-08',
+    competitionMode: 'Individual',
+    maxSubmissions: 1,
+    teamSize: 'Solo',
+    statusNote: 'Competition closed. Available now as a guided practice challenge.',
+    eligibility: ['Open as a practice case study', 'Recommended for analytics learners'],
+    rules: ['Use it for learning and portfolio building', 'No live ranking for archived challenges'],
   },
   {
     id: 'newspaper',
@@ -86,7 +122,19 @@ export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
     tools: ['SQL', 'Spreadsheet Modeling', 'Presentation Deck'],
     deliverables: ['Content funnel analysis', 'Growth recommendation deck', 'Executive summary'],
     steps: ['Understand the newsroom business problem.', 'Analyze audience and revenue trends.', 'Prioritize the biggest growth levers.', 'Present a practical transformation plan.'],
-    actionUrl: '/courses',
+    actionUrl: '',
+    startDate: '2025-08-14',
+    startTime: '10:00',
+    endDate: '2025-08-21',
+    endTime: '23:59',
+    registrationDeadline: '2025-08-18',
+    expiryDate: '2025-08-21',
+    competitionMode: 'Team or Individual',
+    maxSubmissions: 1,
+    teamSize: 'Up to 3',
+    statusNote: 'Archived challenge now open for portfolio practice.',
+    eligibility: ['Open to aspiring analysts and strategists'],
+    rules: ['Cite assumptions clearly', 'Keep recommendations business-focused'],
   },
   {
     id: 'air-purifier',
@@ -107,7 +155,19 @@ export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
     tools: ['Python', 'Spreadsheets', 'Market Research'],
     deliverables: ['Research summary', 'Opportunity sizing sheet', 'Recommendation slide'],
     steps: ['Review the product brief and market context.', 'Study AQI and user demand patterns.', 'Size the opportunity and key segments.', 'Recommend a clear go-to-market direction.'],
-    actionUrl: '/courses',
+    actionUrl: '',
+    startDate: '2025-06-11',
+    startTime: '09:00',
+    endDate: '2025-06-18',
+    endTime: '23:59',
+    registrationDeadline: '2025-06-14',
+    expiryDate: '2025-06-18',
+    competitionMode: 'Individual',
+    maxSubmissions: 1,
+    teamSize: 'Solo',
+    statusNote: 'Archived challenge now open for product analytics practice.',
+    eligibility: ['Open to product and market research learners'],
+    rules: ['Support conclusions with data', 'Keep your recommendation concise and actionable'],
   },
 ];
 
@@ -132,6 +192,18 @@ export function mapChallengeDocumentToPublicChallenge(item: any): PublicChalleng
     tools: Array.isArray(item.tools) ? item.tools.map((tool: unknown) => String(tool || '')).filter(Boolean) : [],
     deliverables: Array.isArray(item.deliverables) ? item.deliverables.map((entry: unknown) => String(entry || '')).filter(Boolean) : [],
     steps: Array.isArray(item.steps) ? item.steps.map((entry: unknown) => String(entry || '')).filter(Boolean) : [],
-    actionUrl: String(item.actionUrl || '/courses'),
+    actionUrl: String(item.actionUrl || ''),
+    startDate: String(item.startDate || ''),
+    startTime: String(item.startTime || ''),
+    endDate: String(item.endDate || ''),
+    endTime: String(item.endTime || ''),
+    registrationDeadline: String(item.registrationDeadline || ''),
+    expiryDate: String(item.expiryDate || ''),
+    competitionMode: String(item.competitionMode || 'Individual'),
+    maxSubmissions: Number(item.maxSubmissions || 1),
+    teamSize: String(item.teamSize || 'Solo or small team'),
+    statusNote: String(item.statusNote || ''),
+    eligibility: Array.isArray(item.eligibility) ? item.eligibility.map((entry: unknown) => String(entry || '')).filter(Boolean) : [],
+    rules: Array.isArray(item.rules) ? item.rules.map((entry: unknown) => String(entry || '')).filter(Boolean) : [],
   };
 }

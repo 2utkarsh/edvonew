@@ -23,6 +23,18 @@ export interface ChallengeItemDocument {
   deliverables: string[];
   steps: string[];
   actionUrl: string;
+  startDate: string;
+  startTime: string;
+  endDate: string;
+  endTime: string;
+  registrationDeadline: string;
+  expiryDate: string;
+  competitionMode: string;
+  maxSubmissions: number;
+  teamSize: string;
+  statusNote: string;
+  eligibility: string[];
+  rules: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -58,6 +70,18 @@ const challengeItemSchema = new Schema<ChallengeItemDocument>(
     deliverables: { type: [String], default: [] },
     steps: { type: [String], default: [] },
     actionUrl: { type: String, default: '', trim: true },
+    startDate: { type: String, default: '', trim: true },
+    startTime: { type: String, default: '', trim: true },
+    endDate: { type: String, default: '', trim: true },
+    endTime: { type: String, default: '', trim: true },
+    registrationDeadline: { type: String, default: '', trim: true },
+    expiryDate: { type: String, default: '', trim: true },
+    competitionMode: { type: String, default: 'Individual', trim: true },
+    maxSubmissions: { type: Number, default: 1 },
+    teamSize: { type: String, default: 'Solo or small team', trim: true },
+    statusNote: { type: String, default: '', trim: true },
+    eligibility: { type: [String], default: [] },
+    rules: { type: [String], default: [] },
   },
   { timestamps: true }
 );

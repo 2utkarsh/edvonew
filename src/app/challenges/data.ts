@@ -19,6 +19,18 @@ export interface ChallengeItem {
   deliverables: string[];
   steps: string[];
   actionUrl: string;
+  startDate: string;
+  startTime: string;
+  endDate: string;
+  endTime: string;
+  registrationDeadline: string;
+  expiryDate: string;
+  competitionMode: string;
+  maxSubmissions: number;
+  teamSize: string;
+  statusNote: string;
+  eligibility: string[];
+  rules: string[];
 }
 
 const apiBase = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '/backend';
@@ -44,7 +56,19 @@ function mapChallenge(item: Record<string, unknown>): ChallengeItem {
     tools: Array.isArray(item.tools) ? item.tools.map((tool) => String(tool || '')).filter(Boolean) : [],
     deliverables: Array.isArray(item.deliverables) ? item.deliverables.map((entry) => String(entry || '')).filter(Boolean) : [],
     steps: Array.isArray(item.steps) ? item.steps.map((entry) => String(entry || '')).filter(Boolean) : [],
-    actionUrl: String(item.actionUrl || '/courses'),
+    actionUrl: String(item.actionUrl || ''),
+    startDate: String(item.startDate || ''),
+    startTime: String(item.startTime || ''),
+    endDate: String(item.endDate || ''),
+    endTime: String(item.endTime || ''),
+    registrationDeadline: String(item.registrationDeadline || ''),
+    expiryDate: String(item.expiryDate || ''),
+    competitionMode: String(item.competitionMode || 'Individual'),
+    maxSubmissions: Number(item.maxSubmissions || 1),
+    teamSize: String(item.teamSize || 'Solo or small team'),
+    statusNote: String(item.statusNote || ''),
+    eligibility: Array.isArray(item.eligibility) ? item.eligibility.map((entry) => String(entry || '')).filter(Boolean) : [],
+    rules: Array.isArray(item.rules) ? item.rules.map((entry) => String(entry || '')).filter(Boolean) : [],
   };
 }
 

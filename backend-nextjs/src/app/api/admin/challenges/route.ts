@@ -56,7 +56,19 @@ export async function POST(request: Request) {
     tools: parseList(body.tools),
     deliverables: parseList(body.deliverables),
     steps: parseList(body.steps),
-    actionUrl: String(body.actionUrl || '/courses'),
+    actionUrl: String(body.actionUrl || ''),
+    startDate: String(body.startDate || ''),
+    startTime: String(body.startTime || ''),
+    endDate: String(body.endDate || ''),
+    endTime: String(body.endTime || ''),
+    registrationDeadline: String(body.registrationDeadline || ''),
+    expiryDate: String(body.expiryDate || ''),
+    competitionMode: String(body.competitionMode || 'Individual'),
+    maxSubmissions: Math.max(1, parseInt(String(body.maxSubmissions || 1), 10) || 1),
+    teamSize: String(body.teamSize || 'Solo or small team'),
+    statusNote: String(body.statusNote || ''),
+    eligibility: parseList(body.eligibility),
+    rules: parseList(body.rules),
   });
 
   return toResponse(created(mapChallengeDocumentToPublicChallenge(item)));

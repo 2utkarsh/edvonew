@@ -38,7 +38,19 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (body.tools !== undefined) update.tools = parseList(body.tools);
   if (body.deliverables !== undefined) update.deliverables = parseList(body.deliverables);
   if (body.steps !== undefined) update.steps = parseList(body.steps);
-  if (body.actionUrl !== undefined) update.actionUrl = String(body.actionUrl || '/courses');
+  if (body.actionUrl !== undefined) update.actionUrl = String(body.actionUrl || '');
+  if (body.startDate !== undefined) update.startDate = String(body.startDate || '');
+  if (body.startTime !== undefined) update.startTime = String(body.startTime || '');
+  if (body.endDate !== undefined) update.endDate = String(body.endDate || '');
+  if (body.endTime !== undefined) update.endTime = String(body.endTime || '');
+  if (body.registrationDeadline !== undefined) update.registrationDeadline = String(body.registrationDeadline || '');
+  if (body.expiryDate !== undefined) update.expiryDate = String(body.expiryDate || '');
+  if (body.competitionMode !== undefined) update.competitionMode = String(body.competitionMode || 'Individual');
+  if (body.maxSubmissions !== undefined) update.maxSubmissions = Math.max(1, parseInt(String(body.maxSubmissions), 10) || 1);
+  if (body.teamSize !== undefined) update.teamSize = String(body.teamSize || 'Solo or small team');
+  if (body.statusNote !== undefined) update.statusNote = String(body.statusNote || '');
+  if (body.eligibility !== undefined) update.eligibility = parseList(body.eligibility);
+  if (body.rules !== undefined) update.rules = parseList(body.rules);
 
   const item = await ChallengeItemModel.findByIdAndUpdate(id, update, { new: true }).lean();
   if (!item) return toResponse(fail('Challenge not found', 'NOT_FOUND', undefined, 404));
