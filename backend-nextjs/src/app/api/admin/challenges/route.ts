@@ -1,8 +1,8 @@
-import { connectToDatabase } from '@/lib/db';
+﻿import { connectToDatabase } from '@/lib/db';
 import { ensureSeededContent } from '@/lib/content-seeder';
 import { requireAdminOrDemo } from '@/lib/demo-admin';
 import { created, fail, ok, parseJson, toResponse } from '@/lib/http';
-import { mapChallengeDocumentToPublicChallenge } from '@/lib/challenge-data';
+import { buildDefaultChallengeQuestions, mapChallengeDocumentToPublicChallenge } from '@/lib/challenge-data';
 import { slugify } from '@/lib/query';
 import { ChallengeItemModel } from '@/models/ChallengeItem';
 
@@ -83,8 +83,9 @@ export async function POST(request: Request) {
     statusNote: String(body.statusNote || ''),
     eligibility: parseList(body.eligibility),
     rules: parseList(body.rules),
-    questions: parseQuestions(body.questions),
+    questions: (() => { const parsedQuestions = parseQuestions(body.questions); return parsedQuestions.length ? parsedQuestions : buildDefaultChallengeQuestions({ title, description: String(body.description || ''), category: String(body.category || 'General'), phase, objective: String(body.objective || body.description || ''), deliverables: parseList(body.deliverables), tools: parseList(body.tools) }); })(),
   });
 
   return toResponse(created(mapChallengeDocumentToPublicChallenge(item)));
 }
+

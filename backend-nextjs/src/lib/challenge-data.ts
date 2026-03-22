@@ -1,4 +1,4 @@
-import { slugify } from '@/lib/query';
+﻿import { slugify } from '@/lib/query';
 
 export interface ChallengeQuestionRecord {
   prompt: string;
@@ -42,6 +42,56 @@ export interface PublicChallengeRecord {
   eligibility: string[];
   rules: string[];
   questions: ChallengeQuestionRecord[];
+}
+
+function toQuestionRecord(question: any): ChallengeQuestionRecord | null {
+  const prompt = String(question?.prompt || '').trim();
+  if (!prompt) return null;
+  return {
+    prompt,
+    type: String(question?.type || 'textarea').trim() || 'textarea',
+    options: Array.isArray(question?.options) ? question.options.map((option: unknown) => String(option || '').trim()).filter(Boolean) : [],
+    required: question?.required === false ? false : true,
+    placeholder: String(question?.placeholder || '').trim(),
+  };
+}
+
+export function buildDefaultChallengeQuestions(item: Partial<PublicChallengeRecord> & { title?: string; phase?: string; category?: string; objective?: string; deliverables?: string[]; tools?: string[] }): ChallengeQuestionRecord[] {
+  const title = String(item.title || 'this challenge').trim();
+  const phase = item.phase === 'completed' ? 'completed' : 'ongoing';
+  const category = String(item.category || 'General').trim();
+  const objective = String(item.objective || item.description || '').trim();
+  const deliverable = Array.isArray(item.deliverables) && item.deliverables.length ? String(item.deliverables[0] || '').trim() : 'your final submission';
+  const toolOptions = Array.isArray(item.tools) && item.tools.length ? item.tools.map((tool) => String(tool || '').trim()).filter(Boolean) : ['SQL', 'Python', 'Power BI', 'Excel'];
+
+  return [
+    {
+      prompt: phase === 'ongoing' ? `How will you approach ${title}?` : `What is your practice plan for ${title}?`,
+      type: 'textarea',
+      options: [],
+      required: true,
+      placeholder: objective || `Summarize the steps you will take for ${title}.`,
+    },
+    {
+      prompt: 'Which primary tool or workflow will you use?',
+      type: 'select',
+      options: toolOptions,
+      required: true,
+      placeholder: 'Choose your tool stack',
+    },
+    {
+      prompt: phase === 'ongoing' ? 'Share your submission or portfolio link' : 'What deliverable will you complete during practice?',
+      type: phase === 'ongoing' ? 'text' : 'textarea',
+      options: [],
+      required: true,
+      placeholder: phase === 'ongoing' ? 'https://your-link.com' : `Describe how you will finish ${deliverable} in ${category}.`,
+    },
+  ];
+}
+
+export function ensureChallengeQuestions(item: Partial<PublicChallengeRecord> & { questions?: unknown }): ChallengeQuestionRecord[] {
+  const mapped = Array.isArray(item.questions) ? item.questions.map(toQuestionRecord).filter(Boolean) as ChallengeQuestionRecord[] : [];
+  return mapped.length ? mapped : buildDefaultChallengeQuestions(item);
 }
 
 export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
@@ -119,6 +169,7 @@ export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
     questions: [
       { prompt: 'What is the first metric you would investigate?', type: 'textarea', options: [], required: true, placeholder: 'Explain why this metric matters.' },
       { prompt: 'Which area is the biggest recovery lever?', type: 'select', options: ['Retention', 'Delivery operations', 'Marketing efficiency', 'Restaurant supply'], required: true, placeholder: '' },
+      { prompt: 'How will you turn this into a practice-ready deliverable?', type: 'textarea', options: [], required: true, placeholder: 'Describe the workbook, deck, or summary you will complete.' },
     ],
   },
   {
@@ -156,6 +207,7 @@ export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
     questions: [
       { prompt: 'Which growth lever would you prioritize first?', type: 'textarea', options: [], required: true, placeholder: 'Describe your reasoning.' },
       { prompt: 'What output would you create first?', type: 'select', options: ['Retention cohort analysis', 'Revenue trend model', 'Executive summary deck', 'Content performance dashboard'], required: true, placeholder: '' },
+      { prompt: 'What will your final practice deliverable include?', type: 'textarea', options: [], required: true, placeholder: 'Summarize the analysis, recommendation, and presentation you plan to complete.' },
     ],
   },
   {
@@ -193,6 +245,7 @@ export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
     questions: [
       { prompt: 'Which segment would you analyze first?', type: 'textarea', options: [], required: true, placeholder: 'Explain your choice.' },
       { prompt: 'What kind of deliverable will you build?', type: 'select', options: ['Market sizing sheet', 'Research memo', 'Recommendation deck', 'Dashboard'], required: true, placeholder: '' },
+      { prompt: 'What proof points will make your recommendation stronger?', type: 'textarea', options: [], required: true, placeholder: 'List the AQI, market, and customer signals you will highlight.' },
     ],
   },
 ];
@@ -231,14 +284,6 @@ export function mapChallengeDocumentToPublicChallenge(item: any): PublicChalleng
     statusNote: String(item.statusNote || ''),
     eligibility: Array.isArray(item.eligibility) ? item.eligibility.map((entry: unknown) => String(entry || '')).filter(Boolean) : [],
     rules: Array.isArray(item.rules) ? item.rules.map((entry: unknown) => String(entry || '')).filter(Boolean) : [],
-    questions: Array.isArray(item.questions)
-      ? item.questions.map((question: any) => ({
-          prompt: String(question?.prompt || ''),
-          type: String(question?.type || 'textarea'),
-          options: Array.isArray(question?.options) ? question.options.map((option: unknown) => String(option || '')).filter(Boolean) : [],
-          required: question?.required === false ? false : true,
-          placeholder: String(question?.placeholder || ''),
-        })).filter((question: ChallengeQuestionRecord) => question.prompt)
-      : [],
+    questions: ensureChallengeQuestions(item),
   };
 }

@@ -1,8 +1,8 @@
-import { connectToDatabase } from '@/lib/db';
+﻿import { connectToDatabase } from '@/lib/db';
 import { ensureSeededContent } from '@/lib/content-seeder';
 import { requireAdminOrDemo } from '@/lib/demo-admin';
 import { fail, ok, parseJson, toResponse } from '@/lib/http';
-import { mapChallengeDocumentToPublicChallenge } from '@/lib/challenge-data';
+import { buildDefaultChallengeQuestions, mapChallengeDocumentToPublicChallenge } from '@/lib/challenge-data';
 import { slugify } from '@/lib/query';
 import { ChallengeItemModel } from '@/models/ChallengeItem';
 
@@ -65,7 +65,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (body.statusNote !== undefined) update.statusNote = String(body.statusNote || '');
   if (body.eligibility !== undefined) update.eligibility = parseList(body.eligibility);
   if (body.rules !== undefined) update.rules = parseList(body.rules);
-  if (body.questions !== undefined) update.questions = parseQuestions(body.questions);
+  if (body.questions !== undefined) { const parsedQuestions = parseQuestions(body.questions); update.questions = parsedQuestions.length ? parsedQuestions : buildDefaultChallengeQuestions({ title: String(body.title || ''), description: String(body.description || ''), category: String(body.category || 'General'), phase: body.phase === 'completed' ? 'completed' : 'ongoing', objective: String(body.objective || body.description || ''), deliverables: parseList(body.deliverables), tools: parseList(body.tools) }); }
 
   const item = await ChallengeItemModel.findByIdAndUpdate(id, update, { new: true }).lean();
   if (!item) return toResponse(fail('Challenge not found', 'NOT_FOUND', undefined, 404));
@@ -84,3 +84,4 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
   if (!item) return toResponse(fail('Challenge not found', 'NOT_FOUND', undefined, 404));
   return toResponse(ok({ deleted: true, id }));
 }
+
