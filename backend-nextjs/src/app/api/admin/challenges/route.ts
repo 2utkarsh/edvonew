@@ -6,6 +6,11 @@ import { mapChallengeDocumentToPublicChallenge } from '@/lib/challenge-data';
 import { slugify } from '@/lib/query';
 import { ChallengeItemModel } from '@/models/ChallengeItem';
 
+function parseList(value: unknown) {
+  if (Array.isArray(value)) return value.map((item) => String(item || '').trim()).filter(Boolean);
+  return String(value || '').split(/\r?\n|,/).map((item) => item.trim()).filter(Boolean);
+}
+
 export async function GET(request: Request) {
   const denied = await requireAdminOrDemo(request);
   if (denied) return denied;
@@ -28,19 +33,30 @@ export async function POST(request: Request) {
   const title = String(body.title || '').trim();
   if (!title) return toResponse(fail('Title is required', 'VALIDATION_ERROR', undefined, 400));
 
+  const slug = String(body.slug || slugify(title));
+  const href = String(body.href || `/challenges/${slug}`);
+  const phase = body.phase === 'completed' ? 'completed' : 'ongoing';
+
   const item = await ChallengeItemModel.create({
     title,
-    slug: String(body.slug || slugify(title)),
+    slug,
     description: String(body.description || ''),
     image: String(body.image || '/images/edvo-official-logo-v10.png'),
     category: String(body.category || 'General'),
-    phase: body.phase === 'completed' ? 'completed' : 'ongoing',
+    phase,
     visibility: body.visibility === 'inactive' ? 'inactive' : 'active',
     order: parseInt(String(body.order || 0), 10) || 0,
     prize: String(body.prize || ''),
     participants: String(body.participants || ''),
-    href: String(body.href || `/challenges/${slugify(title)}`),
+    href,
     badge: body.badge ? String(body.badge) : undefined,
+    objective: String(body.objective || body.description || ''),
+    duration: String(body.duration || (phase === 'completed' ? 'Self-paced practice' : '7 days')),
+    difficulty: String(body.difficulty || 'Intermediate'),
+    tools: parseList(body.tools),
+    deliverables: parseList(body.deliverables),
+    steps: parseList(body.steps),
+    actionUrl: String(body.actionUrl || '/courses'),
   });
 
   return toResponse(created(mapChallengeDocumentToPublicChallenge(item)));

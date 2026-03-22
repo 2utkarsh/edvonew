@@ -6,6 +6,11 @@ import { mapChallengeDocumentToPublicChallenge } from '@/lib/challenge-data';
 import { slugify } from '@/lib/query';
 import { ChallengeItemModel } from '@/models/ChallengeItem';
 
+function parseList(value: unknown) {
+  if (Array.isArray(value)) return value.map((item) => String(item || '').trim()).filter(Boolean);
+  return String(value || '').split(/\r?\n|,/).map((item) => item.trim()).filter(Boolean);
+}
+
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const denied = await requireAdminOrDemo(request);
   if (denied) return denied;
@@ -27,6 +32,13 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (body.participants !== undefined) update.participants = String(body.participants || '');
   if (body.href !== undefined) update.href = String(body.href || '');
   if (body.badge !== undefined) update.badge = body.badge ? String(body.badge) : undefined;
+  if (body.objective !== undefined) update.objective = String(body.objective || '');
+  if (body.duration !== undefined) update.duration = String(body.duration || '');
+  if (body.difficulty !== undefined) update.difficulty = String(body.difficulty || 'Intermediate');
+  if (body.tools !== undefined) update.tools = parseList(body.tools);
+  if (body.deliverables !== undefined) update.deliverables = parseList(body.deliverables);
+  if (body.steps !== undefined) update.steps = parseList(body.steps);
+  if (body.actionUrl !== undefined) update.actionUrl = String(body.actionUrl || '/courses');
 
   const item = await ChallengeItemModel.findByIdAndUpdate(id, update, { new: true }).lean();
   if (!item) return toResponse(fail('Challenge not found', 'NOT_FOUND', undefined, 404));

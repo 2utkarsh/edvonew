@@ -1,4 +1,4 @@
-﻿import { slugify } from '@/lib/query';
+import { slugify } from '@/lib/query';
 
 export interface PublicChallengeRecord {
   id: string;
@@ -14,6 +14,13 @@ export interface PublicChallengeRecord {
   participants: string;
   href: string;
   badge?: string;
+  objective: string;
+  duration: string;
+  difficulty: string;
+  tools: string[];
+  deliverables: string[];
+  steps: string[];
+  actionUrl: string;
 }
 
 export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
@@ -31,6 +38,13 @@ export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
     participants: '2.5k+',
     href: '/challenges/databricks-2',
     badge: 'Certified Submissions',
+    objective: 'Build a polished analytics story from raw business data and present recommendations that feel interview-ready.',
+    duration: '7 days',
+    difficulty: 'Intermediate',
+    tools: ['SQL', 'Power BI', 'Python', 'Presentation Deck'],
+    deliverables: ['Insight summary PDF', 'Dashboard or notebook', 'LinkedIn post with key takeaways'],
+    steps: ['Download the challenge brief and dataset.', 'Analyze the data and document your logic clearly.', 'Prepare your final dashboard or notebook.', 'Publish your takeaways and submit your solution link.'],
+    actionUrl: '/courses',
   },
   {
     id: 'food-delivery',
@@ -45,6 +59,13 @@ export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
     prize: 'Rs 25,000',
     participants: '2265',
     href: '/challenges/food-delivery',
+    objective: 'Practice diagnosing a startup recovery problem using ops, retention, and delivery performance metrics.',
+    duration: 'Self-paced practice',
+    difficulty: 'Beginner to Intermediate',
+    tools: ['Excel', 'SQL', 'Power BI'],
+    deliverables: ['Practice analysis workbook', 'Recommendation notes', 'Portfolio-ready summary'],
+    steps: ['Review the case statement.', 'Explore the provided business metrics.', 'Identify root causes and opportunities.', 'Turn your work into a polished practice project.'],
+    actionUrl: '/courses',
   },
   {
     id: 'newspaper',
@@ -59,6 +80,13 @@ export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
     prize: 'Rs 50,000',
     participants: '1551',
     href: '/challenges/newspaper',
+    objective: 'Practice digital growth analysis by translating audience, content, and monetization signals into strategy.',
+    duration: 'Self-paced practice',
+    difficulty: 'Intermediate',
+    tools: ['SQL', 'Spreadsheet Modeling', 'Presentation Deck'],
+    deliverables: ['Content funnel analysis', 'Growth recommendation deck', 'Executive summary'],
+    steps: ['Understand the newsroom business problem.', 'Analyze audience and revenue trends.', 'Prioritize the biggest growth levers.', 'Present a practical transformation plan.'],
+    actionUrl: '/courses',
   },
   {
     id: 'air-purifier',
@@ -73,6 +101,13 @@ export const MOCK_CHALLENGES: PublicChallengeRecord[] = [
     prize: 'Rs 50,000',
     participants: '2810',
     href: '/challenges/air-purifier',
+    objective: 'Practice product research and market sizing by combining air quality data with market opportunity insights.',
+    duration: 'Self-paced practice',
+    difficulty: 'Intermediate',
+    tools: ['Python', 'Spreadsheets', 'Market Research'],
+    deliverables: ['Research summary', 'Opportunity sizing sheet', 'Recommendation slide'],
+    steps: ['Review the product brief and market context.', 'Study AQI and user demand patterns.', 'Size the opportunity and key segments.', 'Recommend a clear go-to-market direction.'],
+    actionUrl: '/courses',
   },
 ];
 
@@ -91,5 +126,12 @@ export function mapChallengeDocumentToPublicChallenge(item: any): PublicChalleng
     participants: String(item.participants || ''),
     href: String(item.href || `/challenges/${item.slug || ''}`),
     badge: item.badge ? String(item.badge) : undefined,
+    objective: String(item.objective || item.description || ''),
+    duration: String(item.duration || (item.phase === 'completed' ? 'Self-paced practice' : '7 days')),
+    difficulty: String(item.difficulty || 'Intermediate'),
+    tools: Array.isArray(item.tools) ? item.tools.map((tool: unknown) => String(tool || '')).filter(Boolean) : [],
+    deliverables: Array.isArray(item.deliverables) ? item.deliverables.map((entry: unknown) => String(entry || '')).filter(Boolean) : [],
+    steps: Array.isArray(item.steps) ? item.steps.map((entry: unknown) => String(entry || '')).filter(Boolean) : [],
+    actionUrl: String(item.actionUrl || '/courses'),
   };
 }

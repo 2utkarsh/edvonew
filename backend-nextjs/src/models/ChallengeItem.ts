@@ -16,6 +16,13 @@ export interface ChallengeItemDocument {
   participants: string;
   href: string;
   badge?: string;
+  objective: string;
+  duration: string;
+  difficulty: string;
+  tools: string[];
+  deliverables: string[];
+  steps: string[];
+  actionUrl: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -44,6 +51,13 @@ const challengeItemSchema = new Schema<ChallengeItemDocument>(
     participants: { type: String, default: '', trim: true },
     href: { type: String, default: '', trim: true },
     badge: { type: String, trim: true },
+    objective: { type: String, default: '', trim: true },
+    duration: { type: String, default: '', trim: true },
+    difficulty: { type: String, default: 'Intermediate', trim: true },
+    tools: { type: [String], default: [] },
+    deliverables: { type: [String], default: [] },
+    steps: { type: [String], default: [] },
+    actionUrl: { type: String, default: '', trim: true },
   },
   { timestamps: true }
 );
