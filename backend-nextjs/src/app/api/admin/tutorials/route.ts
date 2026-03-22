@@ -1,4 +1,4 @@
-﻿import { connectToDatabase } from '@/lib/db';
+import { connectToDatabase } from '@/lib/db';
 import { created, ok, parseJson, toResponse } from '@/lib/http';
 import { slugify } from '@/lib/query';
 import { ensureSeededContent } from '@/lib/content-seeder';
@@ -37,6 +37,8 @@ export async function POST(request: Request) {
     tool: String(body.tool || 'Tool'),
     duration: String(body.duration || '1h 00m'),
     level: String(body.level || 'Beginner'),
+    tutorialDocumentName: String(body.tutorialDocumentName || `${slugify(title)}.txt`),
+    tutorialDocumentUrl: String(body.tutorialDocumentUrl || ''),
     status: body.status === 'draft' || body.status === 'archived' ? body.status : 'published',
     order: parseInt(String(body.order || 0), 10) || 0,
   });

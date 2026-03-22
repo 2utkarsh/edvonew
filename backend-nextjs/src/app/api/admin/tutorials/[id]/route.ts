@@ -1,4 +1,4 @@
-﻿import { connectToDatabase } from '@/lib/db';
+import { connectToDatabase } from '@/lib/db';
 import { fail, ok, parseJson, toResponse } from '@/lib/http';
 import { slugify } from '@/lib/query';
 import { ensureSeededContent } from '@/lib/content-seeder';
@@ -27,6 +27,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (body.tool) update.tool = String(body.tool);
   if (body.duration) update.duration = String(body.duration);
   if (body.level) update.level = String(body.level);
+  if (body.tutorialDocumentName !== undefined) update.tutorialDocumentName = String(body.tutorialDocumentName || '');
+  if (body.tutorialDocumentUrl !== undefined) update.tutorialDocumentUrl = String(body.tutorialDocumentUrl || '');
   if (body.status) update.status = String(body.status);
   if (body.order !== undefined) update.order = parseInt(String(body.order), 10) || 0;
 

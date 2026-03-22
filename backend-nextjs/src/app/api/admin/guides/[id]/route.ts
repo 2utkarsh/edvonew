@@ -1,10 +1,18 @@
-﻿import { connectToDatabase } from '@/lib/db';
+import { connectToDatabase } from '@/lib/db';
 import { fail, ok, parseJson, toResponse } from '@/lib/http';
 import { slugify } from '@/lib/query';
 import { ensureSeededContent } from '@/lib/content-seeder';
 import { requireAdminOrDemo } from '@/lib/demo-admin';
 import { ResourceItemModel } from '@/models/ResourceItem';
 import { mapResourceDocumentToGuide } from '@/lib/resource-data';
+
+function normalizeRoadmapSteps(value: unknown) {
+  if (Array.isArray(value)) return value.map((step) => String(step || '').trim()).filter(Boolean);
+  return String(value || '')
+    .split(/\r?\n/)
+    .map((step) => step.trim())
+    .filter(Boolean);
+}
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const denied = await requireAdminOrDemo(request);
@@ -30,6 +38,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (body.steps !== undefined) update.steps = parseInt(String(body.steps), 10) || 0;
   if (body.highlight) update.highlight = String(body.highlight);
   if (body.icon) update.icon = String(body.icon);
+  if (body.roadmapSteps !== undefined) update.roadmapSteps = normalizeRoadmapSteps(body.roadmapSteps);
+  if (body.roadmapFileName !== undefined) update.roadmapFileName = String(body.roadmapFileName || '');
+  if (body.roadmapFileUrl !== undefined) update.roadmapFileUrl = String(body.roadmapFileUrl || '');
   if (body.status) update.status = String(body.status);
   if (body.order !== undefined) update.order = parseInt(String(body.order), 10) || 0;
 

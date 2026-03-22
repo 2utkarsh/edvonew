@@ -1,4 +1,4 @@
-﻿export interface GuideItem {
+export interface GuideItem {
   id: string;
   slug: string;
   title: string;
@@ -8,6 +8,9 @@
   highlight: string;
   icon: string;
   thumbnail: string;
+  roadmapSteps: string[];
+  roadmapFileName: string;
+  roadmapFileUrl: string;
   order?: number;
 }
 
@@ -38,6 +41,9 @@ export async function fetchGuides(): Promise<GuideItem[]> {
     highlight: String(item.highlight || 'Featured'),
     icon: String(item.icon || 'Map'),
     thumbnail: String(item.thumbnail || '/images/edvo-official-logo-v10.png'),
+    roadmapSteps: Array.isArray(item.roadmapSteps) ? item.roadmapSteps.map((step) => String(step || '')).filter(Boolean) : [],
+    roadmapFileName: String(item.roadmapFileName || `${String(item.slug || item.id || 'guide')}-roadmap.txt`),
+    roadmapFileUrl: String(item.roadmapFileUrl || ''),
     order: Number(item.order || 0),
   }));
 }

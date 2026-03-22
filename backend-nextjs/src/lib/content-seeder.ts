@@ -1,4 +1,4 @@
-﻿import { hashPassword } from '@/lib/auth';
+import { hashPassword } from '@/lib/auth';
 import { MOCK_BLOGS } from '@/lib/blog-data';
 import { ensureChallengeQuestions, ensurePrizeDistribution, MOCK_CHALLENGES } from '@/lib/challenge-data';
 import { MOCK_COURSE_REVIEWS } from '@/lib/course-review-data';
@@ -70,11 +70,53 @@ export async function ensureSeededContent() {
   }
 
   for (const tutorial of MOCK_TUTORIALS) {
-    await ResourceItemModel.findOneAndUpdate({ slug: tutorial.slug }, { $set: { type: 'tutorial', title: tutorial.title, slug: tutorial.slug, description: tutorial.description, thumbnail: tutorial.thumbnail, category: tutorial.category, tool: tutorial.tool, duration: tutorial.duration, level: tutorial.level, status: tutorial.status, order: tutorial.order } }, { upsert: true, new: true });
+    await ResourceItemModel.findOneAndUpdate(
+      { slug: tutorial.slug },
+      {
+        $set: {
+          type: 'tutorial',
+          title: tutorial.title,
+          slug: tutorial.slug,
+          description: tutorial.description,
+          thumbnail: tutorial.thumbnail,
+          category: tutorial.category,
+          tool: tutorial.tool,
+          duration: tutorial.duration,
+          level: tutorial.level,
+          tutorialDocumentName: tutorial.tutorialDocumentName,
+          tutorialDocumentUrl: tutorial.tutorialDocumentUrl,
+          status: tutorial.status,
+          order: tutorial.order,
+        },
+      },
+      { upsert: true, new: true }
+    );
   }
 
   for (const guide of MOCK_GUIDES) {
-    await ResourceItemModel.findOneAndUpdate({ slug: guide.slug }, { $set: { type: 'guide', title: guide.title, slug: guide.slug, description: guide.description, thumbnail: guide.thumbnail, category: guide.track, track: guide.track, steps: guide.steps, highlight: guide.highlight, icon: guide.icon, status: guide.status, order: guide.order } }, { upsert: true, new: true });
+    await ResourceItemModel.findOneAndUpdate(
+      { slug: guide.slug },
+      {
+        $set: {
+          type: 'guide',
+          title: guide.title,
+          slug: guide.slug,
+          description: guide.description,
+          thumbnail: guide.thumbnail,
+          category: guide.track,
+          track: guide.track,
+          steps: guide.steps,
+          highlight: guide.highlight,
+          icon: guide.icon,
+          roadmapSteps: guide.roadmapSteps,
+          roadmapFileName: guide.roadmapFileName,
+          roadmapFileUrl: guide.roadmapFileUrl,
+          status: guide.status,
+          order: guide.order,
+        },
+      },
+      { upsert: true, new: true }
+    );
   }
 
   const courseReviewCategories = Array.from(new Set(MOCK_COURSE_REVIEWS.map((review) => review.category)));
@@ -166,6 +208,3 @@ export async function ensureSeededContent() {
 
   global.__edvoContentSeeded = true;
 }
-
-
-

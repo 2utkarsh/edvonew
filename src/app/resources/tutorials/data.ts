@@ -1,4 +1,4 @@
-﻿export interface TutorialItem {
+export interface TutorialItem {
   id: string;
   slug: string;
   title: string;
@@ -8,6 +8,8 @@
   level: string;
   thumbnail: string;
   category: string;
+  tutorialDocumentName: string;
+  tutorialDocumentUrl: string;
   order?: number;
 }
 
@@ -38,6 +40,8 @@ export async function fetchTutorials(): Promise<TutorialItem[]> {
     level: String(item.level || 'Beginner'),
     thumbnail: String(item.thumbnail || '/images/edvo-official-logo-v10.png'),
     category: String(item.category || 'General'),
+    tutorialDocumentName: String(item.tutorialDocumentName || `${String(item.slug || item.id || 'tutorial')}.txt`),
+    tutorialDocumentUrl: String(item.tutorialDocumentUrl || ''),
     order: Number(item.order || 0),
   }));
 }

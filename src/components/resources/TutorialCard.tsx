@@ -1,8 +1,7 @@
-﻿'use client';
+'use client';
 
-import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Clock, Play, BookOpen, ChevronRight, Sparkles } from 'lucide-react';
+import { Clock, Download, FileDown, Play, BookOpen, ChevronRight, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface TutorialCardProps {
@@ -13,6 +12,8 @@ interface TutorialCardProps {
   duration: string;
   level: 'Beginner' | 'Intermediate' | 'Advanced' | string;
   thumbnail: string;
+  tutorialDocumentName: string;
+  tutorialDocumentUrl: string;
 }
 
 const levelColors = {
@@ -28,7 +29,11 @@ export default function TutorialCard({
   duration,
   level,
   thumbnail,
+  tutorialDocumentName,
+  tutorialDocumentUrl,
 }: TutorialCardProps) {
+  const learningHref = tutorialDocumentUrl || '/courses';
+
   return (
     <motion.div
       whileHover={{ y: -10, scale: 1.02 }}
@@ -86,11 +91,19 @@ export default function TutorialCard({
           {title}
         </h3>
 
-        <p className="text-[15px] text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed mb-8 flex-1 font-medium">
+        <p className="text-[15px] text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed mb-6 flex-1 font-medium">
           {description}
         </p>
 
-        <div className="pt-8 border-t border-slate-50 dark:border-slate-800/50 flex items-center justify-between">
+        <div className="mb-8 rounded-[1.75rem] border border-slate-100 bg-slate-50 px-5 py-4 dark:border-slate-800/60 dark:bg-slate-950/40">
+          <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
+            <FileDown className="h-4 w-4 text-primary-500" />
+            Tutorial Document
+          </div>
+          <div className="mt-2 text-sm font-bold text-slate-900 dark:text-white line-clamp-1">{tutorialDocumentName || 'Learning doc'}</div>
+        </div>
+
+        <div className="pt-8 border-t border-slate-50 dark:border-slate-800/50 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="flex -space-x-2">
               {[1, 2, 3].map((i) => (
@@ -102,10 +115,10 @@ export default function TutorialCard({
             <span className="text-[11px] font-bold text-slate-400">8.4k Learners</span>
           </div>
 
-          <Link href="/courses" className="flex items-center gap-2 text-primary-600 dark:text-primary-400 font-black text-[12px] uppercase tracking-widest group/btn hover:translate-x-1 transition-transform">
+          <a href={learningHref} download={tutorialDocumentName || undefined} className="flex items-center gap-2 text-primary-600 dark:text-primary-400 font-black text-[12px] uppercase tracking-widest group/btn hover:translate-x-1 transition-transform">
             Start Learning
             <ChevronRight className="w-4 h-4" />
-          </Link>
+          </a>
         </div>
       </div>
     </motion.div>

@@ -1,4 +1,4 @@
-﻿import { Model, model, models, Schema } from 'mongoose';
+import { Model, model, models, Schema } from 'mongoose';
 
 export type ResourceItemType = 'tutorial' | 'guide';
 export type ResourceItemStatus = 'draft' | 'published' | 'archived';
@@ -13,10 +13,15 @@ export interface ResourceItemDocument {
   tool?: string;
   duration?: string;
   level?: string;
+  tutorialDocumentName?: string;
+  tutorialDocumentUrl?: string;
   track?: string;
   steps?: number;
   highlight?: string;
   icon?: string;
+  roadmapSteps?: string[];
+  roadmapFileName?: string;
+  roadmapFileUrl?: string;
   status: ResourceItemStatus;
   order: number;
   createdAt: Date;
@@ -34,10 +39,15 @@ const resourceItemSchema = new Schema<ResourceItemDocument>(
     tool: { type: String, trim: true },
     duration: { type: String, trim: true },
     level: { type: String, trim: true },
+    tutorialDocumentName: { type: String, trim: true },
+    tutorialDocumentUrl: { type: String, trim: true },
     track: { type: String, trim: true },
     steps: { type: Number },
     highlight: { type: String, trim: true },
     icon: { type: String, trim: true },
+    roadmapSteps: { type: [String], default: [] },
+    roadmapFileName: { type: String, trim: true },
+    roadmapFileUrl: { type: String, trim: true },
     status: { type: String, enum: ['draft', 'published', 'archived'], default: 'published' },
     order: { type: Number, default: 0 },
   },
