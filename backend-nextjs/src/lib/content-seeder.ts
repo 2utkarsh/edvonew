@@ -120,7 +120,33 @@ export async function ensureSeededContent() {
   }
 
   for (const [index, challenge] of MOCK_CHALLENGES.entries()) {
-    await ChallengeItemModel.findOneAndUpdate({ slug: challenge.slug }, { $set: { title: challenge.title, slug: challenge.slug, description: challenge.description, image: challenge.image, category: challenge.category, phase: challenge.phase, visibility: challenge.visibility, order: challenge.order || index + 1, prize: challenge.prize, participants: challenge.participants, href: challenge.href, badge: challenge.badge } }, { upsert: true, new: true });
+    await ChallengeItemModel.findOneAndUpdate(
+      { slug: challenge.slug },
+      {
+        $set: {
+          title: challenge.title,
+          slug: challenge.slug,
+          description: challenge.description,
+          image: challenge.image,
+          category: challenge.category,
+          phase: challenge.phase,
+          visibility: challenge.visibility,
+          order: challenge.order || index + 1,
+          prize: challenge.prize,
+          participants: challenge.participants,
+          href: challenge.href,
+          badge: challenge.badge,
+          objective: challenge.objective,
+          duration: challenge.duration,
+          difficulty: challenge.difficulty,
+          tools: challenge.tools,
+          deliverables: challenge.deliverables,
+          steps: challenge.steps,
+          actionUrl: challenge.actionUrl,
+        },
+      },
+      { upsert: true, new: true }
+    );
   }
 
   global.__edvoContentSeeded = true;
