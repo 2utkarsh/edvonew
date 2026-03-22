@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs';
+﻿import { readFileSync } from 'fs';
 import { join } from 'path';
 
 export default function AdminDashboardPage() {
@@ -8,3 +8,4 @@ export default function AdminDashboardPage() {
   }
   return null;
 }
+

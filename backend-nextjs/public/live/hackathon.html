@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Webinar - EDVO</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    .live-header {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      padding: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .live-badge {
+      background: white;
+      color: #f5576c;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    .live-dot {
+      width: 12px;
+      height: 12px;
+      background: #f5576c;
+      border-radius: 50%;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 350px;
+      gap: 0;
+    }
+
+    .video-section {
+      background: #000;
+      min-height: 600px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .video-placeholder {
+      text-align: center;
+      color: white;
+    }
+
+    .video-placeholder h2 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+
+    .chat-section {
+      background: #f7fafc;
+      border-left: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-header {
+      padding: 20px;
+      border-bottom: 1px solid #e2e8f0;
+      font-weight: 600;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .chat-message {
+      margin-bottom: 15px;
+      padding: 10px;
+      background: white;
+      border-radius: 8px;
+    }
+
+    .chat-input {
+      padding: 20px;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .chat-input input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .event-info {
+      padding: 30px;
+    }
+
+    .event-title {
+      font-size: 2rem;
+      color: #1a202c;
+      margin-bottom: 10px;
+    }
+
+    .event-instructor {
+      color: #718096;
+      margin-bottom: 20px;
+    }
+
+    .btn-leave {
+      background: #f56565;
+      color: white;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    .participants {
+      margin-top: 20px;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+    }
+
+    .participants h3 {
+      margin-bottom: 15px;
+      color: #2d3748;
+    }
+
+    .participant-count {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #667eea;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="live-header">
+      <div>
+        <h1 id="eventTitle" style="color: white; margin-bottom: 5px;">Loading...</h1>
+        <p id="instructorName" style="color: rgba(255,255,255,0.9);">Instructor</p>
+      </div>
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        LIVE NOW
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="video-section">
+        <div class="video-placeholder">
+          <h2>🎥 Live Webinar</h2>
+          <p>Video stream will appear here</p>
+          <div id="videoContainer" style="margin-top: 20px;"></div>
+        </div>
+      </div>
+
+      <div class="chat-section">
+        <div class="chat-header">💬 Live Chat</div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-message">
+            <strong>System:</strong> Welcome to the webinar!
+          </div>
+        </div>
+        <div class="chat-input">
+          <input type="text" id="chatInput" placeholder="Type your message..." />
+        </div>
+      </div>
+    </div>
+
+    <div class="event-info">
+      <h2 class="event-title" id="infoTitle">Event Title</h2>
+      <p class="event-instructor" id="infoInstructor">Instructor Name</p>
+      
+      <div class="participants">
+        <h3>👥 Live Participants</h3>
+        <div class="participant-count" id="participantCount">0</div>
+      </div>
+
+      <button class="btn-leave" onclick="leaveEvent()">Leave Event</button>
+    </div>
+  </div>
+
+  <script>
+    let eventId = null;
+
+    // Get event ID from URL
+    const pathParts = window.location.pathname.split('/');
+    eventId = pathParts[pathParts.length - 1];
+
+    // Load event details
+    async function loadEvent() {
+      try {
+        const token = localStorage.getItem('adminToken') || localStorage.getItem('userToken');
+        const response = await fetch(`/api/v1/events/${eventId}`);
+        const data = await response.json();
+
+        if (data.success) {
+          const event = data.data.event;
+          document.getElementById('eventTitle').textContent = event.title;
+          document.getElementById('instructorName').textContent = `By ${event.instructorName}`;
+          document.getElementById('infoTitle').textContent = event.title;
+          document.getElementById('infoInstructor').textContent = `Instructor: ${event.instructorName}`;
+          document.getElementById('participantCount').textContent = event.registeredCount || 0;
+
+          // Join the event
+          joinEvent();
+        }
+      } catch (error) {
+        console.error('Failed to load event:', error);
+      }
+    }
+
+    // Join event
+    async function joinEvent() {
+      try {
+        const token = localStorage.getItem('adminToken') || localStorage.getItem('userToken');
+        const response = await fetch(`/api/v1/events/${eventId}/join`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Load video player or meeting room
+          loadVideoPlayer(data.data.liveUrl);
+        } else {
+          alert(data.error?.message || 'Failed to join event');
+        }
+      } catch (error) {
+        console.error('Failed to join event:', error);
+      }
+    }
+
+    // Load video player
+    function loadVideoPlayer(liveUrl) {
+      const container = document.getElementById('videoContainer');
+      // You can integrate YouTube Live, Vimeo, or custom RTMP player here
+      container.innerHTML = `
+        <div style="background: #1a202c; padding: 40px; border-radius: 10px;">
+          <p>🔴 Live Stream Active</p>
+          <p style="margin-top: 10px; font-size: 0.9rem; color: #a0aec0;">${liveUrl}</p>
+        </div>
+      `;
+    }
+
+    // Leave event
+    function leaveEvent() {
+      if (confirm('Are you sure you want to leave the live event?')) {
+        window.location.href = '/events';
+      }
+    }
+
+    // Chat functionality
+    document.getElementById('chatInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
+        
+        if (message) {
+          const chatMessages = document.getElementById('chatMessages');
+          const messageEl = document.createElement('div');
+          messageEl.className = 'chat-message';
+          messageEl.innerHTML = `<strong>You:</strong> ${message}`;
+          chatMessages.appendChild(messageEl);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+          input.value = '';
+        }
+      }
+    });
+
+    // Initialize
+    loadEvent();
+
+    // Update participant count periodically
+    setInterval(() => {
+      const countEl = document.getElementById('participantCount');
+      const current = parseInt(countEl.textContent) || 0;
+      const change = Math.floor(Math.random() * 5) - 2;
+      countEl.textContent = Math.max(0, current + change);
+    }, 5000);
+  </script>
+</body>
+</html>
