@@ -20,6 +20,7 @@ export interface EventItemDocument {
   date: string;
   time: string;
   location: string;
+  liveUrl?: string;
   status: EventLifecycle;
   visibility: EventVisibility;
   order: number;
@@ -61,6 +62,7 @@ const eventItemSchema = new Schema<EventItemDocument>(
     date: { type: String, required: true, trim: true },
     time: { type: String, required: true, trim: true },
     location: { type: String, required: true, trim: true },
+    liveUrl: { type: String, trim: true },
     status: { type: String, enum: ['Upcoming', 'Live', 'Ended'], default: 'Upcoming' },
     visibility: { type: String, enum: ['active', 'inactive'], default: 'active' },
     order: { type: Number, default: 0 },

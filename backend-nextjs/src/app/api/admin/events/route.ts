@@ -57,6 +57,7 @@ export async function POST(request: Request) {
     date: String(body.date || ''),
     time: String(body.time || ''),
     location: String(body.location || ''),
+    liveUrl: body.liveUrl ? String(body.liveUrl) : undefined,
     status: ['Live', 'Ended'].includes(String(body.status)) ? body.status : 'Upcoming',
     visibility: body.visibility === 'inactive' ? 'inactive' : 'active',
     order: parseInt(String(body.order || 0), 10) || 0,

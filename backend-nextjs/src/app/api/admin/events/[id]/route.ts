@@ -43,6 +43,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (body.date !== undefined) update.date = String(body.date || '');
   if (body.time !== undefined) update.time = String(body.time || '');
   if (body.location !== undefined) update.location = String(body.location || '');
+  if (body.liveUrl !== undefined) update.liveUrl = body.liveUrl ? String(body.liveUrl) : undefined;
   if (body.status) update.status = ['Live', 'Ended'].includes(String(body.status)) ? body.status : 'Upcoming';
   if (body.visibility) update.visibility = body.visibility === 'inactive' ? 'inactive' : 'active';
   if (body.order !== undefined) update.order = parseInt(String(body.order), 10) || 0;

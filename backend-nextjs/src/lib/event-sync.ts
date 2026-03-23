@@ -29,9 +29,12 @@ function mapLifecycleToStatus(status: string, visibility: string): 'draft' | 'pu
   return 'published';
 }
 
-function inferLiveUrl(location: string): string | undefined {
-  const value = String(location || '').trim();
-  return /^https?:\/\//i.test(value) ? value : undefined;
+function inferLiveUrl(item: Pick<EventItemDocument, 'location' | 'liveUrl'>): string | undefined {
+  const explicitUrl = String(item.liveUrl || '').trim();
+  if (/^https?:\/\//i.test(explicitUrl)) return explicitUrl;
+
+  const locationValue = String(item.location || '').trim();
+  return /^https?:\/\//i.test(locationValue) ? locationValue : undefined;
 }
 
 async function resolveOwner() {
@@ -71,7 +74,7 @@ export async function syncEventItemToPublicEvent(item: EventItemDocument & { _id
       maxParticipants: existing?.maxParticipants || 100,
       registeredCount: existing?.registeredCount || 0,
       status: mapLifecycleToStatus(item.status, item.visibility),
-      liveUrl: inferLiveUrl(item.location) || existing?.liveUrl,
+      liveUrl: inferLiveUrl(item) || existing?.liveUrl,
       recordingUrl: existing?.recordingUrl,
       resources: existing?.resources || [],
       requirements: existing?.requirements || [],
