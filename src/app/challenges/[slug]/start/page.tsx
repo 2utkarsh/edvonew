@@ -182,16 +182,18 @@ export default function ChallengeStartPage() {
   }
 
   function runVisibleTests() {
-    if (!challenge.codingChallenge) return;
-    const suite = runCodingTestSuite(code, challenge.codingChallenge.functionName, challenge.codingChallenge.visibleTestCases);
+    const codingChallenge = challenge?.codingChallenge;
+    if (!codingChallenge) return;
+    const suite = runCodingTestSuite(code, codingChallenge.functionName, codingChallenge.visibleTestCases);
     setRunnerError(suite.ok ? '' : suite.error || 'Unable to run tests.');
     setVisibleResults(suite.results);
   }
 
   function submitCodingChallenge() {
-    if (!challenge.codingChallenge || submissionLocked) return;
-    const visibleSuite = runCodingTestSuite(code, challenge.codingChallenge.functionName, challenge.codingChallenge.visibleTestCases);
-    const hiddenSuite = runCodingTestSuite(code, challenge.codingChallenge.functionName, challenge.codingChallenge.hiddenTestCases);
+    const codingChallenge = challenge?.codingChallenge;
+    if (!codingChallenge || submissionLocked) return;
+    const visibleSuite = runCodingTestSuite(code, codingChallenge.functionName, codingChallenge.visibleTestCases);
+    const hiddenSuite = runCodingTestSuite(code, codingChallenge.functionName, codingChallenge.hiddenTestCases);
     setRunnerError(visibleSuite.ok && hiddenSuite.ok ? '' : visibleSuite.error || hiddenSuite.error || 'Unable to evaluate code.');
     setVisibleResults(visibleSuite.results);
     setHiddenResults(hiddenSuite.results);
@@ -261,3 +263,4 @@ export default function ChallengeStartPage() {
     </main>
   );
 }
+
