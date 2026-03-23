@@ -551,24 +551,43 @@
   </div>
 
   <script>
-    document.getElementById('loginForm').addEventListener('submit', (event) => {
-      event.preventDefault();
+  document.getElementById('loginForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
 
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      const errorDiv = document.getElementById('error');
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const errorDiv = document.getElementById('error');
+    const button = document.getElementById('loginBtn');
 
-      if (email === 'admin@edvo.com' && password === 'admin123') {
-        localStorage.setItem('adminLoggedIn', 'true');
-        localStorage.setItem('adminToken', 'demo-admin');
-        localStorage.setItem('adminEmail', email);
-        window.location.href = '/backend/admin/dashboard';
-        return;
+    errorDiv.style.display = 'none';
+    button.disabled = true;
+    button.textContent = 'Signing In...';
+
+    try {
+      const response = await fetch('/backend/api/v1/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || !payload?.data?.token) {
+        throw new Error(payload?.error?.message || payload?.message || 'Unable to sign in');
       }
 
-      errorDiv.textContent = 'Invalid credentials. Use admin@edvo.com / admin123';
+      localStorage.setItem('adminLoggedIn', 'true');
+      localStorage.setItem('adminToken', payload.data.token);
+      localStorage.setItem('adminEmail', payload.data.user?.email || email);
+      localStorage.setItem('adminUser', JSON.stringify(payload.data.user || {}));
+      window.location.href = '/backend/admin/dashboard';
+    } catch (error) {
+      errorDiv.textContent = error.message || 'Unable to sign in';
       errorDiv.style.display = 'block';
-    });
-  </script>
+    } finally {
+      button.disabled = false;
+      button.textContent = 'Sign In';
+    }
+  });
+</script>
 </body>
 </html>

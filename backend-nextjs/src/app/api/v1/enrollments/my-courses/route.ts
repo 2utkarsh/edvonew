@@ -1,46 +1,56 @@
-import { NextRequest } from 'next/server';
-import { connectToDatabase } from '@/lib/db';
 import { requireAuth } from '@/lib/auth';
-import { success, fail } from '@/lib/http';
+import { buildEnrollmentSnapshot } from '@/lib/course-runtime';
+import { connectToDatabase } from '@/lib/db';
+import { success, fail, toResponse } from '@/lib/http';
 import { EnrollmentModel } from '@/models/Enrollment';
 
-// GET user's enrolled courses
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     await connectToDatabase();
 
-    const authResult = await requireAuth(['student']);
-    if (authResult.error) return authResult.error;
+    const auth = await requireAuth(['student']);
+    if ('error' in auth) return auth.error;
 
-    const userId = authResult.payload.sub;
-
-    const enrollments = await EnrollmentModel.find({ userId, status: 'active' })
-      .populate('courseId', 'title thumbnail price rating instructorName category level')
+    const userId = auth.payload.sub;
+    const enrollments = await EnrollmentModel.find({ userId, paymentStatus: 'paid' })
+      .populate('courseId')
       .sort({ updatedAt: -1 })
       .lean();
 
-    const myCourses = enrollments.map((e: any) => ({
-      enrollment: {
-        id: e._id.toString(),
-        progress: e.progress,
-        completedLectures: e.completedLectures,
-        status: e.status,
-        lastAccessedAt: e.updatedAt,
-      },
-      course: e.courseId,
-    }));
+    const myCourses = enrollments.map((enrollment: any) => {
+      const course = enrollment.courseId;
+      const snapshot = buildEnrollmentSnapshot(course, enrollment);
+      return {
+        enrollment: {
+          id: String(enrollment._id),
+          progress: enrollment.progress,
+          completedLectures: enrollment.completedLectures,
+          status: enrollment.status,
+          paymentStatus: enrollment.paymentStatus,
+          lastAccessedAt: enrollment.lastAccessedAt || enrollment.updatedAt,
+        },
+        course: {
+          id: String(course._id),
+          title: course.title,
+          slug: course.slug,
+          thumbnail: course.thumbnail,
+          rating: course.rating,
+          instructorName: course.instructorName,
+          category: course.category,
+          level: course.level,
+          deliveryMode: course.deliveryMode || course.delivery || 'recorded',
+          duration: course.duration,
+        },
+        attendance: snapshot.attendanceSummary,
+        performance: snapshot.performanceSummary,
+        participation: snapshot.participationSummary,
+        certificateEligible: snapshot.certificateEligible,
+        nextLiveSession: snapshot.nextLiveSession,
+      };
+    });
 
-    return success(
-      { myCourses },
-      'My courses retrieved successfully'
-    );
+    return toResponse(success({ myCourses }));
   } catch (error: any) {
-    console.error('Get my courses error:', error);
-    return fail(
-      error.message || 'Failed to fetch courses',
-      'FETCH_COURSES_FAILED',
-      undefined,
-      500
-    );
+    return toResponse(fail(error?.message || 'Failed to fetch courses', 'FETCH_COURSES_FAILED', undefined, 500));
   }
 }

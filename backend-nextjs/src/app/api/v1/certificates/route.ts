@@ -1,39 +1,25 @@
-import { NextRequest } from 'next/server';
-import { connectToDatabase } from '@/lib/db';
 import { requireAuth } from '@/lib/auth';
-import { success, fail, notFound } from '@/lib/http';
+import { connectToDatabase } from '@/lib/db';
+import { success, fail, toResponse } from '@/lib/http';
 import { CertificateModel } from '@/models/Certificate';
 
-// GET user certificates
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     await connectToDatabase();
 
-    const authResult = await requireAuth();
-    if (authResult.error) return authResult.error;
+    const auth = await requireAuth();
+    if ('error' in auth) return auth.error;
 
-    const userId = authResult.payload.sub;
+    const userId = auth.payload.sub;
+    const certificates = await CertificateModel.find({ userId }).sort({ issuedAt: -1 }).lean();
 
-    const certificates = await CertificateModel.find({ userId })
-      .sort({ issuedAt: -1 })
-      .lean();
-
-    return success(
-      {
-        certificates: certificates.map((c: any) => ({
-          ...c.toObject(),
-          id: c._id.toString(),
-        })),
-      },
-      'Certificates retrieved successfully'
-    );
+    return toResponse(success({
+      certificates: certificates.map((certificate: any) => ({
+        ...certificate,
+        id: String(certificate._id),
+      })),
+    }));
   } catch (error: any) {
-    console.error('Get certificates error:', error);
-    return fail(
-      error.message || 'Failed to fetch certificates',
-      'FETCH_CERTIFICATES_FAILED',
-      undefined,
-      500
-    );
+    return toResponse(fail(error?.message || 'Failed to fetch certificates', 'FETCH_CERTIFICATES_FAILED', undefined, 500));
   }
 }

@@ -9,8 +9,14 @@ import { Menu, X, ChevronDown, Sun, Moon, LayoutDashboard, LogOut, UserCircle } 
 import { cn } from '@/lib/utils';
 import { useHeaderStore, NavLink } from '@/store/useHeaderStore';
 import { useThemeStore } from '@/store/useThemeStore';
+import { publicFetchJson } from '@/lib/backend-api';
 
 type AuthUser = { name?: string; email?: string } | null;
+
+type NavCategoryResponse = {
+  success: boolean;
+  data: Array<{ id: string; name: string; slug: string }>;
+};
 
 function readStoredAuthToken() {
   if (typeof window === 'undefined') return false;
@@ -36,6 +42,7 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [announcementDismissed, setAnnouncementDismissed] = useState(false);
+  const [navLinks, setNavLinks] = useState<NavLink[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => readStoredAuthToken());
   const [authUser, setAuthUser] = useState<AuthUser>(() => (readStoredAuthToken() ? readStoredAuthUser() : null));
   const pathname = usePathname();
@@ -63,8 +70,7 @@ export default function Navbar() {
         const storedUser = localStorage.getItem('auth_user');
         if (!token) {
           setIsAuthenticated(false);
-          setIsAuthenticated(false);
-    setAuthUser(null);
+          setAuthUser(null);
           return;
         }
 
@@ -94,6 +100,47 @@ export default function Navbar() {
     };
   }, [pathname]);
 
+  useEffect(() => {
+    let active = true;
+
+    const loadCourseNav = async () => {
+      const courseLink = config.navLinks.find((link) => link.label === 'Courses');
+      if (!courseLink) {
+        if (active) setNavLinks(config.navLinks);
+        return;
+      }
+
+      try {
+        const response = await publicFetchJson<NavCategoryResponse>('/api/course-categories');
+        if (!active) return;
+
+        const categories = (response.data || []).map((category) => ({
+          href: "/courses?category=" + encodeURIComponent(category.slug || category.name),
+          label: category.name,
+        }));
+
+        setNavLinks(
+          config.navLinks.map((link) =>
+            link.label === 'Courses'
+              ? {
+                  ...link,
+                  hasDropdown: true,
+                  children: categories.length ? categories : link.children || [],
+                }
+              : link
+          )
+        );
+      } catch {
+        if (active) setNavLinks(config.navLinks);
+      }
+    };
+
+    loadCourseNav();
+    return () => {
+      active = false;
+    };
+  }, [config.navLinks]);
+
   const handleLogout = () => {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('auth_user');
@@ -116,6 +163,7 @@ export default function Navbar() {
   };
 
   const { announcement } = config;
+  const displayedNavLinks = navLinks.length ? navLinks : config.navLinks;
   const showAnnouncement = announcement.enabled && !announcementDismissed;
 
   return (
@@ -179,9 +227,9 @@ export default function Navbar() {
         </AnimatePresence>
 
         {/* Main Nav */}
-        <div 
+        <div
           className={cn(
-            "w-full transition-all duration-500 ease-in-out", 
+            "w-full transition-all duration-500 ease-in-out",
             isScrolled ? "bg-transparent py-3" : "py-0 bg-white/95 backdrop-blur-md border-b border-slate-200/50 dark:bg-[#070e28]/95 dark:border-white/10"
           )}
         >
@@ -208,7 +256,7 @@ export default function Navbar() {
 
               {/* Desktop Nav */}
               <nav className="hidden lg:flex items-center gap-1">
-                {config.navLinks.map((link) => (
+                {displayedNavLinks.map((link) => (
                   <NavItem
                     key={link.label}
                     link={link}
@@ -311,7 +359,7 @@ export default function Navbar() {
               className="overflow-hidden border-t border-border bg-white/95 dark:border-white/10 dark:bg-slate-950/95 lg:hidden"
             >
               <div className="max-w-7xl mx-auto px-4 py-4 space-y-1">
-                {config.navLinks.map((link) => (
+                {displayedNavLinks.map((link) => (
                   <MobileNavItem
                     key={link.label}
                     link={link}
@@ -498,6 +546,3 @@ function MobileNavItem({ link, isActive }: { link: NavLink; isActive: boolean })
     </div>
   );
 }
-
-
-

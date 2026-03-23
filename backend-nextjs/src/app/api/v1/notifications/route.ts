@@ -1,22 +1,19 @@
-import { NextRequest } from 'next/server';
-import { connectToDatabase } from '@/lib/db';
 import { requireAuth } from '@/lib/auth';
-import { success, fail } from '@/lib/http';
+import { connectToDatabase } from '@/lib/db';
+import { success, fail, toResponse } from '@/lib/http';
 import { NotificationModel } from '@/models/Notification';
 
-// GET user notifications
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   try {
     await connectToDatabase();
 
-    const authResult = await requireAuth();
-    if (authResult.error) return authResult.error;
+    const auth = await requireAuth();
+    if ('error' in auth) return auth.error;
 
-    const userId = authResult.payload.sub;
-
+    const userId = auth.payload.sub;
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '20');
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const limit = parseInt(searchParams.get('limit') || '20', 10);
     const unreadOnly = searchParams.get('unread') === 'true';
 
     const filterQuery: any = { userId };
@@ -25,18 +22,17 @@ export async function GET(request: NextRequest) {
     }
 
     const total = await NotificationModel.countDocuments(filterQuery);
-
     const notifications = await NotificationModel.find(filterQuery)
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .lean();
 
-    return success(
+    return toResponse(success(
       {
-        notifications: notifications.map((n: any) => ({
-          ...n.toObject(),
-          id: n._id.toString(),
+        notifications: notifications.map((notification: any) => ({
+          ...notification,
+          id: String(notification._id),
         })),
       },
       'Notifications retrieved successfully',
@@ -46,14 +42,8 @@ export async function GET(request: NextRequest) {
         total,
         totalPages: Math.ceil(total / limit),
       }
-    );
+    ));
   } catch (error: any) {
-    console.error('Get notifications error:', error);
-    return fail(
-      error.message || 'Failed to fetch notifications',
-      'FETCH_NOTIFICATIONS_FAILED',
-      undefined,
-      500
-    );
+    return toResponse(fail(error?.message || 'Failed to fetch notifications', 'FETCH_NOTIFICATIONS_FAILED', undefined, 500));
   }
 }

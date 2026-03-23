@@ -111,112 +111,57 @@
   </main>
 
   <script src="/backend/admin/admin.js"></script>
-  <script>
-    if (!localStorage.getItem('adminLoggedIn')) {
-      window.location.href = '/backend/admin';
+<script>
+  async function loadDashboard() {
+    try {
+      const [overviewPayload, coursesPayload] = await Promise.all([
+        adminFetch('/backend/api/dashboard/admin/overview'),
+        adminFetch('/backend/api/admin/courses'),
+      ]);
+
+      const metrics = overviewPayload.data.metrics || {};
+      const courses = (coursesPayload.data.courses || []).slice(0, 6);
+      const revenue = courses.reduce((sum, course) => sum + ((course.price || 0) * (course.studentMetrics?.totalStudents || 0)), 0);
+
+      document.getElementById('totalUsers').textContent = Number(metrics.users || 0).toLocaleString();
+      document.getElementById('totalCourses').textContent = Number(metrics.courses || 0).toLocaleString();
+      document.getElementById('totalEnrollments').textContent = Number(metrics.enrollments || 0).toLocaleString();
+      document.getElementById('totalRevenue').textContent = 'INR ' + (revenue / 100000).toFixed(1) + 'L';
+      renderCourses(courses);
+    } catch (error) {
+      showToast(error.message || 'Unable to load dashboard overview', 'error');
+    }
+  }
+
+  function renderCourses(courses) {
+    const tbody = document.getElementById('coursesTableBody');
+    if (!courses.length) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#718096;padding:40px;">No courses available yet.</td></tr>';
+      return;
     }
 
-    const demoStats = {
-      totalUsers: 1250,
-      totalCourses: 48,
-      totalEnrollments: 3420,
-      totalRevenue: 1250000,
-    };
-
-    const demoCourses = [
-      {
-        id: '1',
-        title: 'Complete Python Bootcamp',
-        category: 'Programming',
-        instructorName: 'John Smith',
-        studentsEnrolled: 1250,
-        price: 4999,
-        rating: 4.8,
-        reviewCount: 320,
-        status: 'published',
-        thumbnail: '',
-      },
-      {
-        id: '2',
-        title: 'React JS - The Complete Guide',
-        category: 'Web Development',
-        instructorName: 'Sarah Johnson',
-        studentsEnrolled: 980,
-        price: 5999,
-        rating: 4.7,
-        reviewCount: 245,
-        status: 'published',
-        thumbnail: '',
-      },
-      {
-        id: '3',
-        title: 'Machine Learning A-Z',
-        category: 'Data Science',
-        instructorName: 'Mike Wilson',
-        studentsEnrolled: 756,
-        price: 7999,
-        rating: 4.9,
-        reviewCount: 412,
-        status: 'published',
-        thumbnail: '',
-      },
-    ];
-
-    document.getElementById('totalUsers').textContent = demoStats.totalUsers.toLocaleString();
-    document.getElementById('totalCourses').textContent = demoStats.totalCourses.toLocaleString();
-    document.getElementById('totalEnrollments').textContent = demoStats.totalEnrollments.toLocaleString();
-    document.getElementById('totalRevenue').textContent = 'INR ' + (demoStats.totalRevenue / 100000).toFixed(1) + 'L';
-
-    displayCourses(demoCourses);
-
-    function displayCourses(courses) {
-      const tbody = document.getElementById('coursesTableBody');
-
-      if (courses.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="7" style="text-align: center; color: #718096; padding: 40px;">
-              No courses available. Create your first course!
-            </td>
-          </tr>
-        `;
-        return;
-      }
-
-      tbody.innerHTML = courses.map((course) => `
-        <tr>
-          <td>
-            <div class="course-cell">
-              ${course.thumbnail
-                ? `<img src="${course.thumbnail}" alt="${course.title}" class="course-thumb" />`
-                : `<div class="course-fallback">${course.title.charAt(0)}</div>`}
-              <div>
-                <div style="font-weight: 600;">${course.title}</div>
-                <div style="font-size: 0.85rem; color: #718096;">${course.instructorName}</div>
-              </div>
+    tbody.innerHTML = courses.map((course) => `
+      <tr>
+        <td>
+          <div class="course-cell">
+            ${course.thumbnail ? `<img src="${course.thumbnail}" alt="${course.title}" class="course-thumb" />` : `<div class="course-fallback">${course.title.charAt(0)}</div>`}
+            <div>
+              <div style="font-weight:600;">${course.title}</div>
+              <div style="font-size:0.85rem;color:#718096;">${course.instructorName || 'Lead Mentor'}</div>
             </div>
-          </td>
-          <td><span class="badge badge-info">${course.category}</span></td>
-          <td>${course.studentsEnrolled.toLocaleString()}</td>
-          <td>INR ${course.price.toLocaleString()}</td>
-          <td>${course.rating.toFixed(1)} (${course.reviewCount})</td>
-          <td><span class="badge badge-success">${course.status}</span></td>
-          <td>
-            <div class="action-btns">
-              <button class="action-btn edit">Edit</button>
-              <button class="action-btn delete">Delete</button>
-            </div>
-          </td>
-        </tr>
-      `).join('');
-    }
-  </script>
+          </div>
+        </td>
+        <td><span class="badge badge-info">${course.category || 'General'}</span></td>
+        <td>${course.studentMetrics?.totalStudents || 0}</td>
+        <td>INR ${(course.price || 0).toLocaleString()}</td>
+        <td>${course.studentMetrics?.averagePerformance || 0}%</td>
+        <td><span class="badge badge-success">${course.status || 'draft'}</span></td>
+        <td><div class="action-btns"><button class="action-btn edit" onclick="window.location.href='/backend/admin/courses'">Open</button></div></td>
+      </tr>
+    `).join('');
+  }
+
+  loadDashboard();
+</script>
 </body>
 </html>
-
-
-
-
-
-
-

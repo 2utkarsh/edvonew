@@ -1,9 +1,8 @@
-﻿// Shared Admin JavaScript
-
 function logout() {
   localStorage.removeItem('adminToken');
   localStorage.removeItem('adminLoggedIn');
   localStorage.removeItem('adminEmail');
+  localStorage.removeItem('adminUser');
   window.location.href = '/backend/admin';
 }
 
@@ -19,9 +18,10 @@ function checkAuth() {
 }
 
 async function adminFetch(url, options = {}) {
+  const token = localStorage.getItem('adminToken');
   const headers = {
     Accept: 'application/json',
-    'X-Admin-Demo': 'true',
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...(options.body ? { 'Content-Type': 'application/json' } : {}),
     ...(options.headers || {}),
   };
@@ -33,6 +33,9 @@ async function adminFetch(url, options = {}) {
 
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      logout();
+    }
     throw new Error(payload?.error?.message || payload?.message || 'Request failed');
   }
 

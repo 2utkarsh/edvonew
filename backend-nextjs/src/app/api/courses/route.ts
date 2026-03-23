@@ -1,6 +1,7 @@
-﻿import { connectToDatabase } from '@/lib/db';
-import { fail, handleError, ok } from '@/lib/http';
+import { connectToDatabase } from '@/lib/db';
+import { handleError, ok, toResponse } from '@/lib/http';
 import { buildSearchRegex, getPagination } from '@/lib/query';
+import { CourseCategoryModel } from '@/models/CourseCategory';
 import { CourseModel } from '@/models/Course';
 
 export async function GET(request: Request) {
@@ -19,7 +20,12 @@ export async function GET(request: Request) {
     if (level) query.level = level;
 
     const category = searchParams.get('category');
-    if (category) query.category = category;
+    if (category) {
+      const categoryDoc = await CourseCategoryModel.findOne({
+        $or: [{ slug: category }, { name: category }],
+      }).lean();
+      query.category = categoryDoc?.name || category;
+    }
 
     const sortParam = searchParams.get('sort') || 'popular';
     const sortMap: Record<string, Record<string, 1 | -1>> = {
@@ -27,6 +33,7 @@ export async function GET(request: Request) {
       rating: { rating: -1, reviewCount: -1 },
       'price-low': { price: 1 },
       'price-high': { price: -1 },
+      latest: { createdAt: -1 },
     };
 
     const [items, total] = await Promise.all([
@@ -34,30 +41,33 @@ export async function GET(request: Request) {
       CourseModel.countDocuments(query),
     ]);
 
-    return ok({
-      data: items.map((item) => ({
-        id: String(item._id),
-        title: item.title,
-        slug: item.slug,
-        description: item.description,
-        short_description: item.shortDescription,
-        category: item.category,
-        level: item.level,
-        price: item.price,
-        originalPrice: item.originalPrice,
-        discount: item.discount,
-        duration: item.duration,
-        thumbnail: item.thumbnail,
-        banner: item.banner,
-        rating: item.rating,
-        reviewCount: item.reviewCount,
-        studentsEnrolled: item.studentsEnrolled,
-        href: `/courses/${item.slug}`,
-      })),
-      meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
-    });
+    return toResponse(
+      ok({
+        data: items.map((item) => ({
+          id: String(item._id),
+          title: item.title,
+          slug: item.slug,
+          description: item.description,
+          short_description: item.shortDescription,
+          category: item.category,
+          level: item.level,
+          price: item.price,
+          originalPrice: item.originalPrice,
+          discount: item.discount,
+          duration: item.duration,
+          thumbnail: item.thumbnail,
+          banner: item.banner,
+          rating: item.rating,
+          reviewCount: item.reviewCount,
+          studentsEnrolled: item.studentsEnrolled,
+          deliveryMode: item.deliveryMode || item.delivery || 'recorded',
+          liveSessionsCount: Array.isArray(item.liveSessions) ? item.liveSessions.length : 0,
+          href: `/courses/${item.slug}`,
+        })),
+        meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+      })
+    );
   } catch (error) {
     return handleError(error);
   }
 }
-

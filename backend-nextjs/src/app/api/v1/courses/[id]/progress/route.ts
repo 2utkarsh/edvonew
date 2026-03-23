@@ -1,78 +1,71 @@
-import { NextRequest } from 'next/server';
-import { connectToDatabase } from '@/lib/db';
 import { requireAuth } from '@/lib/auth';
-import { success, fail, notFound } from '@/lib/http';
+import { issueCourseCertificateIfEligible } from '@/lib/course-access';
+import { buildEnrollmentSnapshot, countCourseLectures } from '@/lib/course-runtime';
+import { connectToDatabase } from '@/lib/db';
+import { success, fail, toResponse } from '@/lib/http';
 import { CourseModel } from '@/models/Course';
 import { EnrollmentModel } from '@/models/Enrollment';
+import { UserModel } from '@/models/User';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-// GET course progress
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(_: Request, { params }: RouteParams) {
   try {
     await connectToDatabase();
 
-    const authResult = await requireAuth(['student']);
-    if (authResult.error) return authResult.error;
+    const auth = await requireAuth(['student']);
+    if ('error' in auth) return auth.error;
 
-    const userId = authResult.payload.sub;
+    const userId = auth.payload.sub;
     const { id: courseId } = await params;
 
-    const enrollment = await EnrollmentModel.findOne({
-      userId,
-      courseId,
-    }).lean();
-
+    const enrollment = await EnrollmentModel.findOne({ userId, courseId }).lean();
     if (!enrollment) {
-      return notFound('Enrollment');
+      return toResponse(fail('Enrollment not found', 'NOT_FOUND', undefined, 404));
     }
 
-    return success(
-      {
-        progress: {
-          percentage: enrollment.progress,
-          completedLectures: enrollment.completedLectures,
-          lastAccessedAt: enrollment.updatedAt,
-        },
+    return toResponse(success({
+      progress: {
+        percentage: enrollment.progress,
+        completedLectures: enrollment.completedLectures,
+        lastAccessedAt: enrollment.lastAccessedAt || enrollment.updatedAt,
       },
-      'Progress retrieved successfully'
-    );
+    }));
   } catch (error: any) {
-    console.error('Get progress error:', error);
-    return fail(
-      error.message || 'Failed to fetch progress',
-      'FETCH_PROGRESS_FAILED',
-      undefined,
-      500
-    );
+    return toResponse(fail(error?.message || 'Failed to fetch progress', 'FETCH_PROGRESS_FAILED', undefined, 500));
   }
 }
 
-// PUT update course progress
-export async function PUT(request: NextRequest, { params }: RouteParams) {
+export async function PUT(request: Request, { params }: RouteParams) {
   try {
     await connectToDatabase();
 
-    const authResult = await requireAuth(['student']);
-    if (authResult.error) return authResult.error;
+    const auth = await requireAuth(['student']);
+    if ('error' in auth) return auth.error;
 
-    const userId = authResult.payload.sub;
+    const userId = auth.payload.sub;
     const { id: courseId } = await params;
-
     const body = await request.json();
-    const { lectureId, completed } = body;
+    const lectureId = String(body.lectureId || '');
+    const completed = Boolean(body.completed);
 
-    // Find enrollment
-    const enrollment = await EnrollmentModel.findOne({ userId, courseId });
-    if (!enrollment) {
-      return notFound('Enrollment');
+    if (!lectureId) {
+      return toResponse(fail('Lecture ID is required', 'INVALID_REQUEST', undefined, 400));
     }
 
-    // Update completed lectures
-    let completedLectures = enrollment.completedLectures || [];
-    
+    const [enrollment, course, user] = await Promise.all([
+      EnrollmentModel.findOne({ userId, courseId }),
+      CourseModel.findById(courseId),
+      UserModel.findById(userId).lean(),
+    ]);
+
+    if (!enrollment || !course) {
+      return toResponse(fail('Enrollment not found', 'NOT_FOUND', undefined, 404));
+    }
+
+    let completedLectures = Array.isArray(enrollment.completedLectures) ? [...enrollment.completedLectures] : [];
     if (completed) {
       if (!completedLectures.includes(lectureId)) {
         completedLectures.push(lectureId);
@@ -81,34 +74,50 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       completedLectures = completedLectures.filter((id: string) => id !== lectureId);
     }
 
-    // Calculate progress percentage
-    // Note: You would need to get total lectures from course curriculum
-    const totalLectures = 100; // Placeholder
-    const progress = (completedLectures.length / totalLectures) * 100;
+    const totalLectures = Math.max(countCourseLectures(course.toObject()), 1);
+    const progress = Math.min(100, Math.round((completedLectures.length / totalLectures) * 100));
 
-    // Update enrollment
-    await EnrollmentModel.findByIdAndUpdate(enrollment._id, {
+    enrollment.completedLectures = completedLectures;
+    enrollment.progress = progress;
+    enrollment.lastAccessedAt = new Date();
+
+    const snapshot = buildEnrollmentSnapshot(course.toObject(), {
+      ...enrollment.toObject(),
       completedLectures,
       progress,
-      updatedAt: new Date(),
+      lastAccessedAt: new Date(),
     });
 
-    return success(
-      {
-        progress: {
-          percentage: progress,
-          completedLectures,
-        },
+    enrollment.attendanceSummary = snapshot.attendanceSummary as any;
+    enrollment.performanceSummary = {
+      ...snapshot.performanceSummary,
+      completionRate: progress,
+    } as any;
+    enrollment.participationSummary = snapshot.participationSummary as any;
+    enrollment.certificateEligible = snapshot.certificateEligible;
+
+    if (progress >= 100) {
+      enrollment.status = 'completed';
+      enrollment.completedAt = new Date();
+    }
+
+    await enrollment.save();
+    await issueCourseCertificateIfEligible({
+      course,
+      enrollment,
+      userName: user?.name || 'Student',
+    });
+
+    return toResponse(success({
+      progress: {
+        percentage: progress,
+        completedLectures,
+        attendance: snapshot.attendanceSummary,
+        performance: snapshot.performanceSummary,
+        participation: snapshot.participationSummary,
       },
-      'Progress updated successfully'
-    );
+    }));
   } catch (error: any) {
-    console.error('Update progress error:', error);
-    return fail(
-      error.message || 'Failed to update progress',
-      'UPDATE_PROGRESS_FAILED',
-      undefined,
-      500
-    );
+    return toResponse(fail(error?.message || 'Failed to update progress', 'UPDATE_PROGRESS_FAILED', undefined, 500));
   }
 }

@@ -1,11 +1,20 @@
-﻿import { Model, model, models, Schema, Types } from 'mongoose';
+import { Model, model, models, Schema, Types } from 'mongoose';
 
 const curriculumLectureSchema = new Schema(
   {
     title: { type: String, required: true },
+    description: String,
     isFree: { type: Boolean, default: false },
     duration: String,
     videoUrl: String,
+    resourceUrl: String,
+    notes: String,
+    releaseAt: String,
+    contentType: {
+      type: String,
+      enum: ['recorded', 'live', 'quiz', 'assignment', 'resource'],
+      default: 'recorded',
+    },
   },
   { _id: true }
 );
@@ -14,6 +23,8 @@ const curriculumModuleSchema = new Schema(
   {
     label: String,
     title: { type: String, required: true },
+    description: String,
+    estimatedMinutes: { type: Number, default: 0 },
     lectures: { type: [curriculumLectureSchema], default: [] },
   },
   { _id: true }
@@ -22,6 +33,7 @@ const curriculumModuleSchema = new Schema(
 const curriculumSubjectSchema = new Schema(
   {
     name: { type: String, required: true },
+    description: String,
     modules: { type: [curriculumModuleSchema], default: [] },
   },
   { _id: true }
@@ -86,6 +98,47 @@ const offeringSchema = new Schema(
   { _id: true }
 );
 
+const liveSessionSchema = new Schema(
+  {
+    title: { type: String, required: true },
+    description: String,
+    hostName: String,
+    startTime: { type: String, required: true },
+    endTime: String,
+    timezone: { type: String, default: 'Asia/Kolkata' },
+    meetingUrl: String,
+    recordingUrl: String,
+    attendanceRequired: { type: Boolean, default: true },
+    status: {
+      type: String,
+      enum: ['scheduled', 'live', 'completed', 'cancelled'],
+      default: 'scheduled',
+    },
+  },
+  { _id: true }
+);
+
+const certificateSettingsSchema = new Schema(
+  {
+    enabled: { type: Boolean, default: true },
+    minProgressPercentage: { type: Number, default: 100 },
+    minAttendancePercentage: { type: Number, default: 70 },
+    minPerformanceScore: { type: Number, default: 60 },
+    templateName: { type: String, default: 'EDVO Completion Certificate' },
+    badgeLabel: { type: String, default: 'Course Graduate' },
+  },
+  { _id: false }
+);
+
+const notificationSettingsSchema = new Schema(
+  {
+    enrollmentConfirmation: { type: Boolean, default: true },
+    liveClassReminder: { type: Boolean, default: true },
+    certificateIssued: { type: Boolean, default: true },
+  },
+  { _id: false }
+);
+
 export interface CourseDocument {
   title: string;
   slug: string;
@@ -104,22 +157,41 @@ export interface CourseDocument {
   startDate?: string;
   duration?: string;
   delivery?: string;
+  deliveryMode?: 'recorded' | 'live' | 'hybrid';
   language?: string;
   jobAssistance?: boolean;
   bannerTag?: string;
   bannerSubtag?: string;
   bannerExtra?: string;
+  cohortLabel?: string;
+  supportEmail?: string;
+  accessDurationMonths?: number;
   stats?: { hiringPartners?: string; careerTransitions?: string; highestPackage?: string };
   tags: string[];
   requirements: string[];
   whatYouWillLearn: string[];
+  featuredOutcomes: string[];
   curriculum: unknown[];
+  liveSessions: unknown[];
   mentors: unknown[];
   plans: unknown[];
   offerings: unknown[];
   faqs: unknown[];
   testimonials: unknown[];
   certifications: Array<{ name: string; provider?: string }>;
+  certificateSettings?: {
+    enabled?: boolean;
+    minProgressPercentage?: number;
+    minAttendancePercentage?: number;
+    minPerformanceScore?: number;
+    templateName?: string;
+    badgeLabel?: string;
+  };
+  notificationSettings?: {
+    enrollmentConfirmation?: boolean;
+    liveClassReminder?: boolean;
+    certificateIssued?: boolean;
+  };
   rating: number;
   reviewCount: number;
   studentsEnrolled: number;
@@ -147,11 +219,15 @@ const courseSchema = new Schema<CourseDocument>(
     startDate: String,
     duration: String,
     delivery: String,
+    deliveryMode: { type: String, enum: ['recorded', 'live', 'hybrid'], default: 'recorded' },
     language: String,
     jobAssistance: Boolean,
     bannerTag: String,
     bannerSubtag: String,
     bannerExtra: String,
+    cohortLabel: String,
+    supportEmail: String,
+    accessDurationMonths: { type: Number, default: 12 },
     stats: {
       hiringPartners: String,
       careerTransitions: String,
@@ -160,7 +236,9 @@ const courseSchema = new Schema<CourseDocument>(
     tags: { type: [String], default: [] },
     requirements: { type: [String], default: [] },
     whatYouWillLearn: { type: [String], default: [] },
+    featuredOutcomes: { type: [String], default: [] },
     curriculum: { type: [curriculumSubjectSchema], default: [] },
+    liveSessions: { type: [liveSessionSchema], default: [] },
     mentors: { type: [mentorSchema], default: [] },
     plans: { type: [planSchema], default: [] },
     offerings: { type: [offeringSchema], default: [] },
@@ -178,6 +256,8 @@ const courseSchema = new Schema<CourseDocument>(
       ],
       default: [],
     },
+    certificateSettings: { type: certificateSettingsSchema, default: () => ({}) },
+    notificationSettings: { type: notificationSettingsSchema, default: () => ({}) },
     rating: { type: Number, default: 0 },
     reviewCount: { type: Number, default: 0 },
     studentsEnrolled: { type: Number, default: 0 },
@@ -187,4 +267,3 @@ const courseSchema = new Schema<CourseDocument>(
 );
 
 export const CourseModel = (models.Course as Model<CourseDocument>) || model<CourseDocument>('Course', courseSchema);
-
