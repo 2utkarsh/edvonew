@@ -1,9 +1,26 @@
-﻿export interface ChallengeQuestion {
+export interface ChallengeQuestion {
   prompt: string;
   options: string[];
   correctAnswer: string;
   explanation: string;
   points: number;
+}
+
+export interface CodingTestCase {
+  input: string;
+  expectedOutput: string;
+  explanation?: string;
+}
+
+export interface CodingChallenge {
+  enabled: boolean;
+  language: string;
+  functionName: string;
+  problemStatement: string;
+  starterCode: string;
+  visibleTestCases: CodingTestCase[];
+  hiddenTestCases: CodingTestCase[];
+  durationMinutes: number;
 }
 
 export interface ChallengeItem {
@@ -42,6 +59,7 @@ export interface ChallengeItem {
   quizDurationMinutes: number;
   prizeDistribution: string[];
   questions: ChallengeQuestion[];
+  codingChallenge?: CodingChallenge;
 }
 
 const apiBase = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '/backend';
@@ -99,6 +117,18 @@ function mapChallenge(item: Record<string, unknown>): ChallengeItem {
           })
           .filter((entry): entry is ChallengeQuestion => Boolean(entry))
       : [],
+    codingChallenge: item.codingChallenge && typeof item.codingChallenge === 'object'
+      ? {
+          enabled: (item.codingChallenge as any).enabled === true,
+          language: String((item.codingChallenge as any).language || 'javascript'),
+          functionName: String((item.codingChallenge as any).functionName || 'solve'),
+          problemStatement: String((item.codingChallenge as any).problemStatement || ''),
+          starterCode: String((item.codingChallenge as any).starterCode || ''),
+          visibleTestCases: Array.isArray((item.codingChallenge as any).visibleTestCases) ? (item.codingChallenge as any).visibleTestCases.map((testCase: any) => ({ input: String(testCase?.input || ''), expectedOutput: String(testCase?.expectedOutput || ''), explanation: testCase?.explanation ? String(testCase.explanation) : undefined })).filter((testCase: CodingTestCase) => testCase.input && testCase.expectedOutput) : [],
+          hiddenTestCases: Array.isArray((item.codingChallenge as any).hiddenTestCases) ? (item.codingChallenge as any).hiddenTestCases.map((testCase: any) => ({ input: String(testCase?.input || ''), expectedOutput: String(testCase?.expectedOutput || ''), explanation: testCase?.explanation ? String(testCase.explanation) : undefined })).filter((testCase: CodingTestCase) => testCase.input && testCase.expectedOutput) : [],
+          durationMinutes: Math.max(1, Number((item.codingChallenge as any).durationMinutes || 90) || 90),
+        }
+      : undefined,
   };
 }
 

@@ -1,4 +1,4 @@
-﻿import { Model, model, models, Schema } from 'mongoose';
+import { Model, model, models, Schema } from 'mongoose';
 
 export type ChallengePhase = 'ongoing' | 'completed';
 export type ChallengeVisibility = 'active' | 'inactive';
@@ -9,6 +9,23 @@ export interface ChallengeQuestionDocument {
   correctAnswer: string;
   explanation: string;
   points: number;
+}
+
+export interface CodingTestCaseDocument {
+  input: string;
+  expectedOutput: string;
+  explanation?: string;
+}
+
+export interface CodingChallengeDocument {
+  enabled: boolean;
+  language: string;
+  functionName: string;
+  problemStatement: string;
+  starterCode: string;
+  visibleTestCases: CodingTestCaseDocument[];
+  hiddenTestCases: CodingTestCaseDocument[];
+  durationMinutes: number;
 }
 
 export interface ChallengeItemDocument {
@@ -46,6 +63,7 @@ export interface ChallengeItemDocument {
   quizDurationMinutes: number;
   prizeDistribution: string[];
   questions: ChallengeQuestionDocument[];
+  codingChallenge?: CodingChallengeDocument;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -67,6 +85,29 @@ const challengeQuestionSchema = new Schema<ChallengeQuestionDocument>(
     correctAnswer: { type: String, required: true, trim: true },
     explanation: { type: String, default: '', trim: true },
     points: { type: Number, default: 1 },
+  },
+  { _id: false }
+);
+
+const codingTestCaseSchema = new Schema<CodingTestCaseDocument>(
+  {
+    input: { type: String, required: true, trim: true },
+    expectedOutput: { type: String, required: true, trim: true },
+    explanation: { type: String, trim: true },
+  },
+  { _id: false }
+);
+
+const codingChallengeSchema = new Schema<CodingChallengeDocument>(
+  {
+    enabled: { type: Boolean, default: false },
+    language: { type: String, default: 'javascript', trim: true },
+    functionName: { type: String, default: 'solve', trim: true },
+    problemStatement: { type: String, default: '', trim: true },
+    starterCode: { type: String, default: '', trim: true },
+    visibleTestCases: { type: [codingTestCaseSchema], default: [] },
+    hiddenTestCases: { type: [codingTestCaseSchema], default: [] },
+    durationMinutes: { type: Number, default: 90 },
   },
   { _id: false }
 );
@@ -107,6 +148,7 @@ const challengeItemSchema = new Schema<ChallengeItemDocument>(
     quizDurationMinutes: { type: Number, default: 45 },
     prizeDistribution: { type: [String], default: [] },
     questions: { type: [challengeQuestionSchema], default: [] },
+    codingChallenge: { type: codingChallengeSchema, default: () => ({ enabled: false, language: 'javascript', functionName: 'solve', problemStatement: '', starterCode: '', visibleTestCases: [], hiddenTestCases: [], durationMinutes: 90 }) },
   },
   { timestamps: true }
 );
