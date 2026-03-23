@@ -14,6 +14,7 @@ import {
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import { FadeIn } from '@/components/animations';
+import HiringPartnersSection from '@/components/home/hiring-partners-section';
 import { fetchHomeContent, type HomeContentPayload } from '../home-data';
 
 const defaultStats = [
@@ -119,6 +120,7 @@ export default function HireTalentPage() {
 
   const hero = useMemo(() => ({ ...defaultHero, ...((homeContent.hireTalentHero || {}) as Record<string, string>) }), [homeContent.hireTalentHero]);
   const partners = useMemo(() => ((Array.isArray(homeContent.hiringPartners) && homeContent.hiringPartners.length ? homeContent.hiringPartners : []) as any[]), [homeContent.hiringPartners]);
+  const hiringPartnersSection = useMemo(() => ((homeContent.hiringPartnersSection || {}) as any), [homeContent.hiringPartnersSection]);
   const testimonials = useMemo(() => ((Array.isArray(homeContent.hireTalentTestimonials) && homeContent.hireTalentTestimonials.length ? homeContent.hireTalentTestimonials : defaultTestimonials) as any[]), [homeContent.hireTalentTestimonials]);
   const cta = useMemo(() => ({ ...defaultCta, ...((homeContent.hireTalentCta || {}) as Record<string, string>) }), [homeContent.hireTalentCta]);
   const heroStats = defaultStats;
@@ -165,20 +167,7 @@ export default function HireTalentPage() {
         </div>
       </section>
 
-      {partners.length ? (
-        <section className="border-b border-slate-200 bg-white py-10 dark:border-slate-800 dark:bg-slate-900">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="mb-6 text-center text-sm font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Our Hiring Partners</div>
-            <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
-              {partners.map((partner, index) => (
-                <div key={`${partner.name}-${index}`} className="flex min-h-[88px] items-center justify-center rounded-3xl border border-slate-200 bg-slate-50 p-4 text-center dark:border-slate-700 dark:bg-slate-800/60">
-                  {partner.logo ? <img src={partner.logo} alt={partner.name} className="max-h-10 w-auto object-contain" /> : <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{partner.name}</span>}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      ) : null}
+      <HiringPartnersSection section={hiringPartnersSection} partners={partners} />
 
       <section className="py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
