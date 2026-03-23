@@ -6,6 +6,28 @@ import { CourseModel } from '@/models/Course';
 
 export const LEGACY_COURSE_CATALOG_IMPORTED_KEY = 'courses.legacyCatalogImported';
 
+function getLegacyCatalogTotals() {
+  return {
+    totalLegacyCategories: legacyCourseCategories.length,
+    totalLegacyCourses: legacyCourses.length,
+  };
+}
+
+export async function getLegacyCatalogPresence() {
+  const [existingLegacyCategoryCount, existingLegacyCourseCount] = await Promise.all([
+    CourseCategoryModel.countDocuments({ slug: { $in: legacyCourseCategories.map((item) => item.slug) } }),
+    CourseModel.countDocuments({ slug: { $in: legacyCourses.map((item) => item.slug) } }),
+  ]);
+
+  return {
+    existingLegacyCategoryCount,
+    existingLegacyCourseCount,
+    missingLegacyCategories: Math.max(legacyCourseCategories.length - existingLegacyCategoryCount, 0),
+    missingLegacyCourses: Math.max(legacyCourses.length - existingLegacyCourseCount, 0),
+    ...getLegacyCatalogTotals(),
+  };
+}
+
 export async function markLegacyCourseCatalogImported() {
   await SystemSettingModel.findOneAndUpdate(
     { key: LEGACY_COURSE_CATALOG_IMPORTED_KEY },
@@ -23,14 +45,9 @@ export async function markLegacyCourseCatalogImported() {
 }
 
 export async function importLegacyCourseCatalog() {
-  const existingLegacyCategoryCount = await CourseCategoryModel.countDocuments({
-    slug: { $in: legacyCourseCategories.map((item) => item.slug) },
-  });
-  const existingLegacyCourseCount = await CourseModel.countDocuments({
-    slug: { $in: legacyCourses.map((item) => item.slug) },
-  });
+  const presence = await getLegacyCatalogPresence();
 
-  if (existingLegacyCategoryCount < legacyCourseCategories.length) {
+  if (presence.missingLegacyCategories > 0) {
     await CourseCategoryModel.bulkWrite(
       legacyCourseCategories.map((category) => ({
         updateOne: {
@@ -49,7 +66,7 @@ export async function importLegacyCourseCatalog() {
     );
   }
 
-  if (existingLegacyCourseCount < legacyCourses.length) {
+  if (presence.missingLegacyCourses > 0) {
     await CourseModel.bulkWrite(
       legacyCourses.map((course) => ({
         updateOne: {
@@ -67,23 +84,27 @@ export async function importLegacyCourseCatalog() {
   await syncCourseCategoryCounts();
 
   return {
-    createdCategories: Math.max(legacyCourseCategories.length - existingLegacyCategoryCount, 0),
-    createdCourses: Math.max(legacyCourses.length - existingLegacyCourseCount, 0),
-    seeded: existingLegacyCategoryCount < legacyCourseCategories.length || existingLegacyCourseCount < legacyCourses.length,
-    totalLegacyCategories: legacyCourseCategories.length,
-    totalLegacyCourses: legacyCourses.length,
+    createdCategories: presence.missingLegacyCategories,
+    createdCourses: presence.missingLegacyCourses,
+    seeded: presence.missingLegacyCategories > 0 || presence.missingLegacyCourses > 0,
+    totalLegacyCategories: presence.totalLegacyCategories,
+    totalLegacyCourses: presence.totalLegacyCourses,
   };
 }
 
 export async function bootstrapLegacyCourseCatalog() {
-  const item = await SystemSettingModel.findOne({ key: LEGACY_COURSE_CATALOG_IMPORTED_KEY }).lean();
-  if (item?.value === true) {
+  const [item, presence] = await Promise.all([
+    SystemSettingModel.findOne({ key: LEGACY_COURSE_CATALOG_IMPORTED_KEY }).lean(),
+    getLegacyCatalogPresence(),
+  ]);
+
+  if (item?.value === true && presence.missingLegacyCategories === 0 && presence.missingLegacyCourses === 0) {
     return {
       createdCategories: 0,
       createdCourses: 0,
       seeded: false,
-      totalLegacyCategories: legacyCourseCategories.length,
-      totalLegacyCourses: legacyCourses.length,
+      totalLegacyCategories: presence.totalLegacyCategories,
+      totalLegacyCourses: presence.totalLegacyCourses,
     };
   }
 

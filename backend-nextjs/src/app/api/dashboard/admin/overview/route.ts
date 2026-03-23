@@ -1,6 +1,7 @@
 import { requireAuth } from '@/lib/auth';
 import { connectToDatabase } from '@/lib/db';
-import { handleError, ok } from '@/lib/http';
+import { bootstrapLegacyCourseCatalog } from '@/lib/ensure-legacy-course-catalog';
+import { handleError, ok, toResponse } from '@/lib/http';
 import { BlogCategoryModel, BlogModel } from '@/models/Blog';
 import { ContactMessageModel } from '@/models/ContactMessage';
 import { CourseCategoryChildModel, CourseCategoryModel } from '@/models/CourseCategory';
@@ -23,6 +24,7 @@ export async function GET() {
     const auth = await requireAuth(['admin']);
     if ('error' in auth) return auth.error;
     await connectToDatabase();
+    await bootstrapLegacyCourseCatalog();
 
     const [users, courses, exams, jobs, enrollments, subscriptions, instructors, blogs, blogCategories, navbars, footers, pages, pageSections, examCategories, courseCategories, courseCategoryChildren, newsletters, contactMessages] = await Promise.all([
       UserModel.countDocuments(),
@@ -45,10 +47,12 @@ export async function GET() {
       ContactMessageModel.countDocuments(),
     ]);
 
-    return ok({
-      metrics: { users, courses, exams, jobs, enrollments, subscriptions, instructors, blogs, blogCategories, navbars, footers, pages, pageSections, examCategories, courseCategories, courseCategoryChildren, newsletters, contactMessages },
-      generatedAt: new Date().toISOString(),
-    });
+    return toResponse(
+      ok({
+        metrics: { users, courses, exams, jobs, enrollments, subscriptions, instructors, blogs, blogCategories, navbars, footers, pages, pageSections, examCategories, courseCategories, courseCategoryChildren, newsletters, contactMessages },
+        generatedAt: new Date().toISOString(),
+      })
+    );
   } catch (error) {
     return handleError(error);
   }
