@@ -1,43 +1,286 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang='en'>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
   <title>Home Content - EDVO Admin</title>
-  <link rel="stylesheet" href="/backend/admin/styles.css" />
+  <link rel='stylesheet' href='/backend/admin/styles.css' />
   <style>
-    .stack{display:flex;flex-direction:column;gap:24px}.panel{background:#fff;border:1px solid #e2e8f0;border-radius:20px;box-shadow:0 8px 30px rgba(15,23,42,.06);padding:24px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.input,.textarea{width:100%;padding:12px 16px;border:1px solid #cbd5e0;border-radius:12px;font-size:.95rem;background:#fff}.textarea{min-height:160px;resize:vertical}.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.btn{border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}.btn-primary{background:#667eea;color:#fff}.help{color:#718096;font-size:.88rem}.section-title{font-size:1.05rem;font-weight:800;margin-bottom:6px}.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+    .stack{display:flex;flex-direction:column;gap:24px}.panel,.stat{background:#fff;border:1px solid #e2e8f0;border-radius:20px;box-shadow:0 8px 30px rgba(15,23,42,.06);padding:24px}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}.label{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:#718096;margin-bottom:8px;font-weight:700}.value{font-size:2rem;font-weight:800}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.grid-split{display:grid;grid-template-columns:minmax(320px,1.15fr) minmax(0,1.85fr);gap:24px}.input,.textarea{width:100%;padding:12px 16px;border:1px solid #cbd5e0;border-radius:12px;font-size:.95rem;background:#fff}.textarea{min-height:120px;resize:vertical}.actions,.table-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.btn{border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}.btn-primary{background:#667eea;color:#fff}.btn-secondary{background:#edf2f7;color:#1a202c}.btn-danger{background:#f56565;color:#fff}.btn-link{display:inline-flex;align-items:center;justify-content:center;border-radius:10px;padding:10px 14px;background:#ebf4ff;color:#4c51bf;text-decoration:none;font-weight:700}.toolbar{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}.table-wrap{overflow:auto}.help{color:#718096;font-size:.88rem}.section-title{font-size:1.05rem;font-weight:800;color:#1a202c;margin-bottom:6px}.subtle{background:#f8fafc;border:1px dashed #cbd5e0;border-radius:18px;padding:18px}.field{display:flex;flex-direction:column;gap:8px}.field label{font-size:.84rem;font-weight:700;color:#4a5568}.wide{grid-column:1 / -1}.tag-list{display:flex;gap:8px;flex-wrap:wrap}.tag{display:inline-flex;align-items:center;border-radius:999px;background:#edf2f7;color:#2d3748;padding:6px 10px;font-size:.8rem;font-weight:700}.empty{padding:24px;text-align:center;color:#718096;border:1px dashed #cbd5e0;border-radius:16px;background:#f8fafc}.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.info-card{padding:18px;border-radius:18px;border:1px solid #e2e8f0;background:#f8fafc}.info-card strong{display:block;margin-bottom:6px}.pill-note{display:inline-flex;align-items:center;border-radius:999px;background:#ebf8ff;color:#2b6cb0;padding:6px 12px;font-size:.78rem;font-weight:700}.checkbox{display:flex;align-items:center;gap:10px;font-size:.92rem;font-weight:600;color:#2d3748}@media (max-width: 960px){.grid-split{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
-  <aside class="sidebar"><div class="sidebar-logo"><span>ED</span>VO Admin</div><div class="nav-section"><div class="nav-section-title">Main Menu</div><a href="/backend/admin" class="nav-item"><span class="nav-label">Dashboard</span></a><a href="/backend/admin/home-content" class="nav-item active"><span class="nav-label">Home Content</span></a><a href="/backend/admin/hiring-partners" class="nav-item"><span class="nav-label">Hiring Partners</span></a><a href="/backend/admin/courses" class="nav-item"><span class="nav-label">Courses</span></a><a href="/backend/admin/blogs" class="nav-item"><span class="nav-label">Blogs</span></a><a href="/backend/admin/tutorials" class="nav-item"><span class="nav-label">Tutorials</span></a><a href="/backend/admin/guides" class="nav-item"><span class="nav-label">Guides</span></a><a href="/backend/admin/team" class="nav-item"><span class="nav-label">Team</span></a><a href="/backend/admin/course-reviews" class="nav-item"><span class="nav-label">Course Reviews</span></a><a href="/backend/admin/job-success-stories" class="nav-item"><span class="nav-label">Job Success Stories</span></a><a href="/backend/admin/events" class="nav-item"><span class="nav-label">Events</span></a><a href="/backend/admin/challenges" class="nav-item"><span class="nav-label">Challenges</span></a></div><div class="nav-section"><div class="nav-section-title">Settings</div><a href="#" class="nav-item" onclick="logout()"><span class="nav-label">Logout</span></a></div></aside>
-  <main class="main-content"><div class="top-bar"><h1 class="page-title">Home Content</h1><div class="user-avatar">A</div></div><div class="dashboard-content"><form id="homeContentForm" class="stack">
-    <section class="panel"><div class="section-title">About This Page</div><div class="help">This manages the homepage sections except the course-focused sections. Keep the JSON shape intact and edit values only.</div></section>
-    <section class="panel"><div class="section-title">Hero Slides</div><div class="help">Array of hero cards shown at the top of the homepage.</div><textarea id="heroSlides" class="textarea mono"></textarea></section>
-    <section class="panel"><div class="section-title">Social Stats</div><div class="help">Supports icons like <span class="mono">Youtube</span>, <span class="mono">Users</span>, <span class="mono">GraduationCap</span>, <span class="mono">Star</span>.</div><textarea id="socialStats" class="textarea mono"></textarea></section>
-    <section class="panel"><div class="section-title">Why Choose EDVO</div><textarea id="features" class="textarea mono"></textarea></section>
-    <section class="panel"><div class="section-title">Career Transformations</div><textarea id="careerTransformations" class="textarea mono"></textarea></section>
-    <section class="panel"><div class="section-title">Instructors Intro</div><textarea id="instructorsIntro" class="textarea mono"></textarea></section>
-    <section class="panel"><div class="section-title">Cinematic Section</div><textarea id="cinematicSection" class="textarea mono"></textarea></section>
-    <section class="panel"><div class="section-title">Portfolio Intro</div><textarea id="portfoliosIntro" class="textarea mono"></textarea></section>
-    <section class="panel"><div class="section-title">Portfolios</div><textarea id="portfolios" class="textarea mono"></textarea></section>
-    <section class="panel"><div class="section-title">YouTube Intro</div><textarea id="youtubeSection" class="textarea mono"></textarea></section>
-    <section class="panel"><div class="section-title">YouTube Videos</div><textarea id="youtubeVideos" class="textarea mono"></textarea></section>
-    <section class="panel"><div class="section-title">Hiring Partners Intro</div><textarea id="hiringPartnersSection" class="textarea mono"></textarea></section>
-    <section class="panel"><div class="section-title">Hiring Partners</div><textarea id="hiringPartners" class="textarea mono"></textarea></section>
-    <section class="panel"><div class="section-title">Testimonials Intro</div><textarea id="testimonialsIntro" class="textarea mono"></textarea></section>
-    <section class="panel"><div class="section-title">Home Testimonials</div><textarea id="homeTestimonials" class="textarea mono"></textarea></section>
-    <section class="panel"><div class="section-title">Bottom CTA</div><textarea id="ctaSection" class="textarea mono"></textarea></section>
-    <section class="panel"><div class="actions"><button class="btn btn-primary" type="submit">Save Home Content</button></div></section>
-  </form></div></main>
-  <script src="/backend/admin/admin.js"></script>
+  <aside class='sidebar'><div class='sidebar-logo'><span>ED</span>VO Admin</div><div class='nav-section'><div class='nav-section-title'>Main Menu</div><a href='/backend/admin' class='nav-item'><span class='nav-label'>Dashboard</span></a><a href='/backend/admin/home-content' class='nav-item active'><span class='nav-label'>Home Content</span></a><a href='/backend/admin/hiring-partners' class='nav-item'><span class='nav-label'>Hiring Partners</span></a><a href='/backend/admin/courses' class='nav-item'><span class='nav-label'>Courses</span></a><a href='/backend/admin/blogs' class='nav-item'><span class='nav-label'>Blogs</span></a><a href='/backend/admin/tutorials' class='nav-item'><span class='nav-label'>Tutorials</span></a><a href='/backend/admin/guides' class='nav-item'><span class='nav-label'>Guides</span></a><a href='/backend/admin/team' class='nav-item'><span class='nav-label'>Team</span></a><a href='/backend/admin/course-reviews' class='nav-item'><span class='nav-label'>Course Reviews</span></a><a href='/backend/admin/job-success-stories' class='nav-item'><span class='nav-label'>Job Success Stories</span></a><a href='/backend/admin/events' class='nav-item'><span class='nav-label'>Events</span></a><a href='/backend/admin/challenges' class='nav-item'><span class='nav-label'>Challenges</span></a></div><div class='nav-section'><div class='nav-section-title'>Settings</div><a href='#' class='nav-item' onclick='logout()'><span class='nav-label'>Logout</span></a></div></aside>
+  <main class='main-content'><div class='top-bar'><h1 class='page-title'>Home Content</h1><div class='user-avatar'>A</div></div><div class='dashboard-content'><div class='stack'>
+    <section class='panel'><div class='toolbar'><div><div class='section-title'>Structured Homepage Editor</div><div class='help'>Edit homepage content with forms, tables, and shuffle controls. Raw JSON fields have been removed from this page.</div></div><span class='pill-note'>No JSON</span></div></section>
+    <div id='stats' class='stats'></div>
+    <div id='objectPanels' class='stack'></div>
+    <div id='listPanels' class='stack'></div>
+    <section class='panel'><div class='section-title'>Dedicated Admin Areas</div><div class='info-grid'><div class='info-card'><strong>Hiring Partners & Testimonials</strong><div class='help'>Partner logos and hiring-partner testimonials already have a dedicated admin page, so they stay managed there instead of duplicating another editor here.</div><div class='actions' style='margin-top:12px'><a class='btn-link' href='/backend/admin/hiring-partners'>Open Hiring Partners Admin</a></div></div><div class='info-card'><strong>Scope Covered Here</strong><div class='help'>Hero slides, social stats, feature cards, career transformations, portfolio cards, YouTube cards, home testimonials, and all homepage copy sections.</div></div></div></section>
+  </div></div></main>
+  <script src='/backend/admin/admin.js'></script>
   <script>
-    const fieldIds=['heroSlides','socialStats','features','careerTransformations','instructorsIntro','cinematicSection','portfoliosIntro','portfolios','youtubeSection','youtubeVideos','hiringPartnersSection','hiringPartners','testimonialsIntro','homeTestimonials','ctaSection'];
-    function pretty(value){return JSON.stringify(value??(Array.isArray(value)?[]:{}),null,2)}
-    async function loadContent(){const payload=await adminFetch('/backend/api/admin/home-content');const item=payload.data||{};fieldIds.forEach((id)=>{document.getElementById(id).value=pretty(item[id])})}
-    document.getElementById('homeContentForm').addEventListener('submit',async(e)=>{e.preventDefault();try{const payload={};fieldIds.forEach((id)=>{payload[id]=JSON.parse(document.getElementById(id).value||'null')});await adminFetch('/backend/api/admin/home-content',{method:'PATCH',body:JSON.stringify(payload)});showToast('Home content updated','success')}catch(error){showToast(error.message||'Invalid JSON in one of the sections','error')}});
-    loadContent();
+    const objectConfigs = [
+      { key: 'instructorsIntro', title: 'Instructors Intro', help: 'Copy above the instructors section.', fields: [
+        { path: 'badge', label: 'Badge' }, { path: 'title', label: 'Title' }, { path: 'accent', label: 'Accent Text' }, { path: 'description', label: 'Description', type: 'textarea', wide: true },
+      ]},
+      { key: 'cinematicSection', title: 'Cinematic Section', help: 'Section copy and CTA for the cinematic learning panel.', fields: [
+        { path: 'badge', label: 'Badge' }, { path: 'title', label: 'Title' }, { path: 'accent', label: 'Accent Text' }, { path: 'buttonLabel', label: 'Button Label' }, { path: 'previewEmoji', label: 'Preview Emoji / Label' }, { path: 'previewTitle', label: 'Preview Title' }, { path: 'previewSubtitle', label: 'Preview Subtitle' }, { path: 'description', label: 'Description', type: 'textarea', wide: true },
+      ]},
+      { key: 'portfoliosIntro', title: 'Portfolio Intro', help: 'Intro copy and CTA for the portfolio section.', fields: [
+        { path: 'title', label: 'Title' }, { path: 'ctaLabel', label: 'CTA Label' }, { path: 'ctaHref', label: 'CTA Link' }, { path: 'description', label: 'Description', type: 'textarea', wide: true },
+      ]},
+      { key: 'youtubeSection', title: 'YouTube Intro', help: 'Heading and channel CTA for the YouTube section.', fields: [
+        { path: 'title', label: 'Title' }, { path: 'subscribers', label: 'Subscribers Text' }, { path: 'buttonLabel', label: 'Button Label' }, { path: 'channelUrl', label: 'Channel URL', wide: true },
+      ]},
+      { key: 'hiringPartnersSection', title: 'Hiring Partners Intro', help: 'Copy above the homepage hiring partners slider.', fields: [
+        { path: 'title', label: 'Title' }, { path: 'buttonLabel', label: 'Button Label' }, { path: 'buttonHref', label: 'Button Link' }, { path: 'description', label: 'Description', type: 'textarea', wide: true },
+      ]},
+      { key: 'testimonialsIntro', title: 'Testimonials Intro', help: 'Heading and supporting text above the testimonial cards.', fields: [
+        { path: 'badge', label: 'Badge' }, { path: 'title', label: 'Title' }, { path: 'accent', label: 'Accent Text' }, { path: 'description', label: 'Description', type: 'textarea', wide: true },
+      ]},
+      { key: 'ctaSection', title: 'Bottom CTA', help: 'Final homepage CTA section.', fields: [
+        { path: 'title', label: 'Title' }, { path: 'primaryLabel', label: 'Primary Button Label' }, { path: 'primaryHref', label: 'Primary Button Link' }, { path: 'secondaryLabel', label: 'Secondary Button Label' }, { path: 'secondaryHref', label: 'Secondary Button Link' }, { path: 'description', label: 'Description', type: 'textarea', wide: true },
+      ]},
+    ];
+
+    const listConfigs = [
+      { key: 'heroSlides', title: 'Hero Slides', help: 'Slides shown in the homepage hero carousel.', empty: 'No hero slides found.', create: () => ({ eyebrow: '', title: '', accent: '', description: '', chips: [], primaryCta: { label: '', href: '' }, secondaryCta: { label: '', href: '' }, note: '', panelTitle: '', panelBody: '', theme: { shell: '', glow: '', accent: '' } }), fields: [
+        { path: 'eyebrow', label: 'Eyebrow' }, { path: 'title', label: 'Title' }, { path: 'accent', label: 'Accent Text' }, { path: 'note', label: 'Note' }, { path: 'panelTitle', label: 'Panel Title' }, { path: 'primaryCta.label', label: 'Primary CTA Label' }, { path: 'primaryCta.href', label: 'Primary CTA Link' }, { path: 'secondaryCta.label', label: 'Secondary CTA Label' }, { path: 'secondaryCta.href', label: 'Secondary CTA Link' }, { path: 'theme.shell', label: 'Theme Shell Classes' }, { path: 'theme.glow', label: 'Theme Glow Classes' }, { path: 'theme.accent', label: 'Theme Accent Classes' }, { path: 'chips', label: 'Chips (comma separated)', type: 'chips', wide: true }, { path: 'description', label: 'Description', type: 'textarea', wide: true }, { path: 'panelBody', label: 'Panel Body', type: 'textarea', wide: true },
+      ], columns: [
+        { label: 'Slide', render: (item) => `<strong>${escapeHtml(item.title || 'Untitled')}</strong><div class='help'>${escapeHtml(item.eyebrow || 'No eyebrow')}</div>` },
+        { label: 'Primary CTA', render: (item) => `<div class='help'>${escapeHtml(item.primaryCta?.label || 'No CTA')}<br>${escapeHtml(item.primaryCta?.href || '')}</div>` },
+        { label: 'Chips', render: (item) => renderTags(item.chips || []) },
+      ]},
+      { key: 'socialStats', title: 'Social Stats', help: 'Stats cards below the homepage hero.', empty: 'No social stats found.', create: () => ({ icon: '', value: '', label: '', color: '' }), fields: [
+        { path: 'icon', label: 'Icon Name' }, { path: 'value', label: 'Value' }, { path: 'label', label: 'Label' }, { path: 'color', label: 'Color Classes', wide: true },
+      ], columns: [
+        { label: 'Value', render: (item) => `<strong>${escapeHtml(item.value || '0')}</strong><div class='help'>${escapeHtml(item.label || '')}</div>` },
+        { label: 'Icon', render: (item) => escapeHtml(item.icon || '-') },
+        { label: 'Color', render: (item) => `<span class='help'>${escapeHtml(item.color || '-')}</span>` },
+      ]},
+      { key: 'features', title: 'Why Choose EDVO Cards', help: 'Feature cards on the homepage.', empty: 'No feature cards found.', create: () => ({ icon: '', title: '', description: '', color: '' }), fields: [
+        { path: 'icon', label: 'Icon Name' }, { path: 'title', label: 'Title' }, { path: 'color', label: 'Gradient / Color Classes' }, { path: 'description', label: 'Description', type: 'textarea', wide: true },
+      ], columns: [
+        { label: 'Feature', render: (item) => `<strong>${escapeHtml(item.title || 'Untitled')}</strong><div class='help'>${escapeHtml(item.icon || 'No icon')}</div>` },
+        { label: 'Description', render: (item) => `<span class='help'>${escapeHtml(item.description || '')}</span>` },
+        { label: 'Color', render: (item) => `<span class='help'>${escapeHtml(item.color || '-')}</span>` },
+      ]},
+      { key: 'careerTransformations', title: 'Career Transformations', help: 'Transformation cards shown on the homepage.', empty: 'No transformations found.', create: () => ({ name: '', beforeRole: '', afterRole: '', company: '' }), fields: [
+        { path: 'name', label: 'Name' }, { path: 'beforeRole', label: 'Before Role' }, { path: 'afterRole', label: 'After Role' }, { path: 'company', label: 'Source / Company' },
+      ], columns: [
+        { label: 'Person', render: (item) => `<strong>${escapeHtml(item.name || 'Unnamed')}</strong><div class='help'>${escapeHtml(item.company || '')}</div>` },
+        { label: 'Before', render: (item) => escapeHtml(item.beforeRole || '-') },
+        { label: 'After', render: (item) => escapeHtml(item.afterRole || '-') },
+      ]},
+      { key: 'portfolios', title: 'Portfolio Cards', help: 'Featured portfolio cards and their skill badges.', empty: 'No portfolios found.', create: () => ({ name: '', role: '', href: '', skills: [] }), fields: [
+        { path: 'name', label: 'Name' }, { path: 'role', label: 'Role' }, { path: 'href', label: 'Portfolio Link', wide: true }, { path: 'skills', label: 'Skills (one per line, ICON:COUNT)', type: 'skills', wide: true },
+      ], columns: [
+        { label: 'Portfolio', render: (item) => `<strong>${escapeHtml(item.name || 'Untitled')}</strong><div class='help'>${escapeHtml(item.role || '')}</div>` },
+        { label: 'Link', render: (item) => `<span class='help'>${escapeHtml(item.href || '-')}</span>` },
+        { label: 'Skills', render: (item) => renderTags((item.skills || []).map((skill) => `${skill.icon || ''}:${skill.count || 1}`)) },
+      ]},
+      { key: 'youtubeVideos', title: 'YouTube Videos', help: 'Cards in the homepage YouTube section.', empty: 'No videos found.', create: () => ({ title: '', views: '', duration: '' }), fields: [
+        { path: 'title', label: 'Video Title', wide: true }, { path: 'views', label: 'Views Text' }, { path: 'duration', label: 'Duration' },
+      ], columns: [
+        { label: 'Video', render: (item) => `<strong>${escapeHtml(item.title || 'Untitled video')}</strong>` },
+        { label: 'Views', render: (item) => escapeHtml(item.views || '-') },
+        { label: 'Duration', render: (item) => escapeHtml(item.duration || '-') },
+      ]},
+      { key: 'homeTestimonials', title: 'Home Testimonials', help: 'Homepage learner testimonial cards.', empty: 'No testimonials found.', create: () => ({ name: '', role: '', badge: '', quote: '', linkedin: '', video: false }), fields: [
+        { path: 'name', label: 'Name' }, { path: 'role', label: 'Role' }, { path: 'badge', label: 'Badge' }, { path: 'linkedin', label: 'Link / LinkedIn URL', wide: true }, { path: 'video', label: 'Show Video Badge', type: 'checkbox' }, { path: 'quote', label: 'Quote', type: 'textarea', wide: true },
+      ], columns: [
+        { label: 'Learner', render: (item) => `<strong>${escapeHtml(item.name || 'Unnamed')}</strong><div class='help'>${escapeHtml(item.role || '')}</div>` },
+        { label: 'Badge', render: (item) => escapeHtml(item.badge || '-') },
+        { label: 'Type', render: (item) => `<span class='tag'>${item.video ? 'Video' : 'Text'}</span>` },
+      ]},
+    ];
+
+    const state = { homeContent: {}, editIndexes: {} };
+    const statsEl = document.getElementById('stats');
+    const objectPanelsEl = document.getElementById('objectPanels');
+    const listPanelsEl = document.getElementById('listPanels');
+
+    function escapeHtml(value){return String(value ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+    function clone(value){return JSON.parse(JSON.stringify(value ?? null))}
+    function getByPath(source, path){return String(path || '').split('.').reduce((acc, key) => acc && acc[key] !== undefined ? acc[key] : undefined, source)}
+    function setByPath(target, path, value){const keys=String(path||'').split('.');let current=target;keys.forEach((key,index)=>{if(index===keys.length-1){current[key]=value;return}if(!current[key]||typeof current[key]!=='object')current[key]={};current=current[key]})}
+    function fieldId(sectionKey, path){return sectionKey + '__' + String(path).replace(/\./g,'__')}
+    function splitLines(value){return String(value||'').split(/\r?\n/).map((item)=>item.trim()).filter(Boolean)}
+    function parseCommaList(value){return String(value||'').split(',').map((item)=>item.trim()).filter(Boolean)}
+    function parseSkills(value){return splitLines(value).map((line)=>{const parts=line.split(':');const icon=String(parts[0]||'').trim();const count=Number(String(parts[1]||'').trim()||0);if(!icon)return null;return {icon, count:count>0?count:1}}).filter(Boolean)}
+    function formatSkills(value){return Array.isArray(value)?value.map((item)=>`${item.icon||''}:${item.count||1}`).join('\n'):''}
+    function renderTags(values){const list=Array.isArray(values)?values.filter(Boolean):[];return list.length?`<div class='tag-list'>${list.map((item)=>`<span class='tag'>${escapeHtml(item)}</span>`).join('')}</div>`:`<span class='help'>-</span>`}
+    function itemsFor(key){return Array.isArray(state.homeContent[key])?clone(state.homeContent[key]):[]}
+
+    function renderField(sectionKey, field){
+      const id = fieldId(sectionKey, field.path);
+      const wide = field.wide ? 'wide' : '';
+      if (field.type === 'checkbox') return `<div class='field ${wide}'><label class='checkbox' for='${id}'><input id='${id}' type='checkbox' /> ${escapeHtml(field.label)}</label></div>`;
+      if (field.type === 'textarea' || field.type === 'skills') return `<div class='field ${wide}'><label for='${id}'>${escapeHtml(field.label)}</label><textarea id='${id}' class='textarea'></textarea></div>`;
+      return `<div class='field ${wide}'><label for='${id}'>${escapeHtml(field.label)}</label><input id='${id}' class='input' /></div>`;
+    }
+
+    function renderObjectPanels(){
+      objectPanelsEl.innerHTML = objectConfigs.map((config)=>`<section class='panel'><div class='section-title'>${escapeHtml(config.title)}</div><div class='help'>${escapeHtml(config.help)}</div><form id='${config.key}Form' class='stack' style='margin-top:16px'><div class='grid'>${config.fields.map((field)=>renderField(config.key, field)).join('')}</div><div class='actions'><button class='btn btn-primary' type='submit'>Save ${escapeHtml(config.title)}</button></div></form></section>`).join('');
+      objectConfigs.forEach((config)=>{
+        document.getElementById(config.key + 'Form').addEventListener('submit', async (event)=>{
+          event.preventDefault();
+          const payload = {};
+          config.fields.forEach((field)=>{
+            const el = document.getElementById(fieldId(config.key, field.path));
+            const value = field.type === 'checkbox' ? el.checked : el.value.trim();
+            setByPath(payload, field.path, value);
+          });
+          await savePatch({ [config.key]: payload }, config.title + ' updated');
+        });
+      });
+    }
+
+    function renderListPanels(){
+      listPanelsEl.innerHTML = listConfigs.map((config)=>`<section class='panel stack'><div class='section-title'>${escapeHtml(config.title)}</div><div class='help'>${escapeHtml(config.help)}</div><div class='grid-split'><form id='${config.key}Form' class='stack subtle'><div class='section-title' id='${config.key}FormTitle'>Add ${escapeHtml(config.title.replace(/s$/, ''))}</div><div class='grid'>${config.fields.map((field)=>renderField(config.key, field)).join('')}</div><div class='actions'><button class='btn btn-primary' type='submit' id='${config.key}Submit'>Save Item</button><button class='btn btn-secondary' type='button' id='${config.key}Cancel' style='display:none'>Cancel Edit</button></div></form><div class='table-wrap'><table><thead><tr>${config.columns.map((column)=>`<th>${escapeHtml(column.label)}</th>`).join('')}<th>Actions</th></tr></thead><tbody id='${config.key}Rows'><tr><td colspan='${config.columns.length + 1}' class='help'>Loading...</td></tr></tbody></table></div></div></section>`).join('');
+      listConfigs.forEach((config)=>{
+        state.editIndexes[config.key] = null;
+        document.getElementById(config.key + 'Form').addEventListener('submit', (event)=>saveListItem(event, config.key));
+        document.getElementById(config.key + 'Cancel').addEventListener('click', ()=>resetListForm(config.key));
+      });
+    }
+
+    function populateObjectPanels(){
+      objectConfigs.forEach((config)=>{
+        const source = state.homeContent[config.key] && typeof state.homeContent[config.key] === 'object' ? state.homeContent[config.key] : {};
+        config.fields.forEach((field)=>{
+          const el = document.getElementById(fieldId(config.key, field.path));
+          const value = getByPath(source, field.path);
+          if (field.type === 'checkbox') el.checked = value === true;
+          else el.value = value == null ? '' : String(value);
+        });
+      });
+    }
+
+    function resetListForm(sectionKey){
+      const config = listConfigs.find((item)=>item.key===sectionKey);
+      const seed = config.create();
+      state.editIndexes[sectionKey] = null;
+      config.fields.forEach((field)=>{
+        const el = document.getElementById(fieldId(sectionKey, field.path));
+        const value = getByPath(seed, field.path);
+        if (field.type === 'checkbox') el.checked = value === true;
+        else if (field.type === 'chips') el.value = Array.isArray(value) ? value.join(', ') : '';
+        else if (field.type === 'skills') el.value = formatSkills(value);
+        else el.value = value == null ? '' : String(value);
+      });
+      document.getElementById(sectionKey + 'FormTitle').textContent = 'Add ' + config.title.replace(/s$/, '');
+      document.getElementById(sectionKey + 'Submit').textContent = 'Save Item';
+      document.getElementById(sectionKey + 'Cancel').style.display = 'none';
+    }
+
+    function collectListForm(sectionKey){
+      const config = listConfigs.find((item)=>item.key===sectionKey);
+      const item = config.create();
+      config.fields.forEach((field)=>{
+        const el = document.getElementById(fieldId(sectionKey, field.path));
+        let value;
+        if (field.type === 'checkbox') value = el.checked;
+        else if (field.type === 'chips') value = parseCommaList(el.value);
+        else if (field.type === 'skills') value = parseSkills(el.value);
+        else value = el.value.trim();
+        setByPath(item, field.path, value);
+      });
+      return item;
+    }
+
+    async function saveListItem(event, sectionKey){
+      event.preventDefault();
+      const config = listConfigs.find((item)=>item.key===sectionKey);
+      const list = itemsFor(sectionKey);
+      const item = collectListForm(sectionKey);
+      const editIndex = state.editIndexes[sectionKey];
+      if (editIndex === null || editIndex === undefined) list.push(item); else list[editIndex] = item;
+      await savePatch({ [sectionKey]: list }, config.title + ' updated');
+      resetListForm(sectionKey);
+      renderListTable(sectionKey);
+    }
+
+    function editListItem(sectionKey, index){
+      const config = listConfigs.find((item)=>item.key===sectionKey);
+      const item = itemsFor(sectionKey)[index];
+      if (!item) return;
+      state.editIndexes[sectionKey] = index;
+      config.fields.forEach((field)=>{
+        const el = document.getElementById(fieldId(sectionKey, field.path));
+        const value = getByPath(item, field.path);
+        if (field.type === 'checkbox') el.checked = value === true;
+        else if (field.type === 'chips') el.value = Array.isArray(value) ? value.join(', ') : '';
+        else if (field.type === 'skills') el.value = formatSkills(value);
+        else el.value = value == null ? '' : String(value);
+      });
+      document.getElementById(sectionKey + 'FormTitle').textContent = 'Edit ' + config.title.replace(/s$/, '');
+      document.getElementById(sectionKey + 'Submit').textContent = 'Update Item';
+      document.getElementById(sectionKey + 'Cancel').style.display = 'inline-flex';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function moveListItem(sectionKey, index, direction){
+      const config = listConfigs.find((item)=>item.key===sectionKey);
+      const list = itemsFor(sectionKey);
+      const swap = index + direction;
+      if (swap < 0 || swap >= list.length) return;
+      const temp = list[index]; list[index] = list[swap]; list[swap] = temp;
+      await savePatch({ [sectionKey]: list }, config.title + ' order updated');
+      renderListTable(sectionKey);
+    }
+
+    async function deleteListItem(sectionKey, index){
+      const config = listConfigs.find((item)=>item.key===sectionKey);
+      const list = itemsFor(sectionKey);
+      if (!list[index]) return;
+      list.splice(index, 1);
+      await savePatch({ [sectionKey]: list }, config.title + ' updated');
+      if (state.editIndexes[sectionKey] === index) resetListForm(sectionKey);
+      renderListTable(sectionKey);
+    }
+
+    function renderListTable(sectionKey){
+      const config = listConfigs.find((item)=>item.key===sectionKey);
+      const rows = itemsFor(sectionKey);
+      const tbody = document.getElementById(sectionKey + 'Rows');
+      if (!rows.length) { tbody.innerHTML = `<tr><td colspan='${config.columns.length + 1}' class='empty'>${escapeHtml(config.empty)}</td></tr>`; updateStats(); return; }
+      tbody.innerHTML = rows.map((item, index)=>`<tr>${config.columns.map((column)=>`<td>${column.render(item, index)}</td>`).join('')}<td><div class='table-actions'><button class='btn btn-secondary' type='button' onclick="moveListItem('${sectionKey}', ${index}, -1)" ${index===0?'disabled':''}>Up</button><button class='btn btn-secondary' type='button' onclick="moveListItem('${sectionKey}', ${index}, 1)" ${index===rows.length-1?'disabled':''}>Down</button><button class='btn btn-secondary' type='button' onclick="editListItem('${sectionKey}', ${index})">Edit</button><button class='btn btn-danger' type='button' onclick="deleteListItem('${sectionKey}', ${index})">Delete</button></div></td></tr>`).join('');
+      updateStats();
+    }
+
+    function updateStats(){
+      const cards = [
+        { label: 'Hero Slides', value: itemsFor('heroSlides').length },
+        { label: 'Feature Cards', value: itemsFor('features').length },
+        { label: 'Portfolio Cards', value: itemsFor('portfolios').length },
+        { label: 'YouTube Videos', value: itemsFor('youtubeVideos').length },
+        { label: 'Testimonials', value: itemsFor('homeTestimonials').length },
+      ];
+      statsEl.innerHTML = cards.map((card)=>`<div class='stat'><div class='label'>${escapeHtml(card.label)}</div><div class='value'>${escapeHtml(card.value)}</div></div>`).join('');
+    }
+
+    async function savePatch(patch, message){
+      const payload = await adminFetch('/backend/api/admin/home-content', { method: 'PATCH', body: JSON.stringify(patch) });
+      state.homeContent = { ...state.homeContent, ...(payload.data || patch) };
+      populateObjectPanels();
+      listConfigs.forEach((config)=>renderListTable(config.key));
+      showToast(message, 'success');
+    }
+
+    async function loadContent(){
+      const payload = await adminFetch('/backend/api/admin/home-content');
+      state.homeContent = payload.data || {};
+      populateObjectPanels();
+      listConfigs.forEach((config)=>{ resetListForm(config.key); renderListTable(config.key); });
+      updateStats();
+    }
+
+    renderObjectPanels();
+    renderListPanels();
+    loadContent().catch((error)=>showToast(error.message || 'Failed to load home content', 'error'));
+    window.editListItem = editListItem; window.moveListItem = moveListItem; window.deleteListItem = deleteListItem;
   </script>
 </body>
 </html>
-

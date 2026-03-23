@@ -5,7 +5,15 @@ import Button from '@/components/ui/Button';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
-const HiringPartnersSection = ({ section, partners = [] as any[] }: { section?: { title?: string; description?: string; buttonLabel?: string; buttonHref?: string }; partners?: any[] }) => {
+const HiringPartnersSection = ({
+  section,
+  partners = [] as any[],
+  showLogos = true,
+}: {
+  section?: { title?: string; description?: string; buttonLabel?: string; buttonHref?: string };
+  partners?: any[];
+  showLogos?: boolean;
+}) => {
   const selectedPartners = partners.filter((partner) => partner?.showOnHome);
   const rows = (selectedPartners.length ? selectedPartners : partners).slice(0, 4);
   const fallbackRows = [
@@ -41,7 +49,7 @@ const HiringPartnersSection = ({ section, partners = [] as any[] }: { section?: 
                 transition={{ delay: index * 0.04, duration: 0.35, ease: 'easeOut' }}
                 className="flex h-16 w-36 flex-shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 shadow-sm transition-all hover:border-primary-400/40 hover:text-primary-600 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900/90 dark:text-slate-300 dark:hover:border-primary-400/40 dark:hover:text-white dark:hover:shadow-[0_12px_30px_rgba(37,99,235,0.12)]"
               >
-                {partner.logo ? <img src={partner.logo} alt={partner.name} className="max-h-10 w-full object-contain" /> : <span>{partner.name}</span>}
+                {showLogos && partner.logo ? <img src={partner.logo} alt={partner.name} className="max-h-10 w-full object-contain" /> : <span>{partner.name}</span>}
               </motion.div>
             ))}
           </div>
@@ -63,5 +71,7 @@ const HiringPartnersSection = ({ section, partners = [] as any[] }: { section?: 
 };
 
 export default HiringPartnersSection;
+
+
 
 

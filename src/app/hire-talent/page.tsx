@@ -167,7 +167,7 @@ export default function HireTalentPage() {
         </div>
       </section>
 
-      <HiringPartnersSection section={hiringPartnersSection} partners={partners} />
+      <HiringPartnersSection section={hiringPartnersSection} partners={partners} showLogos={false} />
 
       <section className="py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -288,4 +288,5 @@ export default function HireTalentPage() {
     </main>
   );
 }
+
 
