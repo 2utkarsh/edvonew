@@ -3,6 +3,7 @@ import { ensureSeededContent } from '@/lib/content-seeder';
 import { requireAdminOrDemo } from '@/lib/demo-admin';
 import { fail, ok, parseJson, toResponse } from '@/lib/http';
 import { mapEventDocumentToPublicEvent } from '@/lib/event-data';
+import { deleteSyncedPublicEvent, syncEventItemToPublicEvent } from '@/lib/event-sync';
 import { slugify } from '@/lib/query';
 import { EventItemModel } from '@/models/EventItem';
 
@@ -25,13 +26,16 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   await ensureSeededContent();
 
   const { id } = await params;
+  const existing = await EventItemModel.findById(id).lean();
+  if (!existing) return toResponse(fail('Event not found', 'NOT_FOUND', undefined, 404));
+
   const body = parseJson<Record<string, unknown>>(await request.text()) || {};
   const update: Record<string, unknown> = {};
 
   if (body.type && ['webinar', 'workshop', 'hackathon'].includes(String(body.type))) update.type = String(body.type);
   if (body.title) {
     update.title = String(body.title);
-    update.slug = String(body.slug || slugify(`${String(body.type || '')}-${String(body.title)}`));
+    update.slug = String(body.slug || slugify(`${String(body.type || existing.type)}-${String(body.title)}`));
   }
   if (body.description !== undefined) update.description = String(body.description || '');
   if (body.category !== undefined) update.category = String(body.category || 'General');
@@ -48,6 +52,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
   const item = await EventItemModel.findByIdAndUpdate(id, update, { new: true }).lean();
   if (!item) return toResponse(fail('Event not found', 'NOT_FOUND', undefined, 404));
+
+  await syncEventItemToPublicEvent(item, existing.slug);
+
   return toResponse(ok(mapEventDocumentToPublicEvent(item)));
 }
 
@@ -61,5 +68,8 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
   const { id } = await params;
   const item = await EventItemModel.findByIdAndDelete(id).lean();
   if (!item) return toResponse(fail('Event not found', 'NOT_FOUND', undefined, 404));
+
+  await deleteSyncedPublicEvent(item.slug);
+
   return toResponse(ok({ deleted: true, id }));
 }

@@ -3,6 +3,7 @@ import { ensureSeededContent } from '@/lib/content-seeder';
 import { requireAdminOrDemo } from '@/lib/demo-admin';
 import { created, fail, ok, parseJson, toResponse } from '@/lib/http';
 import { mapEventDocumentToPublicEvent } from '@/lib/event-data';
+import { syncEventItemToPublicEvent } from '@/lib/event-sync';
 import { slugify } from '@/lib/query';
 import { EventItemModel } from '@/models/EventItem';
 
@@ -63,6 +64,8 @@ export async function POST(request: Request) {
     prizes: body.prizes ? String(body.prizes) : undefined,
     duration: body.duration ? String(body.duration) : undefined,
   });
+
+  await syncEventItemToPublicEvent(item.toObject());
 
   return toResponse(created(mapEventDocumentToPublicEvent(item)));
 }
