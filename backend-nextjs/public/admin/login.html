@@ -11,265 +11,543 @@
       box-sizing: border-box;
     }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    :root {
+      --primary: #c17017;
+      --primary-dark: #9d5510;
+      --secondary: #0f766e;
+      --danger: #b42318;
+      --dark: #241b14;
+      --gray: #6f6459;
+      --light: #efe7d8;
+      --white: #fffdf8;
+      --surface: rgba(255, 250, 243, 0.86);
+      --border: rgba(84, 63, 40, 0.14);
+      --shadow-soft: 0 24px 48px rgba(45, 30, 12, 0.12);
+      --shadow-strong: 0 32px 72px rgba(24, 17, 9, 0.18);
     }
 
-    .left-panel {
-      flex: 1;
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 28%),
+        radial-gradient(circle at top right, rgba(193, 112, 23, 0.2), transparent 34%),
+        linear-gradient(180deg, #f6f0e4 0%, #efe7d8 48%, #eadfcd 100%);
+      color: var(--dark);
+      font-family: "Aptos", "Trebuchet MS", "Segoe UI", sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    body::before {
+      background:
+        linear-gradient(120deg, rgba(255, 255, 255, 0.38), transparent 45%),
+        radial-gradient(circle at 18% 16%, rgba(255, 255, 255, 0.26), transparent 18%),
+        radial-gradient(circle at 82% 0%, rgba(255, 255, 255, 0.16), transparent 24%);
+    }
+
+    body::after {
+      background-image:
+        linear-gradient(rgba(87, 67, 41, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(87, 67, 41, 0.03) 1px, transparent 1px);
+      background-size: 36px 36px;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.42), transparent 92%);
+    }
+
+    .shell {
+      position: relative;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(420px, 520px);
+      gap: 28px;
+      padding: 28px;
+    }
+
+    .shell::before,
+    .shell::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(18px);
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .shell::before {
+      width: 260px;
+      height: 260px;
+      top: -80px;
+      right: 180px;
+      background: rgba(193, 112, 23, 0.16);
+    }
+
+    .shell::after {
+      width: 220px;
+      height: 220px;
+      bottom: 48px;
+      left: 60px;
+      background: rgba(15, 118, 110, 0.14);
+    }
+
+    .brand-panel,
+    .login-panel {
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-panel {
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: space-between;
+      min-height: calc(100vh - 56px);
+      padding: 36px;
+      border: 1px solid rgba(255, 248, 235, 0.24);
+      border-radius: 40px;
+      background:
+        linear-gradient(160deg, rgba(36, 27, 20, 0.94), rgba(47, 35, 25, 0.94)),
+        linear-gradient(135deg, rgba(242, 180, 90, 0.1), rgba(15, 118, 110, 0.1));
+      box-shadow: var(--shadow-strong);
+      color: var(--white);
+      overflow: hidden;
+    }
+
+    .brand-panel::before,
+    .brand-panel::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .brand-panel::before {
+      width: 300px;
+      height: 300px;
+      top: -120px;
+      right: -70px;
+      background: radial-gradient(circle, rgba(242, 180, 90, 0.22), transparent 68%);
+    }
+
+    .brand-panel::after {
+      width: 260px;
+      height: 260px;
+      bottom: -120px;
+      left: -80px;
+      background: radial-gradient(circle, rgba(15, 118, 110, 0.2), transparent 68%);
+    }
+
+    .brand-block,
+    .highlights {
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-mark {
+      display: inline-flex;
       align-items: center;
-      padding: 40px;
-      color: white;
-      text-align: center;
+      gap: 14px;
+      margin-bottom: 28px;
+      padding: 14px 18px;
+      border: 1px solid rgba(255, 248, 235, 0.14);
+      border-radius: 22px;
+      background: rgba(255, 248, 235, 0.06);
+      font-size: 1.12rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
 
-    .left-panel h1 {
-      font-size: 4rem;
-      margin-bottom: 20px;
+    .brand-mark span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 46px;
+      height: 46px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #f2b45a 0%, #b85c16 100%);
+      color: #fffaf2;
+      box-shadow: 0 18px 40px rgba(193, 112, 23, 0.2);
+    }
+
+    .eyebrow {
+      color: rgba(255, 238, 214, 0.74);
+      font-size: 0.82rem;
       font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
     }
 
-    .left-panel h1 span {
-      color: rgba(255,255,255,0.7);
+    h1 {
+      max-width: 720px;
+      margin-top: 18px;
+      font-size: clamp(2.6rem, 5vw, 4.6rem);
+      font-weight: 800;
+      letter-spacing: -0.05em;
+      line-height: 1;
     }
 
-    .left-panel p {
-      font-size: 1.2rem;
-      opacity: 0.9;
-      max-width: 400px;
-      line-height: 1.6;
+    .intro {
+      max-width: 620px;
+      margin-top: 22px;
+      color: rgba(255, 238, 214, 0.78);
+      font-size: 1.06rem;
+      line-height: 1.75;
     }
 
-    .features {
-      margin-top: 60px;
+    .highlights {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 48px;
     }
 
-    .feature {
-      background: rgba(255,255,255,0.1);
-      padding: 20px;
-      border-radius: 12px;
+    .highlight {
+      padding: 22px;
+      border: 1px solid rgba(255, 248, 235, 0.12);
+      border-radius: 26px;
+      background: rgba(255, 248, 235, 0.06);
       backdrop-filter: blur(10px);
     }
 
-    .feature-icon {
-      font-size: 2rem;
-      margin-bottom: 10px;
-    }
-
-    .right-panel {
-      width: 500px;
-      background: white;
-      display: flex;
-      flex-direction: column;
+    .highlight-kicker {
+      display: inline-flex;
+      align-items: center;
       justify-content: center;
-      padding: 60px 50px;
-      box-shadow: -10px 0 40px rgba(0,0,0,0.1);
+      min-width: 38px;
+      height: 38px;
+      margin-bottom: 16px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 238, 214, 0.88);
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
     }
 
-    .logo {
+    .highlight h2 {
+      font-size: 1.02rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .highlight p {
+      margin-top: 10px;
+      color: rgba(255, 238, 214, 0.72);
+      font-size: 0.94rem;
+      line-height: 1.7;
+    }
+
+    .login-panel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-card {
+      width: 100%;
+      padding: 34px;
+      border: 1px solid var(--border);
+      border-radius: 34px;
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 4px;
+      background: linear-gradient(90deg, #f0b35b, #0f766e);
+    }
+
+    .login-brand,
+    .login-copy,
+    form,
+    .demo-credentials,
+    .error-message {
+      position: relative;
+      z-index: 1;
+    }
+
+    .login-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+      padding: 12px 16px;
+      border: 1px solid rgba(84, 63, 40, 0.12);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.62);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .login-brand span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #d38b2c 0%, #a04710 100%);
+      color: #fffaf2;
+    }
+
+    .login-copy h2 {
       font-size: 2rem;
-      font-weight: 700;
-      color: #667eea;
-      margin-bottom: 10px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
     }
 
-    .logo span {
-      color: #764ba2;
+    .login-copy p {
+      margin-top: 12px;
+      color: var(--gray);
+      line-height: 1.7;
     }
 
-    .welcome-text {
-      color: #666;
-      margin-bottom: 40px;
+    form {
+      margin-top: 28px;
     }
 
     .form-group {
-      margin-bottom: 24px;
+      margin-bottom: 18px;
     }
 
     .form-group label {
       display: block;
-      margin-bottom: 8px;
-      color: #333;
-      font-weight: 500;
-      font-size: 14px;
+      margin-bottom: 10px;
+      color: var(--gray);
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
     }
 
     .form-group input {
       width: 100%;
+      min-height: 54px;
       padding: 14px 18px;
-      border: 2px solid #e1e1e1;
-      border-radius: 10px;
-      font-size: 15px;
-      transition: all 0.3s;
+      border: 1px solid rgba(84, 63, 40, 0.22);
+      border-radius: 18px;
+      background: rgba(255, 252, 246, 0.88);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84);
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    .form-group input::placeholder {
+      color: rgba(111, 100, 89, 0.72);
     }
 
     .form-group input:focus {
       outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+      border-color: rgba(193, 112, 23, 0.58);
+      background: var(--white);
+      box-shadow: 0 0 0 4px rgba(193, 112, 23, 0.14);
     }
 
     .login-btn {
       width: 100%;
-      padding: 16px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: 600;
+      min-height: 54px;
+      padding: 14px 18px;
+      border: 0;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #df9a38 0%, #b45711 100%);
+      color: #fffaf2;
+      font-size: 0.96rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
       cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 18px 40px rgba(180, 87, 17, 0.22);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
     }
 
     .login-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+      transform: translateY(-1px);
+      box-shadow: 0 22px 42px rgba(180, 87, 17, 0.28);
     }
 
     .login-btn:disabled {
-      opacity: 0.7;
+      opacity: 0.72;
       cursor: not-allowed;
       transform: none;
+      box-shadow: none;
     }
 
     .error-message {
-      background: #fee;
-      color: #c33;
-      padding: 14px;
-      border-radius: 10px;
-      margin-bottom: 24px;
-      border-left: 4px solid #c33;
+      display: none;
+      margin-top: 22px;
+      padding: 14px 16px;
+      border: 1px solid rgba(180, 35, 24, 0.18);
+      border-radius: 18px;
+      background: rgba(180, 35, 24, 0.08);
+      color: var(--danger);
+      line-height: 1.6;
     }
 
     .demo-credentials {
-      margin-top: 30px;
-      padding: 20px;
-      background: #f8f9ff;
-      border-radius: 10px;
-      text-align: center;
+      margin-top: 22px;
+      padding: 18px;
+      border: 1px solid rgba(84, 63, 40, 0.12);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.62);
     }
 
     .demo-credentials p {
-      color: #666;
-      font-size: 13px;
-      margin-bottom: 8px;
+      color: var(--gray);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
     }
 
     .demo-credentials code {
-      background: white;
-      padding: 8px 16px;
-      border-radius: 6px;
       display: inline-block;
-      font-size: 13px;
-      color: #667eea;
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: rgba(193, 112, 23, 0.1);
+      color: var(--primary-dark);
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    @media (max-width: 1180px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+
+      .brand-panel {
+        min-height: auto;
+      }
     }
 
     @media (max-width: 900px) {
-      .left-panel {
+      .shell {
+        padding: 16px;
+      }
+
+      .brand-panel {
         display: none;
       }
-      .right-panel {
-        width: 100%;
+
+      .login-panel {
+        min-height: calc(100vh - 32px);
+      }
+
+      .login-card {
+        max-width: 560px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body::after {
+        background-size: 28px 28px;
+      }
+
+      .login-card {
+        padding: 24px 20px;
+        border-radius: 28px;
+      }
+
+      .login-copy h2 {
+        font-size: 1.7rem;
       }
     }
   </style>
 </head>
 <body>
-  <div class="left-panel">
-    <h1><span>ED</span>VO</h1>
-    <p>Admin Dashboard - Manage your learning platform with ease</p>
-    
-    <div class="features">
-      <div class="feature">
-        <div class="feature-icon">📊</div>
-        <div>
-          <strong>Analytics</strong>
-          <p style="font-size: 0.9rem; margin-top: 5px; opacity: 0.8;">Track platform growth</p>
-        </div>
+  <div class="shell">
+    <section class="brand-panel">
+      <div class="brand-block">
+        <div class="brand-mark"><span>ED</span>VO Control</div>
+        <p class="eyebrow">Admin workspace</p>
+        <h1>Run content, hiring, and learning operations from one calm command room.</h1>
+        <p class="intro">Manage courses, refresh home page sections, review partner listings, and keep every public-facing editor aligned without switching tools.</p>
       </div>
-      <div class="feature">
-        <div class="feature-icon">📚</div>
-        <div>
-          <strong>Courses</strong>
-          <p style="font-size: 0.9rem; margin-top: 5px; opacity: 0.8;">Manage content</p>
-        </div>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">👥</div>
-        <div>
-          <strong>Users</strong>
-          <p style="font-size: 0.9rem; margin-top: 5px; opacity: 0.8;">Student management</p>
-        </div>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">💼</div>
-        <div>
-          <strong>Jobs</strong>
-          <p style="font-size: 0.9rem; margin-top: 5px; opacity: 0.8;">Job board control</p>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <div class="right-panel">
-    <div class="logo"><span>ED</span>VO Admin</div>
-    <p class="welcome-text">Welcome back! Please sign in to continue.</p>
-    
-    <div id="error" class="error-message" style="display: none;"></div>
-    
-    <form id="loginForm">
-      <div class="form-group">
-        <label for="email">Email Address</label>
-        <input type="email" id="email" name="email" placeholder="admin@edvo.com" required />
+      <div class="highlights">
+        <article class="highlight">
+          <div class="highlight-kicker">01</div>
+          <h2>Content Studio</h2>
+          <p>Update home sections, blogs, tutorials, guides, and events in one consistent editing flow.</p>
+        </article>
+        <article class="highlight">
+          <div class="highlight-kicker">02</div>
+          <h2>Partner Desk</h2>
+          <p>Manage hiring partners, reviews, and success stories with cleaner tables and structured forms.</p>
+        </article>
+        <article class="highlight">
+          <div class="highlight-kicker">03</div>
+          <h2>Course Control</h2>
+          <p>Track catalog changes, reorder items, and keep admin decisions focused on publishing, not raw JSON.</p>
+        </article>
       </div>
-      
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="Enter your password" required />
+    </section>
+
+    <section class="login-panel">
+      <div class="login-card">
+        <div class="login-brand"><span>ED</span>VO Admin</div>
+
+        <div class="login-copy">
+          <h2>Sign in</h2>
+          <p>Use your admin credentials to open the dashboard and continue managing the platform.</p>
+        </div>
+
+        <div id="error" class="error-message" role="alert"></div>
+
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="admin@edvo.com" autocomplete="email" required>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+          </div>
+
+          <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
+        </form>
+
+        <div class="demo-credentials">
+          <p>Demo Credentials</p>
+          <code>admin@edvo.com / admin123</code>
+        </div>
       </div>
-      
-      <button type="submit" class="login-btn" id="loginBtn">
-        Sign In →
-      </button>
-    </form>
-    
-    <div class="demo-credentials">
-      <p>Demo Credentials:</p>
-      <code>admin@edvo.com / admin123</code>
-    </div>
+    </section>
   </div>
 
   <script>
-    // Demo mode - bypass authentication
-    document.getElementById('loginForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      
+    document.getElementById('loginForm').addEventListener('submit', (event) => {
+      event.preventDefault();
+
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
       const errorDiv = document.getElementById('error');
-      
-      // Simple demo check
+
       if (email === 'admin@edvo.com' && password === 'admin123') {
         localStorage.setItem('adminLoggedIn', 'true');
+        localStorage.setItem('adminToken', 'demo-admin');
         localStorage.setItem('adminEmail', email);
         window.location.href = '/backend/admin/dashboard';
-      } else {
-        errorDiv.textContent = 'Invalid credentials. Use: admin@edvo.com / admin123';
-        errorDiv.style.display = 'block';
+        return;
       }
+
+      errorDiv.textContent = 'Invalid credentials. Use admin@edvo.com / admin123';
+      errorDiv.style.display = 'block';
     });
   </script>
 </body>
 </html>
-
-

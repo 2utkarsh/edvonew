@@ -5,72 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Courses - EDVO Admin</title>
   <link rel="stylesheet" href="/backend/admin/styles.css" />
-  <style>
-    .filters {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-    }
-
-    .filter-input,
-    .filter-select {
-      min-height: 46px;
-      padding: 12px 18px;
-      border: 2px solid #e2e8f0;
-      border-radius: 10px;
-      font-size: 0.95rem;
-      background: white;
-    }
-
-    .filter-input {
-      flex: 1 1 260px;
-      min-width: 220px;
-    }
-
-    .filter-select {
-      flex: 0 1 220px;
-      cursor: pointer;
-    }
-
-    .filter-input:focus,
-    .filter-select:focus {
-      outline: none;
-      border-color: #667eea;
-    }
-
-    .course-cell {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 260px;
-    }
-
-    .course-thumb,
-    .course-fallback {
-      width: 50px;
-      height: 50px;
-      border-radius: 10px;
-      flex-shrink: 0;
-      object-fit: cover;
-    }
-
-    .course-fallback {
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 600;
-    }
-
-    @media (max-width: 768px) {
-      .filters > * {
-        width: 100%;
-        flex-basis: 100%;
-      }
-    }
-  </style>
 </head>
 <body>
   <aside class="sidebar">
@@ -95,13 +29,7 @@
   <main class="main-content">
     <div class="top-bar">
       <h1 class="page-title">Courses Management</h1>
-      <div class="user-menu">
-        <div class="user-info">
-          <div class="user-name">Admin User</div>
-          <div class="user-role">Administrator</div>
-        </div>
-        <div class="user-avatar">A</div>
-      </div>
+      <div class="user-avatar">A</div>
     </div>
 
     <div class="dashboard-content">
@@ -256,6 +184,7 @@
   </script>
 </body>
 </html>
+
 
 
 

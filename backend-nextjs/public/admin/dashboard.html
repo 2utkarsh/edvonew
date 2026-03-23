@@ -5,111 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - EDVO Admin</title>
   <link rel="stylesheet" href="/backend/admin/styles.css" />
-  <style>
+    <style>
     .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 24px;
-      margin-bottom: 40px;
-    }
-
-    .stat-card {
-      background: var(--white);
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 18px;
-    }
-
-    .stat-info h3 {
-      font-size: 0.9rem;
-      color: var(--gray);
-      font-weight: 500;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .stat-value {
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: var(--dark);
-      line-height: 1;
-      margin-bottom: 10px;
-    }
-
-    .stat-change {
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .stat-change.positive {
-      color: var(--success);
-    }
-
-    .stat-change.negative {
-      color: var(--danger);
-    }
-
-    .stat-icon {
-      width: 60px;
-      height: 60px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      flex-shrink: 0;
-    }
-
-    .stat-icon.blue { background: rgba(102, 126, 234, 0.1); }
-    .stat-icon.purple { background: rgba(118, 75, 162, 0.1); }
-    .stat-icon.green { background: rgba(72, 187, 120, 0.1); }
-    .stat-icon.orange { background: rgba(237, 137, 54, 0.1); }
-
-    .course-cell {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 240px;
-    }
-
-    .course-thumb,
-    .course-fallback {
-      width: 50px;
-      height: 50px;
-      border-radius: 10px;
-      flex-shrink: 0;
-      object-fit: cover;
-    }
-
-    .course-fallback {
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 600;
-    }
-
-    @media (max-width: 768px) {
-      .stats-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
-
-      .stat-card {
-        padding: 20px;
-      }
-
-      .stat-value {
-        font-size: 2rem;
-      }
+      margin-bottom: 24px;
     }
   </style>
 </head>
@@ -136,13 +34,7 @@
   <main class="main-content">
     <div class="top-bar">
       <h1 class="page-title">Dashboard Overview</h1>
-      <div class="user-menu">
-        <div class="user-info">
-          <div class="user-name">Admin User</div>
-          <div class="user-role">Administrator</div>
-        </div>
-        <div class="user-avatar">A</div>
-      </div>
+      <div class="user-avatar">A</div>
     </div>
 
     <div class="dashboard-content">
@@ -315,6 +207,7 @@
   </script>
 </body>
 </html>
+
 
 
 
