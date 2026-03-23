@@ -1,5 +1,6 @@
 import { requireAuth } from '@/lib/auth';
 import { buildEnrollmentSnapshot, flattenCurriculumRows, normalizeCoursePayload } from '@/lib/course-runtime';
+import { syncCourseCategoryCounts } from '@/lib/course-category-counts';
 import { connectToDatabase } from '@/lib/db';
 import { fail, handleError, ok, toResponse } from '@/lib/http';
 import { slugify } from '@/lib/query';
@@ -63,12 +64,35 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
     const { id } = await params;
     const body = await request.json();
-    const payload = normalizeCoursePayload(body as Record<string, unknown>);
-    const title = String(payload.title || body.title || 'Untitled Course');
+    const existing = await CourseModel.findById(id).lean();
+    if (!existing) {
+      return toResponse(fail('Course not found', 'NOT_FOUND', undefined, 404));
+    }
+
+    const mergedInput = {
+      ...existing,
+      ...body,
+      stats: {
+        ...(existing.stats || {}),
+        ...(body.stats || {}),
+      },
+      certificateSettings: {
+        ...(existing.certificateSettings || {}),
+        ...(body.certificateSettings || {}),
+      },
+      notificationSettings: {
+        ...(existing.notificationSettings || {}),
+        ...(body.notificationSettings || {}),
+      },
+    };
+
+    const payload = normalizeCoursePayload(mergedInput as Record<string, unknown>);
+    const title = String((body as Record<string, unknown>).title || payload.title || existing.title || 'Untitled Course');
     const update = {
       ...payload,
-      ...(payload.slug ? { slug: payload.slug } : title ? { slug: slugify(title) } : {}),
-      ...(payload.status === 'published' ? { publishedAt: new Date() } : {}),
+      order: body.order !== undefined ? Number(body.order || 0) : Number(existing.order || payload.order || 0),
+      ...(body.slug || payload.slug ? { slug: String(body.slug || payload.slug || slugify(title)) } : title ? { slug: slugify(title) } : {}),
+      ...(payload.status === 'published' ? { publishedAt: existing.publishedAt || new Date() } : {}),
     };
 
     const item = await CourseModel.findByIdAndUpdate(id, update, { new: true }).lean();
@@ -76,6 +100,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       return toResponse(fail('Course not found', 'NOT_FOUND', undefined, 404));
     }
 
+    await syncCourseCategoryCounts();
     return toResponse(ok({ ...item, id: String(item._id) }));
   } catch (error) {
     return handleError(error);
@@ -95,6 +120,7 @@ export async function DELETE(_: Request, { params }: { params: Promise<{ id: str
     }
 
     await EnrollmentModel.deleteMany({ courseId: id });
+    await syncCourseCategoryCounts();
     return toResponse(ok({ deleted: true, id }));
   } catch (error) {
     return handleError(error);

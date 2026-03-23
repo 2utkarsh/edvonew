@@ -1,5 +1,6 @@
 import { requireAuth } from '@/lib/auth';
 import { buildEnrollmentSnapshot, flattenCurriculumRows, normalizeCoursePayload } from '@/lib/course-runtime';
+import { syncCourseCategoryCounts } from '@/lib/course-category-counts';
 import { connectToDatabase } from '@/lib/db';
 import { created, fail, handleError, ok, toResponse } from '@/lib/http';
 import { slugify } from '@/lib/query';
@@ -14,7 +15,7 @@ export async function GET() {
     await connectToDatabase();
 
     const [courses, categories, enrollments] = await Promise.all([
-      CourseModel.find().sort({ updatedAt: -1 }).lean(),
+      CourseModel.find().sort({ order: 1, updatedAt: -1 }).lean(),
       CourseCategoryModel.find().sort({ order: 1, updatedAt: -1 }).lean(),
       EnrollmentModel.find().populate('userId', 'name email').lean(),
     ]);
@@ -112,13 +113,18 @@ export async function POST(request: Request) {
       return toResponse(fail('A course with this slug already exists', 'CONFLICT', undefined, 409));
     }
 
+    const highestOrder = await CourseModel.findOne().sort({ order: -1, updatedAt: -1 }).select('order').lean();
+    const order = payload.order > 0 ? payload.order : Number(highestOrder?.order || 0) + 1;
+
     const item = await CourseModel.create({
       ...payload,
       title,
       slug,
+      order,
       publishedAt: payload.status === 'published' ? new Date() : undefined,
     });
 
+    await syncCourseCategoryCounts();
     return toResponse(created({ ...item.toObject(), id: String(item._id) }));
   } catch (error) {
     return handleError(error);

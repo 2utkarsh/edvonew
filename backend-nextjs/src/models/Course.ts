@@ -147,6 +147,7 @@ export interface CourseDocument {
   category: string;
   level: 'beginner' | 'intermediate' | 'advanced';
   status: 'draft' | 'published' | 'archived';
+  order: number;
   instructorId?: Types.ObjectId;
   instructorName?: string;
   thumbnail?: string;
@@ -209,6 +210,7 @@ const courseSchema = new Schema<CourseDocument>(
     category: { type: String, required: true },
     level: { type: String, enum: ['beginner', 'intermediate', 'advanced'], default: 'beginner' },
     status: { type: String, enum: ['draft', 'published', 'archived'], default: 'draft' },
+    order: { type: Number, default: 0 },
     instructorId: { type: Schema.Types.ObjectId, ref: 'User' },
     instructorName: String,
     thumbnail: String,

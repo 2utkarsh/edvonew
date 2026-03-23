@@ -63,7 +63,7 @@ export default function CoursesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedLevel, setSelectedLevel] = useState('all');
-  const [sortBy, setSortBy] = useState('popular');
+  const [sortBy, setSortBy] = useState('featured');
   const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
@@ -164,6 +164,7 @@ export default function CoursesPage() {
                 </SelectField>
 
                 <SelectField value={sortBy} onChange={setSortBy} className="min-w-[220px] ml-auto">
+                  <option value="featured">Admin Order</option>
                   <option value="popular">Most Popular</option>
                   <option value="latest">Latest</option>
                   <option value="rating">Highest Rated</option>
@@ -209,7 +210,7 @@ export default function CoursesPage() {
                   setSearchTerm('');
                   setSelectedCategory('all');
                   setSelectedLevel('all');
-                  setSortBy('popular');
+                  setSortBy('featured');
                 }}
               >
                 Clear Filters

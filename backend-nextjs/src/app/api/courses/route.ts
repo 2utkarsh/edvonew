@@ -27,13 +27,14 @@ export async function GET(request: Request) {
       query.category = categoryDoc?.name || category;
     }
 
-    const sortParam = searchParams.get('sort') || 'popular';
+    const sortParam = searchParams.get('sort') || 'featured';
     const sortMap: Record<string, Record<string, 1 | -1>> = {
-      popular: { studentsEnrolled: -1, createdAt: -1 },
-      rating: { rating: -1, reviewCount: -1 },
-      'price-low': { price: 1 },
-      'price-high': { price: -1 },
-      latest: { createdAt: -1 },
+      featured: { order: 1, createdAt: -1 },
+      popular: { studentsEnrolled: -1, order: 1, createdAt: -1 },
+      rating: { rating: -1, reviewCount: -1, order: 1 },
+      'price-low': { price: 1, order: 1 },
+      'price-high': { price: -1, order: 1 },
+      latest: { createdAt: -1, order: 1 },
     };
 
     const [items, total] = await Promise.all([
