@@ -18,6 +18,12 @@ type NavCategoryResponse = {
   data: Array<{ id: string; name: string; slug: string }>;
 };
 
+function isCoursesNavLink(link: NavLink) {
+  const href = String(link.href || '').toLowerCase();
+  const label = String(link.label || '').trim().toLowerCase();
+  return href === '/courses' || href.startsWith('/courses?') || label === 'courses' || label === 'course';
+}
+
 function readStoredAuthToken() {
   if (typeof window === 'undefined') return false;
   return Boolean(window.localStorage.getItem('auth_token'));
@@ -104,7 +110,7 @@ export default function Navbar() {
     let active = true;
 
     const loadCourseNav = async () => {
-      const courseLink = config.navLinks.find((link) => link.label === 'Courses');
+      const courseLink = config.navLinks.find(isCoursesNavLink);
       if (!courseLink) {
         if (active) setNavLinks(config.navLinks);
         return;
@@ -115,17 +121,19 @@ export default function Navbar() {
         if (!active) return;
 
         const categories = (response.data || []).map((category) => ({
-          href: "/courses?category=" + encodeURIComponent(category.slug || category.name),
+          href: '/courses?category=' + encodeURIComponent(category.slug || category.name),
           label: category.name,
         }));
+        const dynamicChildren = [{ href: '/courses', label: 'All Courses' }, ...categories];
 
         setNavLinks(
           config.navLinks.map((link) =>
-            link.label === 'Courses'
+            isCoursesNavLink(link)
               ? {
                   ...link,
+                  href: '/courses',
                   hasDropdown: true,
-                  children: categories.length ? categories : link.children || [],
+                  children: dynamicChildren.length ? dynamicChildren : link.children || [],
                 }
               : link
           )
