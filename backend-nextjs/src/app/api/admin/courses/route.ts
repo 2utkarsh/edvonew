@@ -2,6 +2,7 @@ import { requireAuth } from '@/lib/auth';
 import { buildEnrollmentSnapshot, flattenCurriculumRows, normalizeCoursePayload } from '@/lib/course-runtime';
 import { syncCourseCategoryCounts } from '@/lib/course-category-counts';
 import { connectToDatabase } from '@/lib/db';
+import { bootstrapLegacyCourseCatalog } from '@/lib/ensure-legacy-course-catalog';
 import { created, fail, handleError, ok, toResponse } from '@/lib/http';
 import { slugify } from '@/lib/query';
 import { CourseCategoryModel } from '@/models/CourseCategory';
@@ -13,6 +14,7 @@ export async function GET() {
     const auth = await requireAuth(['admin']);
     if ('error' in auth) return auth.error;
     await connectToDatabase();
+    await bootstrapLegacyCourseCatalog();
 
     const [courses, categories, enrollments] = await Promise.all([
       CourseModel.find().sort({ order: 1, updatedAt: -1 }).lean(),
@@ -130,3 +132,5 @@ export async function POST(request: Request) {
     return handleError(error);
   }
 }
+
+

@@ -1,11 +1,13 @@
 import { flattenCurriculumRows } from '@/lib/course-runtime';
 import { connectToDatabase } from '@/lib/db';
+import { bootstrapLegacyCourseCatalog } from '@/lib/ensure-legacy-course-catalog';
 import { fail, handleError, ok, toResponse } from '@/lib/http';
 import { CourseModel } from '@/models/Course';
 
 export async function GET(_: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
     await connectToDatabase();
+    await bootstrapLegacyCourseCatalog();
     const { slug } = await params;
     const item = await CourseModel.findOne({ slug }).lean();
     if (!item) return toResponse(fail('Course not found', 'NOT_FOUND', undefined, 404));
@@ -65,3 +67,5 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
     return handleError(error);
   }
 }
+
+

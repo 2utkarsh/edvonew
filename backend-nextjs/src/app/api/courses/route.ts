@@ -1,4 +1,5 @@
 import { connectToDatabase } from '@/lib/db';
+import { bootstrapLegacyCourseCatalog } from '@/lib/ensure-legacy-course-catalog';
 import { handleError, ok, toResponse } from '@/lib/http';
 import { buildSearchRegex, getPagination } from '@/lib/query';
 import { CourseCategoryModel } from '@/models/CourseCategory';
@@ -7,6 +8,7 @@ import { CourseModel } from '@/models/Course';
 export async function GET(request: Request) {
   try {
     await connectToDatabase();
+    await bootstrapLegacyCourseCatalog();
     const { searchParams } = new URL(request.url);
     const { page, limit, skip } = getPagination(searchParams);
     const query: Record<string, unknown> = { status: 'published' };
@@ -72,3 +74,5 @@ export async function GET(request: Request) {
     return handleError(error);
   }
 }
+
+
