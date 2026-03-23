@@ -20,18 +20,22 @@
     .grid2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .grid3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .grid4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .field { display: grid; gap: 7px; }
+    .field { display: grid; gap: 7px; min-width: 0; }
     .field.full { grid-column: 1 / -1; }
     .field label { font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 800; color: var(--gray); }
-    .field input, .field select, .field textarea { width: 100%; min-height: 50px; padding: 12px 14px; border-radius: 16px; border: 1px solid rgba(84, 63, 40, 0.14); background: rgba(255, 252, 246, 0.94); font: inherit; }
+    .field input, .field select, .field textarea { width: 100%; min-width: 0; min-height: 50px; padding: 12px 14px; border-radius: 16px; border: 1px solid rgba(84, 63, 40, 0.14); background: rgba(255, 252, 246, 0.94); font: inherit; }
     .field textarea { min-height: 110px; resize: vertical; }
     .tool { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
-    .tool input, .tool select { flex: 1; min-width: 220px; }
-    .tablex, .minit { border: 1px solid rgba(84, 63, 40, 0.1); border-radius: 22px; overflow: hidden; }
+    .tool input, .tool select { flex: 1 1 220px; min-width: 0; }
+    .tablex, .minit { border: 1px solid rgba(84, 63, 40, 0.1); border-radius: 22px; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
     .tablex table, .minit table { width: 100%; border-collapse: collapse; }
+    .tablex table { min-width: 980px; }
+    .minit table { min-width: 760px; }
     .tablex th, .tablex td, .minit th, .minit td { padding: 12px 14px; border-bottom: 1px solid rgba(84, 63, 40, 0.08); text-align: left; vertical-align: top; }
-    .tablex th, .minit th { background: rgba(193, 112, 23, 0.08); font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gray); }
+    .tablex th, .minit th { background: rgba(193, 112, 23, 0.08); font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gray); white-space: nowrap; }
     .tablex tr:last-child td, .minit tr:last-child td { border-bottom: 0; }
+    .minit input, .minit select, .minit textarea { min-width: 120px; }
+    .minit textarea { min-height: 84px; }
     .acts { display: flex; gap: 8px; flex-wrap: wrap; }
     .tag { display: inline-flex; padding: 7px 11px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; }
     .live { background: rgba(180, 83, 9, 0.12); color: #9a3412; }
@@ -43,12 +47,39 @@
     .pill { display: inline-flex; padding: 7px 10px; border-radius: 999px; background: rgba(193, 112, 23, 0.08); color: var(--primary-dark); font-size: 0.78rem; font-weight: 700; margin: 10px 8px 0 0; }
     .hint { color: var(--gray); font-size: 0.88rem; }
     .editor { display: grid; gap: 18px; }
-    .section { padding: 18px; border-radius: 24px; border: 1px solid rgba(84, 63, 40, 0.09); background: rgba(255, 252, 246, 0.92); }
+    .section { padding: 18px; border-radius: 24px; border: 1px solid rgba(84, 63, 40, 0.09); background: rgba(255, 252, 246, 0.92); min-width: 0; }
     .tt { display: block; font-weight: 700; color: var(--dark); }
     .ts { display: block; margin-top: 6px; color: var(--gray); font-size: 0.88rem; }
     .order-chip { display: inline-flex; align-items: center; justify-content: center; min-width: 38px; min-height: 38px; border-radius: 999px; background: rgba(15, 118, 110, 0.08); color: #0f766e; font-weight: 800; }
-    @media (max-width: 1200px) { .split { grid-template-columns: 1fr; } }
-    @media (max-width: 960px) { .grid2, .grid3, .grid4 { grid-template-columns: 1fr; } }
+    @media (max-width: 1400px) {
+      .grid4 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 1200px) {
+      .split { grid-template-columns: 1fr; }
+      .grid4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 960px) {
+      .grid2, .grid3, .grid4 { grid-template-columns: 1fr; }
+      .head { flex-direction: column; align-items: stretch; }
+      .head > div:last-child, .head .acts { width: 100%; }
+      .tool { flex-direction: column; }
+      .tool input, .tool select { width: 100%; flex-basis: auto; }
+    }
+    @media (max-width: 768px) {
+      .cardx, .panel, .section { padding: 18px; border-radius: 22px; }
+      .acts { width: 100%; }
+      .acts .btn, .acts button { flex: 1 1 180px; }
+      .tablex table { min-width: 920px; }
+      .minit table { min-width: 700px; }
+      .students { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .cardx, .panel, .section { padding: 16px; }
+      .tablex table { min-width: 860px; }
+      .minit table { min-width: 640px; }
+      .acts .btn, .acts button { width: 100%; flex-basis: 100%; }
+    }
   </style>
 </head>
 <body>
