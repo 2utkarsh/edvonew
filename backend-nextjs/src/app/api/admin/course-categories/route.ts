@@ -1,21 +1,32 @@
-import { requireAuth } from '@/lib/auth';
-import { connectToDatabase } from '@/lib/db';
+﻿import { requireAuth } from '@/lib/auth';
+import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { bootstrapLegacyCourseCatalog } from '@/lib/ensure-legacy-course-catalog';
 import { created, fail, handleError, ok, toResponse } from '@/lib/http';
+import { getLegacyCategoriesForApi } from '@/lib/legacy-course-catalog-fallback';
 import { slugify } from '@/lib/query';
 import { CourseCategoryModel } from '@/models/CourseCategory';
+
+function fallbackResponse() {
+  return toResponse(ok(getLegacyCategoriesForApi()));
+}
 
 export async function GET() {
   try {
     const auth = await requireAuth(['admin']);
     if ('error' in auth) return auth.error;
+
+    if (!hasConfiguredMongoUri()) {
+      return fallbackResponse();
+    }
+
     await connectToDatabase();
     await bootstrapLegacyCourseCatalog();
 
     const items = await CourseCategoryModel.find().sort({ order: 1, updatedAt: -1 }).lean();
     return toResponse(ok(items.map((item) => ({ ...item, id: String(item._id) }))));
   } catch (error) {
-    return handleError(error);
+    console.error('Falling back to built-in admin course categories', error);
+    return fallbackResponse();
   }
 }
 
@@ -55,4 +66,3 @@ export async function POST(request: Request) {
     return handleError(error);
   }
 }
-

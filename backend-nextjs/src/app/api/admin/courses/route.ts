@@ -1,18 +1,33 @@
-import { requireAuth } from '@/lib/auth';
+﻿import { requireAuth } from '@/lib/auth';
 import { buildEnrollmentSnapshot, flattenCurriculumRows, normalizeCoursePayload } from '@/lib/course-runtime';
 import { syncCourseCategoryCounts } from '@/lib/course-category-counts';
-import { connectToDatabase } from '@/lib/db';
+import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { bootstrapLegacyCourseCatalog } from '@/lib/ensure-legacy-course-catalog';
 import { created, fail, handleError, ok, toResponse } from '@/lib/http';
+import { getLegacyAdminCoursesForApi, getLegacyCategoriesForApi } from '@/lib/legacy-course-catalog-fallback';
 import { slugify } from '@/lib/query';
 import { CourseCategoryModel } from '@/models/CourseCategory';
 import { CourseModel } from '@/models/Course';
 import { EnrollmentModel } from '@/models/Enrollment';
 
+function fallbackResponse() {
+  return toResponse(
+    ok({
+      courses: getLegacyAdminCoursesForApi(),
+      categories: getLegacyCategoriesForApi(),
+    })
+  );
+}
+
 export async function GET() {
   try {
     const auth = await requireAuth(['admin']);
     if ('error' in auth) return auth.error;
+
+    if (!hasConfiguredMongoUri()) {
+      return fallbackResponse();
+    }
+
     await connectToDatabase();
     await bootstrapLegacyCourseCatalog();
 
@@ -95,7 +110,8 @@ export async function GET() {
       })
     );
   } catch (error) {
-    return handleError(error);
+    console.error('Falling back to built-in admin course catalog', error);
+    return fallbackResponse();
   }
 }
 
@@ -132,5 +148,3 @@ export async function POST(request: Request) {
     return handleError(error);
   }
 }
-
-

@@ -8,37 +8,48 @@ declare global {
 const cache = global.mongooseCache || { conn: null, promise: null };
 global.mongooseCache = cache;
 
+function isPlaceholderMongoUri(value: string) {
+  return (
+    !value ||
+    value === 'memory' ||
+    /USERNAME/i.test(value) ||
+    /PASSWORD/i.test(value) ||
+    /cluster\.mongodb\.net\/edvo/i.test(value) ||
+    /<db_password>/i.test(value)
+  );
+}
+
+export function hasConfiguredMongoUri() {
+  const value = String(process.env.MONGODB_URI || '').trim();
+  return Boolean(value) && !isPlaceholderMongoUri(value);
+}
+
 export async function connectToDatabase() {
   if (cache.conn) return cache.conn;
 
-  // Use in-memory MongoDB for development/testing if no MONGODB_URI is set
-  // or if it's set to 'memory'
-  const useMemory = !process.env.MONGODB_URI || process.env.MONGODB_URI === 'memory';
-  
+  // Use in-memory MongoDB only in local development when no real URI is configured.
+  const useMemory = !hasConfiguredMongoUri() && process.env.NODE_ENV !== 'production';
+
   if (useMemory) {
-    // Only import mongodb-memory-server when needed (it's large)
     const { MongoMemoryServer } = await import('mongodb-memory-server');
-    
+
     if (!global.__MONGODB__) {
-      console.log('⏳ Starting in-memory MongoDB server...');
-      // Increase timeout and use specific MongoDB version for better compatibility
+      console.log('Starting in-memory MongoDB server...');
       global.__MONGODB__ = await MongoMemoryServer.create({
         instance: {
-          timeout: 30000, // 30 seconds timeout
+          timeout: 30000,
           args: ['--setParameter', 'ttlMonitorSleepSecs=1'],
         },
         binary: {
-          version: '7.0.4', // Use a specific MongoDB version
+          version: '7.0.4',
         },
       });
-      console.log('✓ In-memory MongoDB server started');
+      console.log('In-memory MongoDB server started');
     }
-    
+
     const mongoServer = global.__MONGODB__;
     const mongoUri = mongoServer.getUri();
-    
-    console.log('✓ Using in-memory MongoDB for development');
-    
+
     if (!cache.promise) {
       cache.promise = mongoose.connect(mongoUri, {
         bufferCommands: false,
@@ -49,13 +60,12 @@ export async function connectToDatabase() {
     return cache.conn;
   }
 
-  // Use configured MongoDB URI
-  if (!process.env.MONGODB_URI) {
-    throw new Error('MONGODB_URI is not configured');
+  if (!hasConfiguredMongoUri()) {
+    throw new Error('MONGODB_URI is not configured with a real database connection');
   }
 
   if (!cache.promise) {
-    cache.promise = mongoose.connect(process.env.MONGODB_URI, {
+    cache.promise = mongoose.connect(String(process.env.MONGODB_URI).trim(), {
       dbName: process.env.MONGODB_DB,
       bufferCommands: false,
     });
@@ -64,4 +74,3 @@ export async function connectToDatabase() {
   cache.conn = await cache.promise;
   return cache.conn;
 }
-

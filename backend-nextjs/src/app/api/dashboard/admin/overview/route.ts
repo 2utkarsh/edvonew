@@ -1,7 +1,8 @@
-import { requireAuth } from '@/lib/auth';
-import { connectToDatabase } from '@/lib/db';
+﻿import { requireAuth } from '@/lib/auth';
+import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { bootstrapLegacyCourseCatalog } from '@/lib/ensure-legacy-course-catalog';
-import { handleError, ok, toResponse } from '@/lib/http';
+import { ok, toResponse } from '@/lib/http';
+import { getLegacyAdminCoursesForApi, getLegacyCategoriesForApi } from '@/lib/legacy-course-catalog-fallback';
 import { BlogCategoryModel, BlogModel } from '@/models/Blog';
 import { ContactMessageModel } from '@/models/ContactMessage';
 import { CourseCategoryChildModel, CourseCategoryModel } from '@/models/CourseCategory';
@@ -19,10 +20,41 @@ import { PageSectionModel } from '@/models/PageSection';
 import { SubscriptionModel } from '@/models/Subscription';
 import { UserModel } from '@/models/User';
 
+function buildFallbackPayload() {
+  return {
+    metrics: {
+      users: 0,
+      courses: getLegacyAdminCoursesForApi().length,
+      exams: 0,
+      jobs: 0,
+      enrollments: 0,
+      subscriptions: 0,
+      instructors: 0,
+      blogs: 0,
+      blogCategories: 0,
+      navbars: 0,
+      footers: 0,
+      pages: 0,
+      pageSections: 0,
+      examCategories: 0,
+      courseCategories: getLegacyCategoriesForApi().length,
+      courseCategoryChildren: 0,
+      newsletters: 0,
+      contactMessages: 0,
+    },
+    generatedAt: new Date().toISOString(),
+  };
+}
+
 export async function GET() {
   try {
     const auth = await requireAuth(['admin']);
     if ('error' in auth) return auth.error;
+
+    if (!hasConfiguredMongoUri()) {
+      return toResponse(ok(buildFallbackPayload()));
+    }
+
     await connectToDatabase();
     await bootstrapLegacyCourseCatalog();
 
@@ -54,6 +86,7 @@ export async function GET() {
       })
     );
   } catch (error) {
-    return handleError(error);
+    console.error('Falling back to built-in admin overview metrics', error);
+    return toResponse(ok(buildFallbackPayload()));
   }
 }

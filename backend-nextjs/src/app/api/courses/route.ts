@@ -1,15 +1,88 @@
-import { connectToDatabase } from '@/lib/db';
+﻿import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { bootstrapLegacyCourseCatalog } from '@/lib/ensure-legacy-course-catalog';
 import { handleError, ok, toResponse } from '@/lib/http';
+import { getLegacyCategoriesForApi, getLegacyPublicCourseListForApi } from '@/lib/legacy-course-catalog-fallback';
 import { buildSearchRegex, getPagination } from '@/lib/query';
 import { CourseCategoryModel } from '@/models/CourseCategory';
 import { CourseModel } from '@/models/Course';
 
+function buildFallbackResponse(searchParams: URLSearchParams) {
+  const { page, limit, skip } = getPagination(searchParams);
+  const search = buildSearchRegex(searchParams.get('search'));
+  const level = searchParams.get('level');
+  const category = searchParams.get('category');
+  const sortParam = searchParams.get('sort') || 'featured';
+  const categories = getLegacyCategoriesForApi();
+  const categoryName = category
+    ? categories.find((item) => item.slug === category || item.name === category)?.name || category
+    : '';
+
+  let items = getLegacyPublicCourseListForApi();
+
+  if (search) {
+    items = items.filter((item) => search.test([item.title, item.description, item.category].join(' ')));
+  }
+
+  if (level) {
+    items = items.filter((item) => item.level === level);
+  }
+
+  if (categoryName) {
+    items = items.filter((item) => item.category === categoryName);
+  }
+
+  const sorters: Record<string, (a: (typeof items)[number], b: (typeof items)[number]) => number> = {
+    featured: (a, b) => (a.order || 0) - (b.order || 0),
+    popular: (a, b) => (b.studentsEnrolled || 0) - (a.studentsEnrolled || 0) || (a.order || 0) - (b.order || 0),
+    rating: (a, b) => (b.rating || 0) - (a.rating || 0) || (b.reviewCount || 0) - (a.reviewCount || 0),
+    'price-low': (a, b) => (a.price || 0) - (b.price || 0) || (a.order || 0) - (b.order || 0),
+    'price-high': (a, b) => (b.price || 0) - (a.price || 0) || (a.order || 0) - (b.order || 0),
+    latest: (a, b) => new Date(String(b.createdAt || '')).getTime() - new Date(String(a.createdAt || '')).getTime(),
+  };
+
+  items = items.sort(sorters[sortParam] || sorters.featured);
+
+  const total = items.length;
+  const pagedItems = items.slice(skip, skip + limit).map((item) => ({
+    id: item.id,
+    title: item.title,
+    slug: item.slug,
+    description: item.description,
+    short_description: item.short_description,
+    category: item.category,
+    level: item.level,
+    price: item.price,
+    originalPrice: item.originalPrice,
+    discount: item.discount,
+    duration: item.duration,
+    thumbnail: item.thumbnail,
+    banner: item.banner,
+    rating: item.rating,
+    reviewCount: item.reviewCount,
+    studentsEnrolled: item.studentsEnrolled,
+    deliveryMode: item.deliveryMode,
+    liveSessionsCount: item.liveSessionsCount,
+    href: item.href,
+  }));
+
+  return toResponse(
+    ok({
+      data: pagedItems,
+      meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    })
+  );
+}
+
 export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+
+    if (!hasConfiguredMongoUri()) {
+      return buildFallbackResponse(searchParams);
+    }
+
     await connectToDatabase();
     await bootstrapLegacyCourseCatalog();
-    const { searchParams } = new URL(request.url);
     const { page, limit, skip } = getPagination(searchParams);
     const query: Record<string, unknown> = { status: 'published' };
 
@@ -71,8 +144,7 @@ export async function GET(request: Request) {
       })
     );
   } catch (error) {
-    return handleError(error);
+    console.error('Falling back to built-in course catalog', error);
+    return buildFallbackResponse(new URL(request.url).searchParams);
   }
 }
-
-

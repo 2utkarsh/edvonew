@@ -1,14 +1,23 @@
-import { flattenCurriculumRows } from '@/lib/course-runtime';
-import { connectToDatabase } from '@/lib/db';
+﻿import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { bootstrapLegacyCourseCatalog } from '@/lib/ensure-legacy-course-catalog';
 import { fail, handleError, ok, toResponse } from '@/lib/http';
+import { getLegacyCourseDetailForApi } from '@/lib/legacy-course-catalog-fallback';
+import { flattenCurriculumRows } from '@/lib/course-runtime';
 import { CourseModel } from '@/models/Course';
 
 export async function GET(_: Request, { params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+
   try {
+    if (!hasConfiguredMongoUri()) {
+      const fallbackCourse = getLegacyCourseDetailForApi(slug);
+      if (!fallbackCourse) return toResponse(fail('Course not found', 'NOT_FOUND', undefined, 404));
+      return toResponse(ok(fallbackCourse));
+    }
+
     await connectToDatabase();
     await bootstrapLegacyCourseCatalog();
-    const { slug } = await params;
+
     const item = await CourseModel.findOne({ slug }).lean();
     if (!item) return toResponse(fail('Course not found', 'NOT_FOUND', undefined, 404));
 
@@ -64,8 +73,11 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
       })
     );
   } catch (error) {
+    console.error('Falling back to built-in course detail', error);
+    const fallbackCourse = getLegacyCourseDetailForApi(slug);
+    if (fallbackCourse) {
+      return toResponse(ok(fallbackCourse));
+    }
     return handleError(error);
   }
 }
-
-

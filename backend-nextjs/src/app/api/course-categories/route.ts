@@ -1,10 +1,19 @@
-import { connectToDatabase } from '@/lib/db';
+﻿import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { bootstrapLegacyCourseCatalog } from '@/lib/ensure-legacy-course-catalog';
 import { handleError, ok, toResponse } from '@/lib/http';
+import { getLegacyCategoriesForApi } from '@/lib/legacy-course-catalog-fallback';
 import { CourseCategoryModel } from '@/models/CourseCategory';
+
+function fallbackResponse() {
+  return toResponse(ok(getLegacyCategoriesForApi()));
+}
 
 export async function GET() {
   try {
+    if (!hasConfiguredMongoUri()) {
+      return fallbackResponse();
+    }
+
     await connectToDatabase();
     await bootstrapLegacyCourseCatalog();
 
@@ -28,7 +37,7 @@ export async function GET() {
       )
     );
   } catch (error) {
-    return handleError(error);
+    console.error('Falling back to built-in course categories', error);
+    return fallbackResponse();
   }
 }
-
