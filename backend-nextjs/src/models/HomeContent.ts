@@ -16,6 +16,9 @@ export interface HomeContentDocument {
   hiringPartners: unknown[];
   testimonialsIntro: Record<string, unknown>;
   homeTestimonials: unknown[];
+  hireTalentHero: Record<string, unknown>;
+  hireTalentTestimonials: unknown[];
+  hireTalentCta: Record<string, unknown>;
   ctaSection: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;
@@ -38,9 +41,13 @@ const homeContentSchema = new Schema<HomeContentDocument>(
     hiringPartners: { type: [Schema.Types.Mixed] as any, default: [] },
     testimonialsIntro: { type: Schema.Types.Mixed as any, default: {} },
     homeTestimonials: { type: [Schema.Types.Mixed] as any, default: [] },
+    hireTalentHero: { type: Schema.Types.Mixed as any, default: {} },
+    hireTalentTestimonials: { type: [Schema.Types.Mixed] as any, default: [] },
+    hireTalentCta: { type: Schema.Types.Mixed as any, default: {} },
     ctaSection: { type: Schema.Types.Mixed as any, default: {} },
   },
   { timestamps: true }
 );
 
 export const HomeContentModel = (models.HomeContent as Model<HomeContentDocument>) || model<HomeContentDocument>('HomeContent', homeContentSchema);
+

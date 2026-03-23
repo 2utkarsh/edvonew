@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hiring Partners - EDVO Admin</title>
+  <link rel="stylesheet" href="/backend/admin/styles.css" />
+  <style>
+    .stack{display:flex;flex-direction:column;gap:24px}.panel,.stat{background:#fff;border:1px solid #e2e8f0;border-radius:20px;box-shadow:0 8px 30px rgba(15,23,42,.06);padding:24px}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}.label{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:#718096;margin-bottom:8px;font-weight:700}.value{font-size:2rem;font-weight:800}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.input,.textarea,.select,.file{width:100%;padding:12px 16px;border:1px solid #cbd5e0;border-radius:12px;font-size:.95rem;background:#fff}.textarea{min-height:120px;resize:vertical}.actions,.table-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.toolbar{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}.btn{border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}.btn-primary{background:#667eea;color:#fff}.btn-secondary{background:#edf2f7;color:#1a202c}.btn-danger{background:#f56565;color:#fff}.help{color:#718096;font-size:.88rem}.thumb-preview{width:72px;height:72px;border-radius:16px;object-fit:cover;border:1px solid #e2e8f0;background:#f8fafc}.table-wrap{overflow:auto}.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+  </style>
+</head>
+<body>
+  <aside class="sidebar"><div class="sidebar-logo"><span>ED</span>VO Admin</div><div class="nav-section"><div class="nav-section-title">Main Menu</div><a href="/backend/admin" class="nav-item"><span class="nav-label">Dashboard</span></a><a href="/backend/admin/home-content" class="nav-item"><span class="nav-label">Home Content</span></a><a href="/backend/admin/hiring-partners" class="nav-item active"><span class="nav-label">Hiring Partners</span></a><a href="/backend/admin/courses" class="nav-item"><span class="nav-label">Courses</span></a><a href="/backend/admin/blogs" class="nav-item"><span class="nav-label">Blogs</span></a><a href="/backend/admin/tutorials" class="nav-item"><span class="nav-label">Tutorials</span></a><a href="/backend/admin/guides" class="nav-item"><span class="nav-label">Guides</span></a><a href="/backend/admin/team" class="nav-item"><span class="nav-label">Team</span></a><a href="/backend/admin/course-reviews" class="nav-item"><span class="nav-label">Course Reviews</span></a><a href="/backend/admin/job-success-stories" class="nav-item"><span class="nav-label">Job Success Stories</span></a><a href="/backend/admin/events" class="nav-item"><span class="nav-label">Events</span></a><a href="/backend/admin/challenges" class="nav-item"><span class="nav-label">Challenges</span></a></div><div class="nav-section"><div class="nav-section-title">Settings</div><a href="#" class="nav-item" onclick="logout()"><span class="nav-label">Logout</span></a></div></aside>
+  <main class="main-content"><div class="top-bar"><h1 class="page-title">Hiring Partners</h1><div class="user-avatar">A</div></div><div class="dashboard-content"><div class="stack">
+    <div class="stats"><div class="stat"><div class="label">Partner Logos</div><div class="value" id="totalPartners">0</div></div><div class="stat"><div class="label">Testimonials</div><div class="value" id="totalTestimonials">0</div></div><div class="stat"><div class="label">Applications</div><div class="value" id="totalApplications">0</div></div></div>
+
+    <section class="panel"><div class="toolbar"><div><div class="table-title">Frontend Copy</div><div class="help">Controls the Become a Partner buttons, hiring partner hero, and Ready to skip the hiring hustle CTA.</div></div></div>
+      <form id="copyForm" class="stack">
+        <div class="grid">
+          <input id="heroBadge" class="input" placeholder="Hero badge" />
+          <input id="heroTitle" class="input" placeholder="Hero title" />
+          <input id="heroAccent" class="input" placeholder="Hero accent text" />
+          <input id="heroPrimaryLabel" class="input" placeholder="Hero button label" />
+          <input id="heroPrimaryHref" class="input" placeholder="Hero button href" />
+          <input id="heroTrustNote" class="input" placeholder="Trust note" />
+        </div>
+        <textarea id="heroDescription" class="textarea" placeholder="Hero description"></textarea>
+        <div class="grid">
+          <input id="ctaTitle" class="input" placeholder="CTA title" />
+          <input id="ctaPrimaryLabel" class="input" placeholder="CTA primary label" />
+          <input id="ctaPrimaryHref" class="input" placeholder="CTA primary href" />
+          <input id="ctaSecondaryLabel" class="input" placeholder="CTA secondary label" />
+          <input id="ctaSecondaryHref" class="input" placeholder="CTA secondary href" />
+        </div>
+        <textarea id="ctaDescription" class="textarea" placeholder="CTA description"></textarea>
+        <div class="actions"><button class="btn btn-primary" type="submit">Save Frontend Copy</button></div>
+      </form>
+    </section>
+
+    <section class="panel"><div class="toolbar"><div><div class="table-title" id="partnerFormTitle">Add Hiring Partner</div><div class="help">Create, edit, delete, and shuffle partner logos shown on the frontend.</div></div></div>
+      <form id="partnerForm" class="stack">
+        <div class="grid">
+          <input id="partnerName" class="input" placeholder="Partner name" required />
+          <input id="partnerLogo" class="input" placeholder="Logo URL or data URL" />
+        </div>
+        <div class="actions"><button class="btn btn-primary" type="submit">Save Partner</button><button id="cancelPartnerEdit" class="btn btn-secondary" type="button" style="display:none">Cancel Edit</button></div>
+      </form>
+      <div class="table-wrap"><table><thead><tr><th>Logo</th><th>Name</th><th>Actions</th></tr></thead><tbody id="partnerRows"><tr><td colspan="3" class="help">Loading partners...</td></tr></tbody></table></div>
+    </section>
+
+    <section class="panel"><div class="toolbar"><div><div class="table-title" id="testimonialFormTitle">Add Hiring Partner Testimonial</div><div class="help">This controls the Hear from our Hiring Partners section on the frontend.</div></div></div>
+      <form id="testimonialForm" class="stack">
+        <div class="grid">
+          <input id="testimonialAuthor" class="input" placeholder="Author name" required />
+          <input id="testimonialRole" class="input" placeholder="Role / company" />
+          <input id="testimonialImage" class="input" placeholder="Image URL or data URL" />
+        </div>
+        <textarea id="testimonialQuote" class="textarea" placeholder="Testimonial quote" required></textarea>
+        <div class="actions"><button class="btn btn-primary" type="submit">Save Testimonial</button><button id="cancelTestimonialEdit" class="btn btn-secondary" type="button" style="display:none">Cancel Edit</button></div>
+      </form>
+      <div class="table-wrap"><table><thead><tr><th>Author</th><th>Role</th><th>Quote</th><th>Actions</th></tr></thead><tbody id="testimonialRows"><tr><td colspan="4" class="help">Loading testimonials...</td></tr></tbody></table></div>
+    </section>
+
+    <section class="panel"><div class="toolbar"><div><div class="table-title">Company Applications</div><div class="help">Every Become a Partner form submission appears here for admin review.</div></div></div>
+      <div class="table-wrap"><table><thead><tr><th>Company</th><th>Contact</th><th>Hiring Needs</th><th>Status</th><th>Actions</th></tr></thead><tbody id="applicationRows"><tr><td colspan="5" class="help">Loading applications...</td></tr></tbody></table></div>
+    </section>
+  </div></div></main>
+  <script src="/backend/admin/admin.js"></script>
+  <script>
+    let homeContent = {};
+    let applications = [];
+    let editingPartnerIndex = null;
+    let editingTestimonialIndex = null;
+    function e(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+    function partners(){return Array.isArray(homeContent.hiringPartners)?homeContent.hiringPartners:[]}
+    function testimonials(){return Array.isArray(homeContent.hireTalentTestimonials)?homeContent.hireTalentTestimonials:[]}
+    function updateStats(){totalPartners.textContent=partners().length;totalTestimonials.textContent=testimonials().length;totalApplications.textContent=applications.length}
+    function resetPartnerForm(){editingPartnerIndex=null;partnerForm.reset();partnerFormTitle.textContent='Add Hiring Partner';cancelPartnerEdit.style.display='none'}
+    function resetTestimonialForm(){editingTestimonialIndex=null;testimonialForm.reset();testimonialFormTitle.textContent='Add Hiring Partner Testimonial';cancelTestimonialEdit.style.display='none'}
+    function fillCopyFields(){const hero=homeContent.hireTalentHero||{};const cta=homeContent.hireTalentCta||{};heroBadge.value=hero.badge||'';heroTitle.value=hero.title||'';heroAccent.value=hero.accent||'';heroDescription.value=hero.description||'';heroPrimaryLabel.value=hero.primaryLabel||'';heroPrimaryHref.value=hero.primaryHref||'';heroTrustNote.value=hero.trustNote||'';ctaTitle.value=cta.title||'';ctaDescription.value=cta.description||'';ctaPrimaryLabel.value=cta.primaryLabel||'';ctaPrimaryHref.value=cta.primaryHref||'';ctaSecondaryLabel.value=cta.secondaryLabel||'';ctaSecondaryHref.value=cta.secondaryHref||''}
+    async function saveHomeContent(){await adminFetch('/backend/api/admin/home-content',{method:'PATCH',body:JSON.stringify(homeContent)});showToast('Hiring partner content updated','success');await loadHomeContent()}
+    async function loadHomeContent(){const payload=await adminFetch('/backend/api/admin/home-content');homeContent=payload.data||{};renderPartners();renderTestimonials();fillCopyFields();updateStats()}
+    async function loadApplications(){const payload=await adminFetch('/backend/api/admin/hiring-partner-applications');applications=Array.isArray(payload.data)?payload.data:[];renderApplications();updateStats()}
+    function renderPartners(){const rows=partners();partnerRows.innerHTML=rows.length?rows.map((item,index)=>`<tr><td>${item.logo?`<img src="${e(item.logo)}" alt="${e(item.name)}" class="thumb-preview" />`:''}</td><td><strong>${e(item.name)}</strong><div class="help mono">${e(item.logo||'No logo')}</div></td><td><div class="table-actions"><button class="btn btn-secondary" type="button" onclick="movePartner(${index},-1)" ${index===0?'disabled':''}>Up</button><button class="btn btn-secondary" type="button" onclick="movePartner(${index},1)" ${index===rows.length-1?'disabled':''}>Down</button><button class="btn btn-secondary" type="button" onclick="editPartner(${index})">Edit</button><button class="btn btn-danger" type="button" onclick="deletePartner(${index})">Delete</button></div></td></tr>`).join(''):'<tr><td colspan="3" class="help">No hiring partners yet.</td></tr>'}
+    function renderTestimonials(){const rows=testimonials();testimonialRows.innerHTML=rows.length?rows.map((item,index)=>`<tr><td><strong>${e(item.author)}</strong></td><td>${e(item.role||'')}</td><td>${e(item.quote||'')}</td><td><div class="table-actions"><button class="btn btn-secondary" type="button" onclick="moveTestimonial(${index},-1)" ${index===0?'disabled':''}>Up</button><button class="btn btn-secondary" type="button" onclick="moveTestimonial(${index},1)" ${index===rows.length-1?'disabled':''}>Down</button><button class="btn btn-secondary" type="button" onclick="editTestimonial(${index})">Edit</button><button class="btn btn-danger" type="button" onclick="deleteTestimonial(${index})">Delete</button></div></td></tr>`).join(''):'<tr><td colspan="4" class="help">No testimonials yet.</td></tr>'}
+    function renderApplications(){applicationRows.innerHTML=applications.length?applications.map((item)=>`<tr><td><strong>${e(item.companyName)}</strong><div class="help">${e(item.website||'')}</div></td><td>${e(item.contactName)}<div class="help">${e(item.workEmail)}</div></td><td>${e(item.hiringNeeds||item.roles||item.message||'')}</td><td><select class="select" onchange="updateApplication('${item._id||item.id}',{status:this.value})"><option value="new" ${item.status==='new'?'selected':''}>New</option><option value="reviewed" ${item.status==='reviewed'?'selected':''}>Reviewed</option><option value="contacted" ${item.status==='contacted'?'selected':''}>Contacted</option><option value="archived" ${item.status==='archived'?'selected':''}>Archived</option></select></td><td><div class="table-actions"><button class="btn btn-danger" type="button" onclick="deleteApplication('${item._id||item.id}')">Delete</button></div></td></tr>`).join(''):'<tr><td colspan="5" class="help">No company applications yet.</td></tr>'}
+    function editPartner(index){const item=partners()[index];if(!item)return;editingPartnerIndex=index;partnerName.value=item.name||'';partnerLogo.value=item.logo||'';partnerFormTitle.textContent='Edit Hiring Partner';cancelPartnerEdit.style.display='inline-flex';window.scrollTo({top:0,behavior:'smooth'})}
+    function editTestimonial(index){const item=testimonials()[index];if(!item)return;editingTestimonialIndex=index;testimonialAuthor.value=item.author||'';testimonialRole.value=item.role||'';testimonialImage.value=item.image||'';testimonialQuote.value=item.quote||'';testimonialFormTitle.textContent='Edit Hiring Partner Testimonial';cancelTestimonialEdit.style.display='inline-flex';window.scrollTo({top:0,behavior:'smooth'})}
+    async function movePartner(index,dir){const rows=[...partners()];const swap=index+dir;if(swap<0||swap>=rows.length)return;[rows[index],rows[swap]]=[rows[swap],rows[index]];homeContent.hiringPartners=rows;await saveHomeContent()}
+    async function moveTestimonial(index,dir){const rows=[...testimonials()];const swap=index+dir;if(swap<0||swap>=rows.length)return;[rows[index],rows[swap]]=[rows[swap],rows[index]];homeContent.hireTalentTestimonials=rows;await saveHomeContent()}
+    async function deletePartner(index){if(!confirm('Delete this hiring partner?'))return;const rows=[...partners()];rows.splice(index,1);homeContent.hiringPartners=rows;await saveHomeContent();resetPartnerForm()}
+    async function deleteTestimonial(index){if(!confirm('Delete this testimonial?'))return;const rows=[...testimonials()];rows.splice(index,1);homeContent.hireTalentTestimonials=rows;await saveHomeContent();resetTestimonialForm()}
+    async function updateApplication(id,patch){await adminFetch(`/backend/api/admin/hiring-partner-applications/${id}`,{method:'PATCH',body:JSON.stringify(patch)});await loadApplications();showToast('Application updated','success')}
+    async function deleteApplication(id){if(!confirm('Delete this application?'))return;await adminFetch(`/backend/api/admin/hiring-partner-applications/${id}`,{method:'DELETE'});await loadApplications();showToast('Application deleted','success')}
+    copyForm.addEventListener('submit',async(e)=>{e.preventDefault();homeContent.hireTalentHero={...(homeContent.hireTalentHero||{}),badge:heroBadge.value,title:heroTitle.value,accent:heroAccent.value,description:heroDescription.value,primaryLabel:heroPrimaryLabel.value,primaryHref:heroPrimaryHref.value,trustNote:heroTrustNote.value};homeContent.hireTalentCta={...(homeContent.hireTalentCta||{}),title:ctaTitle.value,description:ctaDescription.value,primaryLabel:ctaPrimaryLabel.value,primaryHref:ctaPrimaryHref.value,secondaryLabel:ctaSecondaryLabel.value,secondaryHref:ctaSecondaryHref.value};await saveHomeContent()})
+    partnerForm.addEventListener('submit',async(e)=>{e.preventDefault();const rows=[...partners()];const item={name:partnerName.value,logo:partnerLogo.value};if(editingPartnerIndex===null){rows.push(item)}else{rows[editingPartnerIndex]=item}homeContent.hiringPartners=rows;await saveHomeContent();resetPartnerForm()})
+    testimonialForm.addEventListener('submit',async(e)=>{e.preventDefault();const rows=[...testimonials()];const item={author:testimonialAuthor.value,role:testimonialRole.value,image:testimonialImage.value,quote:testimonialQuote.value};if(editingTestimonialIndex===null){rows.push(item)}else{rows[editingTestimonialIndex]=item}homeContent.hireTalentTestimonials=rows;await saveHomeContent();resetTestimonialForm()})
+    cancelPartnerEdit.addEventListener('click',resetPartnerForm)
+    cancelTestimonialEdit.addEventListener('click',resetTestimonialForm)
+    Promise.all([loadHomeContent(),loadApplications()]).catch((error)=>showToast(error.message||'Failed to load hiring partners admin','error'))
+  </script>
+</body>
+</html>

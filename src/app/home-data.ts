@@ -13,6 +13,9 @@ export interface HomeContentPayload {
   hiringPartners?: any[];
   testimonialsIntro?: Record<string, unknown>;
   homeTestimonials?: any[];
+  hireTalentHero?: Record<string, unknown>;
+  hireTalentTestimonials?: any[];
+  hireTalentCta?: Record<string, unknown>;
   ctaSection?: Record<string, unknown>;
 }
 
@@ -27,3 +30,4 @@ export async function fetchHomeContent(): Promise<HomeContentPayload> {
   if (!response.ok) throw new Error(payload?.error?.message || payload?.message || 'Failed to load home content');
   return (payload?.data || {}) as HomeContentPayload;
 }
+

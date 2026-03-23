@@ -124,7 +124,38 @@ export const DEFAULT_HOME_CONTENT = {
     { id: 2, name: 'Omkar Prakash Gosavi', role: 'BI Analyst', quote: 'I am amazed with the contents that are included in this bootcamp. The effort that have been taken to help so many students and professionals to grow in the field of Data Science and Data can be seen through the initial...', linkedin: '#', video: false },
     { id: 3, name: 'Bhikadiya Pratik', role: 'BI Reporting Analyst - III', badge: 'Landed A Job', quote: 'The practical approach and real-world projects helped me transition smoothly into my new role. The mentorship was exceptional!', linkedin: '#', video: true },
   ],
-  ctaSection: {
+  hireTalentHero: {
+    badge: 'For HRs & Hiring Managers',
+    title: 'Hire The Best Data Professionals at',
+    accent: 'zero cost.',
+    description: 'Skip CV screening, interview rounds, and save 2X time by hiring vetted Data Analysts and Engineers from our talent pool.',
+    primaryLabel: 'Become a Partner',
+    primaryHref: '/hire-talent/apply',
+    trustNote: 'Trusted by 350+ Industry Leaders',
+    backgroundImage: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=2000',
+  },
+  hireTalentTestimonials: [
+    {
+      quote: 'EDVO demonstrated a deep understanding of our requirements and delivered candidates who not only possessed the technical skills but also fit seamlessly into our company culture.',
+      author: 'Bharath Kumar',
+      role: 'Head - BI & Analytics, SBFC',
+      image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200',
+    },
+    {
+      quote: 'As a hiring manager who frequently partners with EDVO, I have been consistently impressed with the caliber of candidates. Their focus on practical, project-based learning is exactly what we need.',
+      author: 'Subham Singh',
+      role: 'Business Analyst, The Media Ant',
+      image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200',
+    },
+  ],
+  hireTalentCta: {
+    title: 'Ready to skip the hiring hustle?',
+    description: 'Partner with us today and get access to the top 1% of our vetted data talent. No hidden fees, just great talent.',
+    primaryLabel: 'Partner With Us',
+    primaryHref: '/hire-talent/apply',
+    secondaryLabel: 'See Success Stories',
+    secondaryHref: '/testimonials',
+  },  ctaSection: {
     title: 'Ready to Start Your Journey?',
     description: 'Join thousands of students who are already learning and growing with EDVO. Start your free trial today!',
     primaryLabel: 'Get Started Free',
@@ -133,3 +164,4 @@ export const DEFAULT_HOME_CONTENT = {
     secondaryHref: '/pricing',
   },
 };
+
