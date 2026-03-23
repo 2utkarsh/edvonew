@@ -4,6 +4,7 @@ import { requireAuth } from '@/lib/auth';
 import { success, fail, toResponse } from '@/lib/http';
 import { EventModel } from '@/models/Event';
 import { buildPagination } from '@/lib/pagination';
+import { syncExistingEventItemsToPublicEvents } from '@/lib/event-sync';
 
 // GET all events with filters
 export async function GET(request: NextRequest): Promise<Response> {
@@ -11,7 +12,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     await connectToDatabase();
 
     const { searchParams } = new URL(request.url);
-    const type = searchParams.get('type'); // webinar, workshop, hackathon
+    const type = searchParams.get('type') as 'webinar' | 'workshop' | 'hackathon' | null;
     const status = searchParams.get('status');
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
@@ -28,13 +29,22 @@ export async function GET(request: NextRequest): Promise<Response> {
       filterQuery.type = type;
     }
 
-    const total = await EventModel.countDocuments(filterQuery);
-
-    const events = await EventModel.find(filterQuery)
+    let total = await EventModel.countDocuments(filterQuery);
+    let events = await EventModel.find(filterQuery)
       .sort({ status: -1, scheduledAt: 1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .lean();
+
+    if (total === 0) {
+      await syncExistingEventItemsToPublicEvents(type || undefined);
+      total = await EventModel.countDocuments(filterQuery);
+      events = await EventModel.find(filterQuery)
+        .sort({ status: -1, scheduledAt: 1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean();
+    }
 
     const meta = buildPagination({ page, limit }, total);
 

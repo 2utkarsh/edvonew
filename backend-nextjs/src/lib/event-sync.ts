@@ -1,5 +1,5 @@
 import { getAuthPayload } from '@/lib/auth';
-import { EventItemDocument } from '@/models/EventItem';
+import { EventItemDocument, EventItemModel, EventType } from '@/models/EventItem';
 import { EventModel } from '@/models/Event';
 import { EventRegistrationModel } from '@/models/EventRegistration';
 import { UserModel } from '@/models/User';
@@ -55,7 +55,7 @@ export async function syncEventItemToPublicEvent(item: EventItemDocument & { _id
   const filter = previousSlug ? { $or: [{ slug: item.slug }, { slug: previousSlug }] } : { slug: item.slug };
   const existing = await EventModel.findOne(filter).lean();
 
-  await EventModel.findOneAndUpdate(
+  const publicEvent = await EventModel.findOneAndUpdate(
     filter,
     {
       title: item.title,
@@ -84,7 +84,28 @@ export async function syncEventItemToPublicEvent(item: EventItemDocument & { _id
       upsert: true,
       setDefaultsOnInsert: true,
     }
-  );
+  ).lean();
+
+  return publicEvent;
+}
+
+export async function syncExistingEventItemsToPublicEvents(type?: EventType) {
+  const query: Record<string, unknown> = { visibility: 'active' };
+  if (type) query.type = type;
+
+  const items = await EventItemModel.find(query).sort({ order: 1, updatedAt: -1 }).lean();
+  const synced = [];
+  for (const item of items) {
+    const publicEvent = await syncEventItemToPublicEvent(item);
+    if (publicEvent) synced.push(publicEvent);
+  }
+  return synced;
+}
+
+export async function syncEventItemByIdToPublicEvent(id: string) {
+  const item = await EventItemModel.findById(id).lean();
+  if (!item || item.visibility === 'inactive') return null;
+  return syncEventItemToPublicEvent(item);
 }
 
 export async function deleteSyncedPublicEvent(slug: string) {

@@ -4,6 +4,7 @@ import { getAuthPayload } from '@/lib/auth';
 import { fail, success, toResponse } from '@/lib/http';
 import { EventModel } from '@/models/Event';
 import { EventRegistrationModel } from '@/models/EventRegistration';
+import { syncEventItemByIdToPublicEvent } from '@/lib/event-sync';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -14,7 +15,10 @@ export async function GET(_request: NextRequest, { params }: RouteParams): Promi
     await connectToDatabase();
 
     const { id } = await params;
-    const event = await EventModel.findById(id).lean();
+    let event = await EventModel.findById(id).lean();
+    if (!event) {
+      event = await syncEventItemByIdToPublicEvent(id);
+    }
     if (!event) {
       return toResponse(fail('Event not found', 'EVENT_NOT_FOUND', undefined, 404));
     }
@@ -24,7 +28,7 @@ export async function GET(_request: NextRequest, { params }: RouteParams): Promi
 
     if (authPayload?.role === 'student') {
       registration = await EventRegistrationModel.findOne({
-        eventId: id,
+        eventId: event._id,
         userId: authPayload.sub,
       }).lean();
     }
