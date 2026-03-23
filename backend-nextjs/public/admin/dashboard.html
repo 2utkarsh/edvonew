@@ -113,23 +113,28 @@
   <script src="/backend/admin/admin.js"></script>
 <script>
   async function loadDashboard() {
-    try {
-      const [overviewPayload, coursesPayload] = await Promise.all([
-        adminFetch('/backend/api/dashboard/admin/overview'),
-        adminFetch('/backend/api/admin/courses'),
-      ]);
+    const [overviewResult, coursesResult] = await Promise.allSettled([
+      adminFetch('/backend/api/dashboard/admin/overview'),
+      adminFetch('/backend/api/admin/courses'),
+    ]);
 
-      const metrics = overviewPayload.data.metrics || {};
-      const courses = (coursesPayload.data.courses || []).slice(0, 6);
-      const revenue = courses.reduce((sum, course) => sum + ((course.price || 0) * (course.studentMetrics?.totalStudents || 0)), 0);
-
+    if (overviewResult.status === 'fulfilled') {
+      const metrics = overviewResult.value.data.metrics || {};
       document.getElementById('totalUsers').textContent = Number(metrics.users || 0).toLocaleString();
       document.getElementById('totalCourses').textContent = Number(metrics.courses || 0).toLocaleString();
       document.getElementById('totalEnrollments').textContent = Number(metrics.enrollments || 0).toLocaleString();
+    } else {
+      showToast(overviewResult.reason?.message || 'Unable to load dashboard metrics', 'error');
+    }
+
+    if (coursesResult.status === 'fulfilled') {
+      const courses = (coursesResult.value.data.courses || []).slice(0, 6);
+      const revenue = courses.reduce((sum, course) => sum + ((course.price || 0) * (course.studentMetrics?.totalStudents || 0)), 0);
       document.getElementById('totalRevenue').textContent = 'INR ' + (revenue / 100000).toFixed(1) + 'L';
       renderCourses(courses);
-    } catch (error) {
-      showToast(error.message || 'Unable to load dashboard overview', 'error');
+    } else {
+      renderCourses([]);
+      showToast(coursesResult.reason?.message || 'Unable to load recent courses', 'error');
     }
   }
 

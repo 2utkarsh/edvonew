@@ -63,15 +63,42 @@ byId('courseForm').addEventListener('submit', saveCourse);
 byId('catName').addEventListener('blur', () => { if (!byId('catSlug').value.trim()) byId('catSlug').value = slugify(byId('catName').value); });
 byId('cTitle').addEventListener('blur', () => { if (!byId('cSlug').value.trim()) byId('cSlug').value = slugify(byId('cTitle').value); });
 
+async function fetchCatalogData() {
+  const [coursesPayload, categoriesPayload] = await Promise.all([
+    adminFetch('/backend/api/admin/courses'),
+    adminFetch('/backend/api/admin/course-categories'),
+  ]);
+  return { coursesPayload, categoriesPayload };
+}
+
+function applyCatalogData(coursesPayload, categoriesPayload) {
+  S.courses = (coursesPayload.data.courses || []).sort((a, b) => (a.order || 0) - (b.order || 0));
+  S.cats = (categoriesPayload.data || []).sort((a, b) => (a.order || 0) - (b.order || 0));
+}
+
 async function boot() {
   try {
-    const [coursesPayload, categoriesPayload, paymentPayload] = await Promise.all([
-      adminFetch('/backend/api/admin/courses'),
-      adminFetch('/backend/api/admin/course-categories'),
-      adminFetch('/backend/api/admin/payment-settings'),
+    const [{ coursesPayload, categoriesPayload }, paymentPayload] = await Promise.all([
+      fetchCatalogData(),
+      adminFetch('/backend/api/admin/payment-settings').catch(() => ({ data: {} })),
     ]);
-    S.courses = (coursesPayload.data.courses || []).sort((a, b) => (a.order || 0) - (b.order || 0));
-    S.cats = (categoriesPayload.data || []).sort((a, b) => (a.order || 0) - (b.order || 0));
+
+    applyCatalogData(coursesPayload, categoriesPayload);
+
+    if (!S.courses.length || !S.cats.length) {
+      try {
+        const importPayload = await adminFetch('/backend/api/admin/courses/import-legacy', { method: 'POST' });
+        const imported = importPayload.data || {};
+        if ((imported.createdCourses || 0) > 0 || (imported.createdCategories || 0) > 0) {
+          showToast('Earlier courses and categories added to admin', 'success');
+        }
+        const refreshed = await fetchCatalogData();
+        applyCatalogData(refreshed.coursesPayload, refreshed.categoriesPayload);
+      } catch (importError) {
+        console.error(importError);
+      }
+    }
+
     S.pay = paymentPayload.data || {};
     renderSummary();
     renderCatOptions();
@@ -143,7 +170,7 @@ function renderCats() {
       <td><span class='tt'>${esc(category.name)}</span><span class='ts'>${esc(category.description || '')}</span></td>
       <td>${esc(category.slug)}</td>
       <td><div class='acts'><button class='btn' type='button' onclick="catShift('${category.id}',-1)">Up</button><button class='btn' type='button' onclick="catShift('${category.id}',1)">Down</button><button class='btn' type='button' onclick="catEdit('${category.id}')">Edit</button><button class='btn' type='button' onclick="catDelete('${category.id}')">Delete</button></div></td>
-    </tr>`).join('') : "<tr><td colspan='4' class='hint'>No categories yet.</td></tr>";
+    </tr>`).join('') : "<tr><td colspan='4' class='hint'>No categories yet. Create one here or use the legacy course import.</td></tr>";
 }
 
 async function catReload() {
@@ -248,7 +275,7 @@ function renderCourses() {
       <td>${course.studentMetrics?.averageAttendance || 0}%</td>
       <td>${course.studentMetrics?.averagePerformance || 0}%</td>
       <td><div class='acts'><button class='btn' type='button' onclick="courseShift('${course.id}',-1)">Up</button><button class='btn' type='button' onclick="courseShift('${course.id}',1)">Down</button><button class='btn' type='button' onclick="editCourse('${course.id}')">Edit</button><button class='btn' type='button' onclick="courseDelete('${course.id}')">Delete</button></div></td>
-    </tr>`).join('') : "<tr><td colspan='9' class='hint'>No courses match the current filters.</td></tr>";
+    </tr>`).join('') : "<tr><td colspan='9' class='hint'>No courses available yet. Use Add Course or Import Earlier Courses.</td></tr>";
 }
 
 async function courseReload() {
