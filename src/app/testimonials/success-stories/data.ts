@@ -1,3 +1,5 @@
+import { publicFetchJson } from '@/lib/backend-api';
+
 export interface SuccessStoryItem {
   id: string;
   name: string;
@@ -18,20 +20,15 @@ export interface SuccessStoryCategoryOption {
   label: string;
 }
 
-const apiBase = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '/backend';
+type PublicListResponse<T> = {
+  success: boolean;
+  data: T[];
+};
 
 export async function fetchSuccessStories(): Promise<SuccessStoryItem[]> {
-  const response = await fetch(`${apiBase}/api/job-success-stories`, {
-    headers: { Accept: 'application/json' },
-    cache: 'no-store',
-  });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(payload?.error?.message || payload?.message || 'Failed to load success stories');
-  }
-
+  const payload = await publicFetchJson<PublicListResponse<Record<string, unknown>>>('/api/job-success-stories');
   const items = Array.isArray(payload?.data) ? payload.data : [];
-  return items.map((item: Record<string, unknown>) => ({
+  return items.map((item) => ({
     id: String(item.id || ''),
     name: String(item.name || 'EDVO Learner'),
     location: String(item.location || ''),
@@ -48,18 +45,10 @@ export async function fetchSuccessStories(): Promise<SuccessStoryItem[]> {
 }
 
 export async function fetchSuccessStoryCategories(): Promise<SuccessStoryCategoryOption[]> {
-  const response = await fetch(`${apiBase}/api/job-success-story-categories`, {
-    headers: { Accept: 'application/json' },
-    cache: 'no-store',
-  });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(payload?.error?.message || payload?.message || 'Failed to load success story categories');
-  }
-
+  const payload = await publicFetchJson<PublicListResponse<Record<string, unknown>>>('/api/job-success-story-categories');
   const items = Array.isArray(payload?.data) ? payload.data : [];
   return [{ id: 'All', label: 'All Categories' }].concat(
-    items.map((item: Record<string, unknown>) => ({
+    items.map((item) => ({
       id: String(item.name || item.id || ''),
       label: String(item.name || item.label || 'Career Growth'),
     }))

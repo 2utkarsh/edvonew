@@ -1,3 +1,5 @@
+import { publicFetchJson } from '@/lib/backend-api';
+
 export interface GuideItem {
   id: string;
   slug: string;
@@ -19,19 +21,15 @@ export interface GuideCategoryOption {
   label: string;
 }
 
-const apiBase = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '/backend';
+type PublicListResponse<T> = {
+  success: boolean;
+  data: T[];
+};
 
 export async function fetchGuides(): Promise<GuideItem[]> {
-  const response = await fetch(`${apiBase}/api/career-guides`, {
-    headers: { Accept: 'application/json' },
-    cache: 'no-store',
-  });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(payload?.error?.message || payload?.message || 'Failed to load guides');
-  }
+  const payload = await publicFetchJson<PublicListResponse<Record<string, unknown>>>('/api/career-guides');
   const items = Array.isArray(payload?.data) ? payload.data : [];
-  return items.map((item: Record<string, unknown>) => ({
+  return items.map((item) => ({
     id: String(item.id || item.slug),
     slug: String(item.slug || item.id),
     title: String(item.title || 'Untitled Guide'),

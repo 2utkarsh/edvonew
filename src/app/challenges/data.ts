@@ -1,3 +1,5 @@
+import { publicFetchJson } from '@/lib/backend-api';
+
 export interface ChallengeQuestion {
   prompt: string;
   options: string[];
@@ -62,7 +64,15 @@ export interface ChallengeItem {
   codingChallenge?: CodingChallenge;
 }
 
-const apiBase = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '/backend';
+type PublicListResponse<T> = {
+  success: boolean;
+  data: T[];
+};
+
+type PublicItemResponse<T> = {
+  success: boolean;
+  data: T;
+};
 
 function mapChallenge(item: Record<string, unknown>): ChallengeItem {
   return {
@@ -133,16 +143,12 @@ function mapChallenge(item: Record<string, unknown>): ChallengeItem {
 }
 
 export async function fetchChallenges(): Promise<ChallengeItem[]> {
-  const response = await fetch(`${apiBase}/api/challenges`, { headers: { Accept: 'application/json' }, cache: 'no-store' });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(payload?.error?.message || payload?.message || 'Failed to load challenges');
+  const payload = await publicFetchJson<PublicListResponse<Record<string, unknown>>>('/api/challenges');
   const items = Array.isArray(payload?.data) ? payload.data : [];
-  return items.map((item: Record<string, unknown>) => mapChallenge(item));
+  return items.map((item) => mapChallenge(item));
 }
 
 export async function fetchChallengeBySlug(slug: string): Promise<ChallengeItem> {
-  const response = await fetch(`${apiBase}/api/challenges/${slug}`, { headers: { Accept: 'application/json' }, cache: 'no-store' });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(payload?.error?.message || payload?.message || 'Failed to load challenge');
+  const payload = await publicFetchJson<PublicItemResponse<Record<string, unknown>>>(`/api/challenges/${slug}`);
   return mapChallenge((payload?.data || {}) as Record<string, unknown>);
 }

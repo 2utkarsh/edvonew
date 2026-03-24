@@ -1,3 +1,5 @@
+import { authFetchJson, publicFetchJson } from '@/lib/backend-api';
+
 export type EventType = 'webinar' | 'workshop' | 'hackathon';
 export type EventLifecycle = 'Upcoming' | 'Live' | 'Ended';
 
@@ -50,7 +52,26 @@ export interface EventDetailResponse {
   viewerRole: 'student' | 'instructor' | 'admin' | null;
 }
 
-export const apiBase = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '/backend';
+type EventsPayload = {
+  success: boolean;
+  data: {
+    events: Record<string, unknown>[];
+  };
+};
+
+type EventDetailPayload = {
+  success: boolean;
+  data: {
+    event: Record<string, unknown>;
+    registration: EventDetailResponse['registration'];
+    viewerRole: EventDetailResponse['viewerRole'];
+  };
+};
+
+type CategoryPayload = {
+  success: boolean;
+  data: Record<string, unknown>[];
+};
 
 function mapEvent(item: any): EventItem {
   const scheduledAt = item.scheduledAt ? new Date(item.scheduledAt) : null;
@@ -87,28 +108,15 @@ function mapEvent(item: any): EventItem {
 }
 
 export async function fetchEvents(type?: EventType): Promise<EventItem[]> {
-  const url = type ? `${apiBase}/api/v1/events?type=${type}` : `${apiBase}/api/v1/events`;
-  const response = await fetch(url, {
-    headers: { Accept: 'application/json' },
-    cache: 'no-store'
-  });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(payload?.error?.message || payload?.message || 'Failed to load events');
-
+  const payload = await publicFetchJson<EventsPayload>(type ? `/api/v1/events?type=${type}` : '/api/v1/events');
   const items = Array.isArray(payload?.data?.events) ? payload.data.events : [];
   return items.map(mapEvent);
 }
 
 export async function fetchEventById(id: string, token?: string | null): Promise<EventDetailResponse> {
-  const response = await fetch(`${apiBase}/api/v1/events/${id}`, {
-    headers: {
-      Accept: 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    cache: 'no-store',
-  });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(payload?.error?.message || payload?.message || 'Failed to load event');
+  const payload = token
+    ? await authFetchJson<EventDetailPayload>(`/api/v1/events/${id}`, { headers: { Accept: 'application/json', Authorization: `Bearer ${token}` } })
+    : await publicFetchJson<EventDetailPayload>(`/api/v1/events/${id}`);
 
   return {
     event: mapEvent(payload?.data?.event || {}),
@@ -118,9 +126,7 @@ export async function fetchEventById(id: string, token?: string | null): Promise
 }
 
 export async function fetchEventCategories(type: EventType): Promise<EventCategoryOption[]> {
-  const response = await fetch(`${apiBase}/api/event-categories?type=${type}`, { headers: { Accept: 'application/json' }, cache: 'no-store' });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(payload?.error?.message || payload?.message || 'Failed to load event categories');
+  const payload = await publicFetchJson<CategoryPayload>(`/api/event-categories?type=${type}`);
   const items = Array.isArray(payload?.data) ? payload.data : [];
-  return [{ id: 'all', label: 'All Categories' }].concat(items.map((item: Record<string, unknown>) => ({ id: String(item.name || item.id || ''), label: String(item.name || 'General') })));
+  return [{ id: 'all', label: 'All Categories' }].concat(items.map((item) => ({ id: String(item.name || item.id || ''), label: String(item.name || 'General') })));
 }

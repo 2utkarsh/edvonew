@@ -1,3 +1,5 @@
+import { publicFetchJson } from '@/lib/backend-api';
+
 export interface CourseReviewItem {
   id: string;
   rating: number;
@@ -25,20 +27,15 @@ export interface ReviewCategoryOption {
   total?: number;
 }
 
-const apiBase = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '/backend';
+type PublicListResponse<T> = {
+  success: boolean;
+  data: T[];
+};
 
 export async function fetchCourseReviews(): Promise<CourseReviewItem[]> {
-  const response = await fetch(`${apiBase}/api/course-reviews`, {
-    headers: { Accept: 'application/json' },
-    cache: 'no-store',
-  });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(payload?.error?.message || payload?.message || 'Failed to load course reviews');
-  }
-
+  const payload = await publicFetchJson<PublicListResponse<Record<string, unknown>>>('/api/course-reviews');
   const items = Array.isArray(payload?.data) ? payload.data : [];
-  return items.map((item: Record<string, unknown>) => ({
+  return items.map((item) => ({
     id: String(item.id || ''),
     rating: Number(item.rating || 0),
     comment: String(item.comment || ''),
@@ -61,18 +58,10 @@ export async function fetchCourseReviews(): Promise<CourseReviewItem[]> {
 }
 
 export async function fetchCourseReviewCategories(): Promise<ReviewCategoryOption[]> {
-  const response = await fetch(`${apiBase}/api/course-review-categories`, {
-    headers: { Accept: 'application/json' },
-    cache: 'no-store',
-  });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(payload?.error?.message || payload?.message || 'Failed to load review categories');
-  }
-
+  const payload = await publicFetchJson<PublicListResponse<Record<string, unknown>>>('/api/course-review-categories');
   const items = Array.isArray(payload?.data) ? payload.data : [];
   return [{ id: 'all', label: 'All Categories' }].concat(
-    items.map((item: Record<string, unknown>) => ({
+    items.map((item) => ({
       id: String(item.id || item.label || ''),
       label: String(item.label || item.id || 'General'),
       total: Number(item.total || 0),

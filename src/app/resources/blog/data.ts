@@ -1,4 +1,6 @@
-﻿export interface BlogPost {
+import { publicFetchJson } from '@/lib/backend-api';
+
+export interface BlogPost {
   id: string;
   slug: string;
   title: string;
@@ -17,21 +19,14 @@ export interface BlogCategoryOption {
   label: string;
 }
 
-const apiBase = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '/backend';
+type PublicListResponse<T> = {
+  success: boolean;
+  data: T[];
+};
 
 export async function fetchBlogs(): Promise<BlogPost[]> {
-  const response = await fetch(`${apiBase}/api/blogs`, {
-    method: 'GET',
-    headers: { Accept: 'application/json' },
-    cache: 'no-store',
-  });
-
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(payload?.error?.message || payload?.message || 'Failed to load blogs');
-  }
-
-  const blogs = (Array.isArray(payload?.data) ? payload.data : []) as Record<string, unknown>[];
+  const payload = await publicFetchJson<PublicListResponse<Record<string, unknown>>>('/api/blogs');
+  const blogs = Array.isArray(payload?.data) ? payload.data : [];
   return blogs.map((blog) => ({
     id: String(blog.id),
     slug: String(blog.slug || blog.id),
@@ -48,18 +43,8 @@ export async function fetchBlogs(): Promise<BlogPost[]> {
 }
 
 export async function fetchBlogCategories(): Promise<BlogCategoryOption[]> {
-  const response = await fetch(`${apiBase}/api/blog-categories`, {
-    method: 'GET',
-    headers: { Accept: 'application/json' },
-    cache: 'no-store',
-  });
-
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(payload?.error?.message || payload?.message || 'Failed to load blog categories');
-  }
-
-  const categories = (Array.isArray(payload?.data) ? payload.data : []) as Record<string, unknown>[];
+  const payload = await publicFetchJson<PublicListResponse<Record<string, unknown>>>('/api/blog-categories');
+  const categories = Array.isArray(payload?.data) ? payload.data : [];
   return [
     { id: 'all', label: 'All Articles' },
     ...categories.map((category) => ({

@@ -1,3 +1,5 @@
+import { publicFetchJson } from '@/lib/backend-api';
+
 export interface HomeContentPayload {
   heroSlides?: any[];
   socialStats?: any[];
@@ -19,15 +21,12 @@ export interface HomeContentPayload {
   ctaSection?: Record<string, unknown>;
 }
 
-const apiBase = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '/backend';
+type HomeContentResponse = {
+  success: boolean;
+  data: HomeContentPayload;
+};
 
 export async function fetchHomeContent(): Promise<HomeContentPayload> {
-  const response = await fetch(`${apiBase}/api/home-content`, {
-    headers: { Accept: 'application/json' },
-    cache: 'no-store',
-  });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(payload?.error?.message || payload?.message || 'Failed to load home content');
+  const payload = await publicFetchJson<HomeContentResponse>('/api/home-content');
   return (payload?.data || {}) as HomeContentPayload;
 }
-
