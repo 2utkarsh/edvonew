@@ -1,4 +1,4 @@
-﻿# EDVO Backend - Next.js API
+# EDVO Backend - Next.js API
 
 A comprehensive RESTful API backend for the EDVO learning platform, built with Next.js 16, TypeScript, MongoDB, and Mongoose.
 
@@ -33,6 +33,8 @@ A comprehensive RESTful API backend for the EDVO learning platform, built with N
    JWT_SECRET=your-secret-key-change-in-production
    PORT=3001
    ```
+
+   For Vercel deployments, add the same `MONGODB_URI` value in `Project Settings > Environment Variables`.
 
 4. **Seed initial data**
    ```bash
@@ -267,6 +269,14 @@ For all models, see the `src/models/` directory.
 
 ### Vercel
 
+Add these environment variables in `Project Settings > Environment Variables` before deploying:
+
+```env
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/edvo?retryWrites=true&w=majority
+JWT_SECRET=replace-with-a-strong-secret
+MONGODB_DB=edvo
+```
+
 ```bash
 # Install Vercel CLI
 npm i -g vercel
@@ -299,6 +309,8 @@ pm2 monit
 ```
 
 ## 📝 Environment Variables
+
+For Vercel, use the same variable names shown below in `Project Settings > Environment Variables`.
 
 | Variable | Description | Default |
 |----------|-------------|---------|

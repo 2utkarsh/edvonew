@@ -559,6 +559,7 @@ Tracked events for analytics:
 
 ```env
 # Database
+# On Vercel, add this exact variable name in Project Settings > Environment Variables
 MONGODB_URI=mongodb://localhost:27017/edvo
 MONGODB_DB=edvo
 
@@ -625,6 +626,14 @@ Auto-generated API documentation available at:
 ## 🚀 Deployment
 
 ### Vercel Deployment
+
+Set the Vercel project environment variables before deploying:
+
+```env
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/edvo?retryWrites=true&w=majority
+JWT_SECRET=replace-with-a-strong-secret
+MONGODB_DB=edvo
+```
 
 ```bash
 # Build and deploy

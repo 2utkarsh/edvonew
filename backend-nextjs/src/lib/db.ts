@@ -82,7 +82,11 @@ export async function connectToDatabase() {
   }
 
   if (!hasConfiguredMongoUri()) {
-    throw new Error('MongoDB connection string is not configured. Set MONGODB_URI, MONGODB_URL, or mongodb_url.');
+    const deploymentHint = process.env.VERCEL
+      ? ' In Vercel, add MONGODB_URI in Project Settings > Environment Variables.'
+      : '';
+
+    throw new Error(`MongoDB connection string is not configured. Set MONGODB_URI.${deploymentHint}`);
   }
 
   if (!cache.promise) {
