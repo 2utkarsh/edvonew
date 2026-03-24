@@ -2,6 +2,8 @@
 
 A modern, feature-rich educational platform inspired by Codebasics.io, PhysicsWallah, and TutDude.com, built with Next.js 14, TypeScript, Tailwind CSS, and Framer Motion.
 
+This repository contains the current EDVO web application and its supporting services.
+
 ![EDVO Platform](https://img.shields.io/badge/EDVO-Learning%20Platform-blue?style=for-the-badge)
 ![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)
