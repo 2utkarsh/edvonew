@@ -91,7 +91,7 @@ export default function StudentLearningPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const enrollmentId = Array.isArray(params?.enrollmentId) ? params.enrollmentId[0] : params?.enrollmentId || '';
-  const learningFocus = searchParams.get('focus') === 'live' ? 'live' : 'recorded';
+  const learningFocus = searchParams?.get('focus') === 'live' ? 'live' : 'recorded';
   const [payload, setPayload] = useState<LearningPayload['data'] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
