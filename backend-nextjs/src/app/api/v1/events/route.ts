@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
-import { connectToDatabase } from '@/lib/db';
+import { getFallbackEvents } from '@/lib/content-fallback';
+import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { requireAuth } from '@/lib/auth';
 import { success, fail, toResponse } from '@/lib/http';
 import { EventModel } from '@/models/Event';
@@ -9,13 +10,30 @@ import { syncExistingEventItemsToPublicEvents } from '@/lib/event-sync';
 // GET all events with filters
 export async function GET(request: NextRequest): Promise<Response> {
   try {
-    await connectToDatabase();
-
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type') as 'webinar' | 'workshop' | 'hackathon' | null;
     const status = searchParams.get('status');
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
+
+    if (!hasConfiguredMongoUri()) {
+      let items = getFallbackEvents(type || undefined);
+      if (status === 'live') items = items.filter((item) => item.status === 'Live');
+      if (status === 'ended') items = items.filter((item) => item.status === 'Ended');
+      const total = items.length;
+      const paged = items.slice((page - 1) * limit, (page - 1) * limit + limit);
+      const meta = buildPagination({ page, limit }, total);
+      return toResponse(success({
+        events: paged.map((event) => ({
+          ...event,
+          _id: event.id,
+          isLive: event.status === 'Live',
+          isUpcoming: event.status === 'Upcoming',
+        })),
+      }, 'Events retrieved successfully', meta));
+    }
+
+    await connectToDatabase();
 
     const filterQuery: any = {};
 

@@ -1,10 +1,15 @@
-import { connectToDatabase } from '@/lib/db';
+import { getFallbackChallengeCategories } from '@/lib/content-fallback';
+import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { ensureSeededContent } from '@/lib/content-seeder';
 import { handleError, ok, toResponse } from '@/lib/http';
 import { ChallengeCategoryModel } from '@/models/ChallengeItem';
 
 export async function GET() {
   try {
+    if (!hasConfiguredMongoUri()) {
+      return toResponse(ok(getFallbackChallengeCategories()));
+    }
+
     await connectToDatabase();
     await ensureSeededContent();
 

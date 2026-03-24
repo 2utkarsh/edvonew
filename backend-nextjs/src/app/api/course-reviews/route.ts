@@ -1,15 +1,20 @@
-import { connectToDatabase } from '@/lib/db';
+import { getFallbackCourseReviews } from '@/lib/content-fallback';
+import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { handleError, ok, toResponse } from '@/lib/http';
 import { ensureSeededContent } from '@/lib/content-seeder';
 import { fetchManualCourseReviews, fetchSubmittedCourseReviews } from '@/lib/course-review-utils';
 
 export async function GET(request: Request) {
   try {
-    await connectToDatabase();
-    await ensureSeededContent();
-
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
+
+    if (!hasConfiguredMongoUri()) {
+      return toResponse(ok(getFallbackCourseReviews(category || undefined)));
+    }
+
+    await connectToDatabase();
+    await ensureSeededContent();
 
     const [submitted, manual] = await Promise.all([fetchSubmittedCourseReviews(), fetchManualCourseReviews()]);
     const items = submitted

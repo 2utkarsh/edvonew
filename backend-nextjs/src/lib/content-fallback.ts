@@ -1,4 +1,7 @@
 import { getMockBlogBySlugOrId, MOCK_BLOGS } from '@/lib/blog-data';
+import { MOCK_CHALLENGES } from '@/lib/challenge-data';
+import { MOCK_COURSE_REVIEWS } from '@/lib/course-review-data';
+import { MOCK_EVENTS } from '@/lib/event-data';
 import { slugify } from '@/lib/query';
 import { MOCK_GUIDES, MOCK_TUTORIALS } from '@/lib/resource-data';
 import { MOCK_SUCCESS_STORIES } from '@/lib/success-story-data';
@@ -73,6 +76,83 @@ export function getFallbackSuccessStoryCategories() {
     name,
     slug: slugify(name),
     description: `${name} success stories`,
+    isActive: true,
+    order: index + 1,
+  }));
+}
+
+export function getFallbackCourseReviews(category?: string) {
+  const items = MOCK_COURSE_REVIEWS.filter((item) => item.status === 'active');
+  if (!category || category === 'all') {
+    return sortByOrder(items);
+  }
+  return sortByOrder(items.filter((item) => item.category === category));
+}
+
+export function getFallbackCourseReviewCategories() {
+  const counts = new Map<string, number>();
+  getFallbackCourseReviews().forEach((item) => {
+    counts.set(item.category, Number(counts.get(item.category) || 0) + 1);
+  });
+
+  return Array.from(counts.keys()).map((name, index) => ({
+    id: `course-review-category-${slugify(name)}`,
+    label: name,
+    slug: slugify(name),
+    description: `${name} course reviews`,
+    isActive: true,
+    order: index + 1,
+    total: Number(counts.get(name) || 0),
+  }));
+}
+
+export function getFallbackChallenges(phase?: string, category?: string) {
+  let items = MOCK_CHALLENGES.filter((item) => item.visibility === 'active');
+  if (phase && ['ongoing', 'completed'].includes(phase)) {
+    items = items.filter((item) => item.phase === phase);
+  }
+  if (category) {
+    items = items.filter((item) => item.category === category);
+  }
+  return sortByOrder(items);
+}
+
+export function getFallbackChallengeBySlug(slug: string) {
+  return getFallbackChallenges().find((item) => item.slug === slug) || null;
+}
+
+export function getFallbackChallengeCategories() {
+  return Array.from(new Set(MOCK_CHALLENGES.map((item) => item.category))).map((name, index) => ({
+    id: `challenge-category-${slugify(name)}`,
+    name,
+    slug: slugify(name),
+    description: `${name} challenges`,
+    isActive: true,
+    order: index + 1,
+  }));
+}
+
+export function getFallbackEvents(type?: string, category?: string) {
+  let items = MOCK_EVENTS.filter((item) => item.visibility === 'active');
+  if (type && ['webinar', 'workshop', 'hackathon'].includes(type)) {
+    items = items.filter((item) => item.type === type);
+  }
+  if (category) {
+    items = items.filter((item) => item.category === category);
+  }
+  return sortByOrder(items);
+}
+
+export function getFallbackEventById(value: string) {
+  return getFallbackEvents().find((item) => item.id === value || item.slug === value) || null;
+}
+
+export function getFallbackEventCategories(type?: string) {
+  return Array.from(new Set(getFallbackEvents(type).map((item) => item.category))).map((name, index) => ({
+    id: `event-category-${slugify(`${type || 'all'}-${name}`)}`,
+    name,
+    slug: slugify(`${type || 'all'}-${name}`),
+    description: `${name} ${type || 'event'} listings`,
     isActive: true,
     order: index + 1,
   }));

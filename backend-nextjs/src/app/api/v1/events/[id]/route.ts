@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
-import { connectToDatabase } from '@/lib/db';
+import { getFallbackEventById } from '@/lib/content-fallback';
+import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { getAuthPayload } from '@/lib/auth';
 import { fail, success, toResponse } from '@/lib/http';
 import { EventModel } from '@/models/Event';
@@ -12,9 +13,29 @@ interface RouteParams {
 
 export async function GET(_request: NextRequest, { params }: RouteParams): Promise<Response> {
   try {
+    const { id } = await params;
+    const authPayload = await getAuthPayload();
+
+    if (!hasConfiguredMongoUri()) {
+      const fallbackEvent = getFallbackEventById(id);
+      if (!fallbackEvent) {
+        return toResponse(fail('Event not found', 'EVENT_NOT_FOUND', undefined, 404));
+      }
+
+      return toResponse(success({
+        event: {
+          ...fallbackEvent,
+          _id: fallbackEvent.id,
+          isLive: fallbackEvent.status === 'Live',
+          isUpcoming: fallbackEvent.status === 'Upcoming',
+        },
+        registration: null,
+        viewerRole: authPayload?.role || null,
+      }));
+    }
+
     await connectToDatabase();
 
-    const { id } = await params;
     let event = await EventModel.findById(id).lean();
     if (!event) {
       event = await syncEventItemByIdToPublicEvent(id);
@@ -23,7 +44,6 @@ export async function GET(_request: NextRequest, { params }: RouteParams): Promi
       return toResponse(fail('Event not found', 'EVENT_NOT_FOUND', undefined, 404));
     }
 
-    const authPayload = await getAuthPayload();
     let registration: any = null;
 
     if (authPayload?.role === 'student') {
