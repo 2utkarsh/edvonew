@@ -14,6 +14,7 @@ import Input from '@/components/ui/Input';
 import { JobCardSkeleton } from '@/components/ui/Skeleton';
 import { FadeIn, StaggerGrid } from '@/components/animations';
 import { Job } from '@/types';
+import { buildApiUrl } from '@/lib/backend-api';
 
 export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -23,7 +24,7 @@ export default function JobsPage() {
   const [selectedLocation, setSelectedLocation] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
 
-  const jobTypes = ['all', 'full-time', 'part-time', 'remote', 'internship'];
+  const jobTypes = ['all', 'full-time', 'part-time', 'contract', 'internship'];
   const locations = ['all', 'Bangalore', 'Delhi', 'Hyderabad', 'Remote', 'Mumbai', 'Pune'];
 
   useEffect(() => {
@@ -38,8 +39,7 @@ export default function JobsPage() {
       if (selectedLocation !== 'all') params.location = selectedLocation;
       if (searchTerm) params.search = searchTerm;
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-      const response = await axios.get(`${apiUrl}/api/jobs`, { params });
+      const response = await axios.get(buildApiUrl('/api/jobs'), { params });
       setJobs(response.data.data || []);
     } catch (error) {
       console.error('Error fetching jobs:', error);
@@ -57,7 +57,7 @@ export default function JobsPage() {
     switch (type) {
       case 'full-time': return 'gradient';
       case 'part-time': return 'info';
-      case 'remote': return 'success';
+      case 'contract': return 'success';
       case 'internship': return 'warning';
       default: return 'default';
     }
@@ -250,10 +250,12 @@ export default function JobsPage() {
 
                         {/* Actions */}
                         <div className="flex flex-wrap items-center gap-4">
-                          <Button variant="primary" size="md" className="group">
-                            Apply Now
-                            <ExternalLink className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                          </Button>
+                          <a href={job.applyUrl} target="_blank" rel="noreferrer">
+                            <Button variant="primary" size="md" className="group">
+                              Apply Now
+                              <ExternalLink className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                            </Button>
+                          </a>
                           <Button variant="outline" size="md">
                             Save Job
                           </Button>

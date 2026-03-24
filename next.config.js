@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const configuredBackendBaseUrl =
   process.env.BACKEND_URL ||
-  (/^https?:\/\//.test(process.env.NEXT_PUBLIC_API_URL || '') ? process.env.NEXT_PUBLIC_API_URL : '') ||
   (/^https?:\/\//.test(process.env.NEXT_PUBLIC_BACKEND_URL || '') ? process.env.NEXT_PUBLIC_BACKEND_URL : '') ||
   'http://localhost:3001';
 

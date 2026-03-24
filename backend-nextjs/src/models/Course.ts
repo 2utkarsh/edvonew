@@ -98,6 +98,20 @@ const offeringSchema = new Schema(
   { _id: true }
 );
 
+const careerPathSchema = new Schema(
+  {
+    title: String,
+    company: String,
+    location: String,
+    type: String,
+    mode: String,
+    salary: String,
+    applicationUrl: String,
+    note: String,
+  },
+  { _id: true }
+);
+
 const liveSessionSchema = new Schema(
   {
     title: { type: String, required: true },
@@ -177,6 +191,16 @@ export interface CourseDocument {
   mentors: unknown[];
   plans: unknown[];
   offerings: unknown[];
+  careerPaths?: Array<{
+    title?: string;
+    company?: string;
+    location?: string;
+    type?: string;
+    mode?: string;
+    salary?: string;
+    applicationUrl?: string;
+    note?: string;
+  }>;
   faqs: unknown[];
   testimonials: unknown[];
   certifications: Array<{ name: string; provider?: string }>;
@@ -244,6 +268,7 @@ const courseSchema = new Schema<CourseDocument>(
     mentors: { type: [mentorSchema], default: [] },
     plans: { type: [planSchema], default: [] },
     offerings: { type: [offeringSchema], default: [] },
+    careerPaths: { type: [careerPathSchema], default: [] },
     faqs: { type: [faqSchema], default: [] },
     testimonials: { type: [testimonialSchema], default: [] },
     certifications: {

@@ -1,6 +1,6 @@
 import { Buffer } from 'buffer';
 import { requireAuth } from '@/lib/auth';
-import { grantCourseAccess } from '@/lib/course-access';
+import { buildLearningWorkspaceUrl, grantCourseAccess } from '@/lib/course-access';
 import { createReceipt } from '@/lib/course-runtime';
 import { connectToDatabase } from '@/lib/db';
 import { fail, success, toResponse } from '@/lib/http';
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
       return toResponse(success({
         mode: 'already-enrolled',
         enrollmentId: String(existingEnrollment._id),
-        redirectUrl: `/dashboard/student/learn/${String(existingEnrollment._id)}`,
+        redirectUrl: buildLearningWorkspaceUrl(String(existingEnrollment._id), course),
       }));
     }
 
@@ -153,7 +153,7 @@ export async function POST(request: Request) {
       mode: 'demo',
       paymentId: String(payment._id),
       enrollmentId: String(enrollment._id),
-      redirectUrl: `/dashboard/student/learn/${String(enrollment._id)}`,
+      redirectUrl: buildLearningWorkspaceUrl(String(enrollment._id), course),
     }));
   } catch (error: any) {
     return toResponse(fail(error?.message || 'Unable to start payment', 'PAYMENT_ORDER_FAILED', undefined, 500));

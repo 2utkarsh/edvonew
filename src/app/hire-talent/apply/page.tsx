@@ -4,8 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { ArrowLeft, Building2, Send } from 'lucide-react';
 import Button from '@/components/ui/Button';
-
-const apiBase = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '/backend';
+import { buildApiUrl } from '@/lib/backend-api';
 
 const initialForm = {
   companyName: '',
@@ -30,7 +29,7 @@ export default function HireTalentApplyPage() {
     setStatus({ type: 'idle', message: '' });
 
     try {
-      const response = await fetch(`${apiBase}/api/hiring-partner-applications`, {
+      const response = await fetch(buildApiUrl('/api/hiring-partner-applications'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify(form),

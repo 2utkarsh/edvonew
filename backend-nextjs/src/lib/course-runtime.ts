@@ -164,6 +164,21 @@ export function normalizeSimpleItems(items: unknown, keyNames: string[]) {
     .filter((item) => keyNames.some((key) => item[key]));
 }
 
+export function normalizeCareerPaths(items: unknown) {
+  return asArray<AnyObject>(items)
+    .map((item) => ({
+      title: asString(item.title),
+      company: asString(item.company),
+      location: asString(item.location),
+      type: asString(item.type),
+      mode: asString(item.mode),
+      salary: asString(item.salary),
+      applicationUrl: asString(item.applicationUrl || item.applyUrl),
+      note: asString(item.note),
+    }))
+    .filter((item) => item.title || item.company || item.location || item.applicationUrl);
+}
+
 export function normalizeCoursePayload(input: AnyObject) {
   const deliveryMode = asString(input.deliveryMode || input.delivery || 'recorded').toLowerCase();
   const plans = normalizePlans(input.plans);
@@ -214,6 +229,7 @@ export function normalizeCoursePayload(input: AnyObject) {
     mentors: normalizeSimpleItems(input.mentors, ['name', 'designation', 'company', 'experience', 'image']),
     plans,
     offerings: normalizeSimpleItems(input.offerings, ['icon', 'title']),
+    careerPaths: normalizeCareerPaths(input.careerPaths),
     faqs: normalizeSimpleItems(input.faqs, ['question', 'answer']),
     testimonials: asArray<AnyObject>(input.testimonials)
       .map((item) => ({

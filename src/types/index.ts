@@ -59,7 +59,8 @@ export interface Job {
   company: string;
   logo: string;
   location: string;
-  type: "full-time" | "part-time" | "remote" | "internship";
+  type: "full-time" | "part-time" | "contract" | "internship";
+  mode?: "remote" | "onsite" | "hybrid";
   salary: string;
   description: string;
   requirements: string[];
@@ -68,6 +69,7 @@ export interface Job {
   postedDate: Date;
   applicationDeadline?: Date;
   applicants: number;
+  applyUrl: string;
 }
 
 export interface Review {

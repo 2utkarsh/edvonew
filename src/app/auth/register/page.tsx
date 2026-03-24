@@ -6,8 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
-
-const defaultApiBase = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '/backend';
+import { buildApiUrl } from '@/lib/backend-api';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -56,7 +55,7 @@ export default function RegisterPage() {
     setSubmitSuccess('');
 
     try {
-      const res = await fetch(`${defaultApiBase}/api/auth/register`, {
+      const res = await fetch(buildApiUrl('/api/auth/register'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({

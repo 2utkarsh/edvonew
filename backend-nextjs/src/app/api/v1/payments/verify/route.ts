@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { requireAuth } from '@/lib/auth';
-import { grantCourseAccess } from '@/lib/course-access';
+import { buildLearningWorkspaceUrl, grantCourseAccess } from '@/lib/course-access';
 import { connectToDatabase } from '@/lib/db';
 import { fail, success, toResponse } from '@/lib/http';
 import { getPaymentGatewaySettings } from '@/lib/system-settings';
@@ -83,7 +83,7 @@ export async function POST(request: Request) {
       verified: true,
       paymentId: String(payment._id),
       enrollmentId: String(enrollment._id),
-      redirectUrl: `/dashboard/student/learn/${String(enrollment._id)}`,
+      redirectUrl: buildLearningWorkspaceUrl(String(enrollment._id), course),
     }));
   } catch (error: any) {
     return toResponse(fail(error?.message || 'Unable to verify payment', 'PAYMENT_VERIFY_FAILED', undefined, 500));

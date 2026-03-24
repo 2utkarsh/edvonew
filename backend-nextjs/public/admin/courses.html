@@ -194,7 +194,7 @@
         <div class='head'>
           <div>
             <h2>Catalog</h2>
-            <p>Manage current courses, import earlier catalog items, and control the restored single-course layout from admin.</p>
+            <p>Manage current courses, import earlier catalog items, and control the restored single-course layout, careers, checkout, and learner experience from admin.</p>
           </div>
           <div class='acts'>
             <button class='btn' type='button' onclick='shuffleCourses()'>Shuffle</button>
@@ -219,7 +219,7 @@
         <div class='head'>
           <div>
             <h2 id='editorTitle'>Create Course</h2>
-            <p id='editorText'>Create, edit, reorder, and manage the overview, offerings, curriculum, mentors, plans, certifications, testimonials, and FAQs for the restored course page from one place.</p>
+            <p id='editorText'>Create, edit, reorder, and manage the overview, offerings, career matches, curriculum, mentors, plans, certifications, testimonials, and FAQs for the restored course page from one place.</p>
           </div>
           <div class='acts'>
             <button class='btn' type='button' onclick='courseReset()'>Reset</button>
@@ -274,6 +274,8 @@
               <div class='field'><label>Offerings</label><textarea id='cOffer' placeholder='One point per line'></textarea></div>
             </div>
           </div>
+
+                    <div class='section'><div class='head'><div><h3>Career Matches</h3><p class='hint'>Add admin-managed job and role cards for this course. Students see these in their dashboard career section after enrollment.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('careerBody')">Shuffle</button><button class='btn' type='button' onclick='addCareerPath()'>Add Career Match</button></div></div><div class='minit'><table><thead><tr><th>Role</th><th>Company</th><th>Location</th><th>Type</th><th>Mode</th><th>Salary</th><th>Apply URL</th><th>Note</th><th>Actions</th></tr></thead><tbody id='careerBody'></tbody></table></div></div>
 
           <div class='section'><div class='head'><div><h3>Recorded Module Rows</h3><p class='hint'>Create, edit, shuffle, and remove curriculum rows shown on the single course page and in the learner workspace.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('currBody')">Shuffle</button><button class='btn' type='button' onclick='addCurr()'>Add Row</button></div></div><div class='minit'><table><thead><tr><th>Subject</th><th>Module</th><th>Lecture</th><th>Duration</th><th>Type</th><th>Free</th><th>Video / Resource</th><th>Actions</th></tr></thead><tbody id='currBody'></tbody></table></div></div>
           <div class='section'><div class='head'><div><h3>Live Sessions</h3><p class='hint'>Manage live schedule, host, meeting link, and ordering here.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('sessionBody')">Shuffle</button><button class='btn' type='button' onclick='addSession()'>Add Session</button></div></div><div class='minit'><table><thead><tr><th>Title</th><th>Start</th><th>End</th><th>Host</th><th>Join Link</th><th>Status</th><th>Actions</th></tr></thead><tbody id='sessionBody'></tbody></table></div></div>

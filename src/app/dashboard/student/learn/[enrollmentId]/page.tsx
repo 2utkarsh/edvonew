@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import {
   Award,
   BookOpen,
@@ -89,13 +89,16 @@ type LearningPayload = {
 
 export default function StudentLearningPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const enrollmentId = Array.isArray(params?.enrollmentId) ? params.enrollmentId[0] : params?.enrollmentId || '';
+  const learningFocus = searchParams.get('focus') === 'live' ? 'live' : 'recorded';
   const [payload, setPayload] = useState<LearningPayload['data'] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeLectureId, setActiveLectureId] = useState('');
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const liveSectionRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -137,6 +140,18 @@ export default function StudentLearningPage() {
     }
     return null;
   }, [payload?.curriculum, activeLectureId]);
+
+  useEffect(() => {
+    if (!payload || learningFocus !== 'live' || !liveSectionRef.current) return;
+
+    const timer = window.setTimeout(() => {
+      liveSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 120);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [payload, learningFocus]);
 
   const markComplete = async () => {
     if (!payload?.course?.id || !activeLectureId) return;
@@ -293,7 +308,7 @@ export default function StudentLearningPage() {
           </div>
 
           <div className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
-            <div className="rounded-[2rem] border border-white/10 bg-slate-900 p-5">
+            <div ref={liveSectionRef} className="rounded-[2rem] border border-white/10 bg-slate-900 p-5">
               <div className="flex items-center gap-3">
                 <RadioTower className="h-5 w-5 text-amber-300" />
                 <div className="text-lg font-bold">Live session control</div>

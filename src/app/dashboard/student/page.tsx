@@ -5,14 +5,17 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   Award,
+  BarChart3,
   Bell,
   BookOpen,
+  Briefcase,
   Calendar,
   Clock,
+  ExternalLink,
+  MapPin,
   Play,
   RadioTower,
   TrendingUp,
-  Users,
 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
@@ -25,6 +28,7 @@ type DashboardPayload = {
   data: {
     myCourses: Array<{
       enrollmentId: string;
+      launchUrl?: string;
       course: {
         id: string;
         title: string;
@@ -38,8 +42,9 @@ type DashboardPayload = {
       };
       progress: number;
       attendance: { overallPercentage: number };
-      performance: { finalScore: number };
+      performance: { finalScore: number; streakDays?: number };
       participation: { discussionCount: number; questionsAsked: number; resourcesDownloaded: number };
+      participationTotal?: number;
       certificateEligible: boolean;
       nextLiveSession?: { title: string; startTime: string } | null;
       lastAccessedAt?: string;
@@ -49,8 +54,14 @@ type DashboardPayload = {
       completedCourses: number;
       inProgressCourses: number;
       averageProgress: number;
+      averageAttendance: number;
+      averagePerformance: number;
+      totalParticipation: number;
       certificatesEarned: number;
+      certificateReady: number;
       unreadNotifications: number;
+      bestStreakDays: number;
+      careerMatches: number;
     };
     upcomingLiveSessions: Array<{
       enrollmentId: string;
@@ -58,6 +69,21 @@ type DashboardPayload = {
       title: string;
       startTime: string;
       status?: string;
+      launchUrl?: string;
+    }>;
+    careerOpportunities: Array<{
+      id: string;
+      courseId: string;
+      courseTitle: string;
+      courseSlug: string;
+      title: string;
+      company?: string;
+      location?: string;
+      type?: string;
+      mode?: string;
+      salary?: string;
+      applicationUrl?: string;
+      note?: string;
     }>;
     notifications: Array<{
       id: string;
@@ -71,6 +97,7 @@ type DashboardPayload = {
       courseName?: string;
       certificateNumber: string;
       issuedAt: string;
+      credentialUrl?: string;
     }>;
   };
 };
@@ -103,6 +130,17 @@ export default function StudentDashboard() {
     };
   }, []);
 
+  const summaryCards = [
+    { label: 'Courses', value: dashboard?.stats.totalEnrolled ?? 0, icon: BookOpen },
+    { label: 'Completed', value: dashboard?.stats.completedCourses ?? 0, icon: Award },
+    { label: 'Avg progress', value: `${dashboard?.stats.averageProgress ?? 0}%`, icon: TrendingUp },
+    { label: 'Avg attendance', value: `${dashboard?.stats.averageAttendance ?? 0}%`, icon: Calendar },
+    { label: 'Avg performance', value: `${dashboard?.stats.averagePerformance ?? 0}%`, icon: BarChart3 },
+    { label: 'Study streak', value: `${dashboard?.stats.bestStreakDays ?? 0}d`, icon: Clock },
+    { label: 'Certificates', value: dashboard?.stats.certificatesEarned ?? 0, icon: Award },
+    { label: 'Career matches', value: dashboard?.stats.careerMatches ?? 0, icon: Briefcase },
+  ];
+
   return (
     <>
       <Navbar />
@@ -114,24 +152,17 @@ export default function StudentDashboard() {
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.22),_transparent_30%)]" />
                 <div className="relative z-10">
                   <h1 className="text-4xl font-black tracking-tight md:text-5xl">Welcome back, {user?.name || 'Student'}</h1>
-                  <p className="mt-4 max-w-2xl text-lg text-white/85">
-                    Your dashboard is now fully dynamic with course access, live schedule, attendance, performance, participation, certificates, and notifications.
+                  <p className="mt-4 max-w-3xl text-lg text-white/85">
+                    Track every enrolled course, continue live or recorded classes instantly after payment, monitor your performance, collect certificates, and explore career matches set by admin for your learning path.
                   </p>
 
-                  <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
-                    {[
-                      { label: 'Courses', value: dashboard?.stats.totalEnrolled ?? 0, icon: BookOpen },
-                      { label: 'Completed', value: dashboard?.stats.completedCourses ?? 0, icon: Award },
-                      { label: 'In progress', value: dashboard?.stats.inProgressCourses ?? 0, icon: TrendingUp },
-                      { label: 'Avg progress', value: `${dashboard?.stats.averageProgress ?? 0}%`, icon: Clock },
-                      { label: 'Certificates', value: dashboard?.stats.certificatesEarned ?? 0, icon: Award },
-                      { label: 'Unread alerts', value: dashboard?.stats.unreadNotifications ?? 0, icon: Bell },
-                    ].map((item, index) => (
+                  <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-8">
+                    {summaryCards.map((item, index) => (
                       <motion.div
                         key={item.label}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.06 }}
+                        transition={{ delay: index * 0.05 }}
                         className="rounded-2xl bg-white/10 p-4 backdrop-blur"
                       >
                         <item.icon className="h-6 w-6 text-white/80" />
@@ -154,9 +185,9 @@ export default function StudentDashboard() {
               <div className="space-y-8">
                 <FadeIn delay={0.05}>
                   <div className="flex items-center justify-between gap-3">
-                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">My learning workspace</h2>
+                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">My courses</h2>
                     <span className="rounded-full bg-white px-4 py-2 text-sm text-slate-500 shadow-sm dark:bg-slate-900 dark:text-slate-300">
-                      {loading ? 'Loading...' : `${dashboard?.myCourses.length || 0} active enrollments`}
+                      {loading ? 'Loading...' : `${dashboard?.myCourses.length || 0} enrolled courses`}
                     </span>
                   </div>
                 </FadeIn>
@@ -164,7 +195,7 @@ export default function StudentDashboard() {
                 <div className="space-y-5">
                   {(dashboard?.myCourses || []).map((item, index) => (
                     <FadeIn key={item.enrollmentId} delay={index * 0.05}>
-                      <Card className="!p-0 overflow-hidden rounded-[2rem] border border-slate-200 dark:border-slate-800">
+                      <Card className="overflow-hidden rounded-[2rem] border border-slate-200 !p-0 dark:border-slate-800">
                         <div className="grid gap-0 md:grid-cols-[0.9fr_1.1fr]">
                           <div className="flex min-h-[220px] flex-col justify-between bg-[linear-gradient(135deg,_rgba(15,118,110,0.15),_rgba(245,158,11,0.16))] p-6 dark:bg-[linear-gradient(135deg,_rgba(15,118,110,0.18),_rgba(245,158,11,0.10))]">
                             <div>
@@ -172,10 +203,12 @@ export default function StudentDashboard() {
                                 {formatDelivery(item.course.deliveryMode)}
                               </div>
                               <h3 className="mt-4 text-2xl font-bold text-slate-900 dark:text-white">{item.course.title}</h3>
-                              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{item.course.category}  -  {item.course.duration || 'Flexible duration'}</p>
+                              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                                {item.course.category} - {item.course.duration || 'Flexible duration'}
+                              </p>
                             </div>
                             <div className="text-sm text-slate-600 dark:text-slate-300">
-                              {item.nextLiveSession ? `Next live class: ${item.nextLiveSession.title}` : 'Continue your recorded modules'}
+                              {item.nextLiveSession ? `Next live class: ${item.nextLiveSession.title}` : 'Continue your current modules and recorded lessons'}
                             </div>
                           </div>
 
@@ -185,10 +218,10 @@ export default function StudentDashboard() {
                                 <div className="text-sm text-slate-500 dark:text-slate-400">Progress</div>
                                 <div className="text-3xl font-black text-slate-900 dark:text-white">{item.progress}%</div>
                               </div>
-                              <Link href={`/dashboard/student/learn/${item.enrollmentId}`}>
+                              <Link href={item.launchUrl || `/dashboard/student/learn/${item.enrollmentId}`}>
                                 <Button variant="primary" size="sm">
                                   <Play className="mr-2 h-4 w-4" />
-                                  Resume
+                                  {item.course.deliveryMode?.toLowerCase() === 'live' || (item.course.deliveryMode?.toLowerCase() === 'hybrid' && item.nextLiveSession) ? 'Open live' : 'Resume'}
                                 </Button>
                               </Link>
                             </div>
@@ -205,6 +238,7 @@ export default function StudentDashboard() {
 
                             <div className="mt-5 flex flex-wrap gap-3 text-xs text-slate-500 dark:text-slate-400">
                               {item.certificateEligible ? <span className="rounded-full bg-emerald-50 px-3 py-1 font-semibold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">Certificate eligible</span> : null}
+                              {item.performance?.streakDays ? <span>{item.performance.streakDays} day study streak</span> : null}
                               {item.lastAccessedAt ? <span>Last active {formatDate(item.lastAccessedAt)}</span> : null}
                               {item.nextLiveSession?.startTime ? <span>{formatDate(item.nextLiveSession.startTime)}</span> : null}
                             </div>
@@ -213,7 +247,71 @@ export default function StudentDashboard() {
                       </Card>
                     </FadeIn>
                   ))}
+
+                  {!loading && !(dashboard?.myCourses || []).length ? (
+                    <EmptyState text="Your enrolled courses will appear here after payment and enrollment." />
+                  ) : null}
                 </div>
+
+                <FadeIn delay={0.1}>
+                  <div className="flex items-center justify-between gap-3">
+                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Career matches</h2>
+                    <span className="rounded-full bg-white px-4 py-2 text-sm text-slate-500 shadow-sm dark:bg-slate-900 dark:text-slate-300">
+                      {dashboard?.stats.careerMatches || 0} admin-set roles
+                    </span>
+                  </div>
+                </FadeIn>
+
+                {(dashboard?.careerOpportunities || []).length ? (
+                  <div className="grid gap-5 md:grid-cols-2">
+                    {dashboard?.careerOpportunities.map((career, index) => (
+                      <FadeIn key={career.id} delay={index * 0.04}>
+                        <Card className="rounded-[2rem] border border-slate-200 !p-6 dark:border-slate-800">
+                          <div className="flex items-start justify-between gap-4">
+                            <div>
+                              <div className="inline-flex rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
+                                {career.courseTitle}
+                              </div>
+                              <h3 className="mt-4 text-xl font-bold text-slate-900 dark:text-white">{career.title}</h3>
+                              {career.company ? <div className="mt-2 text-sm font-medium text-slate-600 dark:text-slate-300">{career.company}</div> : null}
+                            </div>
+                            <div className="rounded-2xl bg-slate-100 p-3 text-slate-600 dark:bg-slate-900 dark:text-slate-300">
+                              <Briefcase className="h-5 w-5" />
+                            </div>
+                          </div>
+
+                          <div className="mt-5 flex flex-wrap gap-2 text-xs text-slate-500 dark:text-slate-400">
+                            {career.location ? <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-900"><MapPin className="mr-1 inline h-3.5 w-3.5" />{career.location}</span> : null}
+                            {career.type ? <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-900">{formatLabel(career.type)}</span> : null}
+                            {career.mode ? <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-900">{formatLabel(career.mode)}</span> : null}
+                            {career.salary ? <span className="rounded-full bg-emerald-50 px-3 py-1 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">{career.salary}</span> : null}
+                          </div>
+
+                          {career.note ? <p className="mt-4 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{career.note}</p> : null}
+
+                          <div className="mt-5 flex flex-wrap gap-3">
+                            {career.applicationUrl ? (
+                              <a
+                                href={career.applicationUrl}
+                                target={isExternalHref(career.applicationUrl) ? '_blank' : undefined}
+                                rel={isExternalHref(career.applicationUrl) ? 'noreferrer' : undefined}
+                                className="inline-flex items-center rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+                              >
+                                Apply now
+                                <ExternalLink className="ml-2 h-4 w-4" />
+                              </a>
+                            ) : null}
+                            <Link href={`/courses/${career.courseSlug}`} className="inline-flex items-center rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-500 dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-500">
+                              View course
+                            </Link>
+                          </div>
+                        </Card>
+                      </FadeIn>
+                    ))}
+                  </div>
+                ) : (
+                  <EmptyState text="Admin-set career matches for your enrolled courses will appear here." />
+                )}
               </div>
 
               <div className="space-y-6">
@@ -226,6 +324,7 @@ export default function StudentDashboard() {
                             <div className="font-semibold text-slate-900 dark:text-white">{session.title}</div>
                             <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">{session.courseTitle}</div>
                             <div className="mt-2 text-xs uppercase tracking-[0.2em] text-amber-700 dark:text-amber-300">{formatDate(session.startTime)}</div>
+                            {session.launchUrl ? <Link className="mt-3 inline-flex text-xs font-semibold uppercase tracking-[0.2em] text-amber-700 dark:text-amber-300" href={session.launchUrl}>Open live</Link> : null}
                           </div>
                         ))}
                       </div>
@@ -236,6 +335,34 @@ export default function StudentDashboard() {
                 </FadeIn>
 
                 <FadeIn delay={0.12}>
+                  <SidebarBlock icon={<Award className="h-5 w-5" />} title="Certificates">
+                    {(dashboard?.certificates || []).length ? (
+                      <div className="space-y-4">
+                        {dashboard?.certificates.map((certificate) => (
+                          <div key={certificate.id} className="rounded-2xl border border-slate-200 p-4 dark:border-slate-800">
+                            <div className="font-semibold text-slate-900 dark:text-white">{certificate.courseName || 'Course certificate'}</div>
+                            <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">{certificate.certificateNumber}</div>
+                            <div className="mt-2 text-xs uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">Issued {formatDate(certificate.issuedAt)}</div>
+                            {certificate.credentialUrl ? (
+                              <a
+                                className="mt-3 inline-flex text-xs font-semibold uppercase tracking-[0.2em] text-amber-700 dark:text-amber-300"
+                                href={certificate.credentialUrl}
+                                target={isExternalHref(certificate.credentialUrl) ? '_blank' : undefined}
+                                rel={isExternalHref(certificate.credentialUrl) ? 'noreferrer' : undefined}
+                              >
+                                Open credential
+                              </a>
+                            ) : null}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <EmptyState text="Certificates will appear here after course completion." />
+                    )}
+                  </SidebarBlock>
+                </FadeIn>
+
+                <FadeIn delay={0.16}>
                   <SidebarBlock icon={<Bell className="h-5 w-5" />} title="Notifications">
                     {(dashboard?.notifications || []).length ? (
                       <div className="space-y-4">
@@ -252,24 +379,6 @@ export default function StudentDashboard() {
                     )}
                   </SidebarBlock>
                 </FadeIn>
-
-                <FadeIn delay={0.16}>
-                  <SidebarBlock icon={<Award className="h-5 w-5" />} title="Certificates">
-                    {(dashboard?.certificates || []).length ? (
-                      <div className="space-y-4">
-                        {dashboard?.certificates.map((certificate) => (
-                          <div key={certificate.id} className="rounded-2xl border border-slate-200 p-4 dark:border-slate-800">
-                            <div className="font-semibold text-slate-900 dark:text-white">{certificate.courseName || 'Course certificate'}</div>
-                            <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">{certificate.certificateNumber}</div>
-                            <div className="mt-2 text-xs uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">Issued {formatDate(certificate.issuedAt)}</div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <EmptyState text="Certificates will appear here after course completion." />
-                    )}
-                  </SidebarBlock>
-                </FadeIn>
               </div>
             </div>
           </div>
@@ -282,7 +391,7 @@ export default function StudentDashboard() {
 
 function SidebarBlock({ icon, title, children }: { icon: any; title: string; children: any }) {
   return (
-    <Card className="rounded-[2rem] !p-6 border border-slate-200 dark:border-slate-800">
+    <Card className="rounded-[2rem] border border-slate-200 !p-6 dark:border-slate-800">
       <div className="flex items-center gap-3">
         <div className="rounded-2xl bg-amber-50 p-3 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">{icon}</div>
         <h3 className="text-lg font-bold text-slate-900 dark:text-white">{title}</h3>
@@ -315,4 +424,16 @@ function formatDelivery(mode?: string) {
   if ((mode || '').toLowerCase() === 'live') return 'Live';
   if ((mode || '').toLowerCase() === 'hybrid') return 'Hybrid';
   return 'Recorded';
+}
+
+function formatLabel(value: string) {
+  return String(value || '')
+    .split('-')
+    .filter(Boolean)
+    .map((item) => item.charAt(0).toUpperCase() + item.slice(1))
+    .join(' ');
+}
+
+function isExternalHref(value: string) {
+  return /^https?:\/\//.test(String(value || ''));
 }

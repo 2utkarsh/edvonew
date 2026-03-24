@@ -1,4 +1,5 @@
 import { requireAuth } from '@/lib/auth';
+import { buildLearningWorkspaceUrl } from '@/lib/course-access';
 import { buildEnrollmentSnapshot } from '@/lib/course-runtime';
 import { connectToDatabase } from '@/lib/db';
 import { success, fail, toResponse } from '@/lib/http';
@@ -28,6 +29,7 @@ export async function GET() {
           status: enrollment.status,
           paymentStatus: enrollment.paymentStatus,
           lastAccessedAt: enrollment.lastAccessedAt || enrollment.updatedAt,
+          launchUrl: buildLearningWorkspaceUrl(String(enrollment._id), course),
         },
         course: {
           id: String(course._id),

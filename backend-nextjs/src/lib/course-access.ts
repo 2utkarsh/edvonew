@@ -5,6 +5,24 @@ import { EnrollmentModel } from '@/models/Enrollment';
 import { NotificationModel } from '@/models/Notification';
 import { UserModel } from '@/models/User';
 
+function resolveLearningFocus(course: any) {
+  const deliveryMode = String(course?.deliveryMode || course?.delivery || 'recorded').toLowerCase();
+  const hasLiveSessions = Array.isArray(course?.liveSessions) && course.liveSessions.length > 0;
+
+  if (deliveryMode === 'live') return 'live';
+  if (deliveryMode === 'hybrid' && hasLiveSessions) return 'live';
+  return 'recorded';
+}
+
+function resolveLearningActionLabel(course: any) {
+  return resolveLearningFocus(course) === 'live' ? 'Open live classroom' : 'Start learning';
+}
+
+export function buildLearningWorkspaceUrl(enrollmentId: string, course: any) {
+  const focus = resolveLearningFocus(course);
+  return `/dashboard/student/learn/${enrollmentId}?focus=${focus}`;
+}
+
 export async function grantCourseAccess({
   userId,
   course,
@@ -81,8 +99,8 @@ export async function grantCourseAccess({
       message: `You now have access to ${course.title}.`,
       type: 'success',
       category: 'enrollment',
-      actionUrl: `/dashboard/student/learn/${enrollment._id}`,
-      actionLabel: 'Start learning',
+      actionUrl: buildLearningWorkspaceUrl(String(enrollment._id), course),
+      actionLabel: resolveLearningActionLabel(course),
       metadata: { courseId: String(course._id), enrollmentId: String(enrollment._id) },
     });
   }

@@ -115,12 +115,14 @@ function renderSummary() {
   const learners = S.courses.reduce((total, course) => total + (course.studentMetrics?.totalStudents || 0), 0);
   const live = S.courses.filter((course) => (course.deliveryMode || '').toLowerCase() === 'live').length;
   const avg = S.courses.length ? Math.round(S.courses.reduce((sum, course) => sum + (course.studentMetrics?.averageProgress || 0), 0) / S.courses.length) : 0;
+  const careerMatches = S.courses.reduce((total, course) => total + (course.careerPaths?.length || 0), 0);
   byId('sum').innerHTML = [
     ['Total Courses', S.courses.length, 'Legacy imports plus new admin-created courses now live here.'],
     ['Categories', S.cats.length, 'Dropdowns and filters are controlled by admin-managed category order.'],
     ['Total Learners', learners, 'Paid enrollments unlock the student dashboard automatically.'],
     ['Live Cohorts', live, 'Recorded, live, and hybrid formats are controlled per course.'],
     ['Avg Progress', avg + '%', 'Attendance, performance, and participation surface in admin and student views.'],
+    ['Career Matches', careerMatches, 'Admin-set job and role cards flow into each student dashboard by course.'],
   ].map((item) => `<article class='cardx'><small>${item[0]}</small><strong>${item[1]}</strong><span>${item[2]}</span></article>`).join('');
 }
 
@@ -360,7 +362,7 @@ function courseReset() {
   byId('certPerf').value = 60;
   byId('notifEnroll').value = 'true';
   byId('notifLive').value = 'true';
-  ['currBody', 'sessionBody', 'planBody', 'mentorBody', 'faqBody', 'testimonialBody', 'certBody'].forEach((id) => { byId(id).innerHTML = ''; });
+  ['currBody', 'sessionBody', 'planBody', 'mentorBody', 'faqBody', 'testimonialBody', 'certBody', 'careerBody'].forEach((id) => { if (byId(id)) byId(id).innerHTML = ''; });
 }
 
 function ensureSectionRows() {
@@ -371,12 +373,13 @@ function ensureSectionRows() {
   if (!byId('faqBody').children.length) addFaq();
   if (!byId('testimonialBody').children.length) addTestimonial();
   if (!byId('certBody').children.length) addCertification();
+  if (byId('careerBody') && !byId('careerBody').children.length) addCareerPath();
 }
 
 function courseNew() {
   courseReset();
   byId('editorTitle').textContent = 'Create Course';
-  byId('editorText').textContent = 'Create, edit, reorder, and manage the overview, offerings, curriculum, mentors, plans, certifications, testimonials, and FAQs for the restored course page.';
+  byId('editorText').textContent = 'Create, edit, reorder, and manage the overview, offerings, career matches, curriculum, mentors, plans, certifications, testimonials, and FAQs for the restored course page.';
   ensureSectionRows();
   renderStudents([]);
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -428,12 +431,20 @@ function addCertification(item = {}) {
   byId('certBody').appendChild(tr);
 }
 
+function addCareerPath(item = {}) {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td><input data-k='title' value='${attr(item.title || '')}'></td><td><input data-k='company' value='${attr(item.company || '')}'></td><td><input data-k='location' value='${attr(item.location || '')}'></td><td><select data-k='type'><option value=''>Select</option><option value='full-time'>Full-time</option><option value='part-time'>Part-time</option><option value='contract'>Contract</option><option value='internship'>Internship</option></select></td><td><select data-k='mode'><option value=''>Select</option><option value='remote'>Remote</option><option value='onsite'>Onsite</option><option value='hybrid'>Hybrid</option></select></td><td><input data-k='salary' value='${attr(item.salary || '')}'></td><td><input data-k='applicationUrl' value='${attr(item.applicationUrl || '')}'></td><td><input data-k='note' value='${attr(item.note || '')}'></td><td>${rowControls()}</td>`;
+  byId('careerBody').appendChild(tr);
+  tr.querySelector('[data-k="type"]').value = item.type || '';
+  tr.querySelector('[data-k="mode"]').value = item.mode || '';
+}
+
 function editCourse(id) {
   const course = S.courses.find((item) => item.id === id);
   if (!course) return;
   S.selected = id;
   byId('editorTitle').textContent = `Edit ${course.title}`;
-  byId('editorText').textContent = 'Frontend listing, restored single-course page, plans, checkout, student dashboard, and learning workspace read these values.';
+  byId('editorText').textContent = 'Frontend listing, restored single-course page, checkout, student dashboard, learner workspace, certificates, and career matches read these values.';
   byId('courseId').value = course.id || '';
   byId('cOrder').value = course.order || 1;
   byId('cTitle').value = course.title || '';
@@ -488,6 +499,10 @@ function editCourse(id) {
   (course.testimonials || []).forEach(addTestimonial);
   byId('certBody').innerHTML = '';
   (course.certifications || []).forEach(addCertification);
+  if (byId('careerBody')) {
+    byId('careerBody').innerHTML = '';
+    (course.careerPaths || []).forEach(addCareerPath);
+  }
   ensureSectionRows();
   renderStudents(course.students || []);
   window.scrollTo({ top: byId('editorTitle').getBoundingClientRect().top + window.scrollY - 120, behavior: 'smooth' });
@@ -530,6 +545,18 @@ function payload() {
     requirements: lines(byId('cReq').value),
     featuredOutcomes: lines(byId('cOutcomes').value),
     offerings: lines(byId('cOffer').value).map((title) => ({ icon: 'check', title })),
+    careerPaths: byId('careerBody')
+      ? readRows('careerBody', (row) => ({
+          title: row.querySelector('[data-k="title"]').value.trim(),
+          company: row.querySelector('[data-k="company"]').value.trim(),
+          location: row.querySelector('[data-k="location"]').value.trim(),
+          type: row.querySelector('[data-k="type"]').value.trim(),
+          mode: row.querySelector('[data-k="mode"]').value.trim(),
+          salary: row.querySelector('[data-k="salary"]').value.trim(),
+          applicationUrl: row.querySelector('[data-k="applicationUrl"]').value.trim(),
+          note: row.querySelector('[data-k="note"]').value.trim(),
+        })).filter((item) => item.title || item.company || item.location || item.applicationUrl)
+      : [],
     curriculumRows: readRows('currBody', (row) => ({ subject: row.querySelector('[data-k="subject"]').value.trim(), module: row.querySelector('[data-k="module"]').value.trim(), lecture: row.querySelector('[data-k="lecture"]').value.trim(), duration: row.querySelector('[data-k="duration"]').value.trim(), contentType: row.querySelector('[data-k="contentType"]').value, isFree: row.querySelector('[data-k="isFree"]').value === 'true', videoUrl: row.querySelector('[data-k="videoUrl"]').value.trim() })).filter((item) => item.subject && item.module && item.lecture),
     liveSessions: readRows('sessionBody', (row) => ({ title: row.querySelector('[data-k="title"]').value.trim(), startTime: row.querySelector('[data-k="startTime"]').value.trim(), endTime: row.querySelector('[data-k="endTime"]').value.trim(), hostName: row.querySelector('[data-k="hostName"]').value.trim(), meetingUrl: row.querySelector('[data-k="meetingUrl"]').value.trim(), status: row.querySelector('[data-k="status"]').value })).filter((item) => item.title && item.startTime),
     plans: readRows('planBody', (row) => ({ name: row.querySelector('[data-k="name"]').value.trim(), price: Number(row.querySelector('[data-k="price"]').value || 0), isRecommended: row.querySelector('[data-k="isRecommended"]').value === 'true', features: lines(row.querySelector('[data-k="features"]').value).map((value, index) => ({ label: 'Feature ' + (index + 1), value })) })).filter((item) => item.name),

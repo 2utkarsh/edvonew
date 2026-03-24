@@ -4,6 +4,7 @@ import { FormEventHandler } from 'react';
 import ButtonGradientPrimary from './button-gradient-primary';
 import InputError from './input-error';
 import { useState } from 'react';
+import { buildApiUrl } from '@/lib/backend-api';
 
 interface SubscribeInputProps {
    className?: string;
@@ -19,8 +20,7 @@ const SubscribeInput = ({ className, buttonText }: SubscribeInputProps) => {
       e.preventDefault();
       setError('');
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-      fetch(`${apiUrl}/api/subscribes`, {
+      fetch(buildApiUrl('/api/subscribes'), {
          method: 'POST',
          headers: { 'Content-Type': 'application/json' },
          body: JSON.stringify({ email }),

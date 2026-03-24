@@ -1,4 +1,29 @@
-export const defaultApiBase = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || '/backend';
+const BROWSER_API_BASE = '/backend';
+
+function normalizeApiBase(value: string) {
+  return value.replace(/\/$/, '');
+}
+
+function resolveServerApiBase() {
+  const candidates = [
+    process.env.BACKEND_URL,
+    process.env.NEXT_PUBLIC_BACKEND_URL,
+    process.env.NEXT_PUBLIC_API_URL,
+    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/backend` : '',
+    'http://localhost:3000/backend',
+  ];
+
+  const explicitBase = candidates.find((candidate) => /^https?:\/\//.test(candidate || ''));
+  return normalizeApiBase(explicitBase || 'http://localhost:3000/backend');
+}
+
+export const defaultApiBase =
+  typeof window === 'undefined' ? resolveServerApiBase() : BROWSER_API_BASE;
+
+export function buildApiUrl(path: string) {
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  return `${defaultApiBase}${normalizedPath}`;
+}
 
 export function getStoredAuthToken() {
   if (typeof window === 'undefined') return '';
@@ -17,7 +42,7 @@ export function getStoredAuthUser() {
 }
 
 export async function publicFetchJson<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`${defaultApiBase}${path}`, {
+  const response = await fetch(buildApiUrl(path), {
     ...init,
     headers: {
       Accept: 'application/json',
@@ -40,7 +65,7 @@ export async function authFetchJson<T>(path: string, init?: RequestInit): Promis
     throw new Error('Please log in to continue');
   }
 
-  const response = await fetch(`${defaultApiBase}${path}`, {
+  const response = await fetch(buildApiUrl(path), {
     ...init,
     headers: {
       Accept: 'application/json',
