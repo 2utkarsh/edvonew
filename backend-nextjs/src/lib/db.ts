@@ -29,9 +29,22 @@ const MONGO_DB_ENV_KEYS = [
   'mongodb_db',
 ] as const;
 
+function normalizeEnvValue(value: string) {
+  const trimmedValue = value.trim();
+
+  if (
+    (trimmedValue.startsWith('"') && trimmedValue.endsWith('"')) ||
+    (trimmedValue.startsWith("'") && trimmedValue.endsWith("'"))
+  ) {
+    return trimmedValue.slice(1, -1).trim();
+  }
+
+  return trimmedValue;
+}
+
 function getFirstConfiguredEnvValue(keys: readonly string[]) {
   for (const key of keys) {
-    const value = String(process.env[key] || '').trim();
+    const value = normalizeEnvValue(String(process.env[key] || ''));
     if (value) {
       return value;
     }
