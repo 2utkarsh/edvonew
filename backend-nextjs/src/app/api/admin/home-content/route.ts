@@ -1,5 +1,6 @@
-import { connectToDatabase } from '@/lib/db';
+import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { requireAdminOrDemo } from '@/lib/demo-admin';
+import { DEFAULT_HOME_CONTENT } from '@/lib/home-content-data';
 import { ensureHomeContent } from '@/lib/home-content-store';
 import { ok, parseJson, toResponse } from '@/lib/http';
 import { HomeContentModel } from '@/models/HomeContent';
@@ -7,6 +8,10 @@ import { HomeContentModel } from '@/models/HomeContent';
 export async function GET(request: Request) {
   const denied = await requireAdminOrDemo(request);
   if (denied) return denied;
+
+  if (!hasConfiguredMongoUri()) {
+    return toResponse(ok(DEFAULT_HOME_CONTENT));
+  }
 
   await connectToDatabase();
   await ensureHomeContent();

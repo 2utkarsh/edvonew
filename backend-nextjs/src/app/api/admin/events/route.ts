@@ -1,4 +1,5 @@
-import { connectToDatabase } from '@/lib/db';
+import { getFallbackEvents } from '@/lib/content-fallback';
+import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { ensureSeededContent } from '@/lib/content-seeder';
 import { requireAdminOrDemo } from '@/lib/demo-admin';
 import { created, fail, ok, parseJson, toResponse } from '@/lib/http';
@@ -22,11 +23,15 @@ export async function GET(request: Request) {
   const denied = await requireAdminOrDemo(request);
   if (denied) return denied;
 
-  await connectToDatabase();
-  await ensureSeededContent();
-
   const { searchParams } = new URL(request.url);
   const type = searchParams.get('type');
+
+  if (!hasConfiguredMongoUri()) {
+    return toResponse(ok(getFallbackEvents(type || undefined)));
+  }
+
+  await connectToDatabase();
+  await ensureSeededContent();
   const query: Record<string, unknown> = {};
   if (type && ['webinar', 'workshop', 'hackathon'].includes(type)) query.type = type;
 

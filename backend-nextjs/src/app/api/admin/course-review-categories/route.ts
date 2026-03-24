@@ -1,4 +1,5 @@
-import { connectToDatabase } from '@/lib/db';
+import { getFallbackCourseReviewCategories } from '@/lib/content-fallback';
+import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { created, fail, ok, parseJson, toResponse } from '@/lib/http';
 import { slugify } from '@/lib/query';
 import { requireAdminOrDemo } from '@/lib/demo-admin';
@@ -9,6 +10,10 @@ import { CourseReviewCategoryModel } from '@/models/CourseReviewItem';
 export async function GET(request: Request) {
   const denied = await requireAdminOrDemo(request);
   if (denied) return denied;
+
+  if (!hasConfiguredMongoUri()) {
+    return toResponse(ok(getFallbackCourseReviewCategories()));
+  }
 
   await connectToDatabase();
   await ensureSeededContent();

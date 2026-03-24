@@ -1,4 +1,4 @@
-import { connectToDatabase } from '@/lib/db';
+import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { requireAdminOrDemo } from '@/lib/demo-admin';
 import { ok, parseJson, toResponse } from '@/lib/http';
 import { HiringPartnerApplicationModel } from '@/models/HiringPartnerApplication';
@@ -6,6 +6,10 @@ import { HiringPartnerApplicationModel } from '@/models/HiringPartnerApplication
 export async function GET(request: Request) {
   const denied = await requireAdminOrDemo(request);
   if (denied) return denied;
+
+  if (!hasConfiguredMongoUri()) {
+    return toResponse(ok([]));
+  }
 
   await connectToDatabase();
   const items = await HiringPartnerApplicationModel.find().sort({ createdAt: -1 }).lean();

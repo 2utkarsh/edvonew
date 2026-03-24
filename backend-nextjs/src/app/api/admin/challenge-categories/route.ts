@@ -1,4 +1,5 @@
-import { connectToDatabase } from '@/lib/db';
+import { getFallbackChallengeCategories } from '@/lib/content-fallback';
+import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { ensureSeededContent } from '@/lib/content-seeder';
 import { requireAdminOrDemo } from '@/lib/demo-admin';
 import { created, fail, ok, parseJson, toResponse } from '@/lib/http';
@@ -20,6 +21,10 @@ async function ensureCategoriesFromChallenges() {
 export async function GET(request: Request) {
   const denied = await requireAdminOrDemo(request);
   if (denied) return denied;
+
+  if (!hasConfiguredMongoUri()) {
+    return toResponse(ok(getFallbackChallengeCategories()));
+  }
 
   await connectToDatabase();
   await ensureSeededContent();

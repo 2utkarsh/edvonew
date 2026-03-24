@@ -1,4 +1,5 @@
-import { connectToDatabase } from '@/lib/db';
+import { getFallbackEventCategories } from '@/lib/content-fallback';
+import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { ensureSeededContent } from '@/lib/content-seeder';
 import { requireAdminOrDemo } from '@/lib/demo-admin';
 import { created, fail, ok, parseJson, toResponse } from '@/lib/http';
@@ -23,11 +24,15 @@ export async function GET(request: Request) {
   const denied = await requireAdminOrDemo(request);
   if (denied) return denied;
 
-  await connectToDatabase();
-  await ensureSeededContent();
-
   const { searchParams } = new URL(request.url);
   const type = String(searchParams.get('type') || 'webinar');
+
+  if (!hasConfiguredMongoUri()) {
+    return toResponse(ok(getFallbackEventCategories(type)));
+  }
+
+  await connectToDatabase();
+  await ensureSeededContent();
   await ensureCategoriesFromEvents(type);
 
   const items = await EventCategoryModel.find({ type }).sort({ order: 1, updatedAt: -1 }).lean();
