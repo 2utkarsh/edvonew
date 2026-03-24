@@ -1,4 +1,5 @@
-﻿import { connectToDatabase } from '@/lib/db';
+import { getFallbackAdminBlogs } from '@/lib/content-fallback';
+import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { created, ok, parseJson, toResponse } from '@/lib/http';
 import { slugify } from '@/lib/query';
 import { BlogModel } from '@/models/Blog';
@@ -10,6 +11,10 @@ import { mapBlogDocumentToPublicBlog } from '@/lib/blog-data';
 export async function GET(request: Request) {
   const denied = await requireAdminOrDemo(request);
   if (denied) return denied;
+
+  if (!hasConfiguredMongoUri()) {
+    return toResponse(ok(getFallbackAdminBlogs()));
+  }
 
   await connectToDatabase();
   await ensureSeededContent();

@@ -1,10 +1,15 @@
-﻿import { connectToDatabase } from '@/lib/db';
+import { getFallbackPublicBlogs } from '@/lib/content-fallback';
+import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { ok, toResponse } from '@/lib/http';
 import { BlogModel } from '@/models/Blog';
 import { ensureSeededContent } from '@/lib/content-seeder';
 import { mapBlogDocumentToPublicBlog } from '@/lib/blog-data';
 
 export async function GET(): Promise<Response> {
+  if (!hasConfiguredMongoUri()) {
+    return toResponse(ok(getFallbackPublicBlogs()));
+  }
+
   await connectToDatabase();
   await ensureSeededContent();
 

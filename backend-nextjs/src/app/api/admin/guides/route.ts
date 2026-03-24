@@ -1,4 +1,5 @@
-import { connectToDatabase } from '@/lib/db';
+import { getFallbackGuides } from '@/lib/content-fallback';
+import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { created, ok, parseJson, toResponse } from '@/lib/http';
 import { slugify } from '@/lib/query';
 import { ensureSeededContent } from '@/lib/content-seeder';
@@ -17,6 +18,10 @@ function normalizeRoadmapSteps(value: unknown) {
 export async function GET(request: Request) {
   const denied = await requireAdminOrDemo(request);
   if (denied) return denied;
+
+  if (!hasConfiguredMongoUri()) {
+    return toResponse(ok(getFallbackGuides()));
+  }
 
   await connectToDatabase();
   await ensureSeededContent();

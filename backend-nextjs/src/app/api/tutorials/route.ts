@@ -1,10 +1,15 @@
-﻿import { connectToDatabase } from '@/lib/db';
+import { getFallbackTutorials } from '@/lib/content-fallback';
+import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { ok, toResponse } from '@/lib/http';
 import { ensureSeededContent } from '@/lib/content-seeder';
 import { ResourceItemModel } from '@/models/ResourceItem';
 import { mapResourceDocumentToTutorial } from '@/lib/resource-data';
 
 export async function GET() {
+  if (!hasConfiguredMongoUri()) {
+    return toResponse(ok(getFallbackTutorials()));
+  }
+
   await connectToDatabase();
   await ensureSeededContent();
 

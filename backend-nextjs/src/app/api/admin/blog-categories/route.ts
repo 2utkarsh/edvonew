@@ -1,4 +1,5 @@
-﻿import { connectToDatabase } from '@/lib/db';
+import { getFallbackBlogCategories } from '@/lib/content-fallback';
+import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { created, fail, ok, parseJson, toResponse } from '@/lib/http';
 import { slugify } from '@/lib/query';
 import { BlogCategoryModel, BlogModel } from '@/models/Blog';
@@ -37,6 +38,10 @@ async function ensureBlogCategoriesFromBlogs() {
 export async function GET(request: Request) {
   const denied = await requireAdminOrDemo(request);
   if (denied) return denied;
+
+  if (!hasConfiguredMongoUri()) {
+    return toResponse(ok(getFallbackBlogCategories()));
+  }
 
   await connectToDatabase();
   await ensureBlogCategoriesFromBlogs();

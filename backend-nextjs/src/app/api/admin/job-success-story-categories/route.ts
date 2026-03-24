@@ -1,4 +1,5 @@
-import { connectToDatabase } from '@/lib/db';
+import { getFallbackSuccessStoryCategories } from '@/lib/content-fallback';
+import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { created, fail, ok, parseJson, toResponse } from '@/lib/http';
 import { slugify } from '@/lib/query';
 import { requireAdminOrDemo } from '@/lib/demo-admin';
@@ -38,6 +39,10 @@ async function ensureCategoriesFromStories() {
 export async function GET(request: Request) {
   const denied = await requireAdminOrDemo(request);
   if (denied) return denied;
+
+  if (!hasConfiguredMongoUri()) {
+    return toResponse(ok(getFallbackSuccessStoryCategories()));
+  }
 
   await connectToDatabase();
   await ensureSeededContent();

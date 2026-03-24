@@ -1,4 +1,5 @@
-import { connectToDatabase } from '@/lib/db';
+import { getFallbackTutorials } from '@/lib/content-fallback';
+import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { created, ok, parseJson, toResponse } from '@/lib/http';
 import { slugify } from '@/lib/query';
 import { ensureSeededContent } from '@/lib/content-seeder';
@@ -9,6 +10,10 @@ import { mapResourceDocumentToTutorial } from '@/lib/resource-data';
 export async function GET(request: Request) {
   const denied = await requireAdminOrDemo(request);
   if (denied) return denied;
+
+  if (!hasConfiguredMongoUri()) {
+    return toResponse(ok(getFallbackTutorials()));
+  }
 
   await connectToDatabase();
   await ensureSeededContent();
