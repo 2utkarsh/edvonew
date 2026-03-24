@@ -48,7 +48,7 @@ export default function LoginPage() {
     setSubmitSuccess('');
 
     try {
-      const res = await fetch(buildApiUrl('/api/auth/login'), {
+      const res = await fetch(buildApiUrl('/api/v1/auth/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({ email: formData.email, password: formData.password }),

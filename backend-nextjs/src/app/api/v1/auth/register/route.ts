@@ -1,17 +1,17 @@
 import { NextRequest } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { hashPassword, signAccessToken } from '@/lib/auth';
-import { success, fail, validationError } from '@/lib/http';
+import { created, fail, toResponse, validationError } from '@/lib/http';
 import { UserModel } from '@/models/User';
 import { registerSchema } from '@/lib/validators';
 import { validateRequest } from '@/middleware/auth';
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<Response> {
   try {
     // Validate request
     const validation = await validateRequest(request, registerSchema);
     if (validation.error) return validation.error;
-    if (!validation.data) return validationError([{ field: 'body', message: 'Request body is required' }]);
+    if (!validation.data) return toResponse(validationError([{ field: 'body', message: 'Request body is required' }]));
 
     const { name, email, password, role, mobile } = validation.data;
 
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     // Check if user already exists
     const existingUser = await UserModel.findOne({ email: email.toLowerCase() });
     if (existingUser) {
-      return fail('User with this email already exists', 'USER_EXISTS', undefined, 409);
+      return toResponse(fail('User with this email already exists', 'USER_EXISTS', undefined, 409));
     }
 
     // Hash password
@@ -48,27 +48,23 @@ export async function POST(request: NextRequest) {
       role: user.role,
     });
 
-    return success(
-      {
-        user: {
-          id: user._id.toString(),
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          avatar: user.avatar,
-        },
-        token,
+    return toResponse(created({
+      user: {
+        id: user._id.toString(),
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar,
       },
-      'User registered successfully',
-      { status: 201 }
-    );
+      token,
+    }, 'User registered successfully'));
   } catch (error: any) {
     console.error('Registration error:', error);
-    return fail(
+    return toResponse(fail(
       error.message || 'Registration failed',
       'REGISTRATION_FAILED',
       undefined,
       500
-    );
+    ));
   }
 }

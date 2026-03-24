@@ -55,7 +55,7 @@ export default function RegisterPage() {
     setSubmitSuccess('');
 
     try {
-      const res = await fetch(buildApiUrl('/api/auth/register'), {
+      const res = await fetch(buildApiUrl('/api/v1/auth/register'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
@@ -67,9 +67,23 @@ export default function RegisterPage() {
         }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error((data as any)?.message || 'Registration failed');
+      const payload = (data as any)?.data || data;
+      if (!res.ok) {
+        throw new Error(payload?.message || (data as any)?.error?.message || (data as any)?.message || 'Registration failed');
+      }
 
-      setSubmitSuccess('Account created successfully. Redirecting to login...');
+      const token = payload?.token;
+      if (token) {
+        localStorage.setItem('auth_token', token);
+      }
+      if (payload?.user) {
+        localStorage.setItem('auth_user', JSON.stringify(payload.user));
+      }
+      if (token || payload?.user) {
+        window.dispatchEvent(new Event('auth-changed'));
+      }
+
+      setSubmitSuccess(payload?.message || (data as any)?.message || 'Account created successfully. Redirecting to login...');
       setFormData({ fullName: '', mobile: '', email: '', password: '', confirmPassword: '', agreeToTerms: false });
       setTimeout(() => router.push('/auth/login'), 500);
     } catch (error: any) {
