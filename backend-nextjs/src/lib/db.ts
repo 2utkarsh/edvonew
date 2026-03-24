@@ -1,4 +1,4 @@
-﻿import mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
 declare global {
   var mongooseCache: { conn: typeof mongoose | null; promise: Promise<typeof mongoose> | null } | undefined;
@@ -14,7 +14,6 @@ function isPlaceholderMongoUri(value: string) {
     value === 'memory' ||
     /USERNAME/i.test(value) ||
     /PASSWORD/i.test(value) ||
-    /cluster\.mongodb\.net\/edvo/i.test(value) ||
     /<db_password>/i.test(value)
   );
 }
