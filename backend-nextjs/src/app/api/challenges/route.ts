@@ -5,6 +5,15 @@ import { handleError, ok, toResponse } from '@/lib/http';
 import { mapChallengeDocumentToPublicChallenge } from '@/lib/challenge-data';
 import { ChallengeItemModel } from '@/models/ChallengeItem';
 
+const activeVisibilityFilter = {
+  $or: [
+    { visibility: 'active' },
+    { visibility: { $exists: false } },
+    { visibility: null },
+    { visibility: '' },
+  ],
+};
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -18,7 +27,7 @@ export async function GET(request: Request) {
     await connectToDatabase();
     await ensureSeededContent();
 
-    const query: Record<string, unknown> = { visibility: 'active' };
+    const query: Record<string, unknown> = { ...activeVisibilityFilter };
     if (phase && ['ongoing', 'completed'].includes(phase)) query.phase = phase;
     if (category) query.category = category;
 
