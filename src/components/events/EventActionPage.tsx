@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, CalendarDays, Clock3, ExternalLink, MapPin, Radio, ShieldCheck, Trophy, UserRound, Users, Video, Wrench } from 'lucide-react';
 import Button from '@/components/ui/Button';
-import { EventItem, EventType, apiBase, fetchEventById } from '@/app/events/data';
+import { EventItem, EventType, fetchEventById } from '@/app/events/data';
+import { authFetchJson } from '@/lib/backend-api';
 
 const TYPE_LABELS: Record<EventType, string> = {
   webinar: 'Webinar',
@@ -89,17 +90,15 @@ export function EventActionPage({ eventId, type }: { eventId: string; type: Even
       return null;
     }
 
-    const response = await fetch(`${apiBase}/api/v1/events/${eventId}/${path}`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok || !payload?.success) {
-      throw new Error(payload?.error?.message || payload?.message || `Failed to ${path} event`);
+    const payload = await authFetchJson<{ success?: boolean; data?: Record<string, unknown> | null }>(
+      `/api/v1/events/${eventId}/${path}`,
+      { method: 'POST' }
+    );
+
+    if (!payload?.success) {
+      throw new Error(`Failed to ${path} event`);
     }
+
     return payload?.data || null;
   }
 
@@ -265,16 +264,13 @@ export function EventLiveRedirectPage({ eventId, type }: { eventId: string; type
           return;
         }
 
-        const response = await fetch(`${apiBase}/api/v1/events/${eventId}/join`, {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const payload = await response.json().catch(() => ({}));
-        if (!response.ok || !payload?.success) {
-          throw new Error(payload?.error?.message || payload?.message || 'Unable to join live event');
+        const payload = await authFetchJson<{ success?: boolean; data?: { liveUrl?: string } }>(
+          `/api/v1/events/${eventId}/join`,
+          { method: 'POST' }
+        );
+
+        if (!payload?.success) {
+          throw new Error('Unable to join live event');
         }
 
         const liveUrl = payload?.data?.liveUrl;
