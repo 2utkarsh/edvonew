@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
-const backendBaseUrl = (process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001').replace(/\/$/, '');
+const configuredBackendBaseUrl =
+  process.env.BACKEND_URL ||
+  (/^https?:\/\//.test(process.env.NEXT_PUBLIC_API_URL || '') ? process.env.NEXT_PUBLIC_API_URL : '') ||
+  (/^https?:\/\//.test(process.env.NEXT_PUBLIC_BACKEND_URL || '') ? process.env.NEXT_PUBLIC_BACKEND_URL : '') ||
+  'http://localhost:3001';
+
+const backendBaseUrl = configuredBackendBaseUrl.replace(/\/$/, '');
 
 const nextConfig = {
   experimental: {
