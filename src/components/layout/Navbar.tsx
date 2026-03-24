@@ -294,13 +294,6 @@ export default function Navbar() {
                 )}
 {(isAuthenticated || !!authUser) ? (
                   <>
-                    <div
-                      className="flex items-center justify-center rounded-full border border-border/70 bg-white/80 p-2 text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
-                      aria-label="Signed in"
-                      title="Signed in"
-                    >
-                      <UserCircle className="h-4 w-4" />
-                    </div>
                     <Link
                       href="/dashboard/student"
                       className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-secondary-lighter hover:text-slate-950 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
@@ -379,9 +372,6 @@ export default function Navbar() {
                 ))}
                 {(isAuthenticated || !!authUser) ? (
                   <div className="mt-4 space-y-3 border-t border-border pt-4 dark:border-white/10">
-                    <div className="flex items-center justify-center rounded-lg bg-secondary-lighter px-3 py-2 text-slate-700 dark:bg-white/10 dark:text-slate-200" aria-label="Signed in">
-                      <UserCircle className="h-4 w-4" />
-                    </div>
                     <div className="flex gap-3">
                       <Link
                         href="/dashboard/student"
