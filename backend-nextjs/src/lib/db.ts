@@ -8,6 +8,25 @@ declare global {
 const cache = global.mongooseCache || { conn: null, promise: null };
 global.mongooseCache = cache;
 
+function getMongoUri() {
+  return String(
+    process.env.MONGODB_URI ||
+      process.env.MONGODB_URL ||
+      process.env.mongodb_url ||
+      process.env.MONGO_URL ||
+      ''
+  ).trim();
+}
+
+function getMongoDbName() {
+  return String(
+    process.env.MONGODB_DB ||
+      process.env.MONGODB_DATABASE ||
+      process.env.mongodb_db ||
+      ''
+  ).trim();
+}
+
 function isPlaceholderMongoUri(value: string) {
   return (
     !value ||
@@ -19,12 +38,15 @@ function isPlaceholderMongoUri(value: string) {
 }
 
 export function hasConfiguredMongoUri() {
-  const value = String(process.env.MONGODB_URI || '').trim();
+  const value = getMongoUri();
   return Boolean(value) && !isPlaceholderMongoUri(value);
 }
 
 export async function connectToDatabase() {
   if (cache.conn) return cache.conn;
+
+  const mongoUri = getMongoUri();
+  const mongoDbName = getMongoDbName();
 
   // Use in-memory MongoDB only in local development when no real URI is configured.
   const useMemory = !hasConfiguredMongoUri() && process.env.NODE_ENV !== 'production';
@@ -47,10 +69,10 @@ export async function connectToDatabase() {
     }
 
     const mongoServer = global.__MONGODB__;
-    const mongoUri = mongoServer.getUri();
+    const memoryMongoUri = mongoServer.getUri();
 
     if (!cache.promise) {
-      cache.promise = mongoose.connect(mongoUri, {
+      cache.promise = mongoose.connect(memoryMongoUri, {
         bufferCommands: false,
       });
     }
@@ -60,12 +82,12 @@ export async function connectToDatabase() {
   }
 
   if (!hasConfiguredMongoUri()) {
-    throw new Error('MONGODB_URI is not configured with a real database connection');
+    throw new Error('MongoDB connection string is not configured. Set MONGODB_URI, MONGODB_URL, or mongodb_url.');
   }
 
   if (!cache.promise) {
-    cache.promise = mongoose.connect(String(process.env.MONGODB_URI).trim(), {
-      dbName: process.env.MONGODB_DB,
+    cache.promise = mongoose.connect(mongoUri, {
+      dbName: mongoDbName || undefined,
       bufferCommands: false,
     });
   }
