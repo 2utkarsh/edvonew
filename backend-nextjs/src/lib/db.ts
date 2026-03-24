@@ -8,32 +8,54 @@ declare global {
 const cache = global.mongooseCache || { conn: null, promise: null };
 global.mongooseCache = cache;
 
+const MONGO_URI_ENV_KEYS = [
+  'MONGODB_URI',
+  'MONGODB_URL',
+  'MONGO_URI',
+  'MONGO_URL',
+  'DATABASE_URL',
+  'DATABASE_URI',
+  'mongodb_uri',
+  'mongodb_url',
+  'mongo_uri',
+  'mongo_url',
+] as const;
+
+const MONGO_DB_ENV_KEYS = [
+  'MONGODB_DB',
+  'MONGODB_DATABASE',
+  'DATABASE_NAME',
+  'DB_NAME',
+  'mongodb_db',
+] as const;
+
+function getFirstConfiguredEnvValue(keys: readonly string[]) {
+  for (const key of keys) {
+    const value = String(process.env[key] || '').trim();
+    if (value) {
+      return value;
+    }
+  }
+
+  return '';
+}
+
 function getMongoUri() {
-  return String(
-    process.env.MONGODB_URI ||
-      process.env.MONGODB_URL ||
-      process.env.mongodb_url ||
-      process.env.MONGO_URL ||
-      ''
-  ).trim();
+  return getFirstConfiguredEnvValue(MONGO_URI_ENV_KEYS);
 }
 
 function getMongoDbName() {
-  return String(
-    process.env.MONGODB_DB ||
-      process.env.MONGODB_DATABASE ||
-      process.env.mongodb_db ||
-      ''
-  ).trim();
+  return getFirstConfiguredEnvValue(MONGO_DB_ENV_KEYS);
 }
 
 function isPlaceholderMongoUri(value: string) {
+  const normalizedValue = value.trim();
+
   return (
-    !value ||
-    value === 'memory' ||
-    /USERNAME/i.test(value) ||
-    /PASSWORD/i.test(value) ||
-    /<db_password>/i.test(value)
+    !normalizedValue ||
+    normalizedValue === 'memory' ||
+    /<db_password>/i.test(normalizedValue) ||
+    /mongodb(?:\+srv)?:\/\/username:password@/i.test(normalizedValue)
   );
 }
 
@@ -83,7 +105,7 @@ export async function connectToDatabase() {
 
   if (!hasConfiguredMongoUri()) {
     const deploymentHint = process.env.VERCEL
-      ? ' In Vercel, add MONGODB_URI in Project Settings > Environment Variables.'
+      ? " In Vercel, add MONGODB_URI, MONGO_URI, or DATABASE_URL in the backend project's Project Settings > Environment Variables."
       : '';
 
     throw new Error(`MongoDB connection string is not configured. Set MONGODB_URI.${deploymentHint}`);
