@@ -194,7 +194,7 @@
         <div class='head'>
           <div>
             <h2>Catalog</h2>
-            <p>Manage current courses, import earlier catalog items, and control public order from admin.</p>
+            <p>Manage current courses, import earlier catalog items, and control the full single-course page experience from admin.</p>
           </div>
           <div class='acts'>
             <button class='btn' type='button' onclick='shuffleCourses()'>Shuffle</button>
@@ -219,7 +219,7 @@
         <div class='head'>
           <div>
             <h2 id='editorTitle'>Create Course</h2>
-            <p id='editorText'>Create, edit, reorder, and fully manage the dynamic course detail experience from one place.</p>
+            <p id='editorText'>Create, edit, reorder, and manage the hero, pricing, curriculum, mentors, testimonials, FAQs, and certificates for the full course page from one place.</p>
           </div>
           <div class='acts'>
             <button class='btn' type='button' onclick='courseReset()'>Reset</button>
@@ -266,7 +266,7 @@
           </div>
 
           <div class='section'>
-            <h3>Learning and Outcomes</h3>
+            <h3>Hero and Outcomes</h3>
             <div class='grid2'>
               <div class='field'><label>What Students Learn</label><textarea id='cLearn' placeholder='One point per line'></textarea></div>
               <div class='field'><label>Requirements</label><textarea id='cReq' placeholder='One point per line'></textarea></div>
@@ -275,13 +275,13 @@
             </div>
           </div>
 
-          <div class='section'><div class='head'><div><h3>Recorded Module Rows</h3><p class='hint'>Create, edit, shuffle, and remove recorded module rows that power the student learning workspace.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('currBody')">Shuffle</button><button class='btn' type='button' onclick='addCurr()'>Add Row</button></div></div><div class='minit'><table><thead><tr><th>Subject</th><th>Module</th><th>Lecture</th><th>Duration</th><th>Type</th><th>Free</th><th>Video / Resource</th><th>Actions</th></tr></thead><tbody id='currBody'></tbody></table></div></div>
+          <div class='section'><div class='head'><div><h3>Recorded Module Rows</h3><p class='hint'>Create, edit, shuffle, and remove curriculum rows shown on the single course page and in the learner workspace.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('currBody')">Shuffle</button><button class='btn' type='button' onclick='addCurr()'>Add Row</button></div></div><div class='minit'><table><thead><tr><th>Subject</th><th>Module</th><th>Lecture</th><th>Duration</th><th>Type</th><th>Free</th><th>Video / Resource</th><th>Actions</th></tr></thead><tbody id='currBody'></tbody></table></div></div>
           <div class='section'><div class='head'><div><h3>Live Sessions</h3><p class='hint'>Manage live schedule, host, meeting link, and ordering here.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('sessionBody')">Shuffle</button><button class='btn' type='button' onclick='addSession()'>Add Session</button></div></div><div class='minit'><table><thead><tr><th>Title</th><th>Start</th><th>End</th><th>Host</th><th>Join Link</th><th>Status</th><th>Actions</th></tr></thead><tbody id='sessionBody'></tbody></table></div></div>
-          <div class='section'><div class='head'><div><h3>Plans</h3><p class='hint'>Create, edit, shuffle, and delete pricing plans and plan features.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('planBody')">Shuffle</button><button class='btn' type='button' onclick='addPlan()'>Add Plan</button></div></div><div class='minit'><table><thead><tr><th>Name</th><th>Price</th><th>Recommended</th><th>Features</th><th>Actions</th></tr></thead><tbody id='planBody'></tbody></table></div></div>
+          <div class='section'><div class='head'><div><h3>Plans</h3><p class='hint'>Create, edit, shuffle, and delete pricing plans and plan features shown in the enroll card and checkout flow.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('planBody')">Shuffle</button><button class='btn' type='button' onclick='addPlan()'>Add Plan</button></div></div><div class='minit'><table><thead><tr><th>Name</th><th>Price</th><th>Recommended</th><th>Features</th><th>Actions</th></tr></thead><tbody id='planBody'></tbody></table></div></div>
           <div class='section'><div class='head'><div><h3>Mentors</h3><p class='hint'>Mentors appear on the course detail page and can be reordered here.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('mentorBody')">Shuffle</button><button class='btn' type='button' onclick='addMentor()'>Add Mentor</button></div></div><div class='minit'><table><thead><tr><th>Name</th><th>Designation</th><th>Company</th><th>Experience</th><th>Image URL</th><th>Actions</th></tr></thead><tbody id='mentorBody'></tbody></table></div></div>
-          <div class='section'><div class='head'><div><h3>FAQs</h3><p class='hint'>Add and reorder frequently asked questions for the public detail page.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('faqBody')">Shuffle</button><button class='btn' type='button' onclick='addFaq()'>Add FAQ</button></div></div><div class='minit'><table><thead><tr><th>Question</th><th>Answer</th><th>Actions</th></tr></thead><tbody id='faqBody'></tbody></table></div></div>
-          <div class='section'><div class='head'><div><h3>Testimonials</h3><p class='hint'>Manage learner proof, social proof, and quote ordering.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('testimonialBody')">Shuffle</button><button class='btn' type='button' onclick='addTestimonial()'>Add Testimonial</button></div></div><div class='minit'><table><thead><tr><th>Name</th><th>Role</th><th>Company</th><th>Rating</th><th>Quote</th><th>Actions</th></tr></thead><tbody id='testimonialBody'></tbody></table></div></div>
-          <div class='section'><div class='head'><div><h3>Certifications</h3><p class='hint'>Add certificate names or badge providers shown on the public course detail page.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('certBody')">Shuffle</button><button class='btn' type='button' onclick='addCertification()'>Add Certification</button></div></div><div class='minit'><table><thead><tr><th>Name</th><th>Provider</th><th>Actions</th></tr></thead><tbody id='certBody'></tbody></table></div></div>
+          <div class='section'><div class='head'><div><h3>FAQs</h3><p class='hint'>Add and reorder frequently asked questions for the single course page.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('faqBody')">Shuffle</button><button class='btn' type='button' onclick='addFaq()'>Add FAQ</button></div></div><div class='minit'><table><thead><tr><th>Question</th><th>Answer</th><th>Actions</th></tr></thead><tbody id='faqBody'></tbody></table></div></div>
+          <div class='section'><div class='head'><div><h3>Testimonials</h3><p class='hint'>Manage learner proof, social proof, and quote ordering for the full course page.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('testimonialBody')">Shuffle</button><button class='btn' type='button' onclick='addTestimonial()'>Add Testimonial</button></div></div><div class='minit'><table><thead><tr><th>Name</th><th>Role</th><th>Company</th><th>Rating</th><th>Quote</th><th>Actions</th></tr></thead><tbody id='testimonialBody'></tbody></table></div></div>
+          <div class='section'><div class='head'><div><h3>Certifications</h3><p class='hint'>Add certificate names or badge providers shown in the full course page sidebar.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('certBody')">Shuffle</button><button class='btn' type='button' onclick='addCertification()'>Add Certification</button></div></div><div class='minit'><table><thead><tr><th>Name</th><th>Provider</th><th>Actions</th></tr></thead><tbody id='certBody'></tbody></table></div></div>
 
           <div class='section'>
             <h3>Certificate and Notifications</h3>

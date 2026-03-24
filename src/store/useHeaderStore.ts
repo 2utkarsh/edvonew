@@ -86,7 +86,7 @@ const defaultConfig: HeaderConfig = {
     leftText: 'Transform Your Career in 2026',
     centerText: 'Live AI Engineering Bootcamp started on 7th March. Recordings Included. Last day to register 13th March.',
     ctaText: 'Know More!',
-    ctaLink: '/courses/ds-gen-ai',
+    ctaLink: '/courses/data-science-with-generative-ai-bootcamp',
     bgColor: '#facc15',
     textColor: '#000000',
   },

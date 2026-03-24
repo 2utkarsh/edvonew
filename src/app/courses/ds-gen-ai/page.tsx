@@ -1,6 +1,5 @@
-import MarketingPage from "@/components/marketing/MarketingPageHomePalette";
-import { getPublicPageConfig } from "@/lib/public-pages";
+import { permanentRedirect } from "next/navigation";
 
 export default function FeaturedCoursePage() {
-  return <MarketingPage config={getPublicPageConfig("courses-ds-gen-ai")} />;
+  permanentRedirect("/courses/data-science-with-generative-ai-bootcamp");
 }

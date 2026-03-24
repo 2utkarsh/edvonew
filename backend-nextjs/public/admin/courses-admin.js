@@ -376,7 +376,7 @@ function ensureSectionRows() {
 function courseNew() {
   courseReset();
   byId('editorTitle').textContent = 'Create Course';
-  byId('editorText').textContent = 'Create, edit, shuffle, and delete every public course detail from one admin editor.';
+  byId('editorText').textContent = 'Create, edit, reorder, and manage the hero, pricing, curriculum, mentors, testimonials, FAQs, and certificates for the full course page.';
   ensureSectionRows();
   renderStudents([]);
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -433,7 +433,7 @@ function editCourse(id) {
   if (!course) return;
   S.selected = id;
   byId('editorTitle').textContent = `Edit ${course.title}`;
-  byId('editorText').textContent = 'Frontend listing, detail page, checkout, student dashboard, and learning workspace read these values.';
+  byId('editorText').textContent = 'Frontend listing, full course page, pricing card, checkout, student dashboard, and learning workspace read these values.';
   byId('courseId').value = course.id || '';
   byId('cOrder').value = course.order || 1;
   byId('cTitle').value = course.title || '';
