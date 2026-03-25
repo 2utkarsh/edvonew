@@ -1,0 +1,29 @@
+port: {{LIVEKIT_WS_PORT}}
+bind_addresses:
+  - {{LIVEKIT_NODE_IP}}
+
+rtc:
+  tcp_port: {{LIVEKIT_RTC_TCP_PORT}}
+  port_range_start: {{LIVEKIT_RTC_UDP_PORT_START}}
+  port_range_end: {{LIVEKIT_RTC_UDP_PORT_END}}
+  use_external_ip: true
+  node_ip: {{LIVEKIT_PUBLIC_IP}}
+
+redis:
+  address: {{LIVEKIT_REDIS_ADDRESS}}
+
+keys:
+  {{LIVEKIT_API_KEY}}: {{LIVEKIT_API_SECRET}}
+
+room:
+  auto_create: true
+  empty_timeout: 300
+  departure_timeout: 20
+
+audio:
+  active_level: 35
+  min_percentile: 40
+  update_interval: 400
+
+logging:
+  level: info
