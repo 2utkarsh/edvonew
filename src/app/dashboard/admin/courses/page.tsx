@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { type LearningDeliveryMode, getDeliveryLabel, resolveModuleDeliveryMode, summarizeDeliveryModes } from '@/lib/learning-delivery';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Plus, Search, Edit2, Trash2, Eye, ChevronDown, ChevronRight,
@@ -35,16 +36,22 @@ interface CoursePlan {
   features: PlanFeature[];
 }
 
+type DeliveryMode = LearningDeliveryMode;
+type LiveSessionStatus = 'scheduled' | 'live' | 'completed';
+
 interface CurriculumLecture {
   id: string;
   title: string;
   isFree: boolean;
+  deliveryMode: DeliveryMode;
+  duration: string;
 }
 
 interface CurriculumModule {
   id: string;
   label: string;
   title: string;
+  deliveryMode: DeliveryMode;
   lectures: CurriculumLecture[];
 }
 
@@ -52,6 +59,20 @@ interface CurriculumSubject {
   id: string;
   name: string;
   modules: CurriculumModule[];
+}
+
+interface CourseLiveSession {
+  id: string;
+  title: string;
+  roomName: string;
+  description: string;
+  hostName: string;
+  startTime: string;
+  duration: string;
+  status: LiveSessionStatus;
+  meetingUrl: string;
+  recordingUrl: string;
+  attendanceRequired: boolean;
 }
 
 interface Mentor {
@@ -70,6 +91,103 @@ interface Offering {
 interface FAQ {
   question: string;
   answer: string;
+}
+
+const deliveryOptions: Array<{ value: DeliveryMode; label: string; note: string }> = [
+  { value: 'recorded', label: 'Recorded only', note: 'Students move through video lessons and recorded assets.' },
+  { value: 'live', label: 'Live only', note: 'Every lesson in the module depends on a live classroom touchpoint.' },
+  { value: 'hybrid', label: 'Blended', note: 'Mix recorded lessons and live sessions inside the same module.' },
+];
+
+function createDefaultCurriculum(): CurriculumSubject[] {
+  return [
+    {
+      id: 'sub1',
+      name: 'Foundation Sprint',
+      modules: [
+        {
+          id: 'mod1',
+          label: 'Module1',
+          title: 'Concepts and Setup',
+          deliveryMode: 'recorded',
+          lectures: [
+            { id: 'l1', title: 'Lecture 1 : Welcome', isFree: true, deliveryMode: 'recorded', duration: '12 min' },
+            { id: 'l2', title: 'Lecture 2 : Environment Setup', isFree: false, deliveryMode: 'recorded', duration: '18 min' },
+          ],
+        },
+        {
+          id: 'mod2',
+          label: 'Module2',
+          title: 'Mentor Kickoff',
+          deliveryMode: 'live',
+          lectures: [
+            { id: 'l3', title: 'Lecture 1 : Live roadmap session', isFree: false, deliveryMode: 'live', duration: '60 min' },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'sub2',
+      name: 'Project Studio',
+      modules: [
+        {
+          id: 'mod3',
+          label: 'Module1',
+          title: 'Portfolio Build Track',
+          deliveryMode: 'hybrid',
+          lectures: [
+            { id: 'l4', title: 'Lecture 1 : Project brief', isFree: false, deliveryMode: 'recorded', duration: '16 min' },
+            { id: 'l5', title: 'Lecture 2 : Live mentor review', isFree: false, deliveryMode: 'live', duration: '75 min' },
+          ],
+        },
+      ],
+    },
+  ];
+}
+
+function createDefaultLiveSessions(): CourseLiveSession[] {
+  return [
+    {
+      id: 'live-1',
+      title: 'Orientation Live Class',
+      roomName: 'edvo-orientation-room',
+      description: 'Kickoff call for roadmap, pacing, and expectations.',
+      hostName: 'Admin Mentor',
+      startTime: '2026-04-05T19:00',
+      duration: '60 mins',
+      status: 'scheduled',
+      meetingUrl: '',
+      recordingUrl: '',
+      attendanceRequired: true,
+    },
+  ];
+}
+
+function getCurriculumOverview(curriculum: CurriculumSubject[], liveSessions: CourseLiveSession[]) {
+  const overview = {
+    modules: 0,
+    lectures: 0,
+    recorded: 0,
+    live: 0,
+    hybrid: 0,
+    liveSessions: liveSessions.length,
+  };
+
+  curriculum.forEach((subject) => {
+    subject.modules.forEach((module) => {
+      overview.modules += 1;
+      module.lectures.forEach((lecture) => {
+        overview.lectures += 1;
+        overview[lecture.deliveryMode] += 1;
+      });
+    });
+  });
+
+  return overview;
+}
+
+function getLaunchPath(roomName: string) {
+  return `/live-classroom/${roomName}`;
 }
 
 // ─── Mock Data ───
@@ -158,23 +276,8 @@ export default function AdminCoursesPage() {
     highestPackage: '6 LPA',
   });
 
-  const [curriculum, setCurriculum] = useState<CurriculumSubject[]>([
-    {
-      id: 'sub1',
-      name: 'Introduction',
-      modules: [
-        {
-          id: 'mod1',
-          label: 'Module1',
-          title: 'Getting Started',
-          lectures: [
-            { id: 'l1', title: 'Lecture 1 : Welcome', isFree: true },
-          ],
-        },
-      ],
-    },
-  ]);
-
+  const [curriculum, setCurriculum] = useState<CurriculumSubject[]>(createDefaultCurriculum());
+  const [liveSessions, setLiveSessions] = useState<CourseLiveSession[]>(createDefaultLiveSessions());
   const [mentors, setMentors] = useState<Mentor[]>([]);
   const [plans, setPlans] = useState<CoursePlan[]>(defaultPlans);
   const [offerings, setOfferings] = useState<Offering[]>(defaultOfferings);
@@ -201,7 +304,8 @@ export default function AdminCoursesPage() {
       jobAssistance: true, bannerTag: 'EDVO SKILLS', hiringPartners: '350+',
       careerTransitions: '120+', highestPackage: '6 LPA',
     });
-    setCurriculum([{ id: 'sub1', name: 'Introduction', modules: [{ id: 'mod1', label: 'Module1', title: 'Getting Started', lectures: [{ id: 'l1', title: 'Lecture 1 : Welcome', isFree: true }] }] }]);
+    setCurriculum(createDefaultCurriculum());
+    setLiveSessions(createDefaultLiveSessions());
     setMentors([]);
     setPlans(defaultPlans);
     setOfferings(defaultOfferings);
@@ -220,6 +324,8 @@ export default function AdminCoursesPage() {
         duration: '8 months', delivery: 'Live', language: 'Hinglish', jobAssistance: true,
         bannerTag: 'EDVO SKILLS', hiringPartners: '350+', careerTransitions: '120+', highestPackage: '6 LPA',
       });
+      setCurriculum(createDefaultCurriculum());
+      setLiveSessions(createDefaultLiveSessions());
       setEditingCourseId(courseId);
       setActiveTab('general');
       setViewMode('editor');
@@ -282,6 +388,7 @@ export default function AdminCoursesPage() {
             id: `mod-${Date.now()}`,
             label: `Module${modNum}`,
             title: 'New Module',
+            deliveryMode: 'recorded',
             lectures: [],
           }],
         };
@@ -300,7 +407,13 @@ export default function AdminCoursesPage() {
               const lecNum = m.lectures.length + 1;
               return {
                 ...m,
-                lectures: [...m.lectures, { id: `l-${Date.now()}`, title: `Lecture ${lecNum} : New Lecture`, isFree: false }],
+                lectures: [...m.lectures, {
+                  id: `l-${Date.now()}`,
+                  title: `Lecture ${lecNum} : New Lecture`,
+                  isFree: false,
+                  deliveryMode: m.deliveryMode === 'hybrid' ? 'recorded' : m.deliveryMode,
+                  duration: m.deliveryMode === 'live' ? '60 min' : '12 min',
+                }],
               };
             }
             return m;
@@ -340,6 +453,70 @@ export default function AdminCoursesPage() {
       return s;
     }));
   };
+  const updateModuleDeliveryMode = (subjectId: string, moduleId: string, mode: DeliveryMode) => {
+    setCurriculum(curriculum.map((subject) => {
+      if (subject.id !== subjectId) return subject;
+      return {
+        ...subject,
+        modules: subject.modules.map((module) => {
+          if (module.id !== moduleId) return module;
+          return {
+            ...module,
+            deliveryMode: mode,
+            lectures: module.lectures.map((lecture) => ({
+              ...lecture,
+              deliveryMode: mode === 'hybrid' ? lecture.deliveryMode : mode,
+            })),
+          };
+        }),
+      };
+    }));
+  };
+
+  const updateLectureDeliveryMode = (subjectId: string, moduleId: string, lectureId: string, mode: DeliveryMode) => {
+    setCurriculum(curriculum.map((subject) => {
+      if (subject.id !== subjectId) return subject;
+      return {
+        ...subject,
+        modules: subject.modules.map((module) => {
+          if (module.id !== moduleId) return module;
+          return {
+            ...module,
+            lectures: module.lectures.map((lecture) => lecture.id === lectureId ? { ...lecture, deliveryMode: mode } : lecture),
+          };
+        }),
+      };
+    }));
+  };
+
+  const addLiveSession = () => {
+    setLiveSessions([
+      ...liveSessions,
+      {
+        id: `live-${Date.now()}`,
+        title: 'New Live Session',
+        roomName: `edvo-room-${Date.now().toString().slice(-6)}`,
+        description: '',
+        hostName: '',
+        startTime: '2026-04-10T19:00',
+        duration: '60 mins',
+        status: 'scheduled',
+        meetingUrl: '',
+        recordingUrl: '',
+        attendanceRequired: true,
+      },
+    ]);
+  };
+
+  const updateLiveSession = <K extends keyof CourseLiveSession>(sessionId: string, key: K, value: CourseLiveSession[K]) => {
+    setLiveSessions(liveSessions.map((session) => session.id === sessionId ? { ...session, [key]: value } : session));
+  };
+
+  const removeLiveSession = (sessionId: string) => {
+    setLiveSessions(liveSessions.filter((session) => session.id !== sessionId));
+  };
+
+  const curriculumOverview = getCurriculumOverview(curriculum, liveSessions);
 
   // ─── Mentor handlers ───
   const addMentor = () => {
@@ -861,6 +1038,132 @@ export default function AdminCoursesPage() {
               </button>
             </div>
 
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <div className="rounded-2xl border border-indigo-100 bg-indigo-50 p-4 dark:border-indigo-500/20 dark:bg-indigo-500/10">
+                <div className="text-sm font-semibold text-indigo-700 dark:text-indigo-300">Modules</div>
+                <div className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{curriculumOverview.modules}</div>
+                <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">Admin can decide per module if it is recorded, live, or blended.</p>
+              </div>
+              <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-4 dark:border-emerald-500/20 dark:bg-emerald-500/10">
+                <div className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Recorded lessons</div>
+                <div className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{curriculumOverview.recorded}</div>
+                <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">Recorded lessons auto-complete on the student side once opened.</p>
+              </div>
+              <div className="rounded-2xl border border-sky-100 bg-sky-50 p-4 dark:border-sky-500/20 dark:bg-sky-500/10">
+                <div className="text-sm font-semibold text-sky-700 dark:text-sky-300">Live touchpoints</div>
+                <div className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{curriculumOverview.live}</div>
+                <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">Live completion logic can be attached later without changing the module map.</p>
+              </div>
+              <div className="rounded-2xl border border-amber-100 bg-amber-50 p-4 dark:border-amber-500/20 dark:bg-amber-500/10">
+                <div className="text-sm font-semibold text-amber-700 dark:text-amber-300">Scheduled sessions</div>
+                <div className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{curriculumOverview.liveSessions}</div>
+                <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">Use the classroom block below to control join URLs and recordings.</p>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <div className="flex items-start gap-3">
+                <div className="rounded-2xl bg-indigo-100 p-2 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300">
+                  <Video className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-base font-semibold text-gray-900 dark:text-white">Learning flow rules</h4>
+                  <p className="mt-1 text-sm text-gray-600 dark:text-slate-400">
+                    Set a whole module to recorded-only, live-only, or switch it to blended when you want different lesson types inside the same module.
+                    Recorded lessons are already prepared to auto-mark complete for students. Live completion can be layered in later.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h4 className="text-base font-semibold text-gray-900 dark:text-white">Live classroom control</h4>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">Scheduling flow adapted from the live-class tool so admin can manage room names, launch links, and recordings per course.</p>
+                </div>
+                <button
+                  onClick={addLiveSession}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Live Session
+                </button>
+              </div>
+
+              <div className="mt-5 space-y-4">
+                {liveSessions.map((session) => (
+                  <div key={session.id} className="rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-slate-800 dark:bg-slate-950/60">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <div className="text-sm font-semibold text-gray-900 dark:text-white">{session.title || 'Untitled live session'}</div>
+                        <div className="mt-1 text-xs uppercase tracking-[0.22em] text-gray-400">Launch path {getLaunchPath(session.roomName || 'room-name')}</div>
+                      </div>
+                      <button
+                        onClick={() => removeLiveSession(session.id)}
+                        className="text-gray-400 hover:text-red-500 p-1 rounded transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <div className="mt-4 grid gap-4 lg:grid-cols-2">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Session title</label>
+                        <input type="text" value={session.title} onChange={(e) => updateLiveSession(session.id, 'title', e.target.value)} placeholder="Orientation live class" className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Host name</label>
+                        <input type="text" value={session.hostName} onChange={(e) => updateLiveSession(session.id, 'hostName', e.target.value)} placeholder="Admin mentor" className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Room name</label>
+                        <input type="text" value={session.roomName} onChange={(e) => updateLiveSession(session.id, 'roomName', e.target.value)} placeholder="edvo-room-001" className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start time</label>
+                        <input type="datetime-local" value={session.startTime} onChange={(e) => updateLiveSession(session.id, 'startTime', e.target.value)} className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Duration</label>
+                        <input type="text" value={session.duration} onChange={(e) => updateLiveSession(session.id, 'duration', e.target.value)} placeholder="60 mins" className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                        <select value={session.status} onChange={(e) => updateLiveSession(session.id, 'status', e.target.value as LiveSessionStatus)} className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white">
+                          <option value="scheduled">Scheduled</option>
+                          <option value="live">Live now</option>
+                          <option value="completed">Completed</option>
+                        </select>
+                      </div>
+                      <div className="lg:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                        <textarea value={session.description} onChange={(e) => updateLiveSession(session.id, 'description', e.target.value)} rows={2} placeholder="Tell students what happens in this session" className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm resize-none dark:border-slate-700 dark:bg-slate-900 dark:text-white" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Meeting URL</label>
+                        <input type="text" value={session.meetingUrl} onChange={(e) => updateLiveSession(session.id, 'meetingUrl', e.target.value)} placeholder="Paste the live classroom or Zoom link" className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Recording URL</label>
+                        <input type="text" value={session.recordingUrl} onChange={(e) => updateLiveSession(session.id, 'recordingUrl', e.target.value)} placeholder="Attach the recording once class is done" className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white" />
+                      </div>
+                    </div>
+
+                    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-dashed border-gray-300 px-3 py-3 dark:border-slate-700">
+                      <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-300">
+                        <input type="checkbox" checked={session.attendanceRequired} onChange={(e) => updateLiveSession(session.id, 'attendanceRequired', e.target.checked)} className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+                        Attendance required
+                      </label>
+                      <div className="text-xs text-gray-500 dark:text-slate-400">
+                        Suggested in-app launcher: <span className="font-medium text-gray-700 dark:text-slate-200">{getLaunchPath(session.roomName || 'room-name')}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {curriculum.map((subject, sIndex) => (
               <div key={subject.id} className="bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 overflow-hidden shadow-sm">
                 {/* Subject header */}
@@ -897,23 +1200,47 @@ export default function AdminCoursesPage() {
 
                 {/* Modules */}
                 <div className="divide-y divide-gray-100 dark:divide-slate-800">
-                  {subject.modules.map((module, mIndex) => (
+                  {subject.modules.map((module, mIndex) => {
+                    const moduleMix = summarizeDeliveryModes(module.lectures);
+                    const moduleMode = resolveModuleDeliveryMode(module);
+                    return (
                     <div key={module.id} className="px-6 py-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <GripVertical className="w-4 h-4 text-gray-300 dark:text-gray-600 cursor-grab" />
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-orange-500 font-bold uppercase">{module.label}</span>
-                            <input
-                              type="text"
-                              value={module.title}
-                              onChange={(e) => {
-                                const updated = [...curriculum];
-                                updated[sIndex].modules[mIndex].title = e.target.value;
-                                setCurriculum(updated);
-                              }}
-                              className="font-bold text-gray-800 dark:text-gray-200 border-none focus:outline-none focus:ring-0 bg-transparent"
-                            />
+                      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+                        <div className="flex items-start gap-3">
+                          <GripVertical className="w-4 h-4 text-gray-300 dark:text-gray-600 cursor-grab mt-2" />
+                          <div className="space-y-3">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="text-xs text-orange-500 font-bold uppercase">{module.label}</span>
+                              <input
+                                type="text"
+                                value={module.title}
+                                onChange={(e) => {
+                                  const updated = [...curriculum];
+                                  updated[sIndex].modules[mIndex].title = e.target.value;
+                                  setCurriculum(updated);
+                                }}
+                                className="font-bold text-gray-800 dark:text-gray-200 border-none focus:outline-none focus:ring-0 bg-transparent"
+                              />
+                              <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-semibold text-gray-700 dark:bg-slate-800 dark:text-slate-200">{getDeliveryLabel(moduleMode)}</span>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <select
+                                value={module.deliveryMode}
+                                onChange={(e) => updateModuleDeliveryMode(subject.id, module.id, e.target.value as DeliveryMode)}
+                                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                              >
+                                {deliveryOptions.map((option) => (
+                                  <option key={option.value} value={option.value}>{option.label}</option>
+                                ))}
+                              </select>
+                              <span className="text-xs text-gray-500 dark:text-slate-400">{deliveryOptions.find((option) => option.value === module.deliveryMode)?.note}</span>
+                            </div>
+                            <div className="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-slate-400">
+                              <span className="rounded-full bg-gray-100 px-2.5 py-1 dark:bg-slate-800">{module.lectures.length} lessons</span>
+                              {moduleMix.recorded > 0 ? <span className="rounded-full bg-gray-100 px-2.5 py-1 dark:bg-slate-800">{moduleMix.recorded} recorded</span> : null}
+                              {moduleMix.live > 0 ? <span className="rounded-full bg-gray-100 px-2.5 py-1 dark:bg-slate-800">{moduleMix.live} live</span> : null}
+                              {moduleMix.hybrid > 0 ? <span className="rounded-full bg-gray-100 px-2.5 py-1 dark:bg-slate-800">{moduleMix.hybrid} blended</span> : null}
+                            </div>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
@@ -936,42 +1263,73 @@ export default function AdminCoursesPage() {
                       {/* Lectures */}
                       <div className="ml-7 space-y-2">
                         {module.lectures.map((lecture, lIndex) => (
-                          <div key={lecture.id} className="flex items-center gap-3 group">
-                            <GripVertical className="w-3 h-3 text-gray-300 cursor-grab opacity-0 group-hover:opacity-100 transition-opacity" />
-                            <input
-                              type="text"
-                              value={lecture.title}
-                              onChange={(e) => {
-                                const updated = [...curriculum];
-                                updated[sIndex].modules[mIndex].lectures[lIndex].title = e.target.value;
-                                setCurriculum(updated);
-                              }}
-                              className="flex-1 text-sm text-gray-600 dark:text-gray-300 border border-transparent hover:border-gray-200 dark:hover:border-slate-700 focus:border-indigo-300 px-2 py-1.5 rounded focus:outline-none focus:ring-1 focus:ring-indigo-200 bg-transparent"
-                            />
-                            <label className="flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={lecture.isFree}
-                                onChange={(e) => {
-                                  const updated = [...curriculum];
-                                  updated[sIndex].modules[mIndex].lectures[lIndex].isFree = e.target.checked;
-                                  setCurriculum(updated);
-                                }}
-                                className="w-3.5 h-3.5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                              />
-                              Free
-                            </label>
-                            <button
-                              onClick={() => removeLecture(subject.id, module.id, lecture.id)}
-                              className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all p-0.5"
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </button>
+                          <div key={lecture.id} className="rounded-xl border border-gray-200 bg-white p-3 group dark:border-slate-800 dark:bg-slate-950/50">
+                            <div className="flex flex-col gap-3 xl:flex-row xl:items-center">
+                              <div className="flex items-center gap-3 xl:flex-1">
+                                <GripVertical className="w-3 h-3 text-gray-300 cursor-grab opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <input
+                                  type="text"
+                                  value={lecture.title}
+                                  onChange={(e) => {
+                                    const updated = [...curriculum];
+                                    updated[sIndex].modules[mIndex].lectures[lIndex].title = e.target.value;
+                                    setCurriculum(updated);
+                                  }}
+                                  className="flex-1 text-sm text-gray-600 dark:text-gray-300 border border-transparent hover:border-gray-200 dark:hover:border-slate-700 focus:border-indigo-300 px-2 py-1.5 rounded focus:outline-none focus:ring-1 focus:ring-indigo-200 bg-transparent"
+                                />
+                              </div>
+                              <div className="flex flex-wrap items-center gap-2 xl:justify-end">
+                                <select
+                                  value={lecture.deliveryMode}
+                                  disabled={module.deliveryMode !== 'hybrid'}
+                                  onChange={(e) => updateLectureDeliveryMode(subject.id, module.id, lecture.id, e.target.value as DeliveryMode)}
+                                  className="px-2.5 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                                >
+                                  {deliveryOptions.map((option) => (
+                                    <option key={option.value} value={option.value}>{option.label}</option>
+                                  ))}
+                                </select>
+                                <input
+                                  type="text"
+                                  value={lecture.duration}
+                                  onChange={(e) => {
+                                    const updated = [...curriculum];
+                                    updated[sIndex].modules[mIndex].lectures[lIndex].duration = e.target.value;
+                                    setCurriculum(updated);
+                                  }}
+                                  placeholder="12 min"
+                                  className="w-24 px-2.5 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                                />
+                                <label className="flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer">
+                                  <input
+                                    type="checkbox"
+                                    checked={lecture.isFree}
+                                    onChange={(e) => {
+                                      const updated = [...curriculum];
+                                      updated[sIndex].modules[mIndex].lectures[lIndex].isFree = e.target.checked;
+                                      setCurriculum(updated);
+                                    }}
+                                    className="w-3.5 h-3.5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                  />
+                                  Free
+                                </label>
+                                <button
+                                  onClick={() => removeLecture(subject.id, module.id, lecture.id)}
+                                  className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all p-0.5"
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </div>
+                            {module.deliveryMode !== 'hybrid' ? (
+                              <div className="mt-2 text-[11px] text-gray-500 dark:text-slate-400">Switch the module to Blended if you want lesson-level delivery control.</div>
+                            ) : null}
                           </div>
                         ))}
                       </div>
                     </div>
-                  ))}
+                  );
+                  })}
                 </div>
 
                 {subject.modules.length === 0 && (
