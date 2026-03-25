@@ -4,7 +4,7 @@ import {
   isAdminCourseDemoError,
   updateAdminCourseDemoCourse,
 } from '@/lib/admin-course-demo-store';
-import { requireAuth } from '@/lib/auth';
+import { requireAdminOrDemo } from '@/lib/demo-admin';
 import { buildEnrollmentSnapshot, flattenCurriculumRows, normalizeCoursePayload } from '@/lib/course-runtime';
 import { syncCourseCategoryCounts } from '@/lib/course-category-counts';
 import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
@@ -13,10 +13,10 @@ import { slugify } from '@/lib/query';
 import { CourseModel } from '@/models/Course';
 import { EnrollmentModel } from '@/models/Enrollment';
 
-export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const auth = await requireAuth(['admin']);
-    if ('error' in auth) return auth.error;
+    const denied = await requireAdminOrDemo(request);
+    if (denied) return denied;
 
     const { id } = await params;
 
@@ -83,8 +83,8 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const auth = await requireAuth(['admin']);
-    if ('error' in auth) return auth.error;
+    const denied = await requireAdminOrDemo(request);
+    if (denied) return denied;
 
     const { id } = await params;
     const body = await request.json();
@@ -145,10 +145,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
 }
 
-export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const auth = await requireAuth(['admin']);
-    if ('error' in auth) return auth.error;
+    const denied = await requireAdminOrDemo(request);
+    if (denied) return denied;
 
     const { id } = await params;
 

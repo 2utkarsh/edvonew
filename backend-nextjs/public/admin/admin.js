@@ -21,6 +21,7 @@ async function adminFetch(url, options = {}) {
   const token = localStorage.getItem('adminToken');
   const headers = {
     Accept: 'application/json',
+    'X-Admin-Demo': 'true',
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...(options.body ? { 'Content-Type': 'application/json' } : {}),
     ...(options.headers || {}),

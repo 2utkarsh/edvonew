@@ -3,7 +3,7 @@ import {
   getAdminCourseDemoPayload,
   isAdminCourseDemoError,
 } from '@/lib/admin-course-demo-store';
-import { requireAuth } from '@/lib/auth';
+import { requireAdminOrDemo } from '@/lib/demo-admin';
 import { buildEnrollmentSnapshot, flattenCurriculumRows, normalizeCoursePayload } from '@/lib/course-runtime';
 import { syncCourseCategoryCounts } from '@/lib/course-category-counts';
 import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
@@ -18,10 +18,10 @@ function fallbackResponse() {
   return toResponse(ok(getAdminCourseDemoPayload()));
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const auth = await requireAuth(['admin']);
-    if ('error' in auth) return auth.error;
+    const denied = await requireAdminOrDemo(request);
+    if (denied) return denied;
 
     if (!hasConfiguredMongoUri()) {
       return fallbackResponse();
@@ -116,8 +116,8 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const auth = await requireAuth(['admin']);
-    if ('error' in auth) return auth.error;
+    const denied = await requireAdminOrDemo(request);
+    if (denied) return denied;
 
     const body = await request.json();
 

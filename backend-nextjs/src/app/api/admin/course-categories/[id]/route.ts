@@ -4,7 +4,7 @@ import {
   isAdminCourseDemoError,
   updateAdminCourseDemoCategory,
 } from '@/lib/admin-course-demo-store';
-import { requireAuth } from '@/lib/auth';
+import { requireAdminOrDemo } from '@/lib/demo-admin';
 import { syncCourseCategoryCounts } from '@/lib/course-category-counts';
 import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { fail, handleError, ok, toResponse } from '@/lib/http';
@@ -12,10 +12,10 @@ import { slugify } from '@/lib/query';
 import { CourseModel } from '@/models/Course';
 import { CourseCategoryModel } from '@/models/CourseCategory';
 
-export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const auth = await requireAuth(['admin']);
-    if ('error' in auth) return auth.error;
+    const denied = await requireAdminOrDemo(request);
+    if (denied) return denied;
 
     const { id } = await params;
 
@@ -38,8 +38,8 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const auth = await requireAuth(['admin']);
-    if ('error' in auth) return auth.error;
+    const denied = await requireAdminOrDemo(request);
+    if (denied) return denied;
 
     const { id } = await params;
     const body = await request.json();
@@ -93,10 +93,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
 }
 
-export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const auth = await requireAuth(['admin']);
-    if ('error' in auth) return auth.error;
+    const denied = await requireAdminOrDemo(request);
+    if (denied) return denied;
 
     const { id } = await params;
 

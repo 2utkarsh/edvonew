@@ -1,4 +1,4 @@
-﻿import { requireAuth } from '@/lib/auth';
+﻿import { requireAdminOrDemo } from '@/lib/demo-admin';
 import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { bootstrapLegacyCourseCatalog } from '@/lib/ensure-legacy-course-catalog';
 import { ok, toResponse } from '@/lib/http';
@@ -46,10 +46,10 @@ function buildFallbackPayload() {
   };
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const auth = await requireAuth(['admin']);
-    if ('error' in auth) return auth.error;
+    const denied = await requireAdminOrDemo(request);
+    if (denied) return denied;
 
     if (!hasConfiguredMongoUri()) {
       return toResponse(ok(buildFallbackPayload()));

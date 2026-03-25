@@ -1,4 +1,4 @@
-import { requireAuth } from '@/lib/auth';
+import { requireAdminOrDemo } from '@/lib/demo-admin';
 import { syncCourseCategoryCounts } from '@/lib/course-category-counts';
 import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import {
@@ -16,10 +16,10 @@ function fallbackResponse() {
   return toResponse(ok(importLegacyAdminCourseDemoCatalog()));
 }
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
-    const auth = await requireAuth(['admin']);
-    if ('error' in auth) return auth.error;
+    const denied = await requireAdminOrDemo(request);
+    if (denied) return denied;
 
     if (!hasConfiguredMongoUri()) {
       return fallbackResponse();

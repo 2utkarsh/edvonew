@@ -2,15 +2,15 @@ import {
   getAdminCourseDemoPaymentSettings,
   saveAdminCourseDemoPaymentSettings,
 } from '@/lib/admin-course-demo-store';
-import { requireAuth } from '@/lib/auth';
+import { requireAdminOrDemo } from '@/lib/demo-admin';
 import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { handleError, ok, toResponse } from '@/lib/http';
 import { getPaymentGatewaySettings, savePaymentGatewaySettings } from '@/lib/system-settings';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const auth = await requireAuth(['admin']);
-    if ('error' in auth) return auth.error;
+    const denied = await requireAdminOrDemo(request);
+    if (denied) return denied;
 
     if (!hasConfiguredMongoUri()) {
       return toResponse(ok(getAdminCourseDemoPaymentSettings()));
@@ -25,8 +25,8 @@ export async function GET() {
 
 export async function PATCH(request: Request) {
   try {
-    const auth = await requireAuth(['admin']);
-    if ('error' in auth) return auth.error;
+    const denied = await requireAdminOrDemo(request);
+    if (denied) return denied;
 
     const body = await request.json();
 
