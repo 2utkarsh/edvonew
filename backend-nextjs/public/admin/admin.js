@@ -19,6 +19,11 @@ function checkAuth() {
 
 async function adminFetch(url, options = {}) {
   const token = localStorage.getItem('adminToken');
+  const method = String(options.method || 'GET').toUpperCase();
+  const targetUrl =
+    method === 'GET' && typeof url === 'string'
+      ? `${url}${url.includes('?') ? '&' : '?'}adminv=20260325c`
+      : url;
   const headers = {
     Accept: 'application/json',
     'X-Admin-Demo': 'true',
@@ -27,8 +32,10 @@ async function adminFetch(url, options = {}) {
     ...(options.headers || {}),
   };
 
-  const response = await fetch(url, {
+  const response = await fetch(targetUrl, {
     ...options,
+    method,
+    cache: method === 'GET' ? 'no-store' : options.cache,
     headers,
   });
 

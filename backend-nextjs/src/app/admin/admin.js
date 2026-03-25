@@ -19,20 +19,32 @@ function checkAuth() {
 }
 
 async function adminFetch(url, options = {}) {
+  const token = localStorage.getItem('adminToken');
+  const method = String(options.method || 'GET').toUpperCase();
+  const targetUrl =
+    method === 'GET' && typeof url === 'string'
+      ? `${url}${url.includes('?') ? '&' : '?'}adminv=20260325c`
+      : url;
   const headers = {
     Accept: 'application/json',
     'X-Admin-Demo': 'true',
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...(options.body ? { 'Content-Type': 'application/json' } : {}),
     ...(options.headers || {}),
   };
 
-  const response = await fetch(url, {
+  const response = await fetch(targetUrl, {
     ...options,
+    method,
+    cache: method === 'GET' ? 'no-store' : options.cache,
     headers,
   });
 
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      logout();
+    }
     throw new Error(payload?.error?.message || payload?.message || 'Request failed');
   }
 
