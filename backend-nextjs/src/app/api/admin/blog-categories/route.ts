@@ -1,3 +1,4 @@
+﻿import { normalizeBlogCategories } from '@/lib/blog-categories';
 import { getFallbackBlogCategories } from '@/lib/content-fallback';
 import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { created, fail, ok, parseJson, toResponse } from '@/lib/http';
@@ -6,12 +7,12 @@ import { BlogCategoryModel, BlogModel } from '@/models/Blog';
 import { requireAdminOrDemo } from '@/lib/demo-admin';
 
 async function ensureBlogCategoriesFromBlogs() {
-  const existingCount = await BlogCategoryModel.countDocuments();
-  if (existingCount > 0) {
-    return;
-  }
+  const [primaryCategories, multiCategories] = await Promise.all([
+    BlogModel.distinct('category', { category: { $exists: true, $ne: '' } }),
+    BlogModel.distinct('categories', { categories: { $exists: true } }),
+  ]);
 
-  const categories = await BlogModel.distinct('category', { category: { $exists: true, $ne: '' } });
+  const categories = normalizeBlogCategories(primaryCategories.concat(multiCategories as any));
   if (!categories.length) {
     return;
   }
@@ -26,7 +27,7 @@ async function ensureBlogCategoriesFromBlogs() {
             slug: slugify(String(name)),
             description: `${String(name)} blog posts`,
             isActive: true,
-            order: index,
+            order: index + 1,
           },
         },
         { upsert: true }

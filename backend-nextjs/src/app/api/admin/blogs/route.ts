@@ -1,3 +1,4 @@
+﻿import { normalizeBlogCategories } from '@/lib/blog-categories';
 import { getFallbackAdminBlogs } from '@/lib/content-fallback';
 import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { created, ok, parseJson, toResponse } from '@/lib/http';
@@ -32,6 +33,9 @@ export async function POST(request: Request) {
 
   const body = parseJson<Record<string, unknown>>(await request.text()) || {};
   const title = String(body.title || 'Untitled Blog');
+  const categories = normalizeBlogCategories(body.categories ?? body.category);
+  const primaryCategory = categories[0] || 'General';
+  const tags = categories.length ? categories : [primaryCategory];
   const authorName = String(body.author || 'EDVO Team');
   const authorEmail = `${authorName.toLowerCase().replace(/[^a-z0-9]+/g, '.').replace(/^\.+|\.+$/g, '')}@edvo.local`;
 
@@ -63,8 +67,9 @@ export async function POST(request: Request) {
     content: String(body.content || body.description || 'New blog content'),
     excerpt: String(body.description || 'New blog description'),
     featuredImage: String(body.thumbnail || '/images/edvo-official-logo-v10.png'),
-    category: String(body.category || 'General'),
-    tags: [String(body.category || 'General')],
+    category: primaryCategory,
+    categories: tags,
+    tags,
     author: author._id,
     status: body.status === 'draft' || body.status === 'archived' ? body.status : 'published',
     order: parseInt(String(body.order || 0), 10) || 0,

@@ -1,4 +1,5 @@
-import { hashPassword } from '@/lib/auth';
+﻿import { hashPassword } from '@/lib/auth';
+import { getBlogCategories, getPrimaryBlogCategory } from '@/lib/blog-categories';
 import { MOCK_BLOGS } from '@/lib/blog-data';
 import { ensureChallengeQuestions, ensurePrizeDistribution, MOCK_CHALLENGES } from '@/lib/challenge-data';
 import { MOCK_COURSE_REVIEWS } from '@/lib/course-review-data';
@@ -31,6 +32,7 @@ export async function ensureSeededContent() {
   const authorIds = new Map<string, string>();
 
   for (const blog of MOCK_BLOGS) {
+    const primaryCategory = getPrimaryBlogCategory(blog);
     const email = authorEmail(blog.author);
     const user = await UserModel.findOneAndUpdate(
       { email },
@@ -43,7 +45,7 @@ export async function ensureSeededContent() {
           isActive: true,
           photo: '/images/edvo-official-logo-v10.png',
           bio: blog.description,
-          headline: blog.category,
+          headline: primaryCategory,
         },
         $setOnInsert: { socialLinks: [], skills: [], enrolledCourses: [], enrolledExams: [], createdCourses: [], createdExams: [] },
       },
@@ -52,15 +54,17 @@ export async function ensureSeededContent() {
     authorIds.set(blog.author, String(user._id));
   }
 
-  const orderedBlogCategories = Array.from(new Set(MOCK_BLOGS.map((blog) => blog.category)));
+  const orderedBlogCategories = Array.from(new Set(MOCK_BLOGS.flatMap((blog) => getBlogCategories(blog))));
   for (const [index, category] of orderedBlogCategories.entries()) {
     await BlogCategoryModel.findOneAndUpdate({ slug: slugify(category) }, { $set: { name: category, slug: slugify(category), description: `${category} blog posts`, isActive: true, order: index + 1 } }, { upsert: true, new: true });
   }
 
   for (const [index, blog] of MOCK_BLOGS.entries()) {
+    const categories = getBlogCategories(blog);
+    const primaryCategory = getPrimaryBlogCategory(blog);
     await BlogModel.findOneAndUpdate(
       { slug: blog.slug },
-      { $set: { title: blog.title, slug: blog.slug, content: blog.content.join('\n\n'), excerpt: blog.description, featuredImage: blog.thumbnail, category: blog.category, tags: [blog.category], author: authorIds.get(blog.author), status: 'published', order: index + 1, readTime: parseInt(blog.readTime, 10) || 5, publishedAt: new Date(blog.date), metaTitle: blog.title, metaDescription: blog.description } },
+      { $set: { title: blog.title, slug: blog.slug, content: blog.content.join('\n\n'), excerpt: blog.description, featuredImage: blog.thumbnail, category: primaryCategory, categories, tags: categories, author: authorIds.get(blog.author), status: 'published', order: index + 1, readTime: parseInt(blog.readTime, 10) || 5, publishedAt: new Date(blog.date), metaTitle: blog.title, metaDescription: blog.description } },
       { upsert: true, new: true }
     );
   }
@@ -208,3 +212,4 @@ export async function ensureSeededContent() {
 
   global.__edvoContentSeeded = true;
 }
+

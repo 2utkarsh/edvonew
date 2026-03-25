@@ -1,4 +1,5 @@
-﻿import { connectToDatabase } from '@/lib/db';
+﻿import { normalizeBlogCategories } from '@/lib/blog-categories';
+import { connectToDatabase } from '@/lib/db';
 import { fail, ok, parseJson, toResponse } from '@/lib/http';
 import { slugify } from '@/lib/query';
 import { BlogModel } from '@/models/Blog';
@@ -63,9 +64,14 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
   if (body.description !== undefined) update.excerpt = String(body.description || '');
   if (body.content !== undefined) update.content = String(body.content || '');
-  if (body.category) {
-    update.category = String(body.category);
-    update.tags = [String(body.category)];
+  if (body.categories !== undefined || body.category !== undefined) {
+    const categories = normalizeBlogCategories(body.categories ?? body.category);
+    const primaryCategory = categories[0] || 'General';
+    const tags = categories.length ? categories : [primaryCategory];
+
+    update.category = primaryCategory;
+    update.categories = tags;
+    update.tags = tags;
   }
   if (body.thumbnail) update.featuredImage = String(body.thumbnail);
   if (body.status) update.status = String(body.status);

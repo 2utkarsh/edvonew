@@ -7,6 +7,7 @@ export interface BlogDocument {
   excerpt?: string;
   featuredImage?: string;
   category: string;
+  categories?: string[];
   tags: string[];
   author: Types.ObjectId;
   status: 'draft' | 'published' | 'archived';
@@ -28,6 +29,7 @@ const blogSchema = new Schema<BlogDocument>(
     excerpt: String,
     featuredImage: String,
     category: { type: String, required: true },
+    categories: { type: [String], default: [] },
     tags: [String],
     author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     status: { 
@@ -72,4 +74,3 @@ const blogCategorySchema = new Schema<BlogCategoryDocument>(
 
 export const BlogCategoryModel = (models.BlogCategory as Model<BlogCategoryDocument>) ||
   model<BlogCategoryDocument>('BlogCategory', blogCategorySchema);
-

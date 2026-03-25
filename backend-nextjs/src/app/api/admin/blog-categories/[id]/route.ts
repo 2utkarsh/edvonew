@@ -1,4 +1,5 @@
-﻿import { connectToDatabase } from '@/lib/db';
+﻿import { getBlogCategoryFilterQuery } from '@/lib/blog-categories';
+import { connectToDatabase } from '@/lib/db';
 import { fail, ok, parseJson, toResponse } from '@/lib/http';
 import { slugify } from '@/lib/query';
 import { BlogCategoryModel } from '@/models/Blog';
@@ -37,7 +38,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
   const item = await BlogCategoryModel.findById(id).lean();
   if (!item) return toResponse(fail('Blog category not found', 'NOT_FOUND', undefined, 404));
 
-  const blogCount = await (await import('@/models/Blog')).BlogModel.countDocuments({ category: item.name });
+  const blogCount = await (await import('@/models/Blog')).BlogModel.countDocuments(getBlogCategoryFilterQuery(item.name));
   if (blogCount > 0) {
     return toResponse(fail('Cannot delete a category that is used by existing blogs', 'CONFLICT', undefined, 409));
   }

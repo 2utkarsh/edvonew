@@ -1,9 +1,12 @@
+﻿import { getBlogCategories, getPrimaryBlogCategory } from '@/lib/blog-categories';
+
 export interface PublicBlogRecord {
   id: string;
   slug: string;
   title: string;
   description: string;
   category: string;
+  categories?: string[];
   author: string;
   date: string;
   readTime: string;
@@ -155,13 +158,15 @@ export function mapBlogDocumentToPublicBlog(item: any): PublicBlogRecord {
   const content = typeof item.content === 'string' ? item.content : '';
   const paragraphs = splitContent(content);
   const authorName = typeof item.author === 'object' && item.author && 'name' in item.author ? String(item.author.name) : 'EDVO Team';
+  const categories = getBlogCategories(item);
 
   return {
     id: String(item._id || item.id || item.slug),
     slug: String(item.slug || item._id || item.id),
     title: String(item.title || 'Untitled Blog'),
     description: String(item.excerpt || paragraphs[0] || 'Explore this EDVO resource article.'),
-    category: String(item.category || 'General'),
+    category: getPrimaryBlogCategory(item),
+    categories,
     author: authorName,
     date: formatDate(item.publishedAt || item.updatedAt || item.createdAt),
     readTime: String(item.readTime ? `${item.readTime} min read` : estimateReadTime(content)),
@@ -174,3 +179,4 @@ export function mapBlogDocumentToPublicBlog(item: any): PublicBlogRecord {
 export function getMockBlogBySlugOrId(value: string) {
   return MOCK_BLOGS.find((blog) => blog.slug === value || blog.id === value) || null;
 }
+

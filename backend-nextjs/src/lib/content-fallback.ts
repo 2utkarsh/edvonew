@@ -1,3 +1,4 @@
+﻿import { getBlogCategories } from '@/lib/blog-categories';
 import { getMockBlogBySlugOrId, MOCK_BLOGS } from '@/lib/blog-data';
 import { MOCK_CHALLENGES } from '@/lib/challenge-data';
 import { MOCK_COURSE_REVIEWS } from '@/lib/course-review-data';
@@ -12,7 +13,9 @@ function sortByOrder<T extends { order?: number }>(items: T[]) {
 }
 
 export function getFallbackPublicBlogs(category?: string) {
-  const items = category ? MOCK_BLOGS.filter((blog) => blog.category === category) : MOCK_BLOGS;
+  const items = category
+    ? MOCK_BLOGS.filter((blog) => getBlogCategories(blog).includes(category))
+    : MOCK_BLOGS;
   return items.slice();
 }
 
@@ -28,7 +31,7 @@ export function getFallbackBlogBySlugOrId(value: string) {
 }
 
 export function getFallbackBlogCategories() {
-  return Array.from(new Set(MOCK_BLOGS.map((blog) => blog.category))).map((name, index) => ({
+  return Array.from(new Set(MOCK_BLOGS.flatMap((blog) => getBlogCategories(blog)))).map((name, index) => ({
     id: `blog-category-${slugify(name)}`,
     name,
     slug: slugify(name),
@@ -157,3 +160,4 @@ export function getFallbackEventCategories(type?: string) {
     order: index + 1,
   }));
 }
+

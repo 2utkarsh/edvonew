@@ -1,3 +1,4 @@
+﻿import { getBlogCategoryFilterQuery } from '@/lib/blog-categories';
 import { NextRequest } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { success, fail } from '@/lib/http';
@@ -15,7 +16,7 @@ export async function GET(request: NextRequest) {
 
     const filterQuery: any = { status: 'published' };
     if (category) {
-      filterQuery.category = category;
+      Object.assign(filterQuery, getBlogCategoryFilterQuery(category));
     }
 
     const total = await BlogModel.countDocuments(filterQuery);
@@ -28,9 +29,9 @@ export async function GET(request: NextRequest) {
 
     return success(
       {
-        blogs: blogs.map((b: any) => ({
-          ...b.toObject(),
-          id: b._id.toString(),
+        blogs: blogs.map((blog: any) => ({
+          ...blog,
+          id: blog._id.toString(),
         })),
       },
       'Blogs retrieved successfully',
