@@ -1,3 +1,6 @@
+// Register populated refs before Enrollment queries run in serverless route handlers.
+import '@/models/Certificate';
+import '@/models/Course';
 import { Model, model, models, Schema, Types } from 'mongoose';
 
 const attendanceRecordSchema = new Schema(
