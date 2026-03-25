@@ -3,15 +3,22 @@ services:
     image: redis:7-alpine
     container_name: edvo-livekit-redis
     restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   livekit:
     image: livekit/livekit-server:latest
     container_name: edvo-livekit
     restart: unless-stopped
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
     command:
       - --config
       - /etc/livekit/livekit.yaml
