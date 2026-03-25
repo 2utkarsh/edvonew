@@ -5,6 +5,203 @@ const lines = (value) => String(value || '').split('\n').map((item) => item.trim
 const esc = (value) => String(value || '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
 const attr = (value) => esc(value).replaceAll('`', '&#96;');
 const slugify = (value) => String(value || '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+const INLINE_DOCUMENT_ACCEPT = '.pdf,.doc,.docx,.txt,.ppt,.pptx,.zip,.rar,.csv,.xlsx,.xls,.md,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain';
+const INLINE_VIDEO_ACCEPT = 'video/*,.mp4,.m4v,.mov,.webm,.avi,.mkv';
+const INLINE_UPLOAD_LIMIT_BYTES = 8 * 1024 * 1024;
+
+function isDataUrl(value) {
+  return /^data:/i.test(String(value || '').trim());
+}
+
+function inferAssetSourceFromValue(value, fallback = 'link') {
+  const normalizedValue = String(value || '').trim();
+  if (!normalizedValue) return fallback;
+  return isDataUrl(normalizedValue) ? 'upload' : 'link';
+}
+
+function getCurriculumAssetValue(row = {}) {
+  return String(row.resourceUrl || row.videoUrl || '').trim();
+}
+
+function getCurriculumAssetLabel(row = {}) {
+  return String(row.assetLabel || row.assetName || '').trim();
+}
+
+function createSuggestedRoomName(value) {
+  return slugify(value || '') || `edvo-room-${Date.now().toString().slice(-6)}`;
+}
+
+function getLaunchPath(roomName) {
+  return `/live-classroom/${encodeURIComponent(roomName || 'room-name')}`;
+}
+
+function buildLiveLaunchUrl(session = {}) {
+  const roomName = String(session.roomName || '').trim() || createSuggestedRoomName(session.title || 'live-room');
+  const launchUrl = new URL(getLaunchPath(roomName), window.location.origin);
+  if (session.title) launchUrl.searchParams.set('title', session.title);
+  if (session.hostName) launchUrl.searchParams.set('host', session.hostName);
+  if (session.startTime) launchUrl.searchParams.set('start', session.startTime);
+  if (session.meetingUrl) launchUrl.searchParams.set('meetingUrl', session.meetingUrl);
+  if (session.recordingUrl) launchUrl.searchParams.set('recordingUrl', session.recordingUrl);
+  return launchUrl.toString();
+}
+
+function getLiveRoomTemplate(roomName) {
+  return `https://your-live-domain/rooms/${createSuggestedRoomName(roomName)}`;
+}
+
+function syncCurriculumAssetUi(row) {
+  if (!row) return;
+
+  const contentTypeField = row.querySelector('[data-k="contentType"]');
+  const assetSourceField = row.querySelector('[data-k="assetSource"]');
+  const linkField = row.querySelector('[data-k="assetLink"]');
+  const fileField = row.querySelector('[data-k="assetFile"]');
+  const metaField = row.querySelector('[data-k="assetMeta"]');
+  const linkWrap = row.querySelector('[data-role="asset-link"]');
+  const fileWrap = row.querySelector('[data-role="asset-file"]');
+
+  if (!contentTypeField || !assetSourceField || !linkField || !fileField || !metaField || !linkWrap || !fileWrap) return;
+
+  const contentType = String(contentTypeField.value || 'recorded').toLowerCase();
+  const assetSource = assetSourceField.value === 'upload' ? 'upload' : 'link';
+  const assetKind = contentType === 'recorded' ? 'video' : 'resource';
+  const storedLabel = String(row.dataset.assetLabel || '').trim();
+  const storedValue = String(row.dataset.assetValue || '').trim();
+
+  if (contentType === 'live') {
+    assetSourceField.value = 'link';
+    assetSourceField.disabled = true;
+    linkField.disabled = true;
+    fileField.disabled = true;
+    linkWrap.hidden = true;
+    fileWrap.hidden = true;
+    metaField.className = 'upload-meta warn';
+    metaField.textContent = 'Live rows do not use direct assets. Configure the live room, host URL, and schedule in the Live Sessions section below.';
+    return;
+  }
+
+  assetSourceField.disabled = false;
+  linkField.disabled = false;
+  fileField.disabled = false;
+  linkWrap.hidden = assetSource !== 'link';
+  fileWrap.hidden = assetSource !== 'upload';
+  fileField.accept = assetKind === 'video' ? INLINE_VIDEO_ACCEPT : INLINE_DOCUMENT_ACCEPT;
+  linkField.placeholder = assetKind === 'video' ? 'Paste hosted video URL' : 'Paste resource or download URL';
+
+  if (assetSource === 'upload') {
+    metaField.className = storedValue ? 'upload-meta ready' : 'upload-meta';
+    metaField.textContent = storedValue
+      ? `${storedLabel || `Uploaded ${assetKind}`} saved inline. Use link mode for large files.`
+      : `Upload a ${assetKind} file here. For large files, switch to link mode.`;
+  } else {
+    metaField.className = 'upload-meta';
+    metaField.textContent = assetKind === 'video'
+      ? 'Link mode is best for full course videos hosted on Drive, Vimeo, YouTube, or your CDN.'
+      : 'Link mode is best for PDFs, notes, and other hosted resources.';
+  }
+}
+
+function handleCurriculumFileChange(input) {
+  const row = input.closest('tr');
+  const file = input.files && input.files[0];
+  if (!row || !file) return;
+
+  if (file.size > INLINE_UPLOAD_LIMIT_BYTES) {
+    input.value = '';
+    showToast('Uploads above 8 MB should use link mode to avoid save failures.', 'error');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    if (typeof reader.result === 'string') {
+      row.dataset.assetValue = reader.result;
+      row.dataset.assetLabel = file.name;
+      syncCurriculumAssetUi(row);
+      showToast(`${file.name} attached`, 'success');
+    }
+  };
+  reader.onerror = () => {
+    input.value = '';
+    showToast('Unable to read the selected file', 'error');
+  };
+  reader.readAsDataURL(file);
+}
+
+function collectSessionRow(row) {
+  const title = row.querySelector('[data-k="title"]').value.trim();
+  const roomName = row.querySelector('[data-k="roomName"]').value.trim() || createSuggestedRoomName(title || 'live-room');
+  return {
+    title,
+    startTime: row.querySelector('[data-k="startTime"]').value.trim(),
+    endTime: row.querySelector('[data-k="endTime"]').value.trim(),
+    hostName: row.querySelector('[data-k="hostName"]').value.trim(),
+    roomName,
+    meetingUrl: row.querySelector('[data-k="meetingUrl"]').value.trim(),
+    recordingUrl: row.querySelector('[data-k="recordingUrl"]').value.trim(),
+    status: row.querySelector('[data-k="status"]').value,
+  };
+}
+
+function refreshSessionRow(row) {
+  if (!row) return;
+
+  const session = collectSessionRow(row);
+  const roomField = row.querySelector('[data-k="roomName"]');
+  const titleField = row.querySelector('[data-k="title"]');
+  const meetingField = row.querySelector('[data-k="meetingUrl"]');
+  const noteField = row.querySelector('[data-k="launchNote"]');
+
+  if (!roomField || !titleField || !meetingField || !noteField) return;
+
+  roomField.placeholder = createSuggestedRoomName(titleField.value.trim() || 'live-room');
+  meetingField.placeholder = getLiveRoomTemplate(session.roomName);
+  noteField.textContent = `Launcher ${getLaunchPath(session.roomName)}${session.meetingUrl ? '' : `\nIEDUP room URL format: ${getLiveRoomTemplate(session.roomName)}`}`;
+}
+
+function startLiveSession(button) {
+  const row = button.closest('tr');
+  if (!row) return;
+
+  const roomField = row.querySelector('[data-k="roomName"]');
+  if (roomField && !roomField.value.trim()) {
+    roomField.value = createSuggestedRoomName(row.querySelector('[data-k="title"]').value.trim() || 'live-room');
+  }
+
+  refreshSessionRow(row);
+  const session = collectSessionRow(row);
+  window.open(buildLiveLaunchUrl(session), '_blank', 'noopener,noreferrer');
+
+  if (!session.meetingUrl) {
+    showToast('Launcher opened. Add your IEDUP/LiveKit room URL so the live page can hand off into the meeting.', 'info');
+  }
+}
+
+async function copyLiveLaunch(button) {
+  const row = button.closest('tr');
+  if (!row) return;
+
+  const roomField = row.querySelector('[data-k="roomName"]');
+  if (roomField && !roomField.value.trim()) {
+    roomField.value = createSuggestedRoomName(row.querySelector('[data-k="title"]').value.trim() || 'live-room');
+  }
+
+  refreshSessionRow(row);
+  const launchUrl = buildLiveLaunchUrl(collectSessionRow(row));
+
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(launchUrl);
+      showToast('Launch URL copied', 'success');
+      return;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+
+  window.prompt('Copy this launch URL', launchUrl);
+}
 
 function filterRows() {
   const query = byId('q').value.trim().toLowerCase();
@@ -387,17 +584,31 @@ function courseNew() {
 
 function addCurr(row = {}) {
   const tr = document.createElement('tr');
-  tr.innerHTML = `<td><input data-k='subject' value='${attr(row.subject || '')}'></td><td><input data-k='module' value='${attr(row.module || '')}'></td><td><input data-k='lecture' value='${attr(row.lecture || '')}'></td><td><input data-k='duration' value='${attr(row.duration || '')}'></td><td><select data-k='contentType'><option value='recorded'>Recorded</option><option value='live'>Live</option><option value='resource'>Resource</option><option value='quiz'>Quiz</option></select></td><td><select data-k='isFree'><option value='false'>No</option><option value='true'>Yes</option></select></td><td><input data-k='videoUrl' value='${attr(row.videoUrl || row.resourceUrl || '')}'></td><td>${rowControls()}</td>`;
+  const assetValue = getCurriculumAssetValue(row);
+  const assetSource = String(row.assetSource || inferAssetSourceFromValue(assetValue, 'link')).toLowerCase() === 'upload' ? 'upload' : 'link';
+
+  tr.dataset.assetValue = assetSource === 'upload' ? assetValue : '';
+  tr.dataset.assetLabel = getCurriculumAssetLabel(row);
+  tr.innerHTML = `<td><input data-k='subject' value='${attr(row.subject || '')}'></td><td><input data-k='module' value='${attr(row.module || '')}'></td><td><input data-k='lecture' value='${attr(row.lecture || '')}'></td><td><input data-k='duration' value='${attr(row.duration || '')}'></td><td><select data-k='contentType' onchange='syncCurriculumAssetUi(this.closest("tr"))'><option value='recorded'>Recorded</option><option value='live'>Live</option><option value='resource'>Resource</option><option value='quiz'>Quiz</option></select></td><td><select data-k='isFree'><option value='false'>No</option><option value='true'>Yes</option></select></td><td><div class='asset-stack'><div data-role='asset-source'><select data-k='assetSource' onchange='syncCurriculumAssetUi(this.closest("tr"))'><option value='link'>Link</option><option value='upload'>Upload</option></select></div><div data-role='asset-link'><input data-k='assetLink' value='${attr(assetSource === 'link' ? assetValue : '')}'></div><div data-role='asset-file'><input data-k='assetFile' type='file'></div><div data-k='assetMeta' class='upload-meta'></div></div></td><td>${rowControls()}</td>`;
   byId('currBody').appendChild(tr);
   tr.querySelector('[data-k="contentType"]').value = row.contentType || 'recorded';
   tr.querySelector('[data-k="isFree"]').value = String(Boolean(row.isFree));
+  tr.querySelector('[data-k="assetSource"]').value = assetSource;
+  const assetFileInput = tr.querySelector('[data-k="assetFile"]');
+  assetFileInput.addEventListener('change', () => handleCurriculumFileChange(assetFileInput));
+  syncCurriculumAssetUi(tr);
 }
 
 function addSession(session = {}) {
   const tr = document.createElement('tr');
-  tr.innerHTML = `<td><input data-k='title' value='${attr(session.title || '')}'></td><td><input data-k='startTime' value='${attr(session.startTime || '')}'></td><td><input data-k='endTime' value='${attr(session.endTime || '')}'></td><td><input data-k='hostName' value='${attr(session.hostName || '')}'></td><td><input data-k='meetingUrl' value='${attr(session.meetingUrl || '')}'></td><td><select data-k='status'><option value='scheduled'>Scheduled</option><option value='live'>Live</option><option value='completed'>Completed</option><option value='cancelled'>Cancelled</option></select></td><td>${rowControls()}</td>`;
+  tr.innerHTML = `<td><input data-k='title' value='${attr(session.title || '')}'></td><td><input data-k='startTime' type='datetime-local' value='${attr(session.startTime || '')}'></td><td><input data-k='endTime' type='datetime-local' value='${attr(session.endTime || '')}'></td><td><input data-k='hostName' value='${attr(session.hostName || '')}'></td><td><div class='asset-stack'><input data-k='roomName' value='${attr(session.roomName || '')}' placeholder='edvo-room-001'><div data-k='launchNote' class='launch-note'></div><div class='acts'><button class='btn' type='button' onclick='startLiveSession(this)'>Start live</button><button class='btn' type='button' onclick='copyLiveLaunch(this)'>Copy launch</button></div></div></td><td><input data-k='meetingUrl' value='${attr(session.meetingUrl || '')}'></td><td><select data-k='status'><option value='scheduled'>Scheduled</option><option value='live'>Live</option><option value='completed'>Completed</option><option value='cancelled'>Cancelled</option></select></td><td><input data-k='recordingUrl' value='${attr(session.recordingUrl || '')}'></td><td>${rowControls()}</td>`;
   byId('sessionBody').appendChild(tr);
   tr.querySelector('[data-k="status"]').value = session.status || 'scheduled';
+  ['title', 'startTime', 'endTime', 'hostName', 'roomName', 'meetingUrl', 'recordingUrl'].forEach((key) => {
+    const field = tr.querySelector(`[data-k="${key}"]`);
+    if (field) field.addEventListener('input', () => refreshSessionRow(tr));
+  });
+  refreshSessionRow(tr);
 }
 
 function addPlan(plan = {}) {
@@ -557,8 +768,34 @@ function payload() {
           note: row.querySelector('[data-k="note"]').value.trim(),
         })).filter((item) => item.title || item.company || item.location || item.applicationUrl)
       : [],
-    curriculumRows: readRows('currBody', (row) => ({ subject: row.querySelector('[data-k="subject"]').value.trim(), module: row.querySelector('[data-k="module"]').value.trim(), lecture: row.querySelector('[data-k="lecture"]').value.trim(), duration: row.querySelector('[data-k="duration"]').value.trim(), contentType: row.querySelector('[data-k="contentType"]').value, isFree: row.querySelector('[data-k="isFree"]').value === 'true', videoUrl: row.querySelector('[data-k="videoUrl"]').value.trim() })).filter((item) => item.subject && item.module && item.lecture),
-    liveSessions: readRows('sessionBody', (row) => ({ title: row.querySelector('[data-k="title"]').value.trim(), startTime: row.querySelector('[data-k="startTime"]').value.trim(), endTime: row.querySelector('[data-k="endTime"]').value.trim(), hostName: row.querySelector('[data-k="hostName"]').value.trim(), meetingUrl: row.querySelector('[data-k="meetingUrl"]').value.trim(), status: row.querySelector('[data-k="status"]').value })).filter((item) => item.title && item.startTime),
+    curriculumRows: readRows('currBody', (row) => {
+      const contentType = row.querySelector('[data-k="contentType"]').value;
+      const assetSource = row.querySelector('[data-k="assetSource"]').value === 'upload' ? 'upload' : 'link';
+      const assetLink = row.querySelector('[data-k="assetLink"]').value.trim();
+      const storedAsset = String(row.dataset.assetValue || '').trim();
+      const assetValue = assetSource === 'upload' ? storedAsset : assetLink;
+      const item = {
+        subject: row.querySelector('[data-k="subject"]').value.trim(),
+        module: row.querySelector('[data-k="module"]').value.trim(),
+        lecture: row.querySelector('[data-k="lecture"]').value.trim(),
+        duration: row.querySelector('[data-k="duration"]').value.trim(),
+        contentType,
+        isFree: row.querySelector('[data-k="isFree"]').value === 'true',
+        assetSource,
+        assetLabel: assetSource === 'upload' ? String(row.dataset.assetLabel || '').trim() : '',
+        videoUrl: '',
+        resourceUrl: '',
+      };
+
+      if (contentType === 'recorded') {
+        item.videoUrl = assetValue;
+      } else if (contentType === 'resource' || contentType === 'quiz') {
+        item.resourceUrl = assetValue;
+      }
+
+      return item;
+    }).filter((item) => item.subject && item.module && item.lecture),
+    liveSessions: readRows('sessionBody', (row) => collectSessionRow(row)).filter((item) => item.title && item.startTime),
     plans: readRows('planBody', (row) => ({ name: row.querySelector('[data-k="name"]').value.trim(), price: Number(row.querySelector('[data-k="price"]').value || 0), isRecommended: row.querySelector('[data-k="isRecommended"]').value === 'true', features: lines(row.querySelector('[data-k="features"]').value).map((value, index) => ({ label: 'Feature ' + (index + 1), value })) })).filter((item) => item.name),
     mentors: readRows('mentorBody', (row) => ({ name: row.querySelector('[data-k="name"]').value.trim(), designation: row.querySelector('[data-k="designation"]').value.trim(), company: row.querySelector('[data-k="company"]').value.trim(), experience: row.querySelector('[data-k="experience"]').value.trim(), image: row.querySelector('[data-k="image"]').value.trim() })).filter((item) => item.name || item.designation || item.company),
     faqs: readRows('faqBody', (row) => ({ question: row.querySelector('[data-k="question"]').value.trim(), answer: row.querySelector('[data-k="answer"]').value.trim() })).filter((item) => item.question || item.answer),

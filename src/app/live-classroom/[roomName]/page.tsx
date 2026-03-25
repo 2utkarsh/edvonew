@@ -55,7 +55,7 @@ export default function LiveClassroomPage() {
             <div className="text-xs uppercase tracking-[0.3em] text-sky-300">Live Classroom</div>
             <h1 className="mt-3 text-3xl font-black sm:text-4xl">{details.title}</h1>
             <p className="mt-3 max-w-3xl text-sm leading-7 text-white/70">
-              This launcher adapts the room-entry flow from your live-class tool so students can join from the EDVO frontend while admin controls the room name, schedule, links, and recordings.
+              This launcher sits between EDVO and your IEDUP live-class tool. Admin saves the room name plus the live URL from that tool, then uses Start live to open the host flow while students join from the same room setup.
             </p>
           </div>
           <Link href="/dashboard/student" className="rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-sm text-white/80 transition hover:bg-white/10">
@@ -130,7 +130,7 @@ export default function LiveClassroomPage() {
                   </a>
                 ) : (
                   <div className="rounded-2xl border border-dashed border-white/10 px-4 py-4 text-sm text-white/55">
-                    Admin has not added a meeting URL yet. This page is ready to hand off once the room provider link is attached.
+                    Admin has not added a meeting URL yet. Paste your IEDUP room URL here in the format https://your-live-domain/rooms/[roomName], then start recording from inside that live room when class begins.
                   </div>
                 )}
 

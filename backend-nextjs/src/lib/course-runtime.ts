@@ -19,26 +19,41 @@ function asNumber(input: unknown, fallback = 0) {
   return Number.isFinite(value) ? value : fallback;
 }
 
+function inferAssetSource(...values: unknown[]) {
+  const normalizedValue = values.map((value) => asString(value)).find(Boolean) || '';
+  if (!normalizedValue) return '';
+  return normalizedValue.startsWith('data:') ? 'upload' : 'link';
+}
+
 function createId(prefix: string) {
   return `${prefix}-${crypto.randomBytes(4).toString('hex')}`;
 }
 
 export function buildCurriculumFromRows(rows: unknown) {
   const normalizedRows = asArray<AnyObject>(rows)
-    .map((row) => ({
-      subject: asString(row.subject),
-      subjectDescription: asString(row.subjectDescription),
-      module: asString(row.module),
-      moduleDescription: asString(row.moduleDescription),
-      lecture: asString(row.lecture),
-      lectureDescription: asString(row.lectureDescription),
-      duration: asString(row.duration),
-      videoUrl: asString(row.videoUrl),
-      resourceUrl: asString(row.resourceUrl),
-      notes: asString(row.notes),
-      isFree: asBoolean(row.isFree),
-      contentType: asString(row.contentType || 'recorded') || 'recorded',
-    }))
+    .map((row) => {
+      const contentType = asString(row.contentType || 'recorded') || 'recorded';
+      const rawVideoUrl = asString(row.videoUrl);
+      const rawResourceUrl = asString(row.resourceUrl);
+      const primaryAsset = rawVideoUrl || rawResourceUrl;
+
+      return {
+        subject: asString(row.subject),
+        subjectDescription: asString(row.subjectDescription),
+        module: asString(row.module),
+        moduleDescription: asString(row.moduleDescription),
+        lecture: asString(row.lecture),
+        lectureDescription: asString(row.lectureDescription),
+        duration: asString(row.duration),
+        videoUrl: rawVideoUrl || (contentType === 'recorded' ? primaryAsset : ''),
+        resourceUrl: rawResourceUrl || (contentType === 'resource' || contentType === 'quiz' ? primaryAsset : ''),
+        assetSource: asString(row.assetSource || inferAssetSource(rawVideoUrl, rawResourceUrl)),
+        assetLabel: asString(row.assetLabel || row.assetName),
+        notes: asString(row.notes),
+        isFree: asBoolean(row.isFree),
+        contentType,
+      };
+    })
     .filter((row) => row.subject && row.module && row.lecture);
 
   const subjects = new Map<string, AnyObject>();
@@ -72,6 +87,8 @@ export function buildCurriculumFromRows(rows: unknown) {
       duration: row.duration,
       videoUrl: row.videoUrl,
       resourceUrl: row.resourceUrl,
+      assetSource: row.assetSource,
+      assetLabel: row.assetLabel,
       notes: row.notes,
       isFree: row.isFree,
       contentType: row.contentType,
@@ -96,6 +113,9 @@ export function flattenCurriculumRows(curriculum: unknown) {
   asArray<AnyObject>(curriculum).forEach((subject) => {
     asArray<AnyObject>(subject.modules).forEach((module) => {
       asArray<AnyObject>(module.lectures).forEach((lecture) => {
+        const videoUrl = asString(lecture.videoUrl);
+        const resourceUrl = asString(lecture.resourceUrl);
+
         rows.push({
           id: lecture._id || createId('lecture'),
           subject: asString(subject.name),
@@ -105,8 +125,10 @@ export function flattenCurriculumRows(curriculum: unknown) {
           lecture: asString(lecture.title),
           lectureDescription: asString(lecture.description),
           duration: asString(lecture.duration),
-          videoUrl: asString(lecture.videoUrl),
-          resourceUrl: asString(lecture.resourceUrl),
+          videoUrl,
+          resourceUrl,
+          assetSource: asString(lecture.assetSource || inferAssetSource(videoUrl, resourceUrl)),
+          assetLabel: asString(lecture.assetLabel || lecture.assetName),
           notes: asString(lecture.notes),
           isFree: Boolean(lecture.isFree),
           contentType: asString(lecture.contentType || 'recorded') || 'recorded',
@@ -125,6 +147,7 @@ export function normalizeLiveSessions(sessions: unknown) {
       title: asString(session.title),
       description: asString(session.description),
       hostName: asString(session.hostName),
+      roomName: asString(session.roomName || session.room),
       startTime: asString(session.startTime),
       endTime: asString(session.endTime),
       timezone: asString(session.timezone || 'Asia/Kolkata') || 'Asia/Kolkata',

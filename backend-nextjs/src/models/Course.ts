@@ -8,6 +8,11 @@ const curriculumLectureSchema = new Schema(
     duration: String,
     videoUrl: String,
     resourceUrl: String,
+    assetSource: {
+      type: String,
+      enum: ['link', 'upload'],
+    },
+    assetLabel: String,
     notes: String,
     releaseAt: String,
     contentType: {
@@ -117,6 +122,7 @@ const liveSessionSchema = new Schema(
     title: { type: String, required: true },
     description: String,
     hostName: String,
+    roomName: String,
     startTime: { type: String, required: true },
     endTime: String,
     timezone: { type: String, default: 'Asia/Kolkata' },

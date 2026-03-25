@@ -41,12 +41,17 @@
     .tablex, .minit { width: 100%; max-width: 100%; border: 1px solid rgba(84, 63, 40, 0.1); border-radius: 22px; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
     .tablex table, .minit table { width: 100%; border-collapse: collapse; }
     .tablex table { min-width: 1000px; }
-    .minit table { min-width: 780px; }
+    .minit table { min-width: 1120px; }
     .tablex th, .tablex td, .minit th, .minit td { padding: 12px 14px; border-bottom: 1px solid rgba(84, 63, 40, 0.08); text-align: left; vertical-align: top; }
     .tablex th, .minit th { background: rgba(193, 112, 23, 0.08); font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gray); white-space: nowrap; }
     .tablex tr:last-child td, .minit tr:last-child td { border-bottom: 0; }
     .minit input, .minit select, .minit textarea { width: 100%; min-width: 160px; }
     .minit textarea { min-height: 84px; }
+    .asset-stack { display: grid; gap: 8px; min-width: 220px; }
+    .asset-stack input[type='file'] { min-width: 220px; padding: 10px 12px; }
+    .upload-meta, .launch-note { padding: 10px 12px; border-radius: 16px; font-size: 0.8rem; line-height: 1.5; white-space: pre-line; background: rgba(84, 63, 40, 0.05); color: var(--gray); border: 1px dashed rgba(84, 63, 40, 0.18); }
+    .upload-meta.ready { border-style: solid; background: rgba(15, 118, 110, 0.08); color: #0f766e; }
+    .upload-meta.warn { border-style: solid; background: rgba(180, 83, 9, 0.12); color: #9a3412; }
     .acts { display: flex; gap: 8px; flex-wrap: wrap; min-width: 0; }
     .acts .btn, .acts button { white-space: normal; }
     .tag { display: inline-flex; padding: 7px 11px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; }
@@ -72,7 +77,7 @@
       .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .grid3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .tablex table { min-width: 940px; }
-      .minit table { min-width: 720px; }
+      .minit table { min-width: 980px; }
     }
     @media (max-width: 1100px) {
       .head { flex-direction: column; align-items: stretch; }
@@ -90,7 +95,7 @@
       .stack { gap: 18px; padding-inline: 12px; }
       .cardx, .panel, .section { padding: 18px; border-radius: 22px; }
       .tablex table { min-width: 880px; }
-      .minit table { min-width: 680px; }
+      .minit table { min-width: 920px; }
       .students { grid-template-columns: 1fr; }
     }
     @media (max-width: 640px) {
@@ -98,7 +103,7 @@
       .acts { width: 100%; }
       .acts .btn, .acts button { width: 100%; flex-basis: 100%; }
       .tablex table { min-width: 840px; }
-      .minit table { min-width: 640px; }
+      .minit table { min-width: 880px; }
     }
     @media (max-width: 560px) {
       .cardx, .panel, .section { padding: 16px; }
@@ -277,8 +282,8 @@
 
                     <div class='section'><div class='head'><div><h3>Career Matches</h3><p class='hint'>Add admin-managed job and role cards for this course. Students see these in their dashboard career section after enrollment.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('careerBody')">Shuffle</button><button class='btn' type='button' onclick='addCareerPath()'>Add Career Match</button></div></div><div class='minit'><table><thead><tr><th>Role</th><th>Company</th><th>Location</th><th>Type</th><th>Mode</th><th>Salary</th><th>Apply URL</th><th>Note</th><th>Actions</th></tr></thead><tbody id='careerBody'></tbody></table></div></div>
 
-          <div class='section'><div class='head'><div><h3>Recorded Module Rows</h3><p class='hint'>Create, edit, shuffle, and remove curriculum rows shown on the single course page and in the learner workspace.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('currBody')">Shuffle</button><button class='btn' type='button' onclick='addCurr()'>Add Row</button></div></div><div class='minit'><table><thead><tr><th>Subject</th><th>Module</th><th>Lecture</th><th>Duration</th><th>Type</th><th>Free</th><th>Video / Resource</th><th>Actions</th></tr></thead><tbody id='currBody'></tbody></table></div></div>
-          <div class='section'><div class='head'><div><h3>Live Sessions</h3><p class='hint'>Manage live schedule, host, meeting link, and ordering here.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('sessionBody')">Shuffle</button><button class='btn' type='button' onclick='addSession()'>Add Session</button></div></div><div class='minit'><table><thead><tr><th>Title</th><th>Start</th><th>End</th><th>Host</th><th>Join Link</th><th>Status</th><th>Actions</th></tr></thead><tbody id='sessionBody'></tbody></table></div></div>
+          <div class='section'><div class='head'><div><h3>Recorded Module Rows</h3><p class='hint'>Choose recorded, live, resource, or quiz for each lesson. Recorded and resource rows can now use either a hosted link or a smaller inline upload.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('currBody')">Shuffle</button><button class='btn' type='button' onclick='addCurr()'>Add Row</button></div></div><div class='minit'><table><thead><tr><th>Subject</th><th>Module</th><th>Lecture</th><th>Duration</th><th>Type</th><th>Free</th><th>Asset Setup</th><th>Actions</th></tr></thead><tbody id='currBody'></tbody></table></div></div>
+          <div class='section'><div class='head'><div><h3>Live Sessions</h3><p class='hint'>For your IEDUP live setup, add a room name and paste a room URL like https://your-live-domain/rooms/&lt;roomName&gt;. Use Start live to open the EDVO launcher, then start recording inside the live tool when class begins.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('sessionBody')">Shuffle</button><button class='btn' type='button' onclick='addSession()'>Add Session</button></div></div><div class='minit'><table><thead><tr><th>Title</th><th>Start</th><th>End</th><th>Host</th><th>Room / Launch</th><th>Live URL</th><th>Status</th><th>Recording</th><th>Actions</th></tr></thead><tbody id='sessionBody'></tbody></table></div></div>
           <div class='section'><div class='head'><div><h3>Plans</h3><p class='hint'>Create, edit, shuffle, and delete pricing plans and plan features shown in the enroll card and checkout flow.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('planBody')">Shuffle</button><button class='btn' type='button' onclick='addPlan()'>Add Plan</button></div></div><div class='minit'><table><thead><tr><th>Name</th><th>Price</th><th>Recommended</th><th>Features</th><th>Actions</th></tr></thead><tbody id='planBody'></tbody></table></div></div>
           <div class='section'><div class='head'><div><h3>Mentors</h3><p class='hint'>Mentors appear on the course detail page and can be reordered here.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('mentorBody')">Shuffle</button><button class='btn' type='button' onclick='addMentor()'>Add Mentor</button></div></div><div class='minit'><table><thead><tr><th>Name</th><th>Designation</th><th>Company</th><th>Experience</th><th>Image URL</th><th>Actions</th></tr></thead><tbody id='mentorBody'></tbody></table></div></div>
           <div class='section'><div class='head'><div><h3>FAQs</h3><p class='hint'>Add and reorder frequently asked questions for the single course page.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('faqBody')">Shuffle</button><button class='btn' type='button' onclick='addFaq()'>Add FAQ</button></div></div><div class='minit'><table><thead><tr><th>Question</th><th>Answer</th><th>Actions</th></tr></thead><tbody id='faqBody'></tbody></table></div></div>
@@ -309,7 +314,7 @@
   </main>
 
   <script src='/backend/admin/admin.js?v=20260325c'></script>
-  <script src='/backend/admin/courses-admin.js?v=20260325c'></script>
+  <script src='/backend/admin/courses-admin.js?v=20260325d'></script>
 </body>
 </html>
 
