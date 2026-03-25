@@ -5,6 +5,12 @@ const configuredBackendBaseUrl =
   'http://localhost:3001';
 
 const backendBaseUrl = configuredBackendBaseUrl.replace(/\/$/, '');
+const configuredLiveKitProxyTarget =
+  process.env.LIVEKIT_PROXY_TARGET ||
+  (/^https?:\/\//.test(process.env.NEXT_PUBLIC_LIVEKIT_PROXY_TARGET || '')
+    ? process.env.NEXT_PUBLIC_LIVEKIT_PROXY_TARGET
+    : '');
+const liveKitProxyTarget = configuredLiveKitProxyTarget.replace(/\/$/, '');
 
 const nextConfig = {
   experimental: {
@@ -33,12 +39,21 @@ const nextConfig = {
     ],
   },
   async rewrites() {
-    return [
+    const rewrites = [
       {
         source: '/backend/:path*',
         destination: `${backendBaseUrl}/backend/:path*`,
       },
     ];
+
+    if (liveKitProxyTarget) {
+      rewrites.push({
+        source: '/livekit/:path*',
+        destination: `${liveKitProxyTarget}/:path*`,
+      });
+    }
+
+    return rewrites;
   },
 };
 

@@ -89,6 +89,16 @@ LIVEKIT_API_SECRET=your-secret
 ```
 
 You can set the keys on either frontend or backend, but keeping them on both is the safest deployment path for the current EDVO fallback flow.
+If you want the browser to connect through the same Vercel app URL, use proxy mode instead:
+
+```env
+LIVEKIT_URL=wss://your-project.vercel.app/livekit
+LIVEKIT_PROXY_TARGET=https://your-vps-livekit-host
+LIVEKIT_API_KEY=your-key
+LIVEKIT_API_SECRET=your-secret
+```
+
+The Vercel-facing `/livekit/*` path is now supported by [next.config.js](/e:/EDVO/next.config.js).
 
 ## How this fits EDVO now
 
@@ -112,3 +122,4 @@ You can set the keys on either frontend or backend, but keeping them on both is 
 This is a fully owned deployment path for EDVO live classes.
 It uses self-hosted LiveKit as the media backbone, which is the right way to support a 100-person classroom without depending on a managed room provider.
 Writing a custom WebRTC SFU from zero inside this repo would take much longer and would be less reliable than deploying a hardened open-source SFU you control.
+
