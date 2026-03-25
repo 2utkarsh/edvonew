@@ -4,17 +4,34 @@ function logout() {
   localStorage.removeItem('adminToken');
   localStorage.removeItem('adminLoggedIn');
   localStorage.removeItem('adminEmail');
+  localStorage.removeItem('adminUser');
   window.location.href = '/backend/admin';
+}
+
+function getStoredAdminEmail() {
+  const directEmail = localStorage.getItem('adminEmail');
+  if (directEmail) {
+    return directEmail;
+  }
+
+  try {
+    const user = JSON.parse(localStorage.getItem('adminUser') || '{}');
+    return user?.email || '';
+  } catch (_error) {
+    return '';
+  }
 }
 
 function checkAuth() {
   const token = localStorage.getItem('adminToken');
-  const isLoggedIn = localStorage.getItem('adminLoggedIn');
+  const isLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
+  const adminEmail = getStoredAdminEmail().toLowerCase();
+  const hasApprovedAdminSession = Boolean(token) && isLoggedIn && adminEmail === 'admin@edvo.com';
   const currentPage = window.location.pathname;
   const isLoginPage = currentPage === '/admin' || currentPage === '/backend/admin' || currentPage === '/backend/admin/login';
 
-  if (!token && !isLoggedIn && !isLoginPage) {
-    window.location.href = '/backend/admin';
+  if (!hasApprovedAdminSession && !isLoginPage) {
+    logout();
   }
 }
 

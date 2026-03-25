@@ -14,12 +14,17 @@ export async function POST(request: NextRequest): Promise<Response> {
     if (!validation.data) return toResponse(validationError([{ field: 'body', message: 'Request body is required' }]));
 
     const { email, password } = validation.data;
+    const normalizedEmail = email.toLowerCase();
+    const isAdminLogin = request.headers.get('x-edvo-admin-login') === 'true';
 
-    // Demo credentials for testing without database
-    if (email === 'admin@edvo.com' && password === 'admin123') {
+    if (isAdminLogin) {
+      if (normalizedEmail !== 'admin@edvo.com' || password !== 'admin123') {
+        return toResponse(fail('Invalid admin credentials', 'INVALID_ADMIN_CREDENTIALS', undefined, 401));
+      }
+
       const token = signAccessToken({
         sub: 'admin-demo-id',
-        email: email.toLowerCase(),
+        email: normalizedEmail,
         name: 'Admin User',
         role: 'admin',
       });
@@ -29,23 +34,24 @@ export async function POST(request: NextRequest): Promise<Response> {
           user: {
             id: 'admin-demo-id',
             name: 'Admin User',
-            email: email.toLowerCase(),
+            email: normalizedEmail,
             role: 'admin',
             avatar: null,
             photo: null,
           },
           token,
         },
-        'Login successful (Demo Mode)'
+        'Login successful'
       ));
     }
+
 
     // Try database login
     try {
       await connectToDatabase();
 
       // Find user by email
-      const user = await UserModel.findOne({ email: email.toLowerCase() });
+      const user = await UserModel.findOne({ email: normalizedEmail });
       if (!user) {
         return toResponse(fail('Invalid email or password', 'INVALID_CREDENTIALS', undefined, 401));
       }
@@ -84,9 +90,9 @@ export async function POST(request: NextRequest): Promise<Response> {
         'Login successful'
       ));
     } catch (dbError: any) {
-      // Database not available, only demo login works
+      // Database not available for standard user login
       console.error('Database connection failed:', dbError.message);
-      return toResponse(fail('Database not available. Use demo credentials: admin@edvo.com / admin123', 'DATABASE_UNAVAILABLE', undefined, 503));
+      return toResponse(fail('Login is temporarily unavailable', 'DATABASE_UNAVAILABLE', undefined, 503));
     }
   } catch (error: any) {
     console.error('Login error:', error);

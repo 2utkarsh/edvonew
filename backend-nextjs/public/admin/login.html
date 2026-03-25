@@ -531,7 +531,7 @@
         <form id="loginForm">
           <div class="form-group">
             <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" placeholder="admin@edvo.com" autocomplete="email" required>
+            <input type="email" id="email" name="email" placeholder="Enter admin email" autocomplete="email" required>
           </div>
 
           <div class="form-group">
@@ -542,10 +542,7 @@
           <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
         </form>
 
-        <div class="demo-credentials">
-          <p>Demo Credentials</p>
-          <code>admin@edvo.com / admin123</code>
-        </div>
+
       </div>
     </section>
   </div>
@@ -566,13 +563,13 @@
     try {
       const response = await fetch('/backend/api/v1/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-EDVO-Admin-Login': 'true' },
         body: JSON.stringify({ email, password }),
       });
 
       const payload = await response.json().catch(() => ({}));
       if (!response.ok || !payload?.data?.token) {
-        throw new Error(payload?.error?.message || payload?.message || 'Unable to sign in');
+        throw new Error(payload?.error?.message || payload?.message || 'Invalid admin credentials');
       }
 
       localStorage.setItem('adminLoggedIn', 'true');
@@ -581,7 +578,7 @@
       localStorage.setItem('adminUser', JSON.stringify(payload.data.user || {}));
       window.location.href = '/backend/admin/dashboard';
     } catch (error) {
-      errorDiv.textContent = error.message || 'Unable to sign in';
+      errorDiv.textContent = error.message || 'Invalid admin credentials';
       errorDiv.style.display = 'block';
     } finally {
       button.disabled = false;
