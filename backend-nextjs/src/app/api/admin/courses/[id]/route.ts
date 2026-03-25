@@ -1,7 +1,13 @@
+import {
+  deleteAdminCourseDemoCourse,
+  getAdminCourseDemoCourse,
+  isAdminCourseDemoError,
+  updateAdminCourseDemoCourse,
+} from '@/lib/admin-course-demo-store';
 import { requireAuth } from '@/lib/auth';
 import { buildEnrollmentSnapshot, flattenCurriculumRows, normalizeCoursePayload } from '@/lib/course-runtime';
 import { syncCourseCategoryCounts } from '@/lib/course-category-counts';
-import { connectToDatabase } from '@/lib/db';
+import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { fail, handleError, ok, toResponse } from '@/lib/http';
 import { slugify } from '@/lib/query';
 import { CourseModel } from '@/models/Course';
@@ -11,9 +17,28 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
   try {
     const auth = await requireAuth(['admin']);
     if ('error' in auth) return auth.error;
-    await connectToDatabase();
 
     const { id } = await params;
+
+    if (!hasConfiguredMongoUri()) {
+      const course = getAdminCourseDemoCourse(id);
+      if (!course) {
+        return toResponse(fail('Course not found', 'NOT_FOUND', undefined, 404));
+      }
+
+      return toResponse(
+        ok({
+          ...course,
+          id: String(course.id || course._id),
+          curriculumRows: flattenCurriculumRows(course.curriculum),
+          deliveryMode: course.deliveryMode || course.delivery || 'recorded',
+          students: Array.isArray(course.students) ? course.students : [],
+        }),
+      );
+    }
+
+    await connectToDatabase();
+
     const course = await CourseModel.findById(id).lean();
     if (!course) {
       return toResponse(fail('Course not found', 'NOT_FOUND', undefined, 404));
@@ -49,7 +74,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
         curriculumRows: flattenCurriculumRows(course.curriculum),
         deliveryMode: course.deliveryMode || course.delivery || 'recorded',
         students,
-      })
+      }),
     );
   } catch (error) {
     return handleError(error);
@@ -60,10 +85,20 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   try {
     const auth = await requireAuth(['admin']);
     if ('error' in auth) return auth.error;
-    await connectToDatabase();
 
     const { id } = await params;
     const body = await request.json();
+
+    if (!hasConfiguredMongoUri()) {
+      const item = updateAdminCourseDemoCourse(id, (body || {}) as Record<string, unknown>);
+      if (!item) {
+        return toResponse(fail('Course not found', 'NOT_FOUND', undefined, 404));
+      }
+      return toResponse(ok(item));
+    }
+
+    await connectToDatabase();
+
     const existing = await CourseModel.findById(id).lean();
     if (!existing) {
       return toResponse(fail('Course not found', 'NOT_FOUND', undefined, 404));
@@ -103,6 +138,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     await syncCourseCategoryCounts();
     return toResponse(ok({ ...item, id: String(item._id) }));
   } catch (error) {
+    if (isAdminCourseDemoError(error)) {
+      return toResponse(fail(error.message, error.code, undefined, error.status));
+    }
     return handleError(error);
   }
 }
@@ -111,9 +149,19 @@ export async function DELETE(_: Request, { params }: { params: Promise<{ id: str
   try {
     const auth = await requireAuth(['admin']);
     if ('error' in auth) return auth.error;
-    await connectToDatabase();
 
     const { id } = await params;
+
+    if (!hasConfiguredMongoUri()) {
+      const item = deleteAdminCourseDemoCourse(id);
+      if (!item) {
+        return toResponse(fail('Course not found', 'NOT_FOUND', undefined, 404));
+      }
+      return toResponse(ok(item));
+    }
+
+    await connectToDatabase();
+
     const item = await CourseModel.findByIdAndDelete(id).lean();
     if (!item) {
       return toResponse(fail('Course not found', 'NOT_FOUND', undefined, 404));
@@ -123,6 +171,9 @@ export async function DELETE(_: Request, { params }: { params: Promise<{ id: str
     await syncCourseCategoryCounts();
     return toResponse(ok({ deleted: true, id }));
   } catch (error) {
+    if (isAdminCourseDemoError(error)) {
+      return toResponse(fail(error.message, error.code, undefined, error.status));
+    }
     return handleError(error);
   }
 }

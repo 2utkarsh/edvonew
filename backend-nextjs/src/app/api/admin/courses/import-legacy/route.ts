@@ -1,25 +1,19 @@
-﻿import { requireAuth } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 import { syncCourseCategoryCounts } from '@/lib/course-category-counts';
 import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
-import { importLegacyCourseCatalog, markLegacyCourseCatalogImported } from '@/lib/ensure-legacy-course-catalog';
+import {
+  importLegacyCourseCatalog,
+  markLegacyCourseCatalogImported,
+} from '@/lib/ensure-legacy-course-catalog';
 import { handleError, ok, toResponse } from '@/lib/http';
-import { getLegacyAdminCoursesForApi, getLegacyCategoriesForApi } from '@/lib/legacy-course-catalog-fallback';
+import {
+  getLegacyAdminCoursesForApi,
+  getLegacyCategoriesForApi,
+} from '@/lib/legacy-course-catalog-fallback';
+import { importLegacyAdminCourseDemoCatalog } from '@/lib/admin-course-demo-store';
 
 function fallbackResponse() {
-  const totalLegacyCourses = getLegacyAdminCoursesForApi().length;
-  const totalLegacyCategories = getLegacyCategoriesForApi().length;
-
-  return toResponse(
-    ok({
-      createdCategories: 0,
-      updatedCategories: 0,
-      createdCourses: 0,
-      skippedCourses: totalLegacyCourses,
-      totalLegacyCourses,
-      totalLegacyCategories,
-      fallback: true,
-    })
-  );
+  return toResponse(ok(importLegacyAdminCourseDemoCatalog()));
 }
 
 export async function POST() {
@@ -45,11 +39,21 @@ export async function POST() {
         skippedCourses: Math.max(result.totalLegacyCourses - result.createdCourses, 0),
         totalLegacyCourses: result.totalLegacyCourses,
         totalLegacyCategories: result.totalLegacyCategories,
-      })
+      }),
     );
   } catch (error) {
     if (!hasConfiguredMongoUri()) {
-      return fallbackResponse();
+      return toResponse(
+        ok({
+          createdCategories: 0,
+          updatedCategories: 0,
+          createdCourses: 0,
+          skippedCourses: getLegacyAdminCoursesForApi().length,
+          totalLegacyCourses: getLegacyAdminCoursesForApi().length,
+          totalLegacyCategories: getLegacyCategoriesForApi().length,
+          fallback: true,
+        }),
+      );
     }
     return handleError(error);
   }

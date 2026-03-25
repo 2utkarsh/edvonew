@@ -1,22 +1,21 @@
-﻿import { requireAuth } from '@/lib/auth';
+import {
+  createAdminCourseDemoCourse,
+  getAdminCourseDemoPayload,
+  isAdminCourseDemoError,
+} from '@/lib/admin-course-demo-store';
+import { requireAuth } from '@/lib/auth';
 import { buildEnrollmentSnapshot, flattenCurriculumRows, normalizeCoursePayload } from '@/lib/course-runtime';
 import { syncCourseCategoryCounts } from '@/lib/course-category-counts';
 import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { bootstrapLegacyCourseCatalog } from '@/lib/ensure-legacy-course-catalog';
 import { created, fail, handleError, ok, toResponse } from '@/lib/http';
-import { getLegacyAdminCoursesForApi, getLegacyCategoriesForApi } from '@/lib/legacy-course-catalog-fallback';
 import { slugify } from '@/lib/query';
 import { CourseCategoryModel } from '@/models/CourseCategory';
 import { CourseModel } from '@/models/Course';
 import { EnrollmentModel } from '@/models/Enrollment';
 
 function fallbackResponse() {
-  return toResponse(
-    ok({
-      courses: getLegacyAdminCoursesForApi(),
-      categories: getLegacyCategoriesForApi(),
-    })
-  );
+  return toResponse(ok(getAdminCourseDemoPayload()));
 }
 
 export async function GET() {
@@ -107,7 +106,7 @@ export async function GET() {
       ok({
         courses: formattedCourses,
         categories: categories.map((item) => ({ ...item, id: String(item._id) })),
-      })
+      }),
     );
   } catch (error) {
     console.error('Falling back to built-in admin course catalog', error);
@@ -119,9 +118,15 @@ export async function POST(request: Request) {
   try {
     const auth = await requireAuth(['admin']);
     if ('error' in auth) return auth.error;
-    await connectToDatabase();
 
     const body = await request.json();
+
+    if (!hasConfiguredMongoUri()) {
+      return toResponse(created(createAdminCourseDemoCourse((body || {}) as Record<string, unknown>)));
+    }
+
+    await connectToDatabase();
+
     const payload = normalizeCoursePayload(body as Record<string, unknown>);
     const title = String(payload.title || 'Untitled Course');
     const slug = String(payload.slug || slugify(title));
@@ -145,6 +150,9 @@ export async function POST(request: Request) {
     await syncCourseCategoryCounts();
     return toResponse(created({ ...item.toObject(), id: String(item._id) }));
   } catch (error) {
+    if (isAdminCourseDemoError(error)) {
+      return toResponse(fail(error.message, error.code, undefined, error.status));
+    }
     return handleError(error);
   }
 }

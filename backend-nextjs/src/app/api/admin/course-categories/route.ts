@@ -1,13 +1,17 @@
-﻿import { requireAuth } from '@/lib/auth';
+import {
+  createAdminCourseDemoCategory,
+  getAdminCourseDemoCategories,
+  isAdminCourseDemoError,
+} from '@/lib/admin-course-demo-store';
+import { requireAuth } from '@/lib/auth';
 import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { bootstrapLegacyCourseCatalog } from '@/lib/ensure-legacy-course-catalog';
 import { created, fail, handleError, ok, toResponse } from '@/lib/http';
-import { getLegacyCategoriesForApi } from '@/lib/legacy-course-catalog-fallback';
 import { slugify } from '@/lib/query';
 import { CourseCategoryModel } from '@/models/CourseCategory';
 
 function fallbackResponse() {
-  return toResponse(ok(getLegacyCategoriesForApi()));
+  return toResponse(ok(getAdminCourseDemoCategories()));
 }
 
 export async function GET() {
@@ -34,9 +38,15 @@ export async function POST(request: Request) {
   try {
     const auth = await requireAuth(['admin']);
     if ('error' in auth) return auth.error;
-    await connectToDatabase();
 
     const body = await request.json();
+
+    if (!hasConfiguredMongoUri()) {
+      return toResponse(created(createAdminCourseDemoCategory((body || {}) as Record<string, unknown>)));
+    }
+
+    await connectToDatabase();
+
     const name = String((body as any)?.name || (body as any)?.title || 'Untitled Category').trim();
     const slug = String((body as any)?.slug || slugify(name));
     const duplicate = await CourseCategoryModel.findOne({
@@ -63,6 +73,9 @@ export async function POST(request: Request) {
 
     return toResponse(created({ ...item.toObject(), id: String(item._id) }));
   } catch (error) {
+    if (isAdminCourseDemoError(error)) {
+      return toResponse(fail(error.message, error.code, undefined, error.status));
+    }
     return handleError(error);
   }
 }
