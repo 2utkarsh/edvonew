@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import "@livekit/components-styles";
 import "./globals.css";
 import PageLayout from "@/components/layout/PageLayout";
 import ThemeProvider from "@/components/ThemeProvider";

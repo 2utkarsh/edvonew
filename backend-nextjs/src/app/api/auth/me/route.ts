@@ -1,4 +1,4 @@
-﻿import { requireAuth } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 import { connectToDatabase } from '@/lib/db';
 import { handleError, ok } from '@/lib/http';
 import { UserModel } from '@/models/User';
@@ -10,7 +10,20 @@ export async function GET() {
 
     await connectToDatabase();
     const user = await UserModel.findById(auth.payload.sub).lean();
-    if (!user) return ok(null);
+
+    if (!user) {
+      return ok({
+        id: auth.payload.sub,
+        name: auth.payload.name,
+        email: auth.payload.email,
+        role: auth.payload.role,
+        avatar: null,
+        bio: null,
+        mobile: null,
+        createdAt: null,
+        updatedAt: null,
+      });
+    }
 
     return ok({
       id: String(user._id),
@@ -27,4 +40,3 @@ export async function GET() {
     return handleError(error);
   }
 }
-

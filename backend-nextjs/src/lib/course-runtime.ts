@@ -29,6 +29,30 @@ function createId(prefix: string) {
   return `${prefix}-${crypto.randomBytes(4).toString('hex')}`;
 }
 
+
+function normalizeRoomSlug(input: unknown, fallback = 'edvo-live-room') {
+  const normalized = asString(input)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+
+  return normalized || fallback;
+}
+
+export function buildLiveSessionLaunchPath(session: AnyObject, entry: 'host' | 'student' = 'student') {
+  const roomName = normalizeRoomSlug(session.roomName || session.room || session.title);
+  const params = new URLSearchParams();
+
+  params.set('entry', entry);
+  if (session.title) params.set('title', asString(session.title));
+  if (session.hostName) params.set('host', asString(session.hostName));
+  if (session.startTime) params.set('start', asString(session.startTime));
+  if (session.recordingUrl) params.set('recordingUrl', asString(session.recordingUrl));
+
+  const query = params.toString();
+  return `/live-classroom/${encodeURIComponent(roomName)}${query ? `?${query}` : ""}`;
+}
+
 export function buildCurriculumFromRows(rows: unknown) {
   const normalizedRows = asArray<AnyObject>(rows)
     .map((row) => {
@@ -147,11 +171,11 @@ export function normalizeLiveSessions(sessions: unknown) {
       title: asString(session.title),
       description: asString(session.description),
       hostName: asString(session.hostName),
-      roomName: asString(session.roomName || session.room),
+      roomName: normalizeRoomSlug(session.roomName || session.room || session.title),
       startTime: asString(session.startTime),
       endTime: asString(session.endTime),
       timezone: asString(session.timezone || 'Asia/Kolkata') || 'Asia/Kolkata',
-      meetingUrl: asString(session.meetingUrl),
+      meetingUrl: asString(session.meetingUrl || buildLiveSessionLaunchPath(session, 'student')), 
       recordingUrl: asString(session.recordingUrl),
       attendanceRequired: session.attendanceRequired === undefined ? true : Boolean(session.attendanceRequired),
       status: asString(session.status || 'scheduled') || 'scheduled',

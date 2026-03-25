@@ -1,5 +1,5 @@
 import { requireAuth } from '@/lib/auth';
-import { buildEnrollmentSnapshot, countCourseLectures, deriveLiveSessionStatus } from '@/lib/course-runtime';
+import { buildEnrollmentSnapshot, buildLiveSessionLaunchPath, countCourseLectures, deriveLiveSessionStatus } from '@/lib/course-runtime';
 import { connectToDatabase } from '@/lib/db';
 import { success, fail, toResponse } from '@/lib/http';
 import { EnrollmentModel } from '@/models/Enrollment';
@@ -74,7 +74,7 @@ export async function GET(_: Request, { params }: RouteParams) {
           startTime: session.startTime,
           endTime: session.endTime,
           timezone: session.timezone,
-          meetingUrl: deriveLiveSessionStatus(session, now) === 'live' ? session.meetingUrl : '',
+          meetingUrl: deriveLiveSessionStatus(session, now) === 'live' ? String(session.meetingUrl || buildLiveSessionLaunchPath(session, 'student')) : '',
           recordingUrl: session.recordingUrl,
           attendanceRequired: session.attendanceRequired,
           status: deriveLiveSessionStatus(session, now),

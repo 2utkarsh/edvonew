@@ -35,19 +35,15 @@ function getLaunchPath(roomName) {
   return `/live-classroom/${encodeURIComponent(roomName || 'room-name')}`;
 }
 
-function buildLiveLaunchUrl(session = {}) {
+function buildLiveLaunchUrl(session = {}, entry = 'student') {
   const roomName = String(session.roomName || '').trim() || createSuggestedRoomName(session.title || 'live-room');
   const launchUrl = new URL(getLaunchPath(roomName), window.location.origin);
+  launchUrl.searchParams.set('entry', entry === 'host' ? 'host' : 'student');
   if (session.title) launchUrl.searchParams.set('title', session.title);
   if (session.hostName) launchUrl.searchParams.set('host', session.hostName);
   if (session.startTime) launchUrl.searchParams.set('start', session.startTime);
-  if (session.meetingUrl) launchUrl.searchParams.set('meetingUrl', session.meetingUrl);
   if (session.recordingUrl) launchUrl.searchParams.set('recordingUrl', session.recordingUrl);
   return launchUrl.toString();
-}
-
-function getLiveRoomTemplate(roomName) {
-  return `https://your-live-domain/rooms/${createSuggestedRoomName(roomName)}`;
 }
 
 function syncCurriculumAssetUi(row) {
@@ -131,15 +127,20 @@ function handleCurriculumFileChange(input) {
 
 function collectSessionRow(row) {
   const title = row.querySelector('[data-k="title"]').value.trim();
+  const startTime = row.querySelector('[data-k="startTime"]').value.trim();
+  const endTime = row.querySelector('[data-k="endTime"]').value.trim();
+  const hostName = row.querySelector('[data-k="hostName"]').value.trim();
   const roomName = row.querySelector('[data-k="roomName"]').value.trim() || createSuggestedRoomName(title || 'live-room');
+  const recordingUrl = row.querySelector('[data-k="recordingUrl"]').value.trim();
+
   return {
     title,
-    startTime: row.querySelector('[data-k="startTime"]').value.trim(),
-    endTime: row.querySelector('[data-k="endTime"]').value.trim(),
-    hostName: row.querySelector('[data-k="hostName"]').value.trim(),
+    startTime,
+    endTime,
+    hostName,
     roomName,
-    meetingUrl: row.querySelector('[data-k="meetingUrl"]').value.trim(),
-    recordingUrl: row.querySelector('[data-k="recordingUrl"]').value.trim(),
+    meetingUrl: buildLiveLaunchUrl({ title, startTime, endTime, hostName, roomName, recordingUrl }, 'student'),
+    recordingUrl,
     status: row.querySelector('[data-k="status"]').value,
   };
 }
@@ -152,12 +153,14 @@ function refreshSessionRow(row) {
   const titleField = row.querySelector('[data-k="title"]');
   const meetingField = row.querySelector('[data-k="meetingUrl"]');
   const noteField = row.querySelector('[data-k="launchNote"]');
+  const hostLaunchUrl = buildLiveLaunchUrl(session, 'host');
 
   if (!roomField || !titleField || !meetingField || !noteField) return;
 
   roomField.placeholder = createSuggestedRoomName(titleField.value.trim() || 'live-room');
-  meetingField.placeholder = getLiveRoomTemplate(session.roomName);
-  noteField.textContent = `Launcher ${getLaunchPath(session.roomName)}${session.meetingUrl ? '' : `\nIEDUP room URL format: ${getLiveRoomTemplate(session.roomName)}`}`;
+  meetingField.value = session.meetingUrl;
+  meetingField.readOnly = true;
+  noteField.textContent = `Student ${session.meetingUrl}\nHost ${hostLaunchUrl}`;
 }
 
 function startLiveSession(button) {
@@ -171,11 +174,8 @@ function startLiveSession(button) {
 
   refreshSessionRow(row);
   const session = collectSessionRow(row);
-  window.open(buildLiveLaunchUrl(session), '_blank', 'noopener,noreferrer');
-
-  if (!session.meetingUrl) {
-    showToast('Launcher opened. Add your IEDUP/LiveKit room URL so the live page can hand off into the meeting.', 'info');
-  }
+  window.open(buildLiveLaunchUrl(session, 'host'), '_blank', 'noopener,noreferrer');
+  showToast('Host live room opened. Share the student launch link with learners.', 'success');
 }
 
 async function copyLiveLaunch(button) {
@@ -188,19 +188,19 @@ async function copyLiveLaunch(button) {
   }
 
   refreshSessionRow(row);
-  const launchUrl = buildLiveLaunchUrl(collectSessionRow(row));
+  const launchUrl = buildLiveLaunchUrl(collectSessionRow(row), 'student');
 
   try {
     if (navigator.clipboard && navigator.clipboard.writeText) {
       await navigator.clipboard.writeText(launchUrl);
-      showToast('Launch URL copied', 'success');
+      showToast('Student launch URL copied', 'success');
       return;
     }
   } catch (error) {
     console.error(error);
   }
 
-  window.prompt('Copy this launch URL', launchUrl);
+  window.prompt('Copy this student launch URL', launchUrl);
 }
 
 function filterRows() {
@@ -601,10 +601,10 @@ function addCurr(row = {}) {
 
 function addSession(session = {}) {
   const tr = document.createElement('tr');
-  tr.innerHTML = `<td><input data-k='title' value='${attr(session.title || '')}'></td><td><input data-k='startTime' type='datetime-local' value='${attr(session.startTime || '')}'></td><td><input data-k='endTime' type='datetime-local' value='${attr(session.endTime || '')}'></td><td><input data-k='hostName' value='${attr(session.hostName || '')}'></td><td><div class='asset-stack'><input data-k='roomName' value='${attr(session.roomName || '')}' placeholder='edvo-room-001'><div data-k='launchNote' class='launch-note'></div><div class='acts'><button class='btn' type='button' onclick='startLiveSession(this)'>Start live</button><button class='btn' type='button' onclick='copyLiveLaunch(this)'>Copy launch</button></div></div></td><td><input data-k='meetingUrl' value='${attr(session.meetingUrl || '')}'></td><td><select data-k='status'><option value='scheduled'>Scheduled</option><option value='live'>Live</option><option value='completed'>Completed</option><option value='cancelled'>Cancelled</option></select></td><td><input data-k='recordingUrl' value='${attr(session.recordingUrl || '')}'></td><td>${rowControls()}</td>`;
+  tr.innerHTML = `<td><input data-k='title' value='${attr(session.title || '')}'></td><td><input data-k='startTime' type='datetime-local' value='${attr(session.startTime || '')}'></td><td><input data-k='endTime' type='datetime-local' value='${attr(session.endTime || '')}'></td><td><input data-k='hostName' value='${attr(session.hostName || '')}'></td><td><div class='asset-stack'><input data-k='roomName' value='${attr(session.roomName || '')}' placeholder='edvo-room-001'><div data-k='launchNote' class='launch-note'></div><div class='acts'><button class='btn' type='button' onclick='startLiveSession(this)'>Start live</button><button class='btn' type='button' onclick='copyLiveLaunch(this)'>Copy launch</button></div></div></td><td><input data-k='meetingUrl' value='${attr(session.meetingUrl || '')}' placeholder='Generated from room name' readonly></td><td><select data-k='status'><option value='scheduled'>Scheduled</option><option value='live'>Live</option><option value='completed'>Completed</option><option value='cancelled'>Cancelled</option></select></td><td><input data-k='recordingUrl' value='${attr(session.recordingUrl || '')}'></td><td>${rowControls()}</td>`;
   byId('sessionBody').appendChild(tr);
   tr.querySelector('[data-k="status"]').value = session.status || 'scheduled';
-  ['title', 'startTime', 'endTime', 'hostName', 'roomName', 'meetingUrl', 'recordingUrl'].forEach((key) => {
+  ['title', 'startTime', 'endTime', 'hostName', 'roomName', 'recordingUrl'].forEach((key) => {
     const field = tr.querySelector(`[data-k="${key}"]`);
     if (field) field.addEventListener('input', () => refreshSessionRow(tr));
   });
