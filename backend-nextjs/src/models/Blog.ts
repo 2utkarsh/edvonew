@@ -1,4 +1,4 @@
-﻿import { Model, model, models, Schema, Types } from 'mongoose';
+import { Model, model, models, Schema, Types } from 'mongoose';
 
 export interface BlogDocument {
   title: string;
@@ -13,7 +13,7 @@ export interface BlogDocument {
   status: 'draft' | 'published' | 'archived';
   order: number;
   views: number;
-  readTime: number; // minutes
+  readTime: number;
   metaTitle?: string;
   metaDescription?: string;
   publishedAt?: Date;
@@ -32,10 +32,10 @@ const blogSchema = new Schema<BlogDocument>(
     categories: { type: [String], default: [] },
     tags: [String],
     author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    status: { 
-      type: String, 
-      enum: ['draft', 'published', 'archived'], 
-      default: 'draft' 
+    status: {
+      type: String,
+      enum: ['draft', 'published', 'archived'],
+      default: 'draft',
     },
     order: { type: Number, default: 0 },
     views: { type: Number, default: 0 },
@@ -47,10 +47,14 @@ const blogSchema = new Schema<BlogDocument>(
   { timestamps: true }
 );
 
+blogSchema.index({ order: 1, updatedAt: -1 });
+blogSchema.index({ status: 1, publishedAt: -1 });
+blogSchema.index({ status: 1, category: 1, order: 1, updatedAt: -1 });
+blogSchema.index({ status: 1, categories: 1, order: 1, updatedAt: -1 });
+
 export const BlogModel = (models.Blog as Model<BlogDocument>) ||
   model<BlogDocument>('Blog', blogSchema);
 
-// Blog Category model
 export interface BlogCategoryDocument {
   name: string;
   slug: string;
@@ -71,6 +75,8 @@ const blogCategorySchema = new Schema<BlogCategoryDocument>(
   },
   { timestamps: true }
 );
+
+blogCategorySchema.index({ order: 1, updatedAt: -1 });
 
 export const BlogCategoryModel = (models.BlogCategory as Model<BlogCategoryDocument>) ||
   model<BlogCategoryDocument>('BlogCategory', blogCategorySchema);

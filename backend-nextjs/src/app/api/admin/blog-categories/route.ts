@@ -1,4 +1,4 @@
-﻿import { normalizeBlogCategories } from '@/lib/blog-categories';
+import { normalizeBlogCategories } from '@/lib/blog-categories';
 import { getFallbackBlogCategories } from '@/lib/content-fallback';
 import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { created, fail, ok, parseJson, toResponse } from '@/lib/http';
@@ -6,7 +6,18 @@ import { slugify } from '@/lib/query';
 import { BlogCategoryModel, BlogModel } from '@/models/Blog';
 import { requireAdminOrDemo } from '@/lib/demo-admin';
 
-async function ensureBlogCategoriesFromBlogs() {
+declare global {
+  var __edvoBlogCategoriesReady: boolean | undefined;
+  var __edvoBlogCategoriesReadyPromise: Promise<void> | undefined;
+}
+
+async function syncBlogCategoriesFromBlogs() {
+  const existingCategory = await BlogCategoryModel.exists({});
+  if (existingCategory) {
+    global.__edvoBlogCategoriesReady = true;
+    return;
+  }
+
   const [primaryCategories, multiCategories] = await Promise.all([
     BlogModel.distinct('category', { category: { $exists: true, $ne: '' } }),
     BlogModel.distinct('categories', { categories: { $exists: true } }),
@@ -34,6 +45,27 @@ async function ensureBlogCategoriesFromBlogs() {
       )
     )
   );
+
+  global.__edvoBlogCategoriesReady = true;
+}
+
+async function ensureBlogCategoriesFromBlogs() {
+  if (global.__edvoBlogCategoriesReady) return;
+
+  if (!global.__edvoBlogCategoriesReadyPromise) {
+    global.__edvoBlogCategoriesReadyPromise = syncBlogCategoriesFromBlogs()
+      .catch((error) => {
+        global.__edvoBlogCategoriesReadyPromise = undefined;
+        throw error;
+      })
+      .finally(() => {
+        if (global.__edvoBlogCategoriesReady) {
+          global.__edvoBlogCategoriesReadyPromise = undefined;
+        }
+      });
+  }
+
+  await global.__edvoBlogCategoriesReadyPromise;
 }
 
 export async function GET(request: Request) {
@@ -47,7 +79,9 @@ export async function GET(request: Request) {
   await connectToDatabase();
   await ensureBlogCategoriesFromBlogs();
 
-  const items = await BlogCategoryModel.find().sort({ order: 1, updatedAt: -1 }).lean();
+  const items = await BlogCategoryModel.find({}, 'name slug description isActive order createdAt updatedAt')
+    .sort({ order: 1, updatedAt: -1 })
+    .lean();
   return toResponse(ok(items));
 }
 
@@ -76,6 +110,9 @@ export async function POST(request: Request) {
     isActive: body.isActive === false ? false : true,
     order: parseInt(String(body.order || 0), 10) || 0,
   });
+
+  global.__edvoBlogCategoriesReady = true;
+  global.__edvoBlogCategoriesReadyPromise = undefined;
 
   return toResponse(created(item));
 }

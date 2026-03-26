@@ -1,4 +1,4 @@
-﻿import { ApiResponse, ApiError } from '@/types';
+import { ApiResponse, ApiError } from '@/types';
 
 export function success<T>(data: T, message?: string, meta?: any): ApiResponse<T> {
   return {
@@ -78,11 +78,10 @@ export function tooManyRequests(message: string = 'Too many requests'): ApiRespo
   return fail(message, 'RATE_LIMIT_EXCEEDED', undefined, 429);
 }
 
-// Helper to convert our response objects to actual Response
-export function toResponse<T>(result: ApiResponse<T> & { status?: number }): Response {
-  const status = result.status || (result.success ? 200 : 500);
+export function toResponse<T>(result: ApiResponse<T> & { status?: number }, init: ResponseInit = {}): Response {
+  const status = result.status || init.status || (result.success ? 200 : 500);
   const { status: _, ...body } = result;
-  return Response.json(body, { status });
+  return Response.json(body, { ...init, status });
 }
 
 export function createResponse<T>(data: T, status: number = 200, message?: string, meta?: any): Response {

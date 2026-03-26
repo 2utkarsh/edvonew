@@ -1,17 +1,18 @@
-﻿import { getBlogCategoryFilterQuery } from '@/lib/blog-categories';
+import { getBlogCategoryFilterQuery } from '@/lib/blog-categories';
 import { NextRequest } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { success, fail } from '@/lib/http';
 import { BlogModel } from '@/models/Blog';
 
-// GET all blogs
+const BLOG_CMS_SELECT = 'title slug excerpt featuredImage category categories author status order readTime publishedAt createdAt updatedAt';
+
 export async function GET(request: NextRequest) {
   try {
     await connectToDatabase();
 
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const limit = parseInt(searchParams.get('limit') || '10', 10);
     const category = searchParams.get('category');
 
     const filterQuery: any = { status: 'published' };
@@ -19,13 +20,14 @@ export async function GET(request: NextRequest) {
       Object.assign(filterQuery, getBlogCategoryFilterQuery(category));
     }
 
-    const total = await BlogModel.countDocuments(filterQuery);
-
-    const blogs = await BlogModel.find(filterQuery)
-      .sort({ publishedAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .lean();
+    const [total, blogs] = await Promise.all([
+      BlogModel.countDocuments(filterQuery),
+      BlogModel.find(filterQuery, BLOG_CMS_SELECT)
+        .sort({ publishedAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean(),
+    ]);
 
     return success(
       {

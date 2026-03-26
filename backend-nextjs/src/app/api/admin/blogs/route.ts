@@ -1,4 +1,4 @@
-﻿import { normalizeBlogCategories } from '@/lib/blog-categories';
+import { normalizeBlogCategories } from '@/lib/blog-categories';
 import { getFallbackAdminBlogs } from '@/lib/content-fallback';
 import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { created, ok, parseJson, toResponse } from '@/lib/http';
@@ -8,6 +8,19 @@ import { ensureSeededContent } from '@/lib/content-seeder';
 import { requireAdminOrDemo } from '@/lib/demo-admin';
 import { UserModel } from '@/models/User';
 import { mapBlogDocumentToPublicBlog } from '@/lib/blog-data';
+
+const ADMIN_BLOG_LIST_SELECT = 'slug title excerpt featuredImage category categories author status order readTime publishedAt createdAt updatedAt';
+
+function mapAdminBlogSummary(item: any) {
+  const blog = mapBlogDocumentToPublicBlog(item);
+  const { content: _content, ...summary } = blog;
+
+  return {
+    ...summary,
+    status: item.status || 'draft',
+    order: item.order || 0,
+  };
+}
 
 export async function GET(request: Request) {
   const denied = await requireAdminOrDemo(request);
@@ -20,8 +33,12 @@ export async function GET(request: Request) {
   await connectToDatabase();
   await ensureSeededContent();
 
-  const items = await BlogModel.find().populate('author', 'name').sort({ order: 1, updatedAt: -1 }).lean();
-  return toResponse(ok(items.map((item) => ({ ...mapBlogDocumentToPublicBlog(item), status: item.status || 'draft', order: item.order || 0 }))));
+  const items = await BlogModel.find({}, ADMIN_BLOG_LIST_SELECT)
+    .populate('author', 'name')
+    .sort({ order: 1, updatedAt: -1 })
+    .lean();
+
+  return toResponse(ok(items.map(mapAdminBlogSummary)));
 }
 
 export async function POST(request: Request) {

@@ -1,4 +1,4 @@
-﻿import { hashPassword } from '@/lib/auth';
+import { hashPassword } from '@/lib/auth';
 import { getBlogCategories, getPrimaryBlogCategory } from '@/lib/blog-categories';
 import { MOCK_BLOGS } from '@/lib/blog-data';
 import { ensureChallengeQuestions, ensurePrizeDistribution, MOCK_CHALLENGES } from '@/lib/challenge-data';
@@ -19,14 +19,32 @@ import { UserModel } from '@/models/User';
 
 declare global {
   var __edvoContentSeeded: boolean | undefined;
+  var __edvoContentSeedingPromise: Promise<void> | undefined;
 }
 
 function authorEmail(name: string) {
   return `${name.toLowerCase().replace(/[^a-z0-9]+/g, '.').replace(/^\.+|\.+$/g, '')}@edvo.local`;
 }
 
-export async function ensureSeededContent() {
-  if (global.__edvoContentSeeded) return;
+async function hasExistingSeededContent() {
+  const checks = await Promise.all([
+    BlogModel.exists({}),
+    TeamMemberModel.exists({}),
+    ResourceItemModel.exists({}),
+    CourseReviewItemModel.exists({}),
+    SuccessStoryModel.exists({}),
+    EventItemModel.exists({}),
+    ChallengeItemModel.exists({}),
+  ]);
+
+  return checks.some(Boolean);
+}
+
+async function runSeedContent() {
+  if (await hasExistingSeededContent()) {
+    global.__edvoContentSeeded = true;
+    return;
+  }
 
   const passwordHash = await hashPassword('admin123');
   const authorIds = new Map<string, string>();
@@ -213,3 +231,21 @@ export async function ensureSeededContent() {
   global.__edvoContentSeeded = true;
 }
 
+export async function ensureSeededContent() {
+  if (global.__edvoContentSeeded) return;
+
+  if (!global.__edvoContentSeedingPromise) {
+    global.__edvoContentSeedingPromise = runSeedContent()
+      .catch((error) => {
+        global.__edvoContentSeedingPromise = undefined;
+        throw error;
+      })
+      .finally(() => {
+        if (global.__edvoContentSeeded) {
+          global.__edvoContentSeedingPromise = undefined;
+        }
+      });
+  }
+
+  await global.__edvoContentSeedingPromise;
+}
