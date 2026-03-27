@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -30,25 +30,27 @@
     .pill{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid #e2e8f0;border-radius:999px;background:#f8fafc}
     .thumb-preview{width:160px;height:96px;border-radius:16px;object-fit:cover;border:1px solid #e2e8f0;background:#f8fafc}
     .help{color:#718096;font-size:.88rem}
-    .multi-select{position:relative;display:flex;flex-direction:column;gap:12px}
-    .multi-select-trigger{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:14px 16px;border:1px solid #cbd5e0;border-radius:16px;background:linear-gradient(180deg,#fff 0%,#f8fafc 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.7);font-size:.95rem;font-weight:600;color:#1a202c;cursor:pointer;transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease}
-    .multi-select-trigger:hover{border-color:#a5b4fc;box-shadow:0 10px 24px rgba(102,126,234,.12)}
-    .multi-select-trigger:disabled{cursor:not-allowed;opacity:.7;box-shadow:none}
-    .multi-select.open .multi-select-trigger{border-color:#667eea;box-shadow:0 0 0 4px rgba(102,126,234,.12),0 14px 32px rgba(102,126,234,.18)}
-    .multi-select-arrow{font-size:.78rem;color:#667eea;transition:transform .2s ease}
-    .multi-select.open .multi-select-arrow{transform:rotate(180deg)}
-    .multi-select-panel{position:absolute;top:calc(100% + 8px);left:0;right:0;z-index:20;display:grid;gap:10px;padding:12px;border:1px solid #dbe4ff;border-radius:18px;background:#fff;box-shadow:0 24px 60px rgba(15,23,42,.18);max-height:260px;overflow:auto}
-    .multi-select-option{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;padding:12px 14px;border:1px solid #e2e8f0;border-radius:14px;background:#f8fafc;cursor:pointer;text-align:left;font:inherit;color:inherit;appearance:none;transition:border-color .2s ease,background .2s ease,transform .2s ease}
-    .multi-select-option:hover{border-color:#c7d2fe;background:#f5f7ff;transform:translateY(-1px)}
-    .multi-select-option.active{border-color:#a5b4fc;background:#eef2ff}
-    .multi-select-option-indicator{display:inline-flex;align-items:center;justify-content:center;min-width:78px;padding:6px 10px;border:1px solid #dbe4ff;border-radius:999px;background:#fff;color:#718096;font-size:.76rem;font-weight:700;transition:background .2s ease,border-color .2s ease,color .2s ease}
+    .category-picker-field{display:flex;flex-direction:column;gap:10px;grid-column:span 2}
+    .category-picker-label{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:#4a5568;font-weight:700}
+    .multi-select{display:flex;flex-direction:column;gap:14px;padding:18px;border:1px solid #e2e8f0;border-radius:22px;background:linear-gradient(180deg,#fff 0%,#f8fafc 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.75);transition:border-color .2s ease,box-shadow .2s ease}
+    .multi-select.has-selection{border-color:#c7d2fe;box-shadow:0 18px 36px rgba(102,126,234,.1),inset 0 1px 0 rgba(255,255,255,.75)}
+    .multi-select-summary{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:14px 16px;border:1px solid #dbe4ff;border-radius:18px;background:#eef2ff}
+    .multi-select-summary-copy{display:flex;flex-direction:column;gap:4px}
+    .multi-select-summary-title{font-size:1rem;font-weight:800;color:#1a202c}
+    .multi-select-summary-help{font-size:.82rem;color:#5a67d8;line-height:1.5}
+    .multi-select-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+    .multi-select-empty{padding:16px;border:1px dashed #cbd5e0;border-radius:16px;background:#fff;color:#718096;font-size:.88rem}
+    .multi-select-option{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;width:100%;padding:14px 16px;border:1px solid #e2e8f0;border-radius:18px;background:#fff;cursor:pointer;text-align:left;font:inherit;color:inherit;appearance:none;transition:border-color .2s ease,background .2s ease,transform .2s ease,box-shadow .2s ease}
+    .multi-select-option:hover{border-color:#c7d2fe;background:#f5f7ff;transform:translateY(-1px);box-shadow:0 14px 28px rgba(102,126,234,.12)}
+    .multi-select-option.active{border-color:#667eea;background:#eef2ff;box-shadow:0 14px 28px rgba(102,126,234,.16)}
+    .multi-select-option-indicator{display:inline-flex;align-items:center;justify-content:center;min-width:92px;padding:8px 12px;border:1px solid #dbe4ff;border-radius:999px;background:#fff;color:#718096;font-size:.76rem;font-weight:700;transition:background .2s ease,border-color .2s ease,color .2s ease}
     .multi-select-option.active .multi-select-option-indicator{background:#667eea;border-color:#667eea;color:#fff}
-    .multi-select-option-copy{display:flex;flex-direction:column;gap:4px;min-width:0}
+    .multi-select-option-copy{display:flex;flex-direction:column;gap:6px;min-width:0}
     .multi-select-option-name{font-weight:700;color:#1a202c}
-    .multi-select-option-help{font-size:.78rem;color:#718096}
+    .multi-select-option-help{font-size:.8rem;color:#718096;line-height:1.5}
     .multi-select-tags{display:flex;flex-wrap:wrap;gap:8px;min-height:20px}
-    .selected-tag{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #dbe4ff;border-radius:999px;background:#eef2ff;color:#3c4bb7;font-size:.85rem;font-weight:700;cursor:pointer;transition:background .2s ease,border-color .2s ease,transform .2s ease}
-    .selected-tag:hover{background:#e0e7ff;border-color:#a5b4fc;transform:translateY(-1px)}
+    .selected-tag{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #dbe4ff;border-radius:999px;background:#fff;color:#3c4bb7;font-size:.85rem;font-weight:700;cursor:pointer;transition:background .2s ease,border-color .2s ease,transform .2s ease}
+    .selected-tag:hover{background:#eef2ff;border-color:#a5b4fc;transform:translateY(-1px)}
     .selected-tag-remove{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:999px;background:rgba(60,75,183,.12);font-size:.75rem;line-height:1}
     .badge-list{display:flex;gap:8px;flex-wrap:wrap}
   </style>
@@ -97,7 +99,7 @@
           <div class="toolbar">
             <div>
               <div class="table-title">Blog Categories</div>
-              <div class="help">Create categories first, then assign one or more of them to each blog. Use Up and Down to reorder frontend tabs.</div>
+              <div class="help">Create categories first, then assign them in the blog form below. Use "Move earlier" and "Move later" to control the frontend tab order.</div>
             </div>
           </div>
 
@@ -118,7 +120,7 @@
           <div class="toolbar">
             <div>
               <div class="table-title" id="formTitle">Create Blog</div>
-              <div class="help" id="formHelp">Uploaded thumbnail, saved categories, status, and order all affect the frontend.</div>
+              <div class="help" id="formHelp">Choose the blog details below. Categories and display position decide where this blog appears on the frontend.</div>
             </div>
           </div>
 
@@ -126,17 +128,18 @@
             <div class="grid">
               <input id="title" class="input" placeholder="Blog title" required />
               <input id="author" class="input" placeholder="Author name" required />
-              <div>
-                <div class="help" style="margin-bottom:8px">Select one or more categories</div>
+              <div class="category-picker-field">
+                <div class="category-picker-label">Blog categories</div>
+                <div class="help">Choose every category where this blog should appear.</div>
                 <div id="categorySelection" class="multi-select">
-                  <button id="categoryDropdownButton" class="multi-select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-                    <span id="categoryDropdownLabel">Select categories</span>
-                    <span class="multi-select-arrow" aria-hidden="true">v</span>
-                  </button>
-                  <div id="categoryDropdownPanel" class="multi-select-panel" role="listbox" aria-multiselectable="true" hidden></div>
-                  <div id="categorySelectedBadges" class="multi-select-tags">
-                    <span class="help">Selected categories will appear here.</span>
+                  <div class="multi-select-summary">
+                    <div class="multi-select-summary-copy">
+                      <div id="categoryDropdownLabel" class="multi-select-summary-title">No categories selected</div>
+                      <div id="categorySelectionNote" class="multi-select-summary-help">Create categories first, then choose one or more here.</div>
+                    </div>
                   </div>
+                  <div id="categoryDropdownOptions" class="multi-select-options" role="listbox" aria-multiselectable="true"></div>
+                  <div id="categorySelectedBadges" class="multi-select-tags" hidden></div>
                 </div>
               </div>
               <input id="readTime" class="input" type="number" min="1" value="5" placeholder="Read time in minutes" required />
@@ -200,9 +203,9 @@
 
     const form = document.getElementById('blogForm');
     const categorySelection = document.getElementById('categorySelection');
-    const categoryDropdownButton = document.getElementById('categoryDropdownButton');
     const categoryDropdownLabel = document.getElementById('categoryDropdownLabel');
-    const categoryDropdownPanel = document.getElementById('categoryDropdownPanel');
+    const categorySelectionNote = document.getElementById('categorySelectionNote');
+    const categoryDropdownOptions = document.getElementById('categoryDropdownOptions');
     const categorySelectedBadges = document.getElementById('categorySelectedBadges');
 
     function e(value) {
@@ -260,24 +263,26 @@
         : normalized;
     }
 
-    function setCategoryDropdownOpen(isOpen) {
-      const shouldOpen = Boolean(isOpen && categories.length);
-      categorySelection.classList.toggle('open', shouldOpen);
-      categoryDropdownButton.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
-      categoryDropdownPanel.hidden = !shouldOpen;
+    function formatCategoryTriggerLabel(selectedValues) {
+      if (!categories.length) return 'Create categories first';
+      if (!selectedValues.length) return 'No categories selected';
+      if (selectedValues.length === 1) return '1 category selected';
+      return `${selectedValues.length} categories selected`;
+    }
+
+    function formatCategoryTriggerHelp(selectedValues) {
+      if (!categories.length) return 'Add a category above before assigning one here.';
+      if (!selectedValues.length) return 'Choose every category where this blog should appear.';
+      return `Selected: ${selectedValues.join(', ')}`;
     }
 
     function syncCategorySelectionUi() {
       const selectedValues = getSelectedCategories();
-      categoryDropdownButton.disabled = !categories.length;
-      categoryDropdownLabel.textContent = !categories.length
-        ? 'Create a category first'
-        : !selectedValues.length
-          ? 'Select categories'
-          : selectedValues.length === 1
-            ? selectedValues[0]
-            : `${selectedValues.length} categories selected`;
+      categorySelection.classList.toggle('has-selection', selectedValues.length > 0);
+      categoryDropdownLabel.textContent = formatCategoryTriggerLabel(selectedValues);
+      categorySelectionNote.textContent = formatCategoryTriggerHelp(selectedValues);
 
+      categorySelectedBadges.hidden = !selectedValues.length;
       categorySelectedBadges.innerHTML = selectedValues.length
         ? selectedValues.map((value) => `
             <button class="selected-tag" type="button" data-value="${e(value)}">
@@ -285,9 +290,9 @@
               <span class="selected-tag-remove" aria-hidden="true">x</span>
             </button>
           `).join('')
-        : '<span class="help">Selected categories will appear here.</span>';
+        : '';
 
-      Array.from(categoryDropdownPanel.querySelectorAll('.multi-select-option')).forEach((option) => {
+      Array.from(categoryDropdownOptions.querySelectorAll('.multi-select-option')).forEach((option) => {
         const value = String(option.getAttribute('data-value') || '');
         const isSelected = selectedValues.some((selectedValue) => selectedValue.toLowerCase() === value.toLowerCase());
         option.classList.toggle('active', isSelected);
@@ -328,21 +333,17 @@
       const selectedValues = getSelectedCategories();
       const selectedKeys = new Set(selectedValues.map((value) => value.toLowerCase()));
 
-      categoryDropdownPanel.innerHTML = categories.length
+      categoryDropdownOptions.innerHTML = categories.length
         ? categories.map((category) => `
             <button class="multi-select-option ${selectedKeys.has(String(category.name).toLowerCase()) ? 'active' : ''}" type="button" role="option" data-value="${e(category.name)}" aria-selected="${selectedKeys.has(String(category.name).toLowerCase()) ? 'true' : 'false'}">
               <span class="multi-select-option-copy">
                 <span class="multi-select-option-name">${e(category.name)}</span>
-                <span class="multi-select-option-help">${e(category.description || 'Choose this category for the blog')}</span>
+                <span class="multi-select-option-help">${e(category.description || 'Use this category as a frontend blog tab')}</span>
               </span>
               <span class="multi-select-option-indicator">${selectedKeys.has(String(category.name).toLowerCase()) ? 'Selected' : 'Select'}</span>
             </button>
           `).join('')
-        : '<div class="help">Create a category first.</div>';
-
-      if (!categories.length) {
-        setCategoryDropdownOpen(false);
-      }
+        : '<div class="multi-select-empty">No categories yet. Add one above, then choose it here.</div>';
 
       syncCategorySelectionUi();
     }
@@ -371,7 +372,6 @@
       thumbnailValue = '/images/edvo-official-logo-v10.png';
       document.getElementById('thumbnailPreview').src = thumbnailValue;
       renderCategoryOptions([]);
-      setCategoryDropdownOpen(false);
     }
 
     async function startEdit(id) {
@@ -396,7 +396,6 @@
       document.getElementById('formTitle').textContent = 'Edit Blog';
       document.getElementById('submitButton').textContent = 'Update Blog';
       document.getElementById('cancelEdit').style.display = 'inline-flex';
-      setCategoryDropdownOpen(false);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -426,10 +425,13 @@
       document.getElementById('categoryList').innerHTML = categories.length
         ? categories.map((category, index) => `
             <div class="pill">
-              <span>${e(category.name)}</span>
+              <div class="pill-copy">
+                <strong>${e(category.name)}</strong>
+                <span class="help">${e(category.description || 'Used as a frontend blog tab')}</span>
+              </div>
               <div class="pill-actions">
-                <button class="btn btn-secondary" type="button" onclick="moveCategory('${category.id}',-1)" ${index === 0 ? 'disabled' : ''}>Up</button>
-                <button class="btn btn-secondary" type="button" onclick="moveCategory('${category.id}',1)" ${index === categories.length - 1 ? 'disabled' : ''}>Down</button>
+                <button class="btn btn-secondary" type="button" onclick="moveCategory('${category.id}',-1)" ${index === 0 ? 'disabled' : ''}>Move Up</button>
+                <button class="btn btn-secondary" type="button" onclick="moveCategory('${category.id}',1)" ${index === categories.length - 1 ? 'disabled' : ''}>Move Down</button>
                 <button class="btn btn-danger" type="button" onclick="deleteCategory('${category.id}')">Delete</button>
               </div>
             </div>
@@ -462,8 +464,8 @@
               </td>
               <td>
                 <div class="table-actions">
-                  <button class="btn btn-secondary" type="button" onclick="moveBlog('${blog.id}',-1)">Up</button>
-                  <button class="btn btn-secondary" type="button" onclick="moveBlog('${blog.id}',1)">Down</button>
+                  <button class="btn btn-secondary" type="button" onclick="moveBlog('${blog.id}',-1)">Move Up</button>
+                  <button class="btn btn-secondary" type="button" onclick="moveBlog('${blog.id}',1)">Move Down</button>
                   <button class="btn btn-secondary" type="button" onclick="startEdit('${blog.id}')">Edit</button>
                   <button class="btn btn-danger" type="button" onclick="deleteBlog('${blog.id}')">Delete</button>
                 </div>
@@ -534,12 +536,7 @@
       reader.readAsDataURL(file);
     });
 
-    categoryDropdownButton.addEventListener('click', () => {
-      if (!categories.length) return;
-      setCategoryDropdownOpen(!categorySelection.classList.contains('open'));
-    });
-
-    categoryDropdownPanel.addEventListener('click', (event) => {
+    categoryDropdownOptions.addEventListener('click', (event) => {
       if (!(event.target instanceof Element)) return;
       const option = event.target.closest('button[data-value]');
       if (!option) return;
@@ -551,17 +548,6 @@
       const button = event.target.closest('button[data-value]');
       if (!button) return;
       toggleCategoryValue(button.getAttribute('data-value') || '', false);
-    });
-
-    document.addEventListener('click', (event) => {
-      if (!(event.target instanceof Node) || categorySelection.contains(event.target)) return;
-      setCategoryDropdownOpen(false);
-    });
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {
-        setCategoryDropdownOpen(false);
-      }
     });
 
     document.getElementById('categoryForm').addEventListener('submit', async (event) => {
