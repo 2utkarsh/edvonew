@@ -32,22 +32,34 @@
     .help{color:#718096;font-size:.88rem}
     .category-picker-field{display:flex;flex-direction:column;gap:10px;grid-column:span 2}
     .category-picker-label{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:#4a5568;font-weight:700}
-    .multi-select{display:flex;flex-direction:column;gap:14px;padding:18px;border:1px solid #e2e8f0;border-radius:22px;background:linear-gradient(180deg,#fff 0%,#f8fafc 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.75);transition:border-color .2s ease,box-shadow .2s ease}
-    .multi-select.has-selection{border-color:#c7d2fe;box-shadow:0 18px 36px rgba(102,126,234,.1),inset 0 1px 0 rgba(255,255,255,.75)}
-    .multi-select-summary{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:14px 16px;border:1px solid #dbe4ff;border-radius:18px;background:#eef2ff}
-    .multi-select-summary-copy{display:flex;flex-direction:column;gap:4px}
-    .multi-select-summary-title{font-size:1rem;font-weight:800;color:#1a202c}
-    .multi-select-summary-help{font-size:.82rem;color:#5a67d8;line-height:1.5}
-    .multi-select-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+    .multi-select{position:relative;display:flex;flex-direction:column;gap:10px}
+    .multi-select-trigger{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;padding:14px 16px;border:1px solid #d7deef;border-radius:18px;background:linear-gradient(180deg,#fff 0%,#f8fafc 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.78);font:inherit;text-align:left;cursor:pointer;transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease}
+    .multi-select-trigger:hover{border-color:#a5b4fc;box-shadow:0 12px 26px rgba(102,126,234,.12)}
+    .multi-select-trigger:disabled{cursor:not-allowed;opacity:.72;box-shadow:none}
+    .multi-select.open .multi-select-trigger{border-color:#667eea;box-shadow:0 0 0 4px rgba(102,126,234,.12),0 14px 30px rgba(102,126,234,.18)}
+    .multi-select.has-selection .multi-select-trigger{border-color:#c7d2fe}
+    .multi-select-trigger-copy{display:flex;flex-direction:column;gap:4px;min-width:0}
+    .multi-select-trigger-label{font-size:.96rem;font-weight:800;color:#1a202c}
+    .multi-select-trigger-help{font-size:.82rem;color:#718096;line-height:1.5;white-space:normal}
+    .multi-select-trigger-meta{display:flex;align-items:center;gap:10px;flex-shrink:0}
+    .multi-select-trigger-count{display:inline-flex;align-items:center;justify-content:center;min-width:92px;padding:8px 12px;border:1px solid #dbe4ff;border-radius:999px;background:#eef2ff;color:#4c5bc6;font-size:.78rem;font-weight:700}
+    .multi-select-trigger-caret{font-size:.9rem;color:#667eea;transition:transform .2s ease}
+    .multi-select.open .multi-select-trigger-caret{transform:rotate(180deg)}
+    .multi-select-panel{position:absolute;top:calc(100% + 10px);left:0;right:0;z-index:30;display:flex;flex-direction:column;gap:12px;padding:14px;border:1px solid #dbe4ff;border-radius:22px;background:#fff;box-shadow:0 24px 60px rgba(15,23,42,.18)}
+    .multi-select-panel-head{display:flex;align-items:center;gap:10px}
+    .multi-select-search{flex:1;min-height:46px;padding:12px 14px;border:1px solid #d7deef;border-radius:14px;background:#f8fafc;font:inherit}
+    .multi-select-search:focus{outline:none;border-color:#667eea;box-shadow:0 0 0 4px rgba(102,126,234,.12);background:#fff}
+    .multi-select-done{min-height:46px;padding:0 16px;border:1px solid #dbe4ff;border-radius:14px;background:#eef2ff;color:#4c5bc6;font-weight:700;cursor:pointer}
+    .multi-select-options{display:flex;flex-direction:column;gap:10px;max-height:260px;overflow:auto;padding-right:4px}
     .multi-select-empty{padding:16px;border:1px dashed #cbd5e0;border-radius:16px;background:#fff;color:#718096;font-size:.88rem}
-    .multi-select-option{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;width:100%;padding:14px 16px;border:1px solid #e2e8f0;border-radius:18px;background:#fff;cursor:pointer;text-align:left;font:inherit;color:inherit;appearance:none;transition:border-color .2s ease,background .2s ease,transform .2s ease,box-shadow .2s ease}
-    .multi-select-option:hover{border-color:#c7d2fe;background:#f5f7ff;transform:translateY(-1px);box-shadow:0 14px 28px rgba(102,126,234,.12)}
-    .multi-select-option.active{border-color:#667eea;background:#eef2ff;box-shadow:0 14px 28px rgba(102,126,234,.16)}
-    .multi-select-option-indicator{display:inline-flex;align-items:center;justify-content:center;min-width:92px;padding:8px 12px;border:1px solid #dbe4ff;border-radius:999px;background:#fff;color:#718096;font-size:.76rem;font-weight:700;transition:background .2s ease,border-color .2s ease,color .2s ease}
-    .multi-select-option.active .multi-select-option-indicator{background:#667eea;border-color:#667eea;color:#fff}
-    .multi-select-option-copy{display:flex;flex-direction:column;gap:6px;min-width:0}
+    .multi-select-option{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;width:100%;padding:13px 14px;border:1px solid #e2e8f0;border-radius:16px;background:#fff;cursor:pointer;text-align:left;font:inherit;color:inherit;appearance:none;transition:border-color .2s ease,background .2s ease,transform .2s ease,box-shadow .2s ease}
+    .multi-select-option:hover{border-color:#c7d2fe;background:#f5f7ff;transform:translateY(-1px);box-shadow:0 12px 24px rgba(102,126,234,.12)}
+    .multi-select-option.active{border-color:#667eea;background:#eef2ff;box-shadow:0 12px 24px rgba(102,126,234,.16)}
+    .multi-select-option-copy{display:flex;flex-direction:column;gap:5px;min-width:0}
     .multi-select-option-name{font-weight:700;color:#1a202c}
     .multi-select-option-help{font-size:.8rem;color:#718096;line-height:1.5}
+    .multi-select-option-indicator{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:24px;height:24px;border:1px solid #cbd5e0;border-radius:8px;background:#fff;color:transparent;font-size:.82rem;font-weight:800;transition:border-color .2s ease,background .2s ease,color .2s ease}
+    .multi-select-option.active .multi-select-option-indicator{border-color:#667eea;background:#667eea;color:#fff}
     .multi-select-tags{display:flex;flex-wrap:wrap;gap:8px;min-height:20px}
     .selected-tag{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #dbe4ff;border-radius:999px;background:#fff;color:#3c4bb7;font-size:.85rem;font-weight:700;cursor:pointer;transition:background .2s ease,border-color .2s ease,transform .2s ease}
     .selected-tag:hover{background:#eef2ff;border-color:#a5b4fc;transform:translateY(-1px)}
@@ -132,13 +144,23 @@
                 <div class="category-picker-label">Blog categories</div>
                 <div class="help">Choose every category where this blog should appear.</div>
                 <div id="categorySelection" class="multi-select">
-                  <div class="multi-select-summary">
-                    <div class="multi-select-summary-copy">
-                      <div id="categoryDropdownLabel" class="multi-select-summary-title">No categories selected</div>
-                      <div id="categorySelectionNote" class="multi-select-summary-help">Create categories first, then choose one or more here.</div>
+                  <button id="categoryDropdownButton" class="multi-select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                    <span class="multi-select-trigger-copy">
+                      <span id="categoryDropdownLabel" class="multi-select-trigger-label">Select categories</span>
+                      <span id="categorySelectionNote" class="multi-select-trigger-help">Choose one or more categories for this blog.</span>
+                    </span>
+                    <span class="multi-select-trigger-meta">
+                      <span id="categorySelectionCount" class="multi-select-trigger-count">0 selected</span>
+                      <span class="multi-select-trigger-caret" aria-hidden="true">v</span>
+                    </span>
+                  </button>
+                  <div id="categoryDropdownPanel" class="multi-select-panel" role="listbox" aria-multiselectable="true" hidden>
+                    <div class="multi-select-panel-head">
+                      <input id="categoryDropdownSearch" class="multi-select-search" type="search" placeholder="Search categories" />
+                      <button id="categoryDropdownDone" class="multi-select-done" type="button">Done</button>
                     </div>
+                    <div id="categoryDropdownOptions" class="multi-select-options"></div>
                   </div>
-                  <div id="categoryDropdownOptions" class="multi-select-options" role="listbox" aria-multiselectable="true"></div>
                   <div id="categorySelectedBadges" class="multi-select-tags" hidden></div>
                 </div>
               </div>
@@ -203,8 +225,13 @@
 
     const form = document.getElementById('blogForm');
     const categorySelection = document.getElementById('categorySelection');
+    const categoryDropdownButton = document.getElementById('categoryDropdownButton');
     const categoryDropdownLabel = document.getElementById('categoryDropdownLabel');
     const categorySelectionNote = document.getElementById('categorySelectionNote');
+    const categorySelectionCount = document.getElementById('categorySelectionCount');
+    const categoryDropdownPanel = document.getElementById('categoryDropdownPanel');
+    const categoryDropdownSearch = document.getElementById('categoryDropdownSearch');
+    const categoryDropdownDone = document.getElementById('categoryDropdownDone');
     const categoryDropdownOptions = document.getElementById('categoryDropdownOptions');
     const categorySelectedBadges = document.getElementById('categorySelectedBadges');
 
@@ -265,22 +292,49 @@
 
     function formatCategoryTriggerLabel(selectedValues) {
       if (!categories.length) return 'Create categories first';
-      if (!selectedValues.length) return 'No categories selected';
-      if (selectedValues.length === 1) return '1 category selected';
+      if (!selectedValues.length) return 'Select categories';
+      if (selectedValues.length === 1) return selectedValues[0];
       return `${selectedValues.length} categories selected`;
     }
 
     function formatCategoryTriggerHelp(selectedValues) {
       if (!categories.length) return 'Add a category above before assigning one here.';
-      if (!selectedValues.length) return 'Choose every category where this blog should appear.';
+      if (!selectedValues.length) return 'Choose one or more categories for this blog.';
       return `Selected: ${selectedValues.join(', ')}`;
+    }
+
+    function formatCategoryTriggerCount(selectedValues) {
+      if (!categories.length) return 'No categories';
+      return `${selectedValues.length} selected`;
+    }
+
+    function setCategoryDropdownOpen(isOpen) {
+      const shouldOpen = Boolean(isOpen && categories.length);
+      categorySelection.classList.toggle('open', shouldOpen);
+      categoryDropdownButton.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+      categoryDropdownPanel.hidden = !shouldOpen;
+
+      if (shouldOpen) {
+        categoryDropdownSearch.focus();
+      } else if (categoryDropdownSearch.value) {
+        categoryDropdownSearch.value = '';
+        renderCategoryOptions(getSelectedCategories());
+      }
     }
 
     function syncCategorySelectionUi() {
       const selectedValues = getSelectedCategories();
       categorySelection.classList.toggle('has-selection', selectedValues.length > 0);
+      if (!categories.length) {
+        categorySelection.classList.remove('open');
+        categoryDropdownButton.setAttribute('aria-expanded', 'false');
+        categoryDropdownPanel.hidden = true;
+      }
+      categoryDropdownButton.disabled = !categories.length;
       categoryDropdownLabel.textContent = formatCategoryTriggerLabel(selectedValues);
       categorySelectionNote.textContent = formatCategoryTriggerHelp(selectedValues);
+      categorySelectionCount.textContent = formatCategoryTriggerCount(selectedValues);
+      categoryDropdownButton.title = selectedValues.join(', ');
 
       categorySelectedBadges.hidden = !selectedValues.length;
       categorySelectedBadges.innerHTML = selectedValues.length
@@ -299,7 +353,7 @@
         option.setAttribute('aria-selected', isSelected ? 'true' : 'false');
         const indicator = option.querySelector('.multi-select-option-indicator');
         if (indicator) {
-          indicator.textContent = isSelected ? 'Selected' : 'Select';
+          indicator.textContent = isSelected ? 'v' : '';
         }
       });
     }
@@ -332,17 +386,25 @@
       setSelectedCategories(selected === undefined ? getSelectedCategories() : selected);
       const selectedValues = getSelectedCategories();
       const selectedKeys = new Set(selectedValues.map((value) => value.toLowerCase()));
+      const query = String(categoryDropdownSearch.value || '').trim().toLowerCase();
+      const filteredCategories = categories.filter((category) => {
+        const name = String(category.name || '').toLowerCase();
+        const description = String(category.description || '').toLowerCase();
+        return !query || name.includes(query) || description.includes(query);
+      });
 
       categoryDropdownOptions.innerHTML = categories.length
-        ? categories.map((category) => `
+        ? filteredCategories.length
+          ? filteredCategories.map((category) => `
             <button class="multi-select-option ${selectedKeys.has(String(category.name).toLowerCase()) ? 'active' : ''}" type="button" role="option" data-value="${e(category.name)}" aria-selected="${selectedKeys.has(String(category.name).toLowerCase()) ? 'true' : 'false'}">
               <span class="multi-select-option-copy">
                 <span class="multi-select-option-name">${e(category.name)}</span>
                 <span class="multi-select-option-help">${e(category.description || 'Use this category as a frontend blog tab')}</span>
               </span>
-              <span class="multi-select-option-indicator">${selectedKeys.has(String(category.name).toLowerCase()) ? 'Selected' : 'Select'}</span>
+              <span class="multi-select-option-indicator" aria-hidden="true">${selectedKeys.has(String(category.name).toLowerCase()) ? 'v' : ''}</span>
             </button>
           `).join('')
+          : '<div class="multi-select-empty">No categories match this search.</div>'
         : '<div class="multi-select-empty">No categories yet. Add one above, then choose it here.</div>';
 
       syncCategorySelectionUi();
@@ -372,6 +434,7 @@
       thumbnailValue = '/images/edvo-official-logo-v10.png';
       document.getElementById('thumbnailPreview').src = thumbnailValue;
       renderCategoryOptions([]);
+      setCategoryDropdownOpen(false);
     }
 
     async function startEdit(id) {
@@ -385,6 +448,7 @@
       document.getElementById('title').value = item.title || '';
       document.getElementById('author').value = item.author || '';
       renderCategoryOptions(getBlogCategories(item));
+      setCategoryDropdownOpen(false);
       document.getElementById('readTime').value = parseInt(item.readTime, 10) || 5;
       document.getElementById('order').value = item.order || 0;
       document.getElementById('status').value = item.status || 'published';
@@ -536,6 +600,24 @@
       reader.readAsDataURL(file);
     });
 
+    categoryDropdownButton.addEventListener('click', () => {
+      setCategoryDropdownOpen(!categorySelection.classList.contains('open'));
+    });
+
+    categoryDropdownDone.addEventListener('click', () => {
+      setCategoryDropdownOpen(false);
+    });
+
+    categoryDropdownSearch.addEventListener('input', () => {
+      renderCategoryOptions(getSelectedCategories());
+    });
+
+    categoryDropdownSearch.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+      }
+    });
+
     categoryDropdownOptions.addEventListener('click', (event) => {
       if (!(event.target instanceof Element)) return;
       const option = event.target.closest('button[data-value]');
@@ -548,6 +630,17 @@
       const button = event.target.closest('button[data-value]');
       if (!button) return;
       toggleCategoryValue(button.getAttribute('data-value') || '', false);
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!(event.target instanceof Node) || categorySelection.contains(event.target)) return;
+      setCategoryDropdownOpen(false);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        setCategoryDropdownOpen(false);
+      }
     });
 
     document.getElementById('categoryForm').addEventListener('submit', async (event) => {
