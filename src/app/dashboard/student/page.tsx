@@ -233,14 +233,14 @@ export default function StudentDashboard() {
   const renderDashboard = () => (
     <div className="space-y-6">
       <Card className="overflow-hidden rounded-[2rem] border border-white/70 bg-white/90 p-0 shadow-[0_30px_80px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-slate-900/85">
-        <div className="grid gap-0 lg:grid-cols-[1.2fr,0.8fr]">
-          <div className="bg-[linear-gradient(135deg,#3b82f6_0%,#6366f1_48%,#8b5cf6_100%)] p-8 text-white sm:p-10">
+        <div className="grid gap-0 xl:grid-cols-[minmax(0,1.35fr),360px]">
+          <div className="bg-[linear-gradient(135deg,#2563eb_0%,#4f46e5_46%,#7c3aed_100%)] p-8 text-white sm:p-10 xl:p-12">
             <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em]">
-              <Sparkles className="h-3.5 w-3.5" /> Overview
+              <Sparkles className="h-3.5 w-3.5" /> Student Overview
             </div>
-            <h2 className="mt-5 text-3xl font-black sm:text-[2.35rem]">Hi, {displayName}!</h2>
+            <h2 className="mt-5 text-3xl font-black sm:text-[2.6rem]">Hi, {displayName}!</h2>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-white/85 sm:text-base">
-              Track enrolled courses, jump into live sessions, view certificates, and manage your profile from one student-first panel.
+              Stay on top of your enrolled courses, upcoming live classes, certificates, and profile details from one polished workspace.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               {currentCourse ? (
@@ -256,18 +256,33 @@ export default function StudentDashboard() {
                 <NotebookPen className="h-4 w-4" /> Profile Settings
               </button>
             </div>
-          </div>
-          <div className="relative flex min-h-[240px] items-end justify-center overflow-hidden bg-[linear-gradient(180deg,#faf5ff_0%,#eef2ff_100%)] p-6 dark:bg-[linear-gradient(180deg,rgba(30,41,59,0.98)_0%,rgba(15,23,42,0.98)_100%)]">
-            <div className="absolute left-8 top-8 rounded-2xl bg-white/80 px-4 py-3 text-sm text-slate-700 shadow-lg dark:bg-slate-900/80 dark:text-slate-300">
-              <div className="font-semibold text-slate-950 dark:text-white">{dashboard?.stats.bestStreakDays ?? 0} day streak</div>
-              <div className="mt-1 text-xs uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-300">Keep the momentum</div>
+            <div className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              <HeroStrip label="Active Course" value={currentCourse?.course.title || 'Start your learning path'} />
+              <HeroStrip label="Live Sessions" value={`${dashboard?.upcomingLiveSessions.length ?? 0} scheduled`} />
+              <HeroStrip label="Certificates Ready" value={`${dashboard?.stats.certificateReady ?? 0} unlocked`} />
             </div>
-            <Image src="/images/student-illustration.png" alt="Student illustration" width={280} height={240} className="h-auto w-full max-w-[260px] object-contain" priority />
+          </div>
+          <div className="flex h-full flex-col justify-between gap-6 bg-[linear-gradient(180deg,#faf5ff_0%,#eef2ff_100%)] p-6 dark:bg-[linear-gradient(180deg,rgba(30,41,59,0.98)_0%,rgba(15,23,42,0.98)_100%)] sm:p-7">
+            <div className="flex items-start justify-between gap-4">
+              <div className="rounded-2xl bg-white/85 px-4 py-3 text-sm text-slate-700 shadow-lg dark:bg-slate-900/80 dark:text-slate-300">
+                <div className="font-semibold text-slate-950 dark:text-white">{dashboard?.stats.bestStreakDays ?? 0} day streak</div>
+                <div className="mt-1 text-xs uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-300">Keep the momentum</div>
+              </div>
+              <div className="rounded-2xl border border-white/70 bg-white/70 px-4 py-3 text-right shadow-sm dark:border-white/10 dark:bg-slate-900/70">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Unread Alerts</div>
+                <div className="mt-1 text-2xl font-black text-slate-950 dark:text-white">{dashboard?.stats.unreadNotifications ?? 0}</div>
+              </div>
+            </div>
+            <Image src="/images/student-illustration.png" alt="Student illustration" width={320} height={260} className="mx-auto h-auto w-full max-w-[290px] object-contain" priority />
+            <div className="grid grid-cols-2 gap-3">
+              <SmallCard label="Avg Progress" value={dashboard?.stats.averageProgress ?? 0} suffix="%" />
+              <SmallCard label="Attendance" value={dashboard?.stats.averageAttendance ?? 0} suffix="%" />
+            </div>
           </div>
         </div>
       </Card>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-4">
         {stats.map((item) => (
           <Card key={item.label} className="rounded-[1.6rem] border border-white/70 bg-white/90 p-5 shadow-[0_20px_50px_rgba(15,23,42,0.05)] dark:border-white/10 dark:bg-slate-900/80">
             <div className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">{item.label}</div>
@@ -276,12 +291,12 @@ export default function StudentDashboard() {
         ))}
       </div>
 
-      <div className="grid gap-6 2xl:grid-cols-[minmax(0,1.2fr),360px]">
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.18fr),360px]">
         <div className="space-y-6">
           <Panel title="My Courses" description="Your enrolled programs with quick resume buttons.">
             {loading ? <Empty text="Loading courses..." /> : dashboard?.myCourses.length ? (
-              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                {dashboard.myCourses.slice(0, 3).map((course) => <CourseCard key={course.enrollmentId} course={course} compact />)}
+              <div className="grid gap-5 md:grid-cols-2">
+                {dashboard.myCourses.slice(0, 4).map((course) => <CourseCard key={course.enrollmentId} course={course} compact />)}
               </div>
             ) : <Empty text="Your enrolled courses will appear here after payment and enrollment." />}
           </Panel>
@@ -413,20 +428,19 @@ export default function StudentDashboard() {
       <Navbar />
       <main className="flex-1">
         <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(79,70,229,0.12),_transparent_28%),radial-gradient(circle_at_bottom_right,_rgba(245,158,11,0.16),_transparent_30%),linear-gradient(180deg,#fffef9_0%,#f8fafc_52%,#f7fafc_100%)] pt-6 dark:bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.16),_transparent_24%),radial-gradient(circle_at_bottom_right,_rgba(245,158,11,0.12),_transparent_26%),linear-gradient(180deg,#020617_0%,#0f172a_48%,#111827_100%)]">
-          <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-            <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-              <div>
+          <div className="mx-auto max-w-[1500px] px-4 py-8 sm:px-6 lg:px-8">
+            <div className="mb-8 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+              <div className="max-w-3xl">
                 <div className="inline-flex items-center gap-2 rounded-full border border-indigo-200/70 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.28em] text-indigo-700 shadow-sm dark:border-indigo-400/20 dark:bg-slate-900/70 dark:text-indigo-200"><Sparkles className="h-3.5 w-3.5" /> Student Dashboard</div>
-                <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-950 dark:text-white md:text-4xl">Student dashboard inspired by your reference</h1>
-                <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300 md:text-base">A cleaner Codebasics-style student experience with quick overview cards, left-side navigation, and a proper profile settings screen.</p>
+                <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-950 dark:text-white md:text-4xl">Learning, live classes, and progress in one place.</h1>
+                <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300 md:text-base">A cleaner student workspace with stronger alignment, better card sizing, and a clearer overview of courses, certificates, job assistance, and profile settings.</p>
               </div>
-              {currentCourse ? <Button asChild className="rounded-full px-5"><Link href={currentCourse.launchUrl || `/dashboard/student/learn/${currentCourse.enrollmentId}`}><PlayCircle className="h-4 w-4" /> Continue Learning</Link></Button> : null}
+              {currentCourse ? <Button asChild className="rounded-full px-6"><Link href={currentCourse.launchUrl || `/dashboard/student/learn/${currentCourse.enrollmentId}`}><PlayCircle className="h-4 w-4" /> Continue Learning</Link></Button> : null}
             </div>
-
             {error ? <div className="mb-6 rounded-[1.5rem] border border-amber-200 bg-amber-50/90 px-5 py-4 text-sm text-amber-800 dark:border-amber-500/25 dark:bg-amber-500/10 dark:text-amber-200">{error} <Link href="/auth/login" className="font-semibold underline underline-offset-2">Log in again</Link></div> : null}
 
-            <div className="grid gap-6 xl:grid-cols-[310px,minmax(0,1fr)]">
-              <aside className="xl:sticky xl:top-24 xl:self-start">
+            <div className="grid gap-6 xl:grid-cols-[330px,minmax(0,1fr)]">
+              <aside className="xl:sticky xl:top-28 xl:self-start">
                 <Card className="overflow-hidden rounded-[2rem] border border-white/70 bg-white/85 p-4 shadow-[0_28px_80px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-slate-900/80">
                   <div className="relative overflow-hidden rounded-[1.7rem] bg-[linear-gradient(145deg,#4f46e5_0%,#7c3aed_56%,#f59e0b_140%)] p-6 text-white">
                     <div className="relative z-10 flex items-start justify-between gap-4">
@@ -493,8 +507,8 @@ function Empty({ text }: { text: string }) {
   return <div className="rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50/70 px-5 py-8 text-sm leading-7 text-slate-500 dark:border-white/10 dark:bg-slate-950/60 dark:text-slate-400">{text}</div>;
 }
 
-function SmallCard({ label, value }: { label: string; value: number }) {
-  return <div className="rounded-[1.35rem] border border-slate-200/70 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-slate-950/70"><div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">{label}</div><div className="mt-2 text-2xl font-black text-slate-950 dark:text-white">{value}</div></div>;
+function SmallCard({ label, value, suffix = '' }: { label: string; value: number | string; suffix?: string }) {
+  return <div className="rounded-[1.35rem] border border-slate-200/70 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-slate-950/70"><div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">{label}</div><div className="mt-2 text-2xl font-black text-slate-950 dark:text-white">{value}{suffix}</div></div>;
 }
 
 function Pill({ children, tone = 'slate' }: { children: React.ReactNode; tone?: 'slate' | 'emerald' }) {
@@ -508,29 +522,86 @@ function Field({ label, children, required = false }: { label: string; children:
 
 function CourseCard({ course, compact = false }: { course: DashboardPayload['data']['myCourses'][number]; compact?: boolean }) {
   const participation = Number(course.participation.discussionCount || 0) + Number(course.participation.questionsAsked || 0) + Number(course.participation.resourcesDownloaded || 0);
+  const courseHref = course.launchUrl || `/dashboard/student/learn/${course.enrollmentId}`;
+
+  if (compact) {
+    return (
+      <Card className="overflow-hidden rounded-[1.7rem] border border-slate-200/80 bg-white p-0 shadow-[0_16px_45px_rgba(15,23,42,0.06)] dark:border-white/10 dark:bg-slate-950/90">
+        <div className="relative overflow-hidden bg-[linear-gradient(135deg,#1d4ed8_0%,#4f46e5_45%,#f59e0b_140%)] p-5 text-white">
+          <div className="flex items-start justify-between gap-3">
+            <div className="inline-flex rounded-full bg-white/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em]">{course.course.category}</div>
+            <div className="rounded-2xl bg-white/15 px-3 py-2 text-right">
+              <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/70">Progress</div>
+              <div className="mt-1 text-lg font-black">{course.progress}%</div>
+            </div>
+          </div>
+          <div className="mt-6">
+            <div className="text-xs uppercase tracking-[0.2em] text-white/75">EDVO Learning</div>
+            <div className="mt-2 text-2xl font-black leading-tight">{course.course.title}</div>
+          </div>
+        </div>
+        <div className="p-5">
+          <div className="flex flex-wrap gap-2 text-xs">
+            <Pill tone="slate">{delivery(course.course.deliveryMode)}</Pill>
+            <Pill tone="slate">{course.course.duration || 'Flexible duration'}</Pill>
+            {course.certificateEligible ? <Pill tone="emerald">Certificate Ready</Pill> : null}
+          </div>
+          <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800"><div className="h-full rounded-full bg-[linear-gradient(90deg,#2563eb_0%,#6366f1_52%,#f59e0b_100%)]" style={{ width: `${Math.max(0, Math.min(100, Number(course.progress || 0)))}%` }} /></div>
+          <div className="mt-4 grid grid-cols-3 gap-3">
+            <CompactMetric label="Attendance" value={`${course.attendance.overallPercentage}%`} />
+            <CompactMetric label="Score" value={`${course.performance.finalScore}%`} />
+            <CompactMetric label="Participation" value={`${participation}`} />
+          </div>
+          <div className="mt-5 flex items-end justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">{course.nextLiveSession ? 'Next live class' : course.lastAccessedAt ? 'Last opened' : 'Learning flow'}</div>
+              <div className="mt-1 text-sm font-semibold leading-6 text-slate-900 dark:text-white">{course.nextLiveSession?.title || (course.lastAccessedAt ? formatShortDate(course.lastAccessedAt) : 'Resume your recorded lessons')}</div>
+              {course.nextLiveSession?.startTime ? <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">{formatShortDate(course.nextLiveSession.startTime)}</div> : null}
+            </div>
+            <Button asChild className="shrink-0 rounded-full px-4">
+              <Link href={courseHref}><span className="inline-flex items-center gap-1.5">Open <ChevronRight className="h-4 w-4" /></span></Link>
+            </Button>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
   return (
     <Card className="overflow-hidden rounded-[1.7rem] border border-slate-200/80 bg-white p-0 shadow-[0_16px_45px_rgba(15,23,42,0.06)] dark:border-white/10 dark:bg-slate-950/90">
-      <div className={cn('relative overflow-hidden bg-[linear-gradient(135deg,#1d4ed8_0%,#4f46e5_45%,#f59e0b_140%)] p-5 text-white', compact ? 'h-40' : 'h-48')}>
+      <div className="relative overflow-hidden bg-[linear-gradient(135deg,#1d4ed8_0%,#4f46e5_45%,#f59e0b_140%)] p-5 text-white h-48">
         <div className="inline-flex rounded-full bg-white/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em]">{course.course.category}</div>
         <div className="absolute bottom-5 left-5 right-5"><div className="text-xs uppercase tracking-[0.2em] text-white/75">EDVO Learning</div><div className="mt-2 text-xl font-black leading-tight">{course.course.title}</div></div>
       </div>
       <div className="p-5">
         <div className="flex items-start justify-between gap-4"><div><div className="inline-flex rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-200">{delivery(course.course.deliveryMode)}</div><p className="mt-3 text-sm text-slate-500 dark:text-slate-300">{course.course.duration || 'Flexible duration'}</p></div><div className="rounded-2xl bg-slate-100 px-3 py-2 text-right dark:bg-slate-900"><div className="text-xs uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Progress</div><div className="mt-1 text-lg font-black text-slate-950 dark:text-white">{course.progress}%</div></div></div>
         <div className="mt-5 h-2.5 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800"><div className="h-full rounded-full bg-[linear-gradient(90deg,#2563eb_0%,#6366f1_52%,#f59e0b_100%)]" style={{ width: `${Math.max(0, Math.min(100, Number(course.progress || 0)))}%` }} /></div>
-        <div className="mt-5 grid gap-3 sm:grid-cols-3"><SmallCard label="Attendance" value={course.attendance.overallPercentage} /><SmallCard label="Performance" value={course.performance.finalScore} /><SmallCard label="Participation" value={participation} /></div>
+        <div className="mt-5 grid gap-3 sm:grid-cols-3"><SmallCard label="Attendance" value={course.attendance.overallPercentage} suffix="%" /><SmallCard label="Performance" value={course.performance.finalScore} suffix="%" /><SmallCard label="Participation" value={participation} /></div>
       </div>
     </Card>
   );
 }
 
+function HeroStrip({ label, value }: { label: string; value: string }) {
+  return <div className="rounded-[1.35rem] border border-white/20 bg-white/10 px-4 py-4 backdrop-blur-sm"><div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/65">{label}</div><div className="mt-2 text-sm font-semibold leading-6 text-white">{value}</div></div>;
+}
+
+function CompactMetric({ label, value }: { label: string; value: string }) {
+  return <div className="rounded-[1.15rem] border border-slate-200/70 bg-slate-50/90 px-3 py-3 dark:border-white/10 dark:bg-slate-900/70"><div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">{label}</div><div className="mt-1 text-base font-black text-slate-950 dark:text-white">{value}</div></div>;
+}
 function parseSection(tab: string | null): Section { if (tab === 'courses') return 'courses'; if (tab === 'events') return 'events'; if (tab === 'certificates') return 'certificates'; if (tab === 'job-assistance' || tab === 'career') return 'career'; if (tab === 'settings' || tab === 'profile') return 'profile'; return 'dashboard'; }
 function toTab(section: Section) { return section === 'dashboard' ? '' : section === 'career' ? 'job-assistance' : section === 'profile' ? 'settings' : section; }
 function baseProfile(user: StudentUser): ProfileForm { const name = user?.name || ''; return { fullName: name, gender: user?.gender || '', birthDate: user?.birthDate || '', email: user?.email || '', whatsapp: user?.mobile || user?.phone || '', country: user?.country || 'India', pinCode: user?.pinCode || '', city: user?.city || '', state: user?.state || '', certificateName: name, linkedinUrl: user?.linkedinUrl || '', bio: '' }; }
 function readDraft(): Partial<ProfileForm> { if (typeof window === 'undefined') return {}; try { const raw = window.localStorage.getItem(PROFILE_KEY); return raw ? JSON.parse(raw) : {}; } catch { return {}; } }
 function formatDate(value: string) { const date = new Date(value); return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeStyle: 'short' }).format(date); }
+function formatShortDate(value: string) { const date = new Date(value); return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium' }).format(date); }
 function delivery(value?: string) { return (value || '').toLowerCase() === 'live' ? 'Live' : (value || '').toLowerCase() === 'hybrid' ? 'Hybrid' : 'Recorded'; }
 function initials(value: string) { const parts = value.split(' ').filter(Boolean).slice(0, 2); return parts.length ? parts.map((item) => item[0]).join('') : 'S'; }
 function isExternal(value: string) { return /^https?:\/\//.test(String(value || '')); }
+
+
+
+
 
 
 

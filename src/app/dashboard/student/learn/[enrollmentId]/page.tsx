@@ -111,6 +111,19 @@ type FlatLesson = {
   lecture: LectureItem;
 };
 
+type RoadmapStep = {
+  key: string;
+  subjectName: string;
+  moduleId: string;
+  label: string;
+  title: string;
+  totalLectures: number;
+  completedLectures: number;
+  progress: number;
+  mode: LearningDeliveryMode;
+  launchLectureId: string;
+};
+
 type StageAsset =
   | { kind: 'iframe'; url: string }
   | { kind: 'video'; url: string }
@@ -129,6 +142,7 @@ export default function StudentLearningPage() {
   const [learningFocus, setLearningFocus] = useState<'live' | 'recorded'>('recorded');
 
   const liveSectionRef = useRef<HTMLDivElement | null>(null);
+  const playerSectionRef = useRef<HTMLDivElement | null>(null);
   const autoSyncRef = useRef('');
 
   const applyWorkspaceData = (data: LearningPayload['data'], preserveSelection = true) => {
@@ -216,6 +230,50 @@ export default function StudentLearningPage() {
 
   const previousLesson = activeLessonIndex > 0 ? flatLessons[activeLessonIndex - 1] : null;
   const nextLesson = activeLessonIndex >= 0 && activeLessonIndex < flatLessons.length - 1 ? flatLessons[activeLessonIndex + 1] : null;
+
+  const nextIncompleteLesson = useMemo(() => {
+    const completedSet = new Set(payload?.enrollment.completedLectures || []);
+    return flatLessons.find((item) => !completedSet.has(item.lecture.id)) || flatLessons[0] || null;
+  }, [flatLessons, payload?.enrollment.completedLectures]);
+
+  const roadmapSteps = useMemo(() => {
+    const steps: RoadmapStep[] = [];
+    const completedSet = new Set(payload?.enrollment.completedLectures || []);
+    let index = 0;
+
+    for (const subject of payload?.curriculum || []) {
+      for (const module of subject.modules || []) {
+        index += 1;
+        const lectureIds = (module.lectures || []).map((lecture) => lecture.id);
+        const completedLectures = lectureIds.filter((lectureId) => completedSet.has(lectureId)).length;
+        const totalLectures = lectureIds.length;
+        const progress = totalLectures ? Math.round((completedLectures / totalLectures) * 100) : 0;
+        const launchLectureId = module.lectures.find((lecture) => !completedSet.has(lecture.id))?.id || module.lectures[0]?.id || '';
+
+        steps.push({
+          key: `${subject.id}-${module.id}`,
+          subjectName: subject.name,
+          moduleId: module.id,
+          label: module.label || `Step ${index}`,
+          title: module.title,
+          totalLectures,
+          completedLectures,
+          progress,
+          mode: resolveModuleDeliveryMode(module),
+          launchLectureId,
+        });
+      }
+    }
+
+    return steps;
+  }, [payload?.curriculum, payload?.enrollment.completedLectures]);
+
+  const activeRoadmapIndex = useMemo(
+    () => roadmapSteps.findIndex((step) => step.moduleId === activeModule?.id),
+    [roadmapSteps, activeModule?.id]
+  );
+
+  const activeRoadmapStep = activeRoadmapIndex >= 0 ? roadmapSteps[activeRoadmapIndex] : null;
 
   const learningInsights = useMemo(() => {
     const summary = {
@@ -326,6 +384,17 @@ export default function StudentLearningPage() {
     }
   };
 
+  const focusLesson = (lectureId?: string) => {
+    if (!lectureId) return;
+    setActiveLectureId(lectureId);
+
+    if (typeof window !== 'undefined') {
+      window.setTimeout(() => {
+        playerSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 60);
+    }
+  };
+
   if (loading) {
     return <main className="min-h-screen bg-[#f5f7fb]" />;
   }
@@ -342,6 +411,9 @@ export default function StudentLearningPage() {
   const completedCount = payload.enrollment.completedLectures.length;
   const messageIsError = /unable|failed|error/i.test(message);
   const participationScore = payload.enrollment.participation.discussionCount + payload.enrollment.participation.questionsAsked + payload.enrollment.participation.resourcesDownloaded;
+  const overallJourneyProgress = payload.enrollment.totalLectures
+    ? Math.round((completedCount / payload.enrollment.totalLectures) * 100)
+    : payload.enrollment.progress;
 
   return (
     <main className="min-h-screen bg-[#f5f7fb] text-slate-900">
@@ -453,6 +525,109 @@ export default function StudentLearningPage() {
 
         <section className="space-y-6">
           <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="rounded-[1.6rem] border border-amber-200 bg-[linear-gradient(135deg,#fff7cc_0%,#fff3d6_48%,#ffffff_100%)] p-4 sm:p-5">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="max-w-4xl">
+                  <div className="text-xs font-black uppercase tracking-[0.2em] text-amber-600">Purchased course journey</div>
+                  <div className="mt-2 text-lg font-black text-slate-900 sm:text-xl">Bootcamp roadmap before the lesson workspace</div>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    Recorded lessons, live sessions, and certificate progress all stay connected in one roadmap just like your reference.
+                  </p>
+                </div>
+
+                <div className="rounded-[1.35rem] border border-white/80 bg-white/85 px-4 py-3 text-right shadow-sm">
+                  <div className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Bootcamp Progress</div>
+                  <div className="mt-1 text-2xl font-black text-slate-900">{overallJourneyProgress}%</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 overflow-x-auto pb-2">
+              <div className="flex min-w-[1040px] items-start">
+                {roadmapSteps.map((step, index) => {
+                  const isCompleted = step.progress >= 100;
+                  const isActive = step.moduleId === activeModule?.id;
+                  const connectorWidth = isCompleted ? '100%' : step.progress >= 50 ? '70%' : step.progress > 0 ? '36%' : '16%';
+
+                  return (
+                    <div key={step.key} className="flex items-start">
+                      <button
+                        type="button"
+                        onClick={() => focusLesson(step.launchLectureId)}
+                        className={cn(
+                          'group w-[176px] shrink-0 rounded-[1.6rem] border px-4 py-4 text-center transition',
+                          isActive
+                            ? 'border-violet-300 bg-violet-50 shadow-[0_14px_35px_rgba(139,92,246,0.12)]'
+                            : isCompleted
+                              ? 'border-emerald-200 bg-emerald-50/70'
+                              : 'border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-white'
+                        )}
+                      >
+                        <div
+                          className={cn(
+                            'mx-auto flex h-14 w-14 items-center justify-center rounded-full border-4 text-sm font-black transition',
+                            isActive
+                              ? 'border-violet-200 bg-violet-600 text-white'
+                              : isCompleted
+                                ? 'border-emerald-200 bg-emerald-500 text-white'
+                                : 'border-slate-200 bg-white text-slate-500'
+                          )}
+                        >
+                          {isCompleted ? <CheckCircle2 className="h-6 w-6" /> : isActive ? <Play className="ml-0.5 h-5 w-5" /> : <span>{index + 1}</span>}
+                        </div>
+                        <div className="mt-3 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">{step.label}</div>
+                        <div className="mt-1 line-clamp-2 text-sm font-bold leading-5 text-slate-900">{step.title}</div>
+                        <div className="mt-2 text-[11px] text-slate-500">{step.subjectName}</div>
+                        <div className="mt-3 flex items-center justify-center gap-2">
+                          <DeliveryPill mode={step.mode} compact />
+                        </div>
+                        <div className="mt-3 inline-flex rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-slate-600 shadow-sm">
+                          {step.completedLectures}/{step.totalLectures} lessons
+                        </div>
+                      </button>
+
+                      {index < roadmapSteps.length - 1 ? (
+                        <div className="flex h-[72px] w-20 shrink-0 items-center justify-center">
+                          <div className="h-1.5 w-full rounded-full bg-slate-200">
+                            <div className={cn('h-full rounded-full', isCompleted ? 'bg-emerald-500' : isActive ? 'bg-violet-500' : 'bg-slate-300')} style={{ width: connectorWidth }} />
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="mt-5 flex flex-col gap-4 rounded-[1.6rem] bg-[linear-gradient(135deg,#312e81_0%,#4338ca_52%,#1d4ed8_100%)] p-4 text-white lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <div className="text-xs font-black uppercase tracking-[0.18em] text-white/70">Boarding Pass</div>
+                <div className="mt-2 text-xl font-black">{activeRoadmapStep?.title || activeLecture?.title || payload.course.title}</div>
+                <div className="mt-1 text-sm text-white/75">
+                  Bootcamp progress {overallJourneyProgress}% with {completedCount}/{payload.enrollment.totalLectures} lessons completed.
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => focusLesson(activeRoadmapStep?.launchLectureId || activeLectureId)}
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-white/90"
+                >
+                  Boarding Pass
+                </button>
+                <button
+                  type="button"
+                  onClick={() => focusLesson(nextIncompleteLesson?.lecture.id || activeLectureId)}
+                  className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/15"
+                >
+                  Continue your journey <ArrowRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div ref={playerSectionRef} className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="max-w-4xl">
                 <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
@@ -849,3 +1024,5 @@ function resolveEmbeddableMedia(url: string): StageAsset | null {
 
   return null;
 }
+
+
