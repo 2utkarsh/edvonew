@@ -153,6 +153,9 @@ export default function StudentDashboard() {
     { label: 'Attendance', value: `${dashboard?.stats.averageAttendance ?? 0}%` },
     { label: 'Certificates', value: dashboard?.stats.certificatesEarned ?? 0 },
   ];
+  const featuredCourses = dashboard?.myCourses.slice(0, 4) || [];
+  const dashboardCourseGridClass = featuredCourses.length > 1 ? 'xl:grid-cols-2' : 'grid-cols-1';
+  const fullCourseGridClass = (dashboard?.myCourses.length || 0) > 1 ? 'xl:grid-cols-2' : 'grid-cols-1';
   const menu = [
     { key: 'dashboard' as const, label: 'Dashboard', icon: LayoutDashboard, badge: 0 },
     { key: 'courses' as const, label: 'Enrolled Courses', icon: BookOpen, badge: dashboard?.stats.totalEnrolled ?? 0 },
@@ -291,12 +294,12 @@ export default function StudentDashboard() {
         ))}
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.18fr),360px]">
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.32fr),320px]">
         <div className="space-y-6">
           <Panel title="My Courses" description="Your enrolled programs with quick resume buttons.">
-            {loading ? <Empty text="Loading courses..." /> : dashboard?.myCourses.length ? (
-              <div className="grid gap-5 md:grid-cols-2">
-                {dashboard.myCourses.slice(0, 4).map((course) => <CourseCard key={course.enrollmentId} course={course} compact />)}
+            {loading ? <Empty text="Loading courses..." /> : featuredCourses.length ? (
+              <div className={cn('grid gap-5', dashboardCourseGridClass)}>
+                {featuredCourses.map((course) => <CourseCard key={course.enrollmentId} course={course} compact />)}
               </div>
             ) : <Empty text="Your enrolled courses will appear here after payment and enrollment." />}
           </Panel>
@@ -428,7 +431,7 @@ export default function StudentDashboard() {
       <Navbar />
       <main className="flex-1">
         <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(79,70,229,0.12),_transparent_28%),radial-gradient(circle_at_bottom_right,_rgba(245,158,11,0.16),_transparent_30%),linear-gradient(180deg,#fffef9_0%,#f8fafc_52%,#f7fafc_100%)] pt-6 dark:bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.16),_transparent_24%),radial-gradient(circle_at_bottom_right,_rgba(245,158,11,0.12),_transparent_26%),linear-gradient(180deg,#020617_0%,#0f172a_48%,#111827_100%)]">
-          <div className="mx-auto max-w-[1500px] px-4 py-8 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-[1700px] px-4 py-8 sm:px-6 lg:px-8">
             <div className="mb-8 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
               <div className="max-w-3xl">
                 <div className="inline-flex items-center gap-2 rounded-full border border-indigo-200/70 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.28em] text-indigo-700 shadow-sm dark:border-indigo-400/20 dark:bg-slate-900/70 dark:text-indigo-200"><Sparkles className="h-3.5 w-3.5" /> Student Dashboard</div>
@@ -439,7 +442,7 @@ export default function StudentDashboard() {
             </div>
             {error ? <div className="mb-6 rounded-[1.5rem] border border-amber-200 bg-amber-50/90 px-5 py-4 text-sm text-amber-800 dark:border-amber-500/25 dark:bg-amber-500/10 dark:text-amber-200">{error} <Link href="/auth/login" className="font-semibold underline underline-offset-2">Log in again</Link></div> : null}
 
-            <div className="grid gap-6 xl:grid-cols-[330px,minmax(0,1fr)]">
+            <div className="grid gap-6 xl:grid-cols-[340px,minmax(0,1fr)]">
               <aside className="xl:sticky xl:top-28 xl:self-start">
                 <Card className="overflow-hidden rounded-[2rem] border border-white/70 bg-white/85 p-4 shadow-[0_28px_80px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-slate-900/80">
                   <div className="relative overflow-hidden rounded-[1.7rem] bg-[linear-gradient(145deg,#4f46e5_0%,#7c3aed_56%,#f59e0b_140%)] p-6 text-white">
@@ -484,7 +487,7 @@ export default function StudentDashboard() {
 
               <div className="min-w-0">
                 {section === 'dashboard' ? renderDashboard() : null}
-                {section === 'courses' ? <Panel title="Enrolled Courses" description="Everything you are currently learning.">{loading ? <Empty text="Loading courses..." /> : dashboard?.myCourses.length ? <div className="grid gap-5 md:grid-cols-2">{dashboard.myCourses.map((course) => <CourseCard key={course.enrollmentId} course={course} />)}</div> : <Empty text="No enrolled courses found yet." />}</Panel> : null}
+                {section === 'courses' ? <Panel title="Enrolled Courses" description="Everything you are currently learning.">{loading ? <Empty text="Loading courses..." /> : dashboard?.myCourses.length ? <div className={cn('grid gap-5', fullCourseGridClass)}>{dashboard.myCourses.map((course) => <CourseCard key={course.enrollmentId} course={course} />)}</div> : <Empty text="No enrolled courses found yet." />}</Panel> : null}
                 {section === 'events' ? <Panel title="Enrolled Events" description="Upcoming live classes and event-style sessions.">{loading ? <Empty text="Loading live sessions..." /> : dashboard?.upcomingLiveSessions.length ? <div className="space-y-4">{dashboard.upcomingLiveSessions.map((item) => <div key={`${item.enrollmentId}-${item.title}`} className="rounded-[1.4rem] border border-slate-200/80 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-slate-950/70"><div className="font-semibold text-slate-950 dark:text-white">{item.title}</div><div className="mt-1 text-sm text-slate-500 dark:text-slate-300">{item.courseTitle}</div><div className="mt-3 text-xs uppercase tracking-[0.2em] text-amber-700 dark:text-amber-200">{formatDate(item.startTime)}</div></div>)}</div> : <Empty text="You do not have any upcoming live events right now." />}</Panel> : null}
                 {section === 'certificates' ? <Panel title="My Certificates" description="Credentials generated from your completed courses.">{loading ? <Empty text="Loading certificates..." /> : dashboard?.certificates.length ? <div className="grid gap-5 md:grid-cols-2">{dashboard.certificates.map((item) => <div key={item.id} className="rounded-[1.5rem] border border-slate-200/80 bg-slate-50/80 p-5 dark:border-white/10 dark:bg-slate-950/70"><div className="font-semibold text-slate-950 dark:text-white">{item.courseName || 'Course Certificate'}</div><div className="mt-1 text-sm text-slate-500 dark:text-slate-300">{item.certificateNumber}</div><div className="mt-3 inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-200">Issued {formatDate(item.issuedAt)}</div>{item.credentialUrl ? <a href={item.credentialUrl} target={isExternal(item.credentialUrl) ? '_blank' : undefined} rel={isExternal(item.credentialUrl) ? 'noreferrer' : undefined} className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-indigo-700 dark:text-indigo-300">Open Credential <ExternalLink className="h-4 w-4" /></a> : null}</div>)}</div> : <Empty text="You have not earned any certificates yet." />}</Panel> : null}
                 {section === 'career' ? <Panel title="Job Assistance Form" description="Explore the job opportunities your admin has mapped to your enrolled courses.">{loading ? <Empty text="Loading opportunities..." /> : dashboard?.careerOpportunities.length ? <div className="grid gap-5 md:grid-cols-2">{dashboard.careerOpportunities.map((item) => <div key={item.id} className="rounded-[1.5rem] border border-slate-200/80 bg-slate-50/80 p-5 dark:border-white/10 dark:bg-slate-950/70"><div className="inline-flex rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-amber-700 dark:bg-amber-500/10 dark:text-amber-200">{item.courseTitle}</div><h3 className="mt-4 text-xl font-black text-slate-950 dark:text-white">{item.title}</h3>{item.company ? <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">{item.company}</div> : null}<div className="mt-4 flex flex-wrap gap-2 text-xs">{item.location ? <Pill>{item.location}</Pill> : null}{item.salary ? <Pill tone="emerald">{item.salary}</Pill> : null}</div>{item.note ? <p className="mt-4 text-sm leading-6 text-slate-600 dark:text-slate-300">{item.note}</p> : null}</div>)}</div> : <Empty text="Career opportunities will appear here after your learning path is matched to open roles." />}</Panel> : null}
@@ -598,6 +601,7 @@ function formatShortDate(value: string) { const date = new Date(value); return N
 function delivery(value?: string) { return (value || '').toLowerCase() === 'live' ? 'Live' : (value || '').toLowerCase() === 'hybrid' ? 'Hybrid' : 'Recorded'; }
 function initials(value: string) { const parts = value.split(' ').filter(Boolean).slice(0, 2); return parts.length ? parts.map((item) => item[0]).join('') : 'S'; }
 function isExternal(value: string) { return /^https?:\/\//.test(String(value || '')); }
+
 
 
 
