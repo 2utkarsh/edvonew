@@ -9,9 +9,15 @@ import { EventItem, EventType, fetchEventById } from '@/app/events/data';
 import { authFetchJson } from '@/lib/backend-api';
 
 const TYPE_LABELS: Record<EventType, string> = {
-  webinar: 'Webinar',
+  webinar: 'Master Class',
   workshop: 'Workshop',
   hackathon: 'Hackathon',
+};
+
+const TYPE_PLURAL_LABELS: Record<EventType, string> = {
+  webinar: 'Master Classes',
+  workshop: 'Workshops',
+  hackathon: 'Hackathons',
 };
 
 const ICONS: Record<EventType, typeof Video> = {
@@ -159,7 +165,7 @@ export function EventActionPage({ eventId, type }: { eventId: string; type: Even
         <div className="mb-8 flex items-center justify-between gap-4">
           <Link href={PARENT_LINKS[type]} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 transition hover:text-slate-950 dark:text-slate-400 dark:hover:text-white">
             <ArrowLeft className="h-4 w-4" />
-            Back to {TYPE_LABELS[type]}s
+            Back to {TYPE_PLURAL_LABELS[type]}
           </Link>
           {event?.status === 'Live' ? <span className="inline-flex items-center gap-2 rounded-full bg-rose-50 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-rose-600 dark:bg-rose-500/10 dark:text-rose-300"><Radio className="h-3.5 w-3.5" />Live Now</span> : null}
         </div>
@@ -308,3 +314,5 @@ export function EventLiveRedirectPage({ eventId, type }: { eventId: string; type
     </main>
   );
 }
+
+

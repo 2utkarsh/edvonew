@@ -78,7 +78,7 @@
       <a href="/backend/admin/hiring-partners" class="nav-item"><span class="nav-label">Hiring Partners</span></a>
       <a href="/backend/admin/courses" class="nav-item"><span class="nav-label">Courses</span></a>
       <a href="/backend/admin/blogs" class="nav-item active"><span class="nav-label">Blogs</span></a>
-      <a href="/backend/admin/tutorials" class="nav-item"><span class="nav-label">Tutorials</span></a>
+      <a href="/backend/admin/tutorials" class="nav-item"><span class="nav-label">Free Courses</span></a>
       <a href="/backend/admin/guides" class="nav-item"><span class="nav-label">Guides</span></a>
       <a href="/backend/admin/team" class="nav-item"><span class="nav-label">Team</span></a>
       <a href="/backend/admin/course-reviews" class="nav-item"><span class="nav-label">Course Reviews</span></a>
@@ -600,12 +600,21 @@
       reader.readAsDataURL(file);
     });
 
-    categoryDropdownButton.addEventListener('click', () => {
+    categoryDropdownButton.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
       setCategoryDropdownOpen(!categorySelection.classList.contains('open'));
     });
 
-    categoryDropdownDone.addEventListener('click', () => {
+    categoryDropdownPanel.addEventListener('click', (event) => {
+      event.stopPropagation();
+    });
+
+    categoryDropdownDone.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
       setCategoryDropdownOpen(false);
+      categoryDropdownButton.focus();
     });
 
     categoryDropdownSearch.addEventListener('input', () => {
@@ -632,14 +641,16 @@
       toggleCategoryValue(button.getAttribute('data-value') || '', false);
     });
 
-    document.addEventListener('click', (event) => {
+    document.addEventListener('pointerdown', (event) => {
       if (!(event.target instanceof Node) || categorySelection.contains(event.target)) return;
       setCategoryDropdownOpen(false);
     });
 
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
+        event.preventDefault();
         setCategoryDropdownOpen(false);
+        categoryDropdownButton.focus();
       }
     });
 
@@ -699,3 +710,5 @@
   </script>
 </body>
 </html>
+
+

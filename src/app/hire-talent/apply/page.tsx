@@ -66,7 +66,7 @@ export default function HireTalentApplyPage() {
               Share your company details, the roles you are hiring for, and the kind of candidates you need. We will match you with vetted talent from the EDVO network.
             </p>
             <div className="mt-8 space-y-4 text-sm text-slate-300">
-              <div className="rounded-2xl bg-white/5 px-4 py-3">Company hiring form for webinar, workshop, hackathon, data, analytics, and developer hiring needs.</div>
+              <div className="rounded-2xl bg-white/5 px-4 py-3">Company hiring form for master class, workshop, hackathon, data, analytics, and developer hiring needs.</div>
               <div className="rounded-2xl bg-white/5 px-4 py-3">Admin can review, update status, contact, archive, or delete applications from the backend.</div>
               <div className="rounded-2xl bg-white/5 px-4 py-3">Your request goes directly into the partner hiring inbox.</div>
             </div>
@@ -106,3 +106,4 @@ export default function HireTalentApplyPage() {
     </main>
   );
 }
+

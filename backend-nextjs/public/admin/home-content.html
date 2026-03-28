@@ -20,7 +20,7 @@
       <a href="/backend/admin/hiring-partners" class="nav-item"><span class="nav-label">Hiring Partners</span></a>
       <a href="/backend/admin/courses" class="nav-item"><span class="nav-label">Courses</span></a>
       <a href="/backend/admin/blogs" class="nav-item"><span class="nav-label">Blogs</span></a>
-      <a href="/backend/admin/tutorials" class="nav-item"><span class="nav-label">Tutorials</span></a>
+      <a href="/backend/admin/tutorials" class="nav-item"><span class="nav-label">Free Courses</span></a>
       <a href="/backend/admin/guides" class="nav-item"><span class="nav-label">Guides</span></a>
       <a href="/backend/admin/team" class="nav-item"><span class="nav-label">Team</span></a>
       <a href="/backend/admin/course-reviews" class="nav-item"><span class="nav-label">Course Reviews</span></a>
@@ -35,7 +35,7 @@
     </div>
   </aside>
   <main class='main-content'><div class='top-bar'><h1 class='page-title'>Home Content</h1><div class='user-avatar'>A</div></div><div class='dashboard-content'><div class='stack'>
-    <section class='panel'><div class='toolbar'><div><div class='section-title'>Structured Homepage Editor</div><div class='help'>Edit homepage content with forms, tables, and shuffle controls. Raw JSON fields have been removed from this page.</div></div><span class='pill-note'>No JSON</span></div></section>
+    <section class='panel'><div class='toolbar'><div><div class='section-title'>Structured Homepage Editor</div><div class='help'>Edit homepage content with forms, tables, and reorder controls. Raw JSON fields have been removed from this page.</div></div><span class='pill-note'>No JSON</span></div></section>
     <div id='stats' class='stats'></div>
     <div id='objectPanels' class='stack'></div>
     <div id='listPanels' class='stack'></div>
@@ -269,7 +269,7 @@
       const rows = itemsFor(sectionKey);
       const tbody = document.getElementById(sectionKey + 'Rows');
       if (!rows.length) { tbody.innerHTML = `<tr><td colspan='${config.columns.length + 1}' class='empty'>${escapeHtml(config.empty)}</td></tr>`; updateStats(); return; }
-      tbody.innerHTML = rows.map((item, index)=>`<tr>${config.columns.map((column)=>`<td>${column.render(item, index)}</td>`).join('')}<td><div class='table-actions'><button class='btn btn-secondary' type='button' onclick="moveListItem('${sectionKey}', ${index}, -1)" ${index===0?'disabled':''}>Up</button><button class='btn btn-secondary' type='button' onclick="moveListItem('${sectionKey}', ${index}, 1)" ${index===rows.length-1?'disabled':''}>Down</button><button class='btn btn-secondary' type='button' onclick="editListItem('${sectionKey}', ${index})">Edit</button><button class='btn btn-danger' type='button' onclick="deleteListItem('${sectionKey}', ${index})">Delete</button></div></td></tr>`).join('');
+      tbody.innerHTML = rows.map((item, index)=>`<tr>${config.columns.map((column)=>`<td>${column.render(item, index)}</td>`).join('')}<td><div class='table-actions'><button class='btn btn-secondary' type='button' onclick="moveListItem('${sectionKey}', ${index}, -1)" ${index===0?'disabled':''}>Move Up</button><button class='btn btn-secondary' type='button' onclick="moveListItem('${sectionKey}', ${index}, 1)" ${index===rows.length-1?'disabled':''}>Move Down</button><button class='btn btn-secondary' type='button' onclick="editListItem('${sectionKey}', ${index})">Edit</button><button class='btn btn-danger' type='button' onclick="deleteListItem('${sectionKey}', ${index})">Delete</button></div></td></tr>`).join('');
       updateStats();
     }
 
@@ -307,3 +307,4 @@
   </script>
 </body>
 </html>
+

@@ -244,11 +244,11 @@ function shuffleRows(bodyId) {
   const body = byId(bodyId);
   if (!body) return;
   [...body.querySelectorAll('tr')].sort(() => Math.random() - 0.5).forEach((row) => body.appendChild(row));
-  showToast('Section order shuffled', 'success');
+  showToast('Section order randomized', 'success');
 }
 
 function rowControls() {
-  return "<div class='acts'><button class='btn' type='button' onclick='moveRow(this,-1)'>Up</button><button class='btn' type='button' onclick='moveRow(this,1)'>Down</button><button class='btn' type='button' onclick='removeRow(this)'>Delete</button></div>";
+  return "<div class='acts'><button class='btn' type='button' onclick='moveRow(this,-1)'>Move Up</button><button class='btn' type='button' onclick='moveRow(this,1)'>Move Down</button><button class='btn' type='button' onclick='removeRow(this)'>Delete</button></div>";
 }
 
 byId('q').addEventListener('input', renderCourses);
@@ -368,7 +368,7 @@ function renderCats() {
       <td><span class='order-chip'>${category.order || 0}</span></td>
       <td><span class='tt'>${esc(category.name)}</span><span class='ts'>${esc(category.description || '')}</span></td>
       <td>${esc(category.slug)}</td>
-      <td><div class='acts'><button class='btn' type='button' onclick="catShift('${category.id}',-1)">Up</button><button class='btn' type='button' onclick="catShift('${category.id}',1)">Down</button><button class='btn' type='button' onclick="catEdit('${category.id}')">Edit</button><button class='btn' type='button' onclick="catDelete('${category.id}')">Delete</button></div></td>
+      <td><div class='acts'><button class='btn' type='button' onclick="catShift('${category.id}',-1)">Move Up</button><button class='btn' type='button' onclick="catShift('${category.id}',1)">Move Down</button><button class='btn' type='button' onclick="catEdit('${category.id}')">Edit</button><button class='btn' type='button' onclick="catDelete('${category.id}')">Delete</button></div></td>
     </tr>`).join('') : "<tr><td colspan='4' class='hint'>No categories yet. Create one here or use the legacy course import.</td></tr>";
 }
 
@@ -473,7 +473,7 @@ function renderCourses() {
       <td>${course.studentMetrics?.averageProgress || 0}%</td>
       <td>${course.studentMetrics?.averageAttendance || 0}%</td>
       <td>${course.studentMetrics?.averagePerformance || 0}%</td>
-      <td><div class='acts'><button class='btn' type='button' onclick="courseShift('${course.id}',-1)">Up</button><button class='btn' type='button' onclick="courseShift('${course.id}',1)">Down</button><button class='btn' type='button' onclick="editCourse('${course.id}')">Edit</button><button class='btn' type='button' onclick="courseDelete('${course.id}')">Delete</button></div></td>
+      <td><div class='acts'><button class='btn' type='button' onclick="courseShift('${course.id}',-1)">Move Up</button><button class='btn' type='button' onclick="courseShift('${course.id}',1)">Move Down</button><button class='btn' type='button' onclick="editCourse('${course.id}')">Edit</button><button class='btn' type='button' onclick="courseDelete('${course.id}')">Delete</button></div></td>
     </tr>`).join('') : "<tr><td colspan='9' class='hint'>No courses available yet. Use Add Course or Import Earlier Courses.</td></tr>";
 }
 

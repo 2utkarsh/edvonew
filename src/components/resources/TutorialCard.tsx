@@ -98,9 +98,9 @@ export default function TutorialCard({
         <div className="mb-8 rounded-[1.75rem] border border-slate-100 bg-slate-50 px-5 py-4 dark:border-slate-800/60 dark:bg-slate-950/40">
           <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
             <FileDown className="h-4 w-4 text-primary-500" />
-            Tutorial Document
+            Free Course Material
           </div>
-          <div className="mt-2 text-sm font-bold text-slate-900 dark:text-white line-clamp-1">{tutorialDocumentName || 'Learning doc'}</div>
+          <div className="mt-2 text-sm font-bold text-slate-900 dark:text-white line-clamp-1">{tutorialDocumentName || 'Free course file'}</div>
         </div>
 
         <div className="pt-8 border-t border-slate-50 dark:border-slate-800/50 flex items-center justify-between gap-4">
@@ -124,3 +124,5 @@ export default function TutorialCard({
     </motion.div>
   );
 }
+
+

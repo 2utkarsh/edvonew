@@ -294,26 +294,26 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
   },
   "resources-tutorials": {
     slug: "resources/tutorials",
-    eyebrow: "Tutorials",
-    title: "Hands-on tutorials with a clear start, finish, and output.",
+    eyebrow: "Free Courses",
+    title: "Hands-on free courses with a clear start, finish, and outcome.",
     description:
-      "These tutorials are made for people who learn best by building dashboards, notebooks, and small production-style projects.",
+      "These free courses are made for people who learn best by building dashboards, notebooks, and small production-style projects.",
     heroPoints: [
-      "Stepwise implementation tutorials",
+      "Stepwise implementation free courses",
       "Beginner-friendly code and BI walkthroughs",
       "Fast outputs you can reuse in your portfolio",
     ],
     primaryCta: { label: "Browse Courses", href: "/courses" },
     secondaryCta: { label: "Try Challenges", href: "/challenges" },
     stats: [
-      { label: "Tutorials", value: "80+" },
+      { label: "Free Courses", value: "80+" },
       { label: "Mini Projects", value: "26" },
       { label: "Tooling Guides", value: "19" },
       { label: "Hands-on Hours", value: "140+" },
     ],
     spotlight: {
-      title: "Tutorials that ship something",
-      description: "Every tutorial is aimed at a visible output rather than passive reading.",
+      title: "Free courses that ship something",
+      description: "Every free course is aimed at a visible output rather than passive reading.",
       items: [
         "Dashboard builds",
         "SQL notebook exercises",
@@ -322,7 +322,7 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
     },
     sections: [
       {
-        title: "Tutorial categories",
+        title: "Free course categories",
         description: "Pick a stack and keep moving.",
         cards: [
           {
@@ -401,13 +401,13 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
     eyebrow: "Events",
     title: "Live sessions that feel useful, not just promotional.",
     description:
-      "Join webinars, workshops, hackathons, and cohort launches focused on practical skills, hiring readiness, and industry workflows.",
+      "Join master classes, workshops, hackathons, and cohort launches focused on practical skills, hiring readiness, and industry workflows.",
     heroPoints: [
       "Live workshops with assignments",
       "Mentor Q&A and roadmap sessions",
       "Career and portfolio review events",
     ],
-    primaryCta: { label: "Join Webinars", href: "/events/webinars" },
+    primaryCta: { label: "Join Master Classes", href: "/events/webinars" },
     secondaryCta: { label: "See Workshops", href: "/events/workshops" },
     stats: [
       { label: "Upcoming Events", value: "24" },
@@ -431,7 +431,7 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
         description: "Pick the format that matches your current goal.",
         cards: [
           {
-            title: "Webinars",
+            title: "Master Classes",
             description: "Big-picture sessions on industry trends, roadmaps, and hiring expectations.",
             meta: "Strategic view",
           },
@@ -451,8 +451,8 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
   },
   "events-webinars": {
     slug: "events/webinars",
-    eyebrow: "Webinars",
-    title: "Roadmap-first webinars for learners and career switchers.",
+    eyebrow: "Master Classes",
+    title: "Roadmap-first master classes for learners and career switchers.",
     description:
       "Attend live sessions that explain what to learn, how to build proof of work, and how to position yourself in the market.",
     heroPoints: [
@@ -469,7 +469,7 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
       { label: "Replay Views", value: "25K+" },
     ],
     spotlight: {
-      title: "Common webinar topics",
+      title: "Common master class topics",
       description: "Each session is mapped to learner problems that actually matter.",
       items: [
         "How to break into data roles",
@@ -512,7 +512,7 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
       "Take-home files and templates",
       "Outputs you can extend into projects",
     ],
-    primaryCta: { label: "See Tutorials", href: "/resources/tutorials" },
+    primaryCta: { label: "See Free Courses", href: "/resources/tutorials" },
     secondaryCta: { label: "Browse Courses", href: "/courses" },
     stats: [
       { label: "Workshop Tracks", value: "9" },
@@ -1440,3 +1440,18 @@ export function getPublicPageConfig(slug: string): MarketingPageConfig {
 
   return config;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

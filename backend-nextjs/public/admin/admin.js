@@ -183,6 +183,84 @@ style.textContent = `
   }
 `;
 document.head.appendChild(style);
+const richEditorStyle = document.createElement('style');
+richEditorStyle.textContent = `
+  .admin-rich-textarea-native {
+    position: absolute !important;
+    left: -9999px !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  .admin-rich-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+    border: 1px solid #d7deef;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    padding: 12px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82);
+  }
+  .admin-rich-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .admin-rich-button {
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid #d7deef;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #334155;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+  .admin-rich-button:hover {
+    border-color: #667eea;
+    box-shadow: 0 10px 22px rgba(102, 126, 234, 0.14);
+    transform: translateY(-1px);
+  }
+  .admin-rich-surface {
+    min-height: 200px;
+    padding: 16px 18px;
+    border: 1px solid #d7deef;
+    border-radius: 16px;
+    background: #ffffff;
+    color: #1e293b;
+    line-height: 1.75;
+    font-size: 0.95rem;
+    outline: none;
+  }
+  .admin-rich-surface.is-empty::before {
+    content: attr(data-placeholder);
+    color: #94a3b8;
+  }
+  .admin-rich-surface h2 {
+    margin: 0 0 12px;
+    font-size: 1.28rem;
+    font-weight: 800;
+    line-height: 1.4;
+  }
+  .admin-rich-surface p {
+    margin: 0 0 12px;
+  }
+  .admin-rich-surface ul,
+  .admin-rich-surface ol {
+    margin: 0 0 12px;
+    padding-left: 22px;
+  }
+  .admin-rich-surface a {
+    color: #4f46e5;
+    text-decoration: underline;
+  }
+`;
+document.head.appendChild(richEditorStyle);
 
 function humanizeAdminFieldName(value) {
   return String(value || '')
@@ -235,8 +313,8 @@ const adminFieldMeta = {
     help: 'Keep this clear and helpful for the frontend preview.',
   },
   documentFile: {
-    label: 'Tutorial document',
-    help: 'Upload the file users download from the tutorial card.',
+    label: 'Free course material',
+    help: 'Upload the file users download from the free course card.',
   },
   duration: {
     label: 'Duration',
@@ -463,6 +541,228 @@ function enhanceAdminForms(root = document) {
   });
 }
 
+const adminTextareaValueDescriptor = typeof HTMLTextAreaElement !== 'undefined'
+  ? Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value')
+  : null;
+
+function shouldEnhanceRichText(control) {
+  if (!(control instanceof HTMLTextAreaElement)) {
+    return false;
+  }
+
+  if (control.dataset.adminRichEnhanced === 'true') {
+    return false;
+  }
+
+  if (
+    control.closest('.toolbar')
+    || control.closest('.filters')
+    || control.closest('.table-wrap')
+    || control.closest('tbody')
+    || control.closest('thead')
+  ) {
+    return false;
+  }
+
+  const hint = `${control.id || ''} ${control.name || ''} ${control.getAttribute('placeholder') || ''}`.toLowerCase();
+  return /description|content|bio|comment|note|summary|overview|details|message|answer|text/i.test(hint) || control.classList.contains('textarea');
+}
+
+function escapeAdminHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function toRichEditorHtml(value) {
+  const text = String(value || '').trim();
+  if (!text) {
+    return '';
+  }
+
+  if (/<\/?[a-z][\s\S]*>/i.test(text)) {
+    return text;
+  }
+
+  return text
+    .split(/\n{2,}/)
+    .map((block) => `<p>${escapeAdminHtml(block).replace(/\n/g, '<br>')}</p>`)
+    .join('');
+}
+
+function toggleRichEditorPlaceholder(editor) {
+  const plainText = String(editor.textContent || '').replace(/\u00a0/g, ' ').trim();
+  const hasStructuredContent = Boolean(editor.querySelector('img, iframe, video, ul li, ol li, blockquote, table'));
+  editor.classList.toggle('is-empty', !plainText && !hasStructuredContent);
+}
+
+function getNativeTextareaValue(textarea) {
+  if (adminTextareaValueDescriptor?.get) {
+    return adminTextareaValueDescriptor.get.call(textarea);
+  }
+  return textarea.value;
+}
+
+function setNativeTextareaValue(textarea, value) {
+  if (adminTextareaValueDescriptor?.set) {
+    adminTextareaValueDescriptor.set.call(textarea, value);
+    return;
+  }
+  textarea.value = value;
+}
+
+function syncRichEditorFromTextarea(textarea) {
+  const editor = textarea._adminRichEditor;
+  if (!editor || textarea.dataset.adminRichSyncing === 'true') {
+    return;
+  }
+
+  textarea.dataset.adminRichSyncing = 'true';
+  const nextHtml = toRichEditorHtml(getNativeTextareaValue(textarea));
+  if (editor.innerHTML !== nextHtml) {
+    editor.innerHTML = nextHtml;
+  }
+  toggleRichEditorPlaceholder(editor);
+  textarea.dataset.adminRichSyncing = 'false';
+}
+
+function syncTextareaFromRichEditor(textarea) {
+  const editor = textarea._adminRichEditor;
+  if (!editor) {
+    return;
+  }
+
+  const cleaned = editor.innerHTML
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .trim();
+
+  setNativeTextareaValue(textarea, cleaned);
+  toggleRichEditorPlaceholder(editor);
+}
+
+function patchRichTextareaValue(textarea) {
+  if (textarea.dataset.adminRichValuePatched === 'true' || !adminTextareaValueDescriptor) {
+    return;
+  }
+
+  Object.defineProperty(textarea, 'value', {
+    configurable: true,
+    enumerable: adminTextareaValueDescriptor.enumerable,
+    get() {
+      return adminTextareaValueDescriptor.get.call(this);
+    },
+    set(nextValue) {
+      adminTextareaValueDescriptor.set.call(this, nextValue);
+      syncRichEditorFromTextarea(this);
+    },
+  });
+
+  textarea.dataset.adminRichValuePatched = 'true';
+}
+
+function runRichTextCommand(textarea, command, value) {
+  const editor = textarea._adminRichEditor;
+  if (!editor) {
+    return;
+  }
+
+  editor.focus();
+
+  if (command === 'createLink') {
+    const link = window.prompt('Paste the full URL');
+    if (!link) {
+      return;
+    }
+    document.execCommand('createLink', false, link);
+  } else {
+    document.execCommand(command, false, value || null);
+  }
+
+  syncTextareaFromRichEditor(textarea);
+}
+
+function buildRichEditorButton(textarea, label, command, value) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'admin-rich-button';
+  button.textContent = label;
+  button.addEventListener('click', () => runRichTextCommand(textarea, command, value));
+  return button;
+}
+
+function syncAllRichTextEditors(root = document) {
+  root.querySelectorAll('textarea[data-admin-rich-enhanced="true"]').forEach((textarea) => {
+    syncTextareaFromRichEditor(textarea);
+  });
+}
+
+function initAdminRichTextEditors(root = document) {
+  root.querySelectorAll('.dashboard-content form textarea').forEach((textarea) => {
+    if (!shouldEnhanceRichText(textarea)) {
+      return;
+    }
+
+    const shell = document.createElement('div');
+    shell.className = 'admin-rich-editor';
+
+    const toolbar = document.createElement('div');
+    toolbar.className = 'admin-rich-toolbar';
+
+    [
+      ['Paragraph', 'formatBlock', '<p>'],
+      ['Heading', 'formatBlock', '<h2>'],
+      ['Bold', 'bold'],
+      ['Italic', 'italic'],
+      ['Underline', 'underline'],
+      ['Bullets', 'insertUnorderedList'],
+      ['Numbers', 'insertOrderedList'],
+      ['Link', 'createLink'],
+      ['Clear', 'removeFormat'],
+    ].forEach(([label, command, buttonValue]) => {
+      toolbar.appendChild(buildRichEditorButton(textarea, label, command, buttonValue));
+    });
+
+    const editor = document.createElement('div');
+    editor.className = 'admin-rich-surface';
+    editor.contentEditable = 'true';
+    editor.dataset.placeholder = textarea.getAttribute('placeholder') || 'Write here...';
+
+    editor.addEventListener('input', () => syncTextareaFromRichEditor(textarea));
+    editor.addEventListener('blur', () => syncTextareaFromRichEditor(textarea));
+    editor.addEventListener('paste', () => {
+      window.setTimeout(() => syncTextareaFromRichEditor(textarea), 0);
+    });
+
+    textarea.classList.add('admin-rich-textarea-native');
+    textarea.setAttribute('aria-hidden', 'true');
+    textarea.dataset.adminRichEnhanced = 'true';
+    textarea.setAttribute('data-admin-rich-enhanced', 'true');
+
+    textarea.insertAdjacentElement('afterend', shell);
+    shell.appendChild(toolbar);
+    shell.appendChild(editor);
+
+    textarea._adminRichEditor = editor;
+    patchRichTextareaValue(textarea);
+    syncRichEditorFromTextarea(textarea);
+  });
+
+  root.querySelectorAll('.dashboard-content form').forEach((form) => {
+    if (form.dataset.adminRichBound === 'true') {
+      return;
+    }
+
+    form.dataset.adminRichBound = 'true';
+    form.addEventListener('submit', () => syncAllRichTextEditors(form), true);
+    form.addEventListener('reset', () => {
+      window.setTimeout(() => syncAllRichTextEditors(form), 0);
+    });
+  });
+}
 function normalizeAdminCopy(root = document) {
   const replacements = [
     {
@@ -531,6 +831,7 @@ let adminUiEnhancementsQueued = false;
 function runAdminUiEnhancements() {
   adminUiEnhancementsQueued = false;
   enhanceAdminForms(document);
+  initAdminRichTextEditors(document);
   normalizeAdminCopy(document);
   enhanceReorderButtons(document);
 }

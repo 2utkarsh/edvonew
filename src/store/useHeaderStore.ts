@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 export interface NavLink {
   href: string;
@@ -34,7 +35,29 @@ interface HeaderStore {
   updateLogoText: (text: string) => void;
 }
 
-const defaultConfig: HeaderConfig = {
+const NAV_LABEL_OVERRIDES: Record<string, string> = {
+  '/resources/tutorials': 'Free Course',
+  '/events/webinars': 'Master Class',
+};
+
+function normalizeNavLinks(navLinks: NavLink[]) {
+  return (navLinks || []).map((link) => ({
+    ...link,
+    children: (link.children || []).map((child) => ({
+      ...child,
+      label: NAV_LABEL_OVERRIDES[child.href] || child.label,
+    })),
+  }));
+}
+
+function normalizeHeaderConfig(config: HeaderConfig): HeaderConfig {
+  return {
+    ...config,
+    navLinks: normalizeNavLinks(config.navLinks),
+  };
+}
+
+const defaultConfig: HeaderConfig = normalizeHeaderConfig({
   logoText: '',
   navLinks: [
     {
@@ -54,7 +77,7 @@ const defaultConfig: HeaderConfig = {
       hasDropdown: true,
       children: [
         { href: '/resources/blog', label: 'Blog' },
-        { href: '/resources/tutorials', label: 'Tutorials' },
+        { href: '/resources/tutorials', label: 'Free Course' },
         { href: '/resources/guides', label: 'Career Guides' },
       ],
     },
@@ -64,7 +87,7 @@ const defaultConfig: HeaderConfig = {
       label: 'Events',
       hasDropdown: true,
       children: [
-        { href: '/events/webinars', label: 'Webinars' },
+        { href: '/events/webinars', label: 'Master Class' },
         { href: '/events/workshops', label: 'Workshops' },
         { href: '/events/hackathons', label: 'Hackathons' },
       ],
@@ -93,25 +116,42 @@ const defaultConfig: HeaderConfig = {
   loginText: 'Login',
   registerText: 'Register',
   registerBgColor: '#22c55e',
-};
+});
 
-export const useHeaderStore = create<HeaderStore>((set) => ({
-  config: defaultConfig,
-  setConfig: (config) => set({ config }),
-  updateAnnouncement: (announcement) =>
-    set((state) => ({
-      config: {
-        ...state.config,
-        announcement: { ...state.config.announcement, ...announcement },
+export const useHeaderStore = create<HeaderStore>()(
+  persist(
+    (set) => ({
+      config: defaultConfig,
+      setConfig: (config) => set({ config: normalizeHeaderConfig(config) }),
+      updateAnnouncement: (announcement) =>
+        set((state) => ({
+          config: {
+            ...state.config,
+            announcement: { ...state.config.announcement, ...announcement },
+          },
+        })),
+      updateNavLinks: (navLinks) =>
+        set((state) => ({
+          config: { ...state.config, navLinks: normalizeNavLinks(navLinks) },
+        })),
+      updateLogoText: (text) =>
+        set((state) => ({
+          config: { ...state.config, logoText: text },
+        })),
+    }),
+    {
+      name: 'header-storage',
+      merge: (persistedState, currentState) => {
+        const persisted = (persistedState || {}) as Partial<HeaderStore>;
+        return {
+          ...currentState,
+          ...persisted,
+          config: normalizeHeaderConfig({
+            ...currentState.config,
+            ...(persisted.config || {}),
+          }),
+        } as HeaderStore;
       },
-    })),
-  updateNavLinks: (navLinks) =>
-    set((state) => ({
-      config: { ...state.config, navLinks },
-    })),
-  updateLogoText: (text) =>
-    set((state) => ({
-      config: { ...state.config, logoText: text },
-    })),
-}));
-
+    }
+  )
+);

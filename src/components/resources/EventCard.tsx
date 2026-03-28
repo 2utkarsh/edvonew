@@ -24,7 +24,7 @@ const typeStyles = {
   webinar: {
     icon: Video,
     color: 'text-blue-500 bg-blue-500/10 border-blue-500/20',
-    label: 'Live Webinar',
+    label: 'Live Master Class',
     hrefBase: '/events/webinars',
   },
   workshop: {
@@ -133,3 +133,4 @@ export default function EventCard({
     </motion.div>
   );
 }
+

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useMemo, useState } from 'react';
 import { Search, Code, Database, Brain, Rocket, BookOpen, Sparkles } from 'lucide-react';
@@ -33,7 +33,7 @@ export default function TutorialsPage() {
         const items = await fetchTutorials();
         if (!cancelled) setTutorials(items);
       } catch (error: any) {
-        if (!cancelled) setLoadError(error?.message || 'Unable to load tutorials right now.');
+        if (!cancelled) setLoadError(error?.message || 'Unable to load free courses right now.');
       } finally {
         if (!cancelled) setIsLoading(false);
       }
@@ -71,17 +71,17 @@ export default function TutorialsPage() {
                 </div>
                 <h1 className="text-5xl md:text-7xl font-black text-slate-950 dark:text-white leading-[1.1] tracking-tight mb-8">
                   Master Tools with <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-indigo-600">Practical Modules.</span>
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-indigo-600">Practical Free Courses.</span>
                 </h1>
                 <p className="text-lg text-slate-500 dark:text-slate-400 font-medium leading-relaxed max-w-xl">
-                  Bite-sized, expert-led tutorials designed to get you from zero to production-ready in record time.
+                  Bite-sized, expert-led free courses designed to move you from zero to job-ready with practical outcomes.
                 </p>
               </div>
 
               <div className="flex items-center gap-8 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-8 rounded-[2.5rem] self-start lg:self-auto">
                 <div className="flex flex-col">
                   <span className="text-3xl font-black text-slate-900 dark:text-white">{tutorials.length}+</span>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Modules</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Free Courses</span>
                 </div>
                 <div className="w-px h-10 bg-slate-200 dark:bg-slate-800" />
                 <div className="flex flex-col">
@@ -98,7 +98,7 @@ export default function TutorialsPage() {
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-primary-500 transition-colors" />
             <input
               type="text"
-              placeholder="Search by tool or skill..."
+              placeholder="Search free courses by tool or skill..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 font-bold text-sm text-slate-900 dark:text-white"
@@ -142,7 +142,7 @@ export default function TutorialsPage() {
           </StaggerGrid>
         ) : (
           <div className="text-center py-32 bg-slate-50/50 dark:bg-slate-900/30 rounded-[3rem] border border-dashed border-slate-200 dark:border-slate-800">
-            <h3 className="text-2xl font-black text-slate-900 dark:text-white">Module not found</h3>
+            <h3 className="text-2xl font-black text-slate-900 dark:text-white">Free course not found</h3>
             <p className="text-slate-500 font-medium mt-2">Try clearing your search or filters.</p>
           </div>
         )}
@@ -150,3 +150,9 @@ export default function TutorialsPage() {
     </main>
   );
 }
+
+
+
+
+
+

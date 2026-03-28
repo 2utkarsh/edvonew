@@ -122,7 +122,7 @@
       <a href='/backend/admin/hiring-partners' class='nav-item'><span class='nav-label'>Hiring Partners</span></a>
       <a href='/backend/admin/courses' class='nav-item active'><span class='nav-label'>Courses</span></a>
       <a href='/backend/admin/blogs' class='nav-item'><span class='nav-label'>Blogs</span></a>
-      <a href='/backend/admin/tutorials' class='nav-item'><span class='nav-label'>Tutorials</span></a>
+      <a href='/backend/admin/tutorials' class='nav-item'><span class='nav-label'>Free Courses</span></a>
       <a href='/backend/admin/guides' class='nav-item'><span class='nav-label'>Guides</span></a>
       <a href='/backend/admin/team' class='nav-item'><span class='nav-label'>Team</span></a>
       <a href='/backend/admin/course-reviews' class='nav-item'><span class='nav-label'>Course Reviews</span></a>
@@ -170,10 +170,10 @@
           <div class='head'>
             <div>
               <h2>Categories</h2>
-              <p>Create, edit, shuffle, and delete course categories that drive dropdowns and filters.</p>
+              <p>Create, edit, reorder, and delete course categories that drive dropdowns and filters.</p>
             </div>
             <div class='acts'>
-              <button class='btn' type='button' onclick='shuffleCategories()'>Shuffle</button>
+              <button class='btn' type='button' onclick='shuffleCategories()'>Randomize Order</button>
               <button class='btn' type='button' onclick='catReset()'>New Category</button>
             </div>
           </div>
@@ -202,7 +202,7 @@
             <p>Manage current courses, import earlier catalog items, and control the restored single-course layout, careers, checkout, and learner experience from admin.</p>
           </div>
           <div class='acts'>
-            <button class='btn' type='button' onclick='shuffleCourses()'>Shuffle</button>
+            <button class='btn' type='button' onclick='shuffleCourses()'>Randomize Order</button>
             <button class='btn' type='button' onclick='importLegacyCourses()'>Import Earlier Courses</button>
             <button class='btn btn-primary' type='button' onclick='courseNew()'>Add Course</button>
           </div>
@@ -280,15 +280,15 @@
             </div>
           </div>
 
-                    <div class='section'><div class='head'><div><h3>Career Matches</h3><p class='hint'>Add admin-managed job and role cards for this course. Students see these in their dashboard career section after enrollment.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('careerBody')">Shuffle</button><button class='btn' type='button' onclick='addCareerPath()'>Add Career Match</button></div></div><div class='minit'><table><thead><tr><th>Role</th><th>Company</th><th>Location</th><th>Type</th><th>Mode</th><th>Salary</th><th>Apply URL</th><th>Note</th><th>Actions</th></tr></thead><tbody id='careerBody'></tbody></table></div></div>
+                    <div class='section'><div class='head'><div><h3>Career Matches</h3><p class='hint'>Add admin-managed job and role cards for this course. Students see these in their dashboard career section after enrollment.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('careerBody')">Randomize Order</button><button class='btn' type='button' onclick='addCareerPath()'>Add Career Match</button></div></div><div class='minit'><table><thead><tr><th>Role</th><th>Company</th><th>Location</th><th>Type</th><th>Mode</th><th>Salary</th><th>Apply URL</th><th>Note</th><th>Actions</th></tr></thead><tbody id='careerBody'></tbody></table></div></div>
 
-          <div class='section'><div class='head'><div><h3>Recorded Module Rows</h3><p class='hint'>Choose recorded, live, resource, or quiz for each lesson. Recorded and resource rows can now use either a hosted link or a smaller inline upload.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('currBody')">Shuffle</button><button class='btn' type='button' onclick='addCurr()'>Add Row</button></div></div><div class='minit'><table><thead><tr><th>Subject</th><th>Module</th><th>Lecture</th><th>Duration</th><th>Type</th><th>Free</th><th>Asset Setup</th><th>Actions</th></tr></thead><tbody id='currBody'></tbody></table></div></div>
-          <div class='section'><div class='head'><div><h3>Live Sessions</h3><p class='hint'>Add a room name and EDVO now generates the student and host live links automatically. Use Start live to open host mode, copy the student launch link for learners, and attach the recording after class.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('sessionBody')">Shuffle</button><button class='btn' type='button' onclick='addSession()'>Add Session</button></div></div><div class='minit'><table><thead><tr><th>Title</th><th>Start</th><th>End</th><th>Host</th><th>Room / Launch</th><th>Generated Link</th><th>Status</th><th>Recording</th><th>Actions</th></tr></thead><tbody id='sessionBody'></tbody></table></div></div>
-          <div class='section'><div class='head'><div><h3>Plans</h3><p class='hint'>Create, edit, shuffle, and delete pricing plans and plan features shown in the enroll card and checkout flow.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('planBody')">Shuffle</button><button class='btn' type='button' onclick='addPlan()'>Add Plan</button></div></div><div class='minit'><table><thead><tr><th>Name</th><th>Price</th><th>Recommended</th><th>Features</th><th>Actions</th></tr></thead><tbody id='planBody'></tbody></table></div></div>
-          <div class='section'><div class='head'><div><h3>Mentors</h3><p class='hint'>Mentors appear on the course detail page and can be reordered here.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('mentorBody')">Shuffle</button><button class='btn' type='button' onclick='addMentor()'>Add Mentor</button></div></div><div class='minit'><table><thead><tr><th>Name</th><th>Designation</th><th>Company</th><th>Experience</th><th>Image URL</th><th>Actions</th></tr></thead><tbody id='mentorBody'></tbody></table></div></div>
-          <div class='section'><div class='head'><div><h3>FAQs</h3><p class='hint'>Add and reorder frequently asked questions for the single course page.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('faqBody')">Shuffle</button><button class='btn' type='button' onclick='addFaq()'>Add FAQ</button></div></div><div class='minit'><table><thead><tr><th>Question</th><th>Answer</th><th>Actions</th></tr></thead><tbody id='faqBody'></tbody></table></div></div>
-          <div class='section'><div class='head'><div><h3>Testimonials</h3><p class='hint'>Manage learner proof, social proof, and quote ordering for the full course page.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('testimonialBody')">Shuffle</button><button class='btn' type='button' onclick='addTestimonial()'>Add Testimonial</button></div></div><div class='minit'><table><thead><tr><th>Name</th><th>Role</th><th>Company</th><th>Rating</th><th>Quote</th><th>Actions</th></tr></thead><tbody id='testimonialBody'></tbody></table></div></div>
-          <div class='section'><div class='head'><div><h3>Certifications</h3><p class='hint'>Add certificate names or badge providers shown in the full course page sidebar.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('certBody')">Shuffle</button><button class='btn' type='button' onclick='addCertification()'>Add Certification</button></div></div><div class='minit'><table><thead><tr><th>Name</th><th>Provider</th><th>Actions</th></tr></thead><tbody id='certBody'></tbody></table></div></div>
+          <div class='section'><div class='head'><div><h3>Recorded Module Rows</h3><p class='hint'>Choose recorded, live, resource, or quiz for each lesson. Recorded and resource rows can now use either a hosted link or a smaller inline upload.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('currBody')">Randomize Order</button><button class='btn' type='button' onclick='addCurr()'>Add Row</button></div></div><div class='minit'><table><thead><tr><th>Subject</th><th>Module</th><th>Lecture</th><th>Duration</th><th>Type</th><th>Free</th><th>Asset Setup</th><th>Actions</th></tr></thead><tbody id='currBody'></tbody></table></div></div>
+          <div class='section'><div class='head'><div><h3>Live Sessions</h3><p class='hint'>Add a room name and EDVO now generates the student and host live links automatically. Use Start live to open host mode, copy the student launch link for learners, and attach the recording after class.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('sessionBody')">Randomize Order</button><button class='btn' type='button' onclick='addSession()'>Add Session</button></div></div><div class='minit'><table><thead><tr><th>Title</th><th>Start</th><th>End</th><th>Host</th><th>Room / Launch</th><th>Generated Link</th><th>Status</th><th>Recording</th><th>Actions</th></tr></thead><tbody id='sessionBody'></tbody></table></div></div>
+          <div class='section'><div class='head'><div><h3>Plans</h3><p class='hint'>Create, edit, reorder, and delete pricing plans and plan features shown in the enroll card and checkout flow.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('planBody')">Randomize Order</button><button class='btn' type='button' onclick='addPlan()'>Add Plan</button></div></div><div class='minit'><table><thead><tr><th>Name</th><th>Price</th><th>Recommended</th><th>Features</th><th>Actions</th></tr></thead><tbody id='planBody'></tbody></table></div></div>
+          <div class='section'><div class='head'><div><h3>Mentors</h3><p class='hint'>Mentors appear on the course detail page and can be reordered here.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('mentorBody')">Randomize Order</button><button class='btn' type='button' onclick='addMentor()'>Add Mentor</button></div></div><div class='minit'><table><thead><tr><th>Name</th><th>Designation</th><th>Company</th><th>Experience</th><th>Image URL</th><th>Actions</th></tr></thead><tbody id='mentorBody'></tbody></table></div></div>
+          <div class='section'><div class='head'><div><h3>FAQs</h3><p class='hint'>Add and reorder frequently asked questions for the single course page.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('faqBody')">Randomize Order</button><button class='btn' type='button' onclick='addFaq()'>Add FAQ</button></div></div><div class='minit'><table><thead><tr><th>Question</th><th>Answer</th><th>Actions</th></tr></thead><tbody id='faqBody'></tbody></table></div></div>
+          <div class='section'><div class='head'><div><h3>Testimonials</h3><p class='hint'>Manage learner proof, social proof, and quote ordering for the full course page.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('testimonialBody')">Randomize Order</button><button class='btn' type='button' onclick='addTestimonial()'>Add Testimonial</button></div></div><div class='minit'><table><thead><tr><th>Name</th><th>Role</th><th>Company</th><th>Rating</th><th>Quote</th><th>Actions</th></tr></thead><tbody id='testimonialBody'></tbody></table></div></div>
+          <div class='section'><div class='head'><div><h3>Certifications</h3><p class='hint'>Add certificate names or badge providers shown in the full course page sidebar.</p></div><div class='acts'><button class='btn' type='button' onclick="shuffleRows('certBody')">Randomize Order</button><button class='btn' type='button' onclick='addCertification()'>Add Certification</button></div></div><div class='minit'><table><thead><tr><th>Name</th><th>Provider</th><th>Actions</th></tr></thead><tbody id='certBody'></tbody></table></div></div>
 
           <div class='section'>
             <h3>Certificate and Notifications</h3>
@@ -314,7 +314,8 @@
   </main>
 
   <script src='/backend/admin/admin.js?v=20260325c'></script>
-  <script src='/backend/admin/courses-admin.js?v=20260325e'></script>
+  <script src='/backend/admin/courses-admin.js?v=20260327a'></script>
 </body>
 </html>
+
 

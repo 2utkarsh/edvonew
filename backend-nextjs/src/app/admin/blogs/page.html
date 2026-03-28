@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -64,7 +64,7 @@
       <a href="/backend/admin/hiring-partners" class="nav-item"><span class="nav-label">Hiring Partners</span></a>
       <a href="/backend/admin/courses" class="nav-item"><span class="nav-label">Courses</span></a>
       <a href="/backend/admin/blogs" class="nav-item active"><span class="nav-label">Blogs</span></a>
-      <a href="/backend/admin/tutorials" class="nav-item"><span class="nav-label">Tutorials</span></a>
+      <a href="/backend/admin/tutorials" class="nav-item"><span class="nav-label">Free Courses</span></a>
       <a href="/backend/admin/guides" class="nav-item"><span class="nav-label">Guides</span></a>
       <a href="/backend/admin/team" class="nav-item"><span class="nav-label">Team</span></a>
       <a href="/backend/admin/course-reviews" class="nav-item"><span class="nav-label">Course Reviews</span></a>
@@ -97,7 +97,7 @@
           <div class="toolbar">
             <div>
               <div class="table-title">Blog Categories</div>
-              <div class="help">Create categories first, then assign one or more of them to each blog. Use Up and Down to reorder frontend tabs.</div>
+              <div class="help">Create categories first, then assign one or more of them to each blog. Use the Move Up and Move Down buttons to reorder the frontend tabs.</div>
             </div>
           </div>
 
@@ -133,10 +133,17 @@
                     <span id="categoryDropdownLabel">Select categories</span>
                     <span class="multi-select-arrow" aria-hidden="true">v</span>
                   </button>
-                  <div id="categoryDropdownPanel" class="multi-select-panel" role="listbox" aria-multiselectable="true" hidden></div>
-                  <div id="categorySelectedBadges" class="multi-select-tags">
-                    <span class="help">Selected categories will appear here.</span>
+                  <div id="categoryDropdownPanel" class="multi-select-panel" role="listbox" aria-multiselectable="true" hidden>
+                    <div class="multi-select-panel-head">
+                      <div>
+                        <div class="multi-select-panel-title">Choose categories</div>
+                        <div class="multi-select-panel-subtitle">Pick one or more, then tap Done.</div>
+                      </div>
+                      <button id="categoryDropdownDone" class="multi-select-close" type="button">Done</button>
+                    </div>
+                    <div id="categoryDropdownOptions" class="multi-select-options"></div>
                   </div>
+                  <div id="categorySelectedBadges" class="multi-select-tags" hidden></div>
                 </div>
               </div>
               <input id="readTime" class="input" type="number" min="1" value="5" placeholder="Read time in minutes" required />
@@ -203,6 +210,8 @@
     const categoryDropdownButton = document.getElementById('categoryDropdownButton');
     const categoryDropdownLabel = document.getElementById('categoryDropdownLabel');
     const categoryDropdownPanel = document.getElementById('categoryDropdownPanel');
+    const categoryDropdownOptions = document.getElementById('categoryDropdownOptions');
+    const categoryDropdownDone = document.getElementById('categoryDropdownDone');
     const categorySelectedBadges = document.getElementById('categorySelectedBadges');
 
     function e(value) {
@@ -260,6 +269,13 @@
         : normalized;
     }
 
+    function formatCategoryTriggerLabel(selectedValues) {
+      if (!selectedValues.length) return 'Select categories';
+      if (selectedValues.length === 1) return selectedValues[0];
+      if (selectedValues.length === 2) return `${selectedValues[0]}, ${selectedValues[1]}`;
+      return `${selectedValues[0]}, ${selectedValues[1]} +${selectedValues.length - 2}`;
+    }
+
     function setCategoryDropdownOpen(isOpen) {
       const shouldOpen = Boolean(isOpen && categories.length);
       categorySelection.classList.toggle('open', shouldOpen);
@@ -272,12 +288,10 @@
       categoryDropdownButton.disabled = !categories.length;
       categoryDropdownLabel.textContent = !categories.length
         ? 'Create a category first'
-        : !selectedValues.length
-          ? 'Select categories'
-          : selectedValues.length === 1
-            ? selectedValues[0]
-            : `${selectedValues.length} categories selected`;
+        : formatCategoryTriggerLabel(selectedValues);
+      categoryDropdownButton.title = selectedValues.join(', ');
 
+      categorySelectedBadges.hidden = !selectedValues.length;
       categorySelectedBadges.innerHTML = selectedValues.length
         ? selectedValues.map((value) => `
             <button class="selected-tag" type="button" data-value="${e(value)}">
@@ -285,16 +299,16 @@
               <span class="selected-tag-remove" aria-hidden="true">x</span>
             </button>
           `).join('')
-        : '<span class="help">Selected categories will appear here.</span>';
+        : '';
 
-      Array.from(categoryDropdownPanel.querySelectorAll('.multi-select-option')).forEach((option) => {
+      Array.from(categoryDropdownOptions.querySelectorAll('.multi-select-option')).forEach((option) => {
         const value = String(option.getAttribute('data-value') || '');
         const isSelected = selectedValues.some((selectedValue) => selectedValue.toLowerCase() === value.toLowerCase());
         option.classList.toggle('active', isSelected);
         option.setAttribute('aria-selected', isSelected ? 'true' : 'false');
         const indicator = option.querySelector('.multi-select-option-indicator');
         if (indicator) {
-          indicator.textContent = isSelected ? 'Selected' : 'Select';
+          indicator.textContent = isSelected ? 'Added' : 'Add';
         }
       });
     }
@@ -328,14 +342,14 @@
       const selectedValues = getSelectedCategories();
       const selectedKeys = new Set(selectedValues.map((value) => value.toLowerCase()));
 
-      categoryDropdownPanel.innerHTML = categories.length
+      categoryDropdownOptions.innerHTML = categories.length
         ? categories.map((category) => `
             <button class="multi-select-option ${selectedKeys.has(String(category.name).toLowerCase()) ? 'active' : ''}" type="button" role="option" data-value="${e(category.name)}" aria-selected="${selectedKeys.has(String(category.name).toLowerCase()) ? 'true' : 'false'}">
               <span class="multi-select-option-copy">
                 <span class="multi-select-option-name">${e(category.name)}</span>
-                <span class="multi-select-option-help">${e(category.description || 'Choose this category for the blog')}</span>
+                <span class="multi-select-option-help">${e(category.description || 'Use this category in the blog')}</span>
               </span>
-              <span class="multi-select-option-indicator">${selectedKeys.has(String(category.name).toLowerCase()) ? 'Selected' : 'Select'}</span>
+              <span class="multi-select-option-indicator">${selectedKeys.has(String(category.name).toLowerCase()) ? 'Added' : 'Add'}</span>
             </button>
           `).join('')
         : '<div class="help">Create a category first.</div>';
@@ -428,8 +442,8 @@
             <div class="pill">
               <span>${e(category.name)}</span>
               <div class="pill-actions">
-                <button class="btn btn-secondary" type="button" onclick="moveCategory('${category.id}',-1)" ${index === 0 ? 'disabled' : ''}>Up</button>
-                <button class="btn btn-secondary" type="button" onclick="moveCategory('${category.id}',1)" ${index === categories.length - 1 ? 'disabled' : ''}>Down</button>
+                <button class="btn btn-secondary" type="button" onclick="moveCategory('${category.id}',-1)" ${index === 0 ? 'disabled' : ''}>Move Up</button>
+                <button class="btn btn-secondary" type="button" onclick="moveCategory('${category.id}',1)" ${index === categories.length - 1 ? 'disabled' : ''}>Move Down</button>
                 <button class="btn btn-danger" type="button" onclick="deleteCategory('${category.id}')">Delete</button>
               </div>
             </div>
@@ -462,8 +476,8 @@
               </td>
               <td>
                 <div class="table-actions">
-                  <button class="btn btn-secondary" type="button" onclick="moveBlog('${blog.id}',-1)">Up</button>
-                  <button class="btn btn-secondary" type="button" onclick="moveBlog('${blog.id}',1)">Down</button>
+                  <button class="btn btn-secondary" type="button" onclick="moveBlog('${blog.id}',-1)">Move Up</button>
+                  <button class="btn btn-secondary" type="button" onclick="moveBlog('${blog.id}',1)">Move Down</button>
                   <button class="btn btn-secondary" type="button" onclick="startEdit('${blog.id}')">Edit</button>
                   <button class="btn btn-danger" type="button" onclick="deleteBlog('${blog.id}')">Delete</button>
                 </div>
@@ -539,7 +553,11 @@
       setCategoryDropdownOpen(!categorySelection.classList.contains('open'));
     });
 
-    categoryDropdownPanel.addEventListener('click', (event) => {
+    categoryDropdownDone.addEventListener('click', () => {
+      setCategoryDropdownOpen(false);
+    });
+
+    categoryDropdownOptions.addEventListener('click', (event) => {
       if (!(event.target instanceof Element)) return;
       const option = event.target.closest('button[data-value]');
       if (!option) return;
@@ -620,3 +638,4 @@
   </script>
 </body>
 </html>
+
