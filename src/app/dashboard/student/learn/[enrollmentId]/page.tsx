@@ -421,12 +421,12 @@ export default function StudentLearningPage() {
   };
 
   if (loading) {
-    return <main className="min-h-screen bg-[#f5f7fb]" />;
+    return <main className="min-h-screen bg-[#f5f7fb] dark:bg-slate-950" />;
   }
 
   if (!payload) {
     return (
-      <main className="min-h-screen bg-[#f5f7fb] px-4 py-16 text-slate-900">
+      <main className="min-h-screen bg-[#f5f7fb] dark:bg-slate-950 px-4 py-16 text-slate-900 dark:text-white">
         <p>{error || 'Learning workspace unavailable'}</p>
         <Link className="mt-4 inline-flex underline" href="/dashboard/student">Back to dashboard</Link>
       </main>
@@ -446,22 +446,22 @@ export default function StudentLearningPage() {
       : 'recorded';
 
   return (
-    <main className="min-h-screen bg-[#f5f7fb] text-slate-900">
-      <div className="border-b border-slate-200 bg-white/95 backdrop-blur">
+    <main className="min-h-screen bg-[#f5f7fb] dark:bg-slate-950 text-slate-900 dark:text-white">
+      <div className="border-b border-slate-200 dark:border-white/10 bg-white/95 dark:bg-slate-950/90 backdrop-blur">
         <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
           <div>
-            <Link href={isLessonWorkspace ? buildLearningUrl() : '/dashboard/student'} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 transition hover:text-slate-950">
+            <Link href={isLessonWorkspace ? buildLearningUrl() : '/dashboard/student'} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300 transition hover:text-slate-950 dark:hover:text-white">
               <ArrowLeft className="h-4 w-4" /> {isLessonWorkspace ? 'Go to roadmap' : 'Go to Home'}
             </Link>
-            <div className="mt-3 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">{isLessonWorkspace ? 'Daily learning workspace' : 'Purchased course journey'}</div>
+            <div className="mt-3 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400 dark:text-slate-500">{isLessonWorkspace ? 'Daily learning workspace' : 'Purchased course journey'}</div>
             <h1 className="mt-2 text-xl font-black sm:text-2xl">{isLessonWorkspace ? activeLecture?.title || payload.course.title : payload.course.title}</h1>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <span className="rounded-full bg-violet-100 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-violet-700">
+            <span className="rounded-full bg-violet-100 dark:bg-violet-500/15 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-violet-700 dark:text-violet-200">
               {getDeliveryLabel(isLessonWorkspace ? activeDeliveryMode : overviewDeliveryMode)}
             </span>
-            <span className="rounded-full bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700">
+            <span className="rounded-full bg-slate-100 dark:bg-white/10 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
               {payload.enrollment.progress}% completed
             </span>
           </div>
@@ -470,33 +470,33 @@ export default function StudentLearningPage() {
 
       <div className={cn('mx-auto gap-6 px-4 py-6 sm:px-6 lg:px-8', isLessonWorkspace ? 'grid max-w-[1600px] xl:grid-cols-[320px_1fr]' : 'max-w-[1500px]')}>
         {isLessonWorkspace ? (
-          <aside className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm xl:sticky xl:top-24 xl:h-fit">
-          <div className="border-b border-slate-200 px-5 py-4">
-            <div className="text-sm font-black uppercase tracking-[0.2em] text-slate-400">Contents</div>
-            <div className="mt-2 text-lg font-bold text-slate-900">Course roadmap</div>
-            <div className="mt-1 text-sm text-slate-500">Recorded and live sessions are arranged by module.</div>
-          </div>
+          <aside className="overflow-hidden rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-sm dark:shadow-none xl:sticky xl:top-24 xl:h-fit">
+            <div className="border-b border-slate-200 dark:border-white/10 px-5 py-4">
+              <div className="text-sm font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Contents</div>
+              <div className="mt-2 text-lg font-bold text-slate-900 dark:text-white">Course roadmap</div>
+              <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">Recorded and live sessions are arranged by module.</div>
+                      </div>
 
-          <div className="max-h-[calc(100vh-10rem)] space-y-4 overflow-auto p-3">
-            {payload.curriculum.map((subject) => (
-              <div key={subject.id} className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-3.5">
-                <div className="px-2 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">{subject.name}</div>
+            <div className="max-h-[calc(100vh-10rem)] space-y-4 overflow-auto p-3">
+              {payload.curriculum.map((subject) => (
+              <div key={subject.id} className="rounded-[1.5rem] border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950/70 p-3.5">
+                <div className="px-2 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">{subject.name}</div>
                 <div className="mt-3 space-y-3">
                   {subject.modules.map((module) => {
                     const moduleMode = resolveModuleDeliveryMode(module);
                     const moduleMix = summarizeDeliveryModes(module.lectures || []);
 
                     return (
-                      <div key={module.id} className="rounded-[1.25rem] border border-slate-200 bg-white p-3">
+                      <div key={module.id} className="rounded-[1.25rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-3">
                         <div className="flex flex-wrap items-start justify-between gap-2">
                           <div>
-                            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">{module.label || 'Module'}</div>
-                            <div className="mt-1 text-sm font-bold text-slate-900">{module.title}</div>
+                            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">{module.label || 'Module'}</div>
+                            <div className="mt-1 text-sm font-bold text-slate-900 dark:text-white">{module.title}</div>
                           </div>
                           <DeliveryPill mode={moduleMode} compact />
                         </div>
 
-                        <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-slate-500">
+                        <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-slate-500 dark:text-slate-400">
                           <span>{module.lectures.length} lessons</span>
                           {moduleMix.recorded ? <span>{moduleMix.recorded} recorded</span> : null}
                           {moduleMix.live ? <span>{moduleMix.live} live</span> : null}
@@ -517,27 +517,27 @@ export default function StudentLearningPage() {
                                 className={cn(
                                   'w-full rounded-2xl border px-3 py-3 text-left transition',
                                   isActive
-                                    ? 'border-violet-300 bg-violet-50 shadow-[0_10px_30px_rgba(139,92,246,0.08)]'
-                                    : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+                                    ? 'border-violet-300 dark:border-violet-400/40 bg-violet-50 dark:bg-violet-500/10 shadow-[0_10px_30px_rgba(139,92,246,0.08)]'
+                                    : 'border-slate-200 dark:border-white/10 bg-white dark:bg-slate-950/70 hover:border-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
                                 )}
                               >
                                 <div className="flex items-start justify-between gap-3">
                                   <div className="min-w-0">
-                                    <div className="line-clamp-2 text-sm font-semibold text-slate-900">{lecture.title}</div>
-                                    <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-slate-500">
+                                    <div className="line-clamp-2 text-sm font-semibold text-slate-900 dark:text-white">{lecture.title}</div>
+                                    <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400">
                                       <DeliveryPill mode={lectureMode} compact />
                                       {lecture.duration ? <span>{lecture.duration}</span> : null}
                                     </div>
                                   </div>
-                                  <div className="flex items-center gap-2 text-[11px] font-semibold text-slate-500">
+                                  <div className="flex items-center gap-2 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
                                     {lecture.completed ? (
-                                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-emerald-700">
+                                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 dark:bg-emerald-500/15 px-2.5 py-1 text-emerald-700 dark:text-emerald-200">
                                         <CheckCircle2 className="h-3.5 w-3.5" /> Done
                                       </span>
                                     ) : isSyncing ? (
-                                      <span className="rounded-full bg-amber-100 px-2.5 py-1 text-amber-700">Syncing</span>
+                                      <span className="rounded-full bg-amber-100 dark:bg-amber-500/15 px-2.5 py-1 text-amber-700 dark:text-amber-200">Syncing</span>
                                     ) : (
-                                      <span className="rounded-full bg-slate-100 px-2.5 py-1">Open</span>
+                                      <span className="rounded-full bg-slate-100 dark:bg-white/10 px-2.5 py-1">Open</span>
                                     )}
                                   </div>
                                 </div>
@@ -550,8 +550,8 @@ export default function StudentLearningPage() {
                   })}
                 </div>
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
           </aside>
         ) : null}
 
@@ -559,17 +559,17 @@ export default function StudentLearningPage() {
           {!isLessonWorkspace ? (
             <>
               {message ? (
-                <div className={cn('rounded-2xl border px-4 py-3 text-sm', messageIsError ? 'border-red-200 bg-red-50 text-red-600' : 'border-emerald-200 bg-emerald-50 text-emerald-700')}>
+                <div className={cn('rounded-2xl border px-4 py-3 text-sm', messageIsError ? 'border-red-200 dark:border-red-400/30 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-200' : 'border-emerald-200 dark:border-emerald-400/30 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-200')}>
                   {message}
                 </div>
               ) : null}
 
-              <div className="overflow-hidden rounded-[2.4rem] border border-slate-200 bg-white shadow-sm">
-                <div className="relative overflow-hidden border-b border-slate-200 bg-[radial-gradient(circle_at_top_right,#312e81_0%,#4338ca_22%,#eef2ff_22%,#f8fafc_100%)] px-6 py-8 sm:px-8">
+              <div className="overflow-hidden rounded-[2.4rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-sm dark:shadow-none">
+                <div className="relative overflow-hidden border-b border-slate-200 dark:border-white/10 bg-[radial-gradient(circle_at_top_right,#312e81_0%,#4338ca_22%,#eef2ff_22%,#f8fafc_100%)] dark:bg-[radial-gradient(circle_at_top_right,#4338ca_0%,#1e1b4b_24%,#0f172a_24%,#020617_100%)] px-6 py-8 sm:px-8">
                   <div className="max-w-4xl">
-                    <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-indigo-700 shadow-sm">Purchased course journey</div>
-                    <h2 className="mt-4 text-2xl font-black text-slate-900 sm:text-[2.2rem]">{payload.course.title}</h2>
-                    <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
+                    <div className="inline-flex items-center gap-2 rounded-full bg-white dark:bg-slate-900 px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-indigo-700 dark:text-indigo-200 shadow-sm dark:shadow-none">Purchased course journey</div>
+                    <h2 className="mt-4 text-2xl font-black text-slate-900 dark:text-white sm:text-[2.2rem]">{payload.course.title}</h2>
+                    <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600 dark:text-slate-300">
                       Click any roadmap circle to open the dedicated lesson player page. The overview stays clean here, and the actual learning opens separately just like your reference.
                     </p>
                   </div>
@@ -583,11 +583,11 @@ export default function StudentLearningPage() {
                 </div>
 
                 <div className="p-6 sm:p-8">
-                  <div ref={liveSectionRef} className="flex flex-wrap items-center justify-between gap-4 rounded-[1.7rem] border border-amber-200 bg-[linear-gradient(135deg,#fff7cc_0%,#fff4d9_52%,#ffffff_100%)] px-5 py-4">
+                  <div ref={liveSectionRef} className="flex flex-wrap items-center justify-between gap-4 rounded-[1.7rem] border border-amber-200 dark:border-amber-400/30 bg-[linear-gradient(135deg,#fff7cc_0%,#fff4d9_52%,#ffffff_100%)] dark:bg-[linear-gradient(135deg,rgba(120,53,15,0.26)_0%,rgba(67,56,202,0.18)_52%,rgba(15,23,42,0.96)_100%)] px-5 py-4">
                     <div className="max-w-3xl">
-                      <div className="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Course access</div>
-                      <div className="mt-2 text-sm font-semibold text-slate-900">Recorded lessons and live sessions stay connected in one bootcamp roadmap.</div>
-                      <div className="mt-1 text-sm text-slate-600">{payload.course.description || 'Open any circle below to enter the lesson workspace.'}</div>
+                      <div className="text-xs font-black uppercase tracking-[0.18em] text-amber-700 dark:text-amber-200">Course access</div>
+                      <div className="mt-2 text-sm font-semibold text-slate-900 dark:text-white">Recorded lessons and live sessions stay connected in one bootcamp roadmap.</div>
+                      <div className="mt-1 text-sm text-slate-600 dark:text-slate-300">{payload.course.description || 'Open any circle below to enter the lesson workspace.'}</div>
                     </div>
 
                     <div className="flex flex-wrap gap-3">
@@ -595,7 +595,7 @@ export default function StudentLearningPage() {
                         <button
                           type="button"
                           onClick={() => joinLiveSession(recommendedLiveSession.id, recommendedLiveSession.meetingUrl || recommendedLiveSession.recordingUrl)}
-                          className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                          className="inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-950/70 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-800"
                         >
                           {recommendedLiveSession.status === 'live' ? 'Join live class now' : 'Open live access'}
                         </button>
@@ -631,10 +631,10 @@ export default function StudentLearningPage() {
                               className={cn(
                                 'group w-[188px] shrink-0 rounded-[1.8rem] border px-4 py-5 text-center transition',
                                 isActive
-                                  ? 'border-violet-300 bg-violet-50 shadow-[0_14px_35px_rgba(139,92,246,0.12)]'
+                                  ? 'border-violet-300 dark:border-violet-400/40 bg-violet-50 dark:bg-violet-500/10 shadow-[0_14px_35px_rgba(139,92,246,0.12)]'
                                   : isCompleted
-                                    ? 'border-emerald-200 bg-emerald-50/70'
-                                    : 'border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-white'
+                                    ? 'border-emerald-200 dark:border-emerald-400/30 bg-emerald-50 dark:bg-emerald-500/10'
+                                    : 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950/70 hover:border-slate-300 hover:bg-white dark:bg-slate-900'
                               )}
                             >
                               <div
@@ -643,27 +643,27 @@ export default function StudentLearningPage() {
                                   isActive
                                     ? 'border-violet-200 bg-violet-600 text-white'
                                     : isCompleted
-                                      ? 'border-emerald-200 bg-emerald-500 text-white'
-                                      : 'border-slate-200 bg-white text-slate-500'
+                                      ? 'border-emerald-200 dark:border-emerald-400/30 bg-emerald-500 text-white'
+                                      : 'border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400'
                                 )}
                               >
                                 {isCompleted ? <CheckCircle2 className="h-7 w-7" /> : isActive ? <Play className="ml-0.5 h-5 w-5" /> : <span>{index + 1}</span>}
                               </div>
-                              <div className="mt-4 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">{step.label}</div>
-                              <div className="mt-1 line-clamp-2 text-sm font-bold leading-5 text-slate-900">{step.title}</div>
-                              <div className="mt-2 text-[11px] text-slate-500">{step.subjectName}</div>
+                              <div className="mt-4 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">{step.label}</div>
+                              <div className="mt-1 line-clamp-2 text-sm font-bold leading-5 text-slate-900 dark:text-white">{step.title}</div>
+                              <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">{step.subjectName}</div>
                               <div className="mt-3 flex items-center justify-center gap-2">
                                 <DeliveryPill mode={step.mode} compact />
                               </div>
-                              <div className="mt-3 inline-flex rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-slate-600 shadow-sm">
+                              <div className="mt-3 inline-flex rounded-full bg-white dark:bg-slate-900 px-3 py-1 text-[11px] font-semibold text-slate-600 dark:text-slate-300 shadow-sm dark:shadow-none">
                                 {step.completedLectures}/{step.totalLectures} lessons
                               </div>
                             </button>
 
                             {index < roadmapSteps.length - 1 ? (
                               <div className="flex h-[72px] w-24 shrink-0 items-center justify-center">
-                                <div className="h-1.5 w-full rounded-full bg-slate-200">
-                                  <div className={cn('h-full rounded-full', isCompleted ? 'bg-emerald-500' : isActive ? 'bg-violet-500' : 'bg-slate-300')} style={{ width: connectorWidth }} />
+                                <div className="h-1.5 w-full rounded-full bg-slate-200 dark:bg-white/10">
+                                  <div className={cn('h-full rounded-full', isCompleted ? 'bg-emerald-500' : isActive ? 'bg-violet-500' : 'bg-slate-300 dark:bg-slate-700')} style={{ width: connectorWidth }} />
                                 </div>
                               </div>
                             ) : null}
@@ -671,7 +671,7 @@ export default function StudentLearningPage() {
                         );
                       })}
 
-                      <div className="ml-6 hidden shrink-0 rounded-full border border-sky-200 bg-sky-50 px-5 py-4 text-center text-sky-700 md:block">
+                      <div className="ml-6 hidden shrink-0 rounded-full border border-sky-200 dark:border-sky-400/30 bg-sky-50 dark:bg-sky-500/10 px-5 py-4 text-center text-sky-700 dark:text-sky-200 md:block">
                         <div className="text-[10px] font-black uppercase tracking-[0.18em] text-sky-500">Finish</div>
                         <div className="mt-1 text-sm font-black">Bootcamp</div>
                       </div>
@@ -690,7 +690,7 @@ export default function StudentLearningPage() {
                         <button
                           type="button"
                           onClick={() => openLesson(activeRoadmapStep?.launchLectureId || activeLectureId)}
-                          className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-white/90"
+                          className="inline-flex items-center gap-2 rounded-full bg-white dark:bg-slate-900 px-4 py-2.5 text-sm font-semibold text-slate-900 dark:text-white transition hover:bg-white/90 dark:hover:bg-slate-800"
                         >
                           Open current lesson
                         </button>
@@ -709,19 +709,19 @@ export default function StudentLearningPage() {
             </>
           ) : (
             <>
-              <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-5 shadow-sm dark:shadow-none">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div className="max-w-4xl">
-                    <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                    <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">
                       {activeSubject ? <span>{activeSubject.name}</span> : null}
                       {activeModule ? <span>/ {activeModule.title}</span> : null}
                     </div>
-                    <h2 className="mt-3 text-2xl font-black text-slate-900 sm:text-3xl">{activeLecture?.title || 'Select a lesson'}</h2>
-                    <p className="mt-3 text-sm leading-7 text-slate-500">{activeLecture?.description || payload.course.description}</p>
+                    <h2 className="mt-3 text-2xl font-black text-slate-900 dark:text-white sm:text-3xl">{activeLecture?.title || 'Select a lesson'}</h2>
+                    <p className="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">{activeLecture?.description || payload.course.description}</p>
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2">
-                    <Link href={buildLearningUrl()} className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                    <Link href={buildLearningUrl()} className="inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-950/70 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-800">
                       <ArrowLeft className="h-4 w-4" /> Back to roadmap
                     </Link>
                     <LessonNavButton
@@ -747,7 +747,7 @@ export default function StudentLearningPage() {
                 </div>
               </div>
 
-              <div className="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-sm">
+              <div className="rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-4 shadow-sm dark:shadow-none">
                 <div className="relative min-h-[360px] overflow-hidden rounded-[1.5rem] bg-[#030712] md:min-h-[460px]">
                   {stageAsset.kind === 'iframe' ? (
                     <iframe
@@ -794,7 +794,7 @@ export default function StudentLearningPage() {
                     </a>
                   ) : null}
                   {activeLecture?.resourceUrl ? (
-                    <a className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" href={activeLecture.resourceUrl} target="_blank" rel="noreferrer">
+                    <a className="inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-950/70 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-800" href={activeLecture.resourceUrl} target="_blank" rel="noreferrer">
                       Open study material <ArrowUpRight className="h-4 w-4" />
                     </a>
                   ) : null}
@@ -802,35 +802,35 @@ export default function StudentLearningPage() {
                     <button
                       type="button"
                       onClick={() => joinLiveSession(recommendedLiveSession.id, recommendedLiveSession.meetingUrl || recommendedLiveSession.recordingUrl)}
-                      className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                      className="inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-950/70 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-800"
                     >
                       {recommendedLiveSession.status === 'live' ? 'Join live class now' : 'Open live access'}
                     </button>
                   ) : null}
                   {recommendedLiveSession?.recordingUrl ? (
-                    <a className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" href={recommendedLiveSession.recordingUrl} target="_blank" rel="noreferrer">
+                    <a className="inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-950/70 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-800" href={recommendedLiveSession.recordingUrl} target="_blank" rel="noreferrer">
                       Open live recording <ArrowUpRight className="h-4 w-4" />
                     </a>
                   ) : null}
                 </div>
 
                 {message ? (
-                  <div className={cn('mt-4 rounded-2xl border px-4 py-3 text-sm', messageIsError ? 'border-red-200 bg-red-50 text-red-600' : 'border-emerald-200 bg-emerald-50 text-emerald-700')}>
+                  <div className={cn('mt-4 rounded-2xl border px-4 py-3 text-sm', messageIsError ? 'border-red-200 dark:border-red-400/30 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-200' : 'border-emerald-200 dark:border-emerald-400/30 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-200')}>
                     {message}
                   </div>
                 ) : null}
               </div>
 
               {activeLecture?.notes ? (
-                <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
+                <div className="rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-5 shadow-sm dark:shadow-none">
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <div className="text-lg font-bold text-slate-900">Lesson notes</div>
-                      <div className="mt-1 text-sm text-slate-500">Only the lesson essentials stay on this page for a cleaner learning flow.</div>
+                      <div className="text-lg font-bold text-slate-900 dark:text-white">Lesson notes</div>
+                      <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">Only the lesson essentials stay on this page for a cleaner learning flow.</div>
                     </div>
                     <DeliveryPill mode={activeDeliveryMode} />
                   </div>
-                  <div className="mt-5 whitespace-pre-wrap rounded-[1.5rem] bg-slate-50 p-4 text-sm leading-7 text-slate-700">
+                  <div className="mt-5 whitespace-pre-wrap rounded-[1.5rem] bg-slate-50 dark:bg-slate-950/70 p-4 text-sm leading-7 text-slate-700 dark:text-slate-200">
                     {activeLecture.notes}
                   </div>
                 </div>
@@ -845,9 +845,9 @@ export default function StudentLearningPage() {
 
 function PanelStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-4">
-      <div className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">{label}</div>
-      <div className="mt-2 text-lg font-bold text-slate-900">{value}</div>
+    <div className="rounded-[1.25rem] border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950/70 px-4 py-4">
+      <div className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">{label}</div>
+      <div className="mt-2 text-lg font-bold text-slate-900 dark:text-white">{value}</div>
     </div>
   );
 }
@@ -858,7 +858,7 @@ function LessonNavButton({ label, icon, disabled, onClick }: { label: string; ic
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+      className="inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-950/70 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
     >
       {icon}
       {label}
@@ -868,16 +868,16 @@ function LessonNavButton({ label, icon, disabled, onClick }: { label: string; ic
 
 function SummaryRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-      <span className="text-sm text-slate-500">{label}</span>
-      <span className="text-sm font-semibold text-slate-900">{value}</span>
+    <div className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-950/70 px-4 py-3">
+      <span className="text-sm text-slate-500 dark:text-slate-400">{label}</span>
+      <span className="text-sm font-semibold text-slate-900 dark:text-white">{value}</span>
     </div>
   );
 }
 
 function InfoPill({ icon, text }: { icon: ReactNode; text: string }) {
   return (
-    <div className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2">
+    <div className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 px-3 py-2 text-slate-600 dark:text-slate-300">
       {icon}
       <span>{text}</span>
     </div>
@@ -893,15 +893,15 @@ function DeliveryPill({ mode, compact = false }: { mode: LearningDeliveryMode; c
 }
 
 function getDeliveryPillClasses(mode: LearningDeliveryMode) {
-  if (mode === 'live') return 'border-sky-200 bg-sky-50 text-sky-700';
-  if (mode === 'hybrid') return 'border-violet-200 bg-violet-50 text-violet-700';
-  return 'border-emerald-200 bg-emerald-50 text-emerald-700';
+  if (mode === 'live') return 'border-sky-200 dark:border-sky-400/30 bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-200';
+  if (mode === 'hybrid') return 'border-violet-200 dark:border-violet-400/30 bg-violet-50 dark:bg-violet-500/10 text-violet-700 dark:text-violet-200';
+  return 'border-emerald-200 dark:border-emerald-400/30 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-200';
 }
 
 function getSessionStatusClasses(status?: string) {
-  if (status === 'live') return 'bg-rose-100 text-rose-700';
-  if (status === 'completed') return 'bg-emerald-100 text-emerald-700';
-  return 'bg-slate-100 text-slate-600';
+  if (status === 'live') return 'bg-rose-100 dark:bg-rose-500/15 text-rose-700 dark:text-rose-200';
+  if (status === 'completed') return 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-200';
+  return 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300';
 }
 
 function getActiveLessonCopy(mode: LearningDeliveryMode) {
