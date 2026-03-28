@@ -2,14 +2,13 @@
 
 import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import {
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
   Award,
   BookOpen,
-  Calendar,
   CheckCircle2,
   Clock,
   MonitorPlay,
@@ -131,7 +130,12 @@ type StageAsset =
 
 export default function StudentLearningPage() {
   const params = useParams();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const enrollmentId = Array.isArray(params?.enrollmentId) ? params.enrollmentId[0] : params?.enrollmentId || '';
+  const learningFocus = searchParams?.get('focus') === 'live' ? 'live' : 'recorded';
+  const selectedLessonId = searchParams?.get('lesson') || '';
+  const isLessonWorkspace = Boolean(selectedLessonId);
 
   const [payload, setPayload] = useState<LearningPayload['data'] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -139,15 +143,17 @@ export default function StudentLearningPage() {
   const [activeLectureId, setActiveLectureId] = useState('');
   const [message, setMessage] = useState('');
   const [syncingLectureId, setSyncingLectureId] = useState('');
-  const [learningFocus, setLearningFocus] = useState<'live' | 'recorded'>('recorded');
 
   const liveSectionRef = useRef<HTMLDivElement | null>(null);
-  const playerSectionRef = useRef<HTMLDivElement | null>(null);
   const autoSyncRef = useRef('');
 
   const applyWorkspaceData = (data: LearningPayload['data'], preserveSelection = true) => {
     setPayload(data);
     setActiveLectureId((current) => {
+      if (selectedLessonId && hasLecture(data.curriculum, selectedLessonId)) {
+        return selectedLessonId;
+      }
+
       if (preserveSelection && current && hasLecture(data.curriculum, current)) {
         return current;
       }
@@ -155,12 +161,6 @@ export default function StudentLearningPage() {
       return pickInitialLecture(data.curriculum, learningFocus) || current || '';
     });
   };
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const nextFocus = new URLSearchParams(window.location.search).get('focus') === 'live' ? 'live' : 'recorded';
-    setLearningFocus(nextFocus);
-  }, []);
 
   useEffect(() => {
     let active = true;
@@ -190,6 +190,19 @@ export default function StudentLearningPage() {
       active = false;
     };
   }, [enrollmentId, learningFocus]);
+
+  useEffect(() => {
+    if (!payload) return;
+
+    if (selectedLessonId && hasLecture(payload.curriculum, selectedLessonId)) {
+      setActiveLectureId(selectedLessonId);
+      return;
+    }
+
+    if (!activeLectureId || !hasLecture(payload.curriculum, activeLectureId)) {
+      setActiveLectureId(pickInitialLecture(payload.curriculum, learningFocus) || '');
+    }
+  }, [payload, selectedLessonId, activeLectureId, learningFocus]);
 
   const activeContext = useMemo(() => {
     for (const subject of payload?.curriculum || []) {
@@ -321,7 +334,7 @@ export default function StudentLearningPage() {
   }, [payload, learningFocus]);
 
   useEffect(() => {
-    if (!payload?.course?.id || !activeLecture?.id) return;
+    if (!isLessonWorkspace || !payload?.course?.id || !activeLecture?.id) return;
     if (resolveLectureDeliveryMode(activeLecture) !== 'recorded' || activeLecture.completed) return;
 
     const syncKey = `${payload.course.id}:${activeLecture.id}`;
@@ -384,15 +397,27 @@ export default function StudentLearningPage() {
     }
   };
 
-  const focusLesson = (lectureId?: string) => {
-    if (!lectureId) return;
-    setActiveLectureId(lectureId);
-
-    if (typeof window !== 'undefined') {
-      window.setTimeout(() => {
-        playerSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 60);
+  const buildLearningUrl = ({ lessonId, focus = learningFocus }: { lessonId?: string; focus?: 'live' | 'recorded' } = {}) => {
+    const params = new URLSearchParams();
+    if (focus === 'live') {
+      params.set('focus', 'live');
     }
+    if (lessonId) {
+      params.set('lesson', lessonId);
+    }
+    const query = params.toString();
+    return query
+      ? '/dashboard/student/learn/' + enrollmentId + '?' + query
+      : '/dashboard/student/learn/' + enrollmentId;
+  };
+
+  const openLesson = (lectureId?: string) => {
+    if (!lectureId) return;
+    const targetLesson = flatLessons.find((item) => item.lecture.id === lectureId)?.lecture || null;
+    const targetFocus = targetLesson && resolveLectureDeliveryMode(targetLesson) !== 'recorded' ? 'live' : 'recorded';
+    setActiveLectureId(lectureId);
+    setMessage('');
+    router.push(buildLearningUrl({ lessonId: lectureId, focus: targetFocus }));
   };
 
   if (loading) {
@@ -410,7 +435,6 @@ export default function StudentLearningPage() {
 
   const completedCount = payload.enrollment.completedLectures.length;
   const messageIsError = /unable|failed|error/i.test(message);
-  const participationScore = payload.enrollment.participation.discussionCount + payload.enrollment.participation.questionsAsked + payload.enrollment.participation.resourcesDownloaded;
   const overallJourneyProgress = payload.enrollment.totalLectures
     ? Math.round((completedCount / payload.enrollment.totalLectures) * 100)
     : payload.enrollment.progress;
@@ -482,7 +506,7 @@ export default function StudentLearningPage() {
                               <button
                                 key={lecture.id}
                                 type="button"
-                                onClick={() => setActiveLectureId(lecture.id)}
+                                onClick={() => openLesson(lecture.id)}
                                 className={cn(
                                   'w-full rounded-2xl border px-3 py-3 text-left transition',
                                   isActive
@@ -524,332 +548,357 @@ export default function StudentLearningPage() {
         </aside>
 
         <section className="space-y-6">
-          <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="rounded-[1.6rem] border border-amber-200 bg-[linear-gradient(135deg,#fff7cc_0%,#fff3d6_48%,#ffffff_100%)] p-4 sm:p-5">
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="max-w-4xl">
-                  <div className="text-xs font-black uppercase tracking-[0.2em] text-amber-600">Purchased course journey</div>
-                  <div className="mt-2 text-lg font-black text-slate-900 sm:text-xl">Bootcamp roadmap before the lesson workspace</div>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">
-                    Recorded lessons, live sessions, and certificate progress all stay connected in one roadmap just like your reference.
-                  </p>
+          {!isLessonWorkspace ? (
+            <>
+              <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
+                <div className="rounded-[1.6rem] border border-amber-200 bg-[linear-gradient(135deg,#fff7cc_0%,#fff3d6_48%,#ffffff_100%)] p-4 sm:p-5">
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div className="max-w-4xl">
+                      <div className="text-xs font-black uppercase tracking-[0.2em] text-amber-600">Purchased course journey</div>
+                      <div className="mt-2 text-lg font-black text-slate-900 sm:text-xl">Bootcamp roadmap before the lesson workspace</div>
+                      <p className="mt-2 text-sm leading-6 text-slate-600">
+                        Open the course first, review the roadmap, and then jump into a lesson from here just like your reference flow.
+                      </p>
+                    </div>
+
+                    <div className="rounded-[1.35rem] border border-white/80 bg-white/85 px-4 py-3 text-right shadow-sm">
+                      <div className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Bootcamp Progress</div>
+                      <div className="mt-1 text-2xl font-black text-slate-900">{overallJourneyProgress}%</div>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="rounded-[1.35rem] border border-white/80 bg-white/85 px-4 py-3 text-right shadow-sm">
-                  <div className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Bootcamp Progress</div>
-                  <div className="mt-1 text-2xl font-black text-slate-900">{overallJourneyProgress}%</div>
+                <div className="mt-5 overflow-x-auto pb-2">
+                  <div className="flex min-w-[1040px] items-start">
+                    {roadmapSteps.map((step, index) => {
+                      const isCompleted = step.progress >= 100;
+                      const isActive = step.moduleId === activeModule?.id;
+                      const connectorWidth = isCompleted ? '100%' : step.progress >= 50 ? '70%' : step.progress > 0 ? '36%' : '16%';
+
+                      return (
+                        <div key={step.key} className="flex items-start">
+                          <button
+                            type="button"
+                            onClick={() => openLesson(step.launchLectureId)}
+                            className={cn(
+                              'group w-[176px] shrink-0 rounded-[1.6rem] border px-4 py-4 text-center transition',
+                              isActive
+                                ? 'border-violet-300 bg-violet-50 shadow-[0_14px_35px_rgba(139,92,246,0.12)]'
+                                : isCompleted
+                                  ? 'border-emerald-200 bg-emerald-50/70'
+                                  : 'border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-white'
+                            )}
+                          >
+                            <div
+                              className={cn(
+                                'mx-auto flex h-14 w-14 items-center justify-center rounded-full border-4 text-sm font-black transition',
+                                isActive
+                                  ? 'border-violet-200 bg-violet-600 text-white'
+                                  : isCompleted
+                                    ? 'border-emerald-200 bg-emerald-500 text-white'
+                                    : 'border-slate-200 bg-white text-slate-500'
+                              )}
+                            >
+                              {isCompleted ? <CheckCircle2 className="h-6 w-6" /> : isActive ? <Play className="ml-0.5 h-5 w-5" /> : <span>{index + 1}</span>}
+                            </div>
+                            <div className="mt-3 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">{step.label}</div>
+                            <div className="mt-1 line-clamp-2 text-sm font-bold leading-5 text-slate-900">{step.title}</div>
+                            <div className="mt-2 text-[11px] text-slate-500">{step.subjectName}</div>
+                            <div className="mt-3 flex items-center justify-center gap-2">
+                              <DeliveryPill mode={step.mode} compact />
+                            </div>
+                            <div className="mt-3 inline-flex rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-slate-600 shadow-sm">
+                              {step.completedLectures}/{step.totalLectures} lessons
+                            </div>
+                          </button>
+
+                          {index < roadmapSteps.length - 1 ? (
+                            <div className="flex h-[72px] w-20 shrink-0 items-center justify-center">
+                              <div className="h-1.5 w-full rounded-full bg-slate-200">
+                                <div className={cn('h-full rounded-full', isCompleted ? 'bg-emerald-500' : isActive ? 'bg-violet-500' : 'bg-slate-300')} style={{ width: connectorWidth }} />
+                              </div>
+                            </div>
+                          ) : null}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="mt-5 flex flex-col gap-4 rounded-[1.6rem] bg-[linear-gradient(135deg,#312e81_0%,#4338ca_52%,#1d4ed8_100%)] p-4 text-white lg:flex-row lg:items-center lg:justify-between">
+                  <div>
+                    <div className="text-xs font-black uppercase tracking-[0.18em] text-white/70">Boarding Pass</div>
+                    <div className="mt-2 text-xl font-black">{activeRoadmapStep?.title || activeLecture?.title || payload.course.title}</div>
+                    <div className="mt-1 text-sm text-white/75">
+                      Bootcamp progress {overallJourneyProgress}% with {completedCount}/{payload.enrollment.totalLectures} lessons completed.
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-3">
+                    <button
+                      type="button"
+                      onClick={() => openLesson(activeRoadmapStep?.launchLectureId || activeLectureId)}
+                      className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-white/90"
+                    >
+                      Open current lesson
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => openLesson(nextIncompleteLesson?.lecture.id || activeLectureId)}
+                      className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/15"
+                    >
+                      Continue your journey <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="mt-5 overflow-x-auto pb-2">
-              <div className="flex min-w-[1040px] items-start">
-                {roadmapSteps.map((step, index) => {
-                  const isCompleted = step.progress >= 100;
-                  const isActive = step.moduleId === activeModule?.id;
-                  const connectorWidth = isCompleted ? '100%' : step.progress >= 50 ? '70%' : step.progress > 0 ? '36%' : '16%';
+              {message ? (
+                <div className={cn('rounded-2xl border px-4 py-3 text-sm', messageIsError ? 'border-red-200 bg-red-50 text-red-600' : 'border-emerald-200 bg-emerald-50 text-emerald-700')}>
+                  {message}
+                </div>
+              ) : null}
 
-                  return (
-                    <div key={step.key} className="flex items-start">
-                      <button
-                        type="button"
-                        onClick={() => focusLesson(step.launchLectureId)}
-                        className={cn(
-                          'group w-[176px] shrink-0 rounded-[1.6rem] border px-4 py-4 text-center transition',
-                          isActive
-                            ? 'border-violet-300 bg-violet-50 shadow-[0_14px_35px_rgba(139,92,246,0.12)]'
-                            : isCompleted
-                              ? 'border-emerald-200 bg-emerald-50/70'
-                              : 'border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-white'
-                        )}
-                      >
-                        <div
-                          className={cn(
-                            'mx-auto flex h-14 w-14 items-center justify-center rounded-full border-4 text-sm font-black transition',
-                            isActive
-                              ? 'border-violet-200 bg-violet-600 text-white'
-                              : isCompleted
-                                ? 'border-emerald-200 bg-emerald-500 text-white'
-                                : 'border-slate-200 bg-white text-slate-500'
-                          )}
-                        >
-                          {isCompleted ? <CheckCircle2 className="h-6 w-6" /> : isActive ? <Play className="ml-0.5 h-5 w-5" /> : <span>{index + 1}</span>}
-                        </div>
-                        <div className="mt-3 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">{step.label}</div>
-                        <div className="mt-1 line-clamp-2 text-sm font-bold leading-5 text-slate-900">{step.title}</div>
-                        <div className="mt-2 text-[11px] text-slate-500">{step.subjectName}</div>
-                        <div className="mt-3 flex items-center justify-center gap-2">
-                          <DeliveryPill mode={step.mode} compact />
-                        </div>
-                        <div className="mt-3 inline-flex rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-slate-600 shadow-sm">
-                          {step.completedLectures}/{step.totalLectures} lessons
-                        </div>
-                      </button>
+              <div className="grid gap-6 xl:grid-cols-[1.04fr_0.96fr]">
+                <div className="space-y-6">
+                  <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <div className="text-lg font-bold text-slate-900">Course overview</div>
+                        <div className="mt-1 text-sm text-slate-500">Open a lesson from the roadmap or left contents panel to enter the clean player page.</div>
+                      </div>
+                      <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{learningInsights.modules} modules</span>
+                    </div>
 
-                      {index < roadmapSteps.length - 1 ? (
-                        <div className="flex h-[72px] w-20 shrink-0 items-center justify-center">
-                          <div className="h-1.5 w-full rounded-full bg-slate-200">
-                            <div className={cn('h-full rounded-full', isCompleted ? 'bg-emerald-500' : isActive ? 'bg-violet-500' : 'bg-slate-300')} style={{ width: connectorWidth }} />
+                    <div className="mt-5 grid gap-3 md:grid-cols-4">
+                      <PanelStat label="Lessons" value={String(payload.enrollment.totalLectures)} />
+                      <PanelStat label="Recorded" value={String(learningInsights.recorded)} />
+                      <PanelStat label="Live" value={String(learningInsights.live + learningInsights.hybrid)} />
+                      <PanelStat label="Progress" value={overallJourneyProgress + '%'} />
+                    </div>
+
+                    <div className="mt-5 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4 text-sm leading-7 text-slate-600">
+                      {payload.course.description || 'Select a lesson from the roadmap to open the dedicated learning player.'}
+                    </div>
+                  </div>
+
+                  <div ref={liveSectionRef} className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <div className="text-lg font-bold text-slate-900">Live classroom schedule</div>
+                        <div className="mt-1 text-sm text-slate-500">Recorded lessons and live sessions stay connected inside the same purchased course flow.</div>
+                      </div>
+                      <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{payload.liveSessions.length} sessions</span>
+                    </div>
+
+                    <div className="mt-5 space-y-4">
+                      {payload.liveSessions.length ? payload.liveSessions.map((session) => (
+                        <div key={session.id} className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
+                          <div className="flex flex-wrap items-start justify-between gap-3">
+                            <div>
+                              <div className="font-semibold text-slate-900">{session.title}</div>
+                              <div className="mt-1 text-sm text-slate-500">{session.description || session.hostName || 'Managed from admin live classroom controls'}</div>
+                            </div>
+                            <span className={cn('rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]', getSessionStatusClasses(session.status))}>
+                              {session.status || 'scheduled'}
+                            </span>
+                          </div>
+
+                          <div className="mt-4 grid gap-3 text-sm text-slate-600 sm:grid-cols-2">
+                            <InfoPill icon={<Clock className="h-4 w-4" />} text={formatDate(session.startTime)} />
+                            <InfoPill icon={<BookOpen className="h-4 w-4" />} text={session.attendanceRequired ? 'Attendance required' : 'Attendance optional'} />
+                            <InfoPill icon={<Award className="h-4 w-4" />} text={session.hostName || 'Mentor assigned'} />
+                            <InfoPill icon={<MonitorPlay className="h-4 w-4" />} text={session.recordingUrl ? 'Recording linked' : 'Recording pending'} />
+                          </div>
+
+                          <div className="mt-4 flex flex-wrap gap-3">
+                            <button
+                              type="button"
+                              disabled={session.status !== 'live'}
+                              onClick={() => joinLiveSession(session.id, session.meetingUrl)}
+                              className="rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+                            >
+                              {session.status === 'live' ? 'Join live now' : session.status === 'completed' ? 'Session completed' : 'Available at start time'}
+                            </button>
+                            {session.recordingUrl ? (
+                              <a className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50" href={session.recordingUrl} target="_blank" rel="noreferrer">
+                                Open recording <ArrowUpRight className="h-3.5 w-3.5" />
+                              </a>
+                            ) : null}
                           </div>
                         </div>
-                      ) : null}
+                      )) : (
+                        <div className="rounded-[1.5rem] border border-dashed border-slate-200 px-4 py-10 text-center text-sm text-slate-500">
+                          No live sessions are available yet. Admin can attach them from the course controls.
+                        </div>
+                      )}
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="mt-5 flex flex-col gap-4 rounded-[1.6rem] bg-[linear-gradient(135deg,#312e81_0%,#4338ca_52%,#1d4ed8_100%)] p-4 text-white lg:flex-row lg:items-center lg:justify-between">
-              <div>
-                <div className="text-xs font-black uppercase tracking-[0.18em] text-white/70">Boarding Pass</div>
-                <div className="mt-2 text-xl font-black">{activeRoadmapStep?.title || activeLecture?.title || payload.course.title}</div>
-                <div className="mt-1 text-sm text-white/75">
-                  Bootcamp progress {overallJourneyProgress}% with {completedCount}/{payload.enrollment.totalLectures} lessons completed.
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-3">
-                <button
-                  type="button"
-                  onClick={() => focusLesson(activeRoadmapStep?.launchLectureId || activeLectureId)}
-                  className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-white/90"
-                >
-                  Boarding Pass
-                </button>
-                <button
-                  type="button"
-                  onClick={() => focusLesson(nextIncompleteLesson?.lecture.id || activeLectureId)}
-                  className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/15"
-                >
-                  Continue your journey <ArrowRight className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div ref={playerSectionRef} className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div className="max-w-4xl">
-                <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                  {activeSubject ? <span>{activeSubject.name}</span> : null}
-                  {activeModule ? <span>/ {activeModule.title}</span> : null}
-                </div>
-                <h2 className="mt-3 text-2xl font-black sm:text-3xl text-slate-900">{activeLecture?.title || 'Select a lesson'}</h2>
-                <p className="mt-3 text-sm leading-7 text-slate-500">{activeLecture?.description || payload.course.description}</p>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-2">
-                <LessonNavButton
-                  label="Prev"
-                  disabled={!previousLesson}
-                  icon={<ArrowLeft className="h-4 w-4" />}
-                  onClick={() => previousLesson && setActiveLectureId(previousLesson.lecture.id)}
-                />
-                <LessonNavButton
-                  label="Next"
-                  disabled={!nextLesson}
-                  icon={<ArrowRight className="h-4 w-4" />}
-                  onClick={() => nextLesson && setActiveLectureId(nextLesson.lecture.id)}
-                />
-              </div>
-            </div>
-
-            <div className="mt-5 grid gap-3 md:grid-cols-4">
-              <PanelStat label="Lesson" value={`${activeLessonIndex >= 0 ? activeLessonIndex + 1 : 0}/${flatLessons.length || 0}`} />
-              <PanelStat label="Mode" value={getDeliveryLabel(activeDeliveryMode)} />
-              <PanelStat label="Duration" value={activeLecture?.duration || 'Flexible'} />
-              <PanelStat label="Resources" value={activeLecture?.resourceUrl || activeLecture?.videoUrl || activeLecture?.recordingUrl ? 'Ready' : 'Pending'} />
-            </div>
-          </div>
-
-          <div className="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-sm">
-            <div className="relative min-h-[360px] overflow-hidden rounded-[1.5rem] bg-[#030712] md:min-h-[460px]">
-              {stageAsset.kind === 'iframe' ? (
-                <iframe
-                  src={stageAsset.url}
-                  title={activeLecture?.title || payload.course.title}
-                  className="h-full min-h-[360px] w-full border-0 md:min-h-[460px]"
-                  allow="autoplay; encrypted-media; picture-in-picture"
-                  allowFullScreen
-                />
-              ) : stageAsset.kind === 'video' ? (
-                <video
-                  src={stageAsset.url}
-                  controls
-                  className="h-full min-h-[360px] w-full bg-black object-contain md:min-h-[460px]"
-                />
-              ) : (
-                <div className="flex h-full min-h-[360px] flex-col items-center justify-center px-6 text-center text-white md:min-h-[460px]">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/10 text-white">
-                    {activeDeliveryMode === 'live' ? <RadioTower className="h-8 w-8" /> : activeDeliveryMode === 'hybrid' ? <Video className="h-8 w-8" /> : <MonitorPlay className="h-8 w-8" />}
                   </div>
-                  <h3 className="mt-5 text-2xl font-black">
-                    {activeDeliveryMode === 'live' ? 'Live session ready to join' : activeDeliveryMode === 'hybrid' ? 'Recorded and live learning together' : 'Recorded lesson ready'}
-                  </h3>
-                  <p className="mt-3 max-w-2xl text-sm leading-7 text-white/70">{activeLecture ? getActiveLessonCopy(activeDeliveryMode) : 'Select a lesson from the contents panel to begin.'}</p>
                 </div>
-              )}
 
-              <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between gap-3 p-4">
-                <div className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-xs font-black uppercase tracking-[0.18em] text-white backdrop-blur">
-                  <Play className="h-3.5 w-3.5" /> {getDeliveryLabel(activeDeliveryMode)}
+                <div className="space-y-6">
+                  <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
+                    <div className="text-lg font-bold text-slate-900">Course summary</div>
+                    <div className="mt-5 space-y-3">
+                      <SummaryRow label="Progress" value={completedCount + '/' + payload.enrollment.totalLectures + ' lessons'} />
+                      <SummaryRow label="Delivery" value={payload.course.deliveryMode || 'Recorded'} />
+                      <SummaryRow label="Modules" value={String(learningInsights.modules)} />
+                      <SummaryRow label="Support" value={payload.course.supportEmail || 'Support managed by admin'} />
+                      <SummaryRow label="Duration" value={payload.course.duration || 'Flexible'} />
+                    </div>
+                  </div>
+
+                  <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
+                    <div className="text-lg font-bold text-slate-900">Certificate status</div>
+                    {payload.certificate ? (
+                      <div className="mt-4 rounded-[1.5rem] bg-emerald-50 p-4 text-sm text-emerald-700">
+                        <div className="font-semibold">Certificate ready</div>
+                        <div className="mt-1">{payload.certificate.certificateNumber}</div>
+                        <a className="mt-3 inline-flex items-center gap-2 font-semibold underline" href={payload.certificate.credentialUrl} target="_blank" rel="noreferrer">
+                          Open credential <ArrowUpRight className="h-4 w-4" />
+                        </a>
+                      </div>
+                    ) : (
+                      <div className="mt-4 rounded-[1.5rem] bg-slate-50 p-4 text-sm leading-7 text-slate-600">
+                        {payload.enrollment.certificateEligible
+                          ? 'You are eligible. Your certificate will appear here after the completion rule is applied.'
+                          : 'Complete the recorded roadmap, attend live requirements, and meet the performance rule to unlock the certificate.'}
+                      </div>
+                    )}
+                  </div>
                 </div>
-                {activeLecture?.completed ? (
-                  <div className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-emerald-500/15 px-3 py-2 text-xs font-semibold text-emerald-100 backdrop-blur">
-                    <CheckCircle2 className="h-3.5 w-3.5" /> Progress synced
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div className="max-w-4xl">
+                    <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                      {activeSubject ? <span>{activeSubject.name}</span> : null}
+                      {activeModule ? <span>/ {activeModule.title}</span> : null}
+                    </div>
+                    <h2 className="mt-3 text-2xl font-black text-slate-900 sm:text-3xl">{activeLecture?.title || 'Select a lesson'}</h2>
+                    <p className="mt-3 text-sm leading-7 text-slate-500">{activeLecture?.description || payload.course.description}</p>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Link href={buildLearningUrl()} className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                      <ArrowLeft className="h-4 w-4" /> Back to roadmap
+                    </Link>
+                    <LessonNavButton
+                      label="Prev"
+                      disabled={!previousLesson}
+                      icon={<ArrowLeft className="h-4 w-4" />}
+                      onClick={() => previousLesson && openLesson(previousLesson.lecture.id)}
+                    />
+                    <LessonNavButton
+                      label="Next"
+                      disabled={!nextLesson}
+                      icon={<ArrowRight className="h-4 w-4" />}
+                      onClick={() => nextLesson && openLesson(nextLesson.lecture.id)}
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-5 grid gap-3 md:grid-cols-4">
+                  <PanelStat label="Lesson" value={(activeLessonIndex >= 0 ? activeLessonIndex + 1 : 0) + '/' + (flatLessons.length || 0)} />
+                  <PanelStat label="Mode" value={getDeliveryLabel(activeDeliveryMode)} />
+                  <PanelStat label="Duration" value={activeLecture?.duration || 'Flexible'} />
+                  <PanelStat label="Resources" value={activeLecture?.resourceUrl || activeLecture?.videoUrl || activeLecture?.recordingUrl ? 'Ready' : 'Pending'} />
+                </div>
+              </div>
+
+              <div className="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-sm">
+                <div className="relative min-h-[360px] overflow-hidden rounded-[1.5rem] bg-[#030712] md:min-h-[460px]">
+                  {stageAsset.kind === 'iframe' ? (
+                    <iframe
+                      src={stageAsset.url}
+                      title={activeLecture?.title || payload.course.title}
+                      className="h-full min-h-[360px] w-full border-0 md:min-h-[460px]"
+                      allow="autoplay; encrypted-media; picture-in-picture"
+                      allowFullScreen
+                    />
+                  ) : stageAsset.kind === 'video' ? (
+                    <video
+                      src={stageAsset.url}
+                      controls
+                      className="h-full min-h-[360px] w-full bg-black object-contain md:min-h-[460px]"
+                    />
+                  ) : (
+                    <div className="flex h-full min-h-[360px] flex-col items-center justify-center px-6 text-center text-white md:min-h-[460px]">
+                      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/10 text-white">
+                        {activeDeliveryMode === 'live' ? <RadioTower className="h-8 w-8" /> : activeDeliveryMode === 'hybrid' ? <Video className="h-8 w-8" /> : <MonitorPlay className="h-8 w-8" />}
+                      </div>
+                      <h3 className="mt-5 text-2xl font-black">
+                        {activeDeliveryMode === 'live' ? 'Live session ready to join' : activeDeliveryMode === 'hybrid' ? 'Recorded and live learning together' : 'Recorded lesson ready'}
+                      </h3>
+                      <p className="mt-3 max-w-2xl text-sm leading-7 text-white/70">{activeLecture ? getActiveLessonCopy(activeDeliveryMode) : 'Select a lesson from the contents panel to begin.'}</p>
+                    </div>
+                  )}
+
+                  <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between gap-3 p-4">
+                    <div className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-xs font-black uppercase tracking-[0.18em] text-white backdrop-blur">
+                      <Play className="h-3.5 w-3.5" /> {getDeliveryLabel(activeDeliveryMode)}
+                    </div>
+                    {activeLecture?.completed ? (
+                      <div className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-emerald-500/15 px-3 py-2 text-xs font-semibold text-emerald-100 backdrop-blur">
+                        <CheckCircle2 className="h-3.5 w-3.5" /> Progress synced
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+
+                <div className="mt-4 flex flex-wrap gap-3">
+                  {activeLecture?.videoUrl ? (
+                    <a className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800" href={activeLecture.videoUrl} target="_blank" rel="noreferrer">
+                      Open recorded video <ArrowUpRight className="h-4 w-4" />
+                    </a>
+                  ) : null}
+                  {activeLecture?.resourceUrl ? (
+                    <a className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" href={activeLecture.resourceUrl} target="_blank" rel="noreferrer">
+                      Open study material <ArrowUpRight className="h-4 w-4" />
+                    </a>
+                  ) : null}
+                  {recommendedLiveSession ? (
+                    <button
+                      type="button"
+                      onClick={() => joinLiveSession(recommendedLiveSession.id, recommendedLiveSession.meetingUrl || recommendedLiveSession.recordingUrl)}
+                      className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                    >
+                      {recommendedLiveSession.status === 'live' ? 'Join live class now' : 'Open live access'}
+                    </button>
+                  ) : null}
+                  {recommendedLiveSession?.recordingUrl ? (
+                    <a className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" href={recommendedLiveSession.recordingUrl} target="_blank" rel="noreferrer">
+                      Open live recording <ArrowUpRight className="h-4 w-4" />
+                    </a>
+                  ) : null}
+                </div>
+
+                {message ? (
+                  <div className={cn('mt-4 rounded-2xl border px-4 py-3 text-sm', messageIsError ? 'border-red-200 bg-red-50 text-red-600' : 'border-emerald-200 bg-emerald-50 text-emerald-700')}>
+                    {message}
                   </div>
                 ) : null}
               </div>
-            </div>
 
-            <div className="mt-4 flex flex-wrap gap-3">
-              {activeLecture?.videoUrl ? (
-                <a className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800" href={activeLecture.videoUrl} target="_blank" rel="noreferrer">
-                  Open recorded video <ArrowUpRight className="h-4 w-4" />
-                </a>
-              ) : null}
-              {activeLecture?.resourceUrl ? (
-                <a className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" href={activeLecture.resourceUrl} target="_blank" rel="noreferrer">
-                  Open study material <ArrowUpRight className="h-4 w-4" />
-                </a>
-              ) : null}
-              {recommendedLiveSession ? (
-                <button
-                  type="button"
-                  onClick={() => joinLiveSession(recommendedLiveSession.id, recommendedLiveSession.meetingUrl || recommendedLiveSession.recordingUrl)}
-                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-                >
-                  {recommendedLiveSession.status === 'live' ? 'Join live class now' : 'Open live access'}
-                </button>
-              ) : null}
-              {recommendedLiveSession?.recordingUrl ? (
-                <a className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" href={recommendedLiveSession.recordingUrl} target="_blank" rel="noreferrer">
-                  Open live recording <ArrowUpRight className="h-4 w-4" />
-                </a>
-              ) : null}
-            </div>
-
-            {message ? (
-              <div className={cn('mt-4 rounded-2xl border px-4 py-3 text-sm', messageIsError ? 'border-red-200 bg-red-50 text-red-600' : 'border-emerald-200 bg-emerald-50 text-emerald-700')}>
-                {message}
-              </div>
-            ) : null}
-          </div>
-
-          <div className="grid gap-6 xl:grid-cols-[1.04fr_0.96fr]">
-            <div className="space-y-6">
-              <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <div className="text-lg font-bold text-slate-900">About this lesson</div>
-                    <div className="mt-1 text-sm text-slate-500">Admin controls recorded delivery, live sessions, and completion logic from the backend.</div>
-                  </div>
-                  <DeliveryPill mode={activeDeliveryMode} />
-                </div>
-
-                <div className="mt-5 space-y-4 text-sm leading-7 text-slate-600">
-                  <p>{activeLecture ? getActiveLessonCopy(activeDeliveryMode) : 'Choose a lesson from the left to begin learning.'}</p>
-                  {activeLecture?.notes ? (
-                    <div className="rounded-[1.5rem] bg-slate-50 p-4 text-slate-700">
-                      <div className="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Lesson notes</div>
-                      <div className="mt-2 whitespace-pre-wrap">{activeLecture.notes}</div>
+              {activeLecture?.notes ? (
+                <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <div className="text-lg font-bold text-slate-900">Lesson notes</div>
+                      <div className="mt-1 text-sm text-slate-500">Only the lesson essentials stay on this page for a cleaner learning flow.</div>
                     </div>
-                  ) : null}
-
-                  <div className="grid gap-3 md:grid-cols-3">
-                    <SummaryMini label="Attendance" value={`${payload.enrollment.attendance.overallPercentage}%`} icon={<Calendar className="h-4 w-4" />} />
-                    <SummaryMini label="Performance" value={`${payload.enrollment.performance.finalScore}%`} icon={<Award className="h-4 w-4" />} />
-                    <SummaryMini label="Participation" value={`${participationScore}`} icon={<BookOpen className="h-4 w-4" />} />
+                    <DeliveryPill mode={activeDeliveryMode} />
+                  </div>
+                  <div className="mt-5 whitespace-pre-wrap rounded-[1.5rem] bg-slate-50 p-4 text-sm leading-7 text-slate-700">
+                    {activeLecture.notes}
                   </div>
                 </div>
-              </div>
-
-              <div ref={liveSectionRef} className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <div className="text-lg font-bold text-slate-900">Live classroom schedule</div>
-                    <div className="mt-1 text-sm text-slate-500">Recorded lessons and live sessions stay connected inside the same purchased course flow.</div>
-                  </div>
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{payload.liveSessions.length} sessions</span>
-                </div>
-
-                <div className="mt-5 space-y-4">
-                  {payload.liveSessions.length ? payload.liveSessions.map((session) => (
-                    <div key={session.id} className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
-                      <div className="flex flex-wrap items-start justify-between gap-3">
-                        <div>
-                          <div className="font-semibold text-slate-900">{session.title}</div>
-                          <div className="mt-1 text-sm text-slate-500">{session.description || session.hostName || 'Managed from admin live classroom controls'}</div>
-                        </div>
-                        <span className={cn('rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]', getSessionStatusClasses(session.status))}>
-                          {session.status || 'scheduled'}
-                        </span>
-                      </div>
-
-                      <div className="mt-4 grid gap-3 text-sm text-slate-600 sm:grid-cols-2">
-                        <InfoPill icon={<Clock className="h-4 w-4" />} text={formatDate(session.startTime)} />
-                        <InfoPill icon={<BookOpen className="h-4 w-4" />} text={session.attendanceRequired ? 'Attendance required' : 'Attendance optional'} />
-                        <InfoPill icon={<Award className="h-4 w-4" />} text={session.hostName || 'Mentor assigned'} />
-                        <InfoPill icon={<MonitorPlay className="h-4 w-4" />} text={session.recordingUrl ? 'Recording linked' : 'Recording pending'} />
-                      </div>
-
-                      <div className="mt-4 flex flex-wrap gap-3">
-                        <button
-                          type="button"
-                          disabled={session.status !== 'live'}
-                          onClick={() => joinLiveSession(session.id, session.meetingUrl)}
-                          className="rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
-                        >
-                          {session.status === 'live' ? 'Join live now' : session.status === 'completed' ? 'Session completed' : 'Available at start time'}
-                        </button>
-                        {session.recordingUrl ? (
-                          <a className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50" href={session.recordingUrl} target="_blank" rel="noreferrer">
-                            Open recording <ArrowUpRight className="h-3.5 w-3.5" />
-                          </a>
-                        ) : null}
-                      </div>
-                    </div>
-                  )) : (
-                    <div className="rounded-[1.5rem] border border-dashed border-slate-200 px-4 py-10 text-center text-sm text-slate-500">
-                      No live sessions are available yet. Admin can attach them from the course controls.
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
-                <div className="text-lg font-bold text-slate-900">Course summary</div>
-                <div className="mt-5 space-y-3">
-                  <SummaryRow label="Progress" value={`${completedCount}/${payload.enrollment.totalLectures} lessons`} />
-                  <SummaryRow label="Delivery" value={payload.course.deliveryMode || 'Recorded'} />
-                  <SummaryRow label="Modules" value={`${learningInsights.modules}`} />
-                  <SummaryRow label="Support" value={payload.course.supportEmail || 'Support managed by admin'} />
-                  <SummaryRow label="Duration" value={payload.course.duration || 'Flexible'} />
-                </div>
-              </div>
-
-              <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
-                <div className="text-lg font-bold text-slate-900">Certificate status</div>
-                {payload.certificate ? (
-                  <div className="mt-4 rounded-[1.5rem] bg-emerald-50 p-4 text-sm text-emerald-700">
-                    <div className="font-semibold">Certificate ready</div>
-                    <div className="mt-1">{payload.certificate.certificateNumber}</div>
-                    <a className="mt-3 inline-flex items-center gap-2 font-semibold underline" href={payload.certificate.credentialUrl} target="_blank" rel="noreferrer">
-                      Open credential <ArrowUpRight className="h-4 w-4" />
-                    </a>
-                  </div>
-                ) : (
-                  <div className="mt-4 rounded-[1.5rem] bg-slate-50 p-4 text-sm leading-7 text-slate-600">
-                    {payload.enrollment.certificateEligible
-                      ? 'You are eligible. Your certificate will appear here after the completion rule is applied.'
-                      : 'Complete the recorded roadmap, attend live requirements, and meet the performance rule to unlock the certificate.'}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+              ) : null}
+            </>
+          )}
         </section>
       </div>
     </main>
@@ -876,15 +925,6 @@ function LessonNavButton({ label, icon, disabled, onClick }: { label: string; ic
       {icon}
       {label}
     </button>
-  );
-}
-
-function SummaryMini({ label, value, icon }: { label: string; value: string; icon: ReactNode }) {
-  return (
-    <div className="rounded-[1.5rem] border border-slate-200 bg-white p-4">
-      <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">{icon}<span>{label}</span></div>
-      <div className="mt-3 text-xl font-black text-slate-900">{value}</div>
-    </div>
   );
 }
 
