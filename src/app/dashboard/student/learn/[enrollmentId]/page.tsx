@@ -438,22 +438,28 @@ export default function StudentLearningPage() {
   const overallJourneyProgress = payload.enrollment.totalLectures
     ? Math.round((completedCount / payload.enrollment.totalLectures) * 100)
     : payload.enrollment.progress;
+  const overviewDeliveryMode: LearningDeliveryMode =
+    learningInsights.live > 0 || learningInsights.hybrid > 0
+      ? learningInsights.recorded > 0 || learningInsights.hybrid > 0
+        ? 'hybrid'
+        : 'live'
+      : 'recorded';
 
   return (
     <main className="min-h-screen bg-[#f5f7fb] text-slate-900">
       <div className="border-b border-slate-200 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
           <div>
-            <Link href="/dashboard/student" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 transition hover:text-slate-950">
-              <ArrowLeft className="h-4 w-4" /> Go to Home
+            <Link href={isLessonWorkspace ? buildLearningUrl() : '/dashboard/student'} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 transition hover:text-slate-950">
+              <ArrowLeft className="h-4 w-4" /> {isLessonWorkspace ? 'Go to roadmap' : 'Go to Home'}
             </Link>
-            <div className="mt-3 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Purchased course workspace</div>
-            <h1 className="mt-2 text-xl font-black sm:text-2xl">{payload.course.title}</h1>
+            <div className="mt-3 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">{isLessonWorkspace ? 'Daily learning workspace' : 'Purchased course journey'}</div>
+            <h1 className="mt-2 text-xl font-black sm:text-2xl">{isLessonWorkspace ? activeLecture?.title || payload.course.title : payload.course.title}</h1>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
             <span className="rounded-full bg-violet-100 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-violet-700">
-              {getDeliveryLabel(activeDeliveryMode)}
+              {getDeliveryLabel(isLessonWorkspace ? activeDeliveryMode : overviewDeliveryMode)}
             </span>
             <span className="rounded-full bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700">
               {payload.enrollment.progress}% completed
@@ -462,8 +468,9 @@ export default function StudentLearningPage() {
         </div>
       </div>
 
-      <div className="mx-auto grid max-w-[1600px] gap-6 px-4 py-6 sm:px-6 xl:grid-cols-[320px_1fr] lg:px-8">
-        <aside className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm xl:sticky xl:top-24 xl:h-fit">
+      <div className={cn('mx-auto gap-6 px-4 py-6 sm:px-6 lg:px-8', isLessonWorkspace ? 'grid max-w-[1600px] xl:grid-cols-[320px_1fr]' : 'max-w-[1500px]')}>
+        {isLessonWorkspace ? (
+          <aside className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm xl:sticky xl:top-24 xl:h-fit">
           <div className="border-b border-slate-200 px-5 py-4">
             <div className="text-sm font-black uppercase tracking-[0.2em] text-slate-400">Contents</div>
             <div className="mt-2 text-lg font-bold text-slate-900">Course roadmap</div>
@@ -545,226 +552,157 @@ export default function StudentLearningPage() {
               </div>
             ))}
           </div>
-        </aside>
+          </aside>
+        ) : null}
 
         <section className="space-y-6">
           {!isLessonWorkspace ? (
             <>
-              <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
-                <div className="rounded-[1.6rem] border border-amber-200 bg-[linear-gradient(135deg,#fff7cc_0%,#fff3d6_48%,#ffffff_100%)] p-4 sm:p-5">
-                  <div className="flex flex-wrap items-center justify-between gap-4">
-                    <div className="max-w-4xl">
-                      <div className="text-xs font-black uppercase tracking-[0.2em] text-amber-600">Purchased course journey</div>
-                      <div className="mt-2 text-lg font-black text-slate-900 sm:text-xl">Bootcamp roadmap before the lesson workspace</div>
-                      <p className="mt-2 text-sm leading-6 text-slate-600">
-                        Open the course first, review the roadmap, and then jump into a lesson from here just like your reference flow.
-                      </p>
-                    </div>
-
-                    <div className="rounded-[1.35rem] border border-white/80 bg-white/85 px-4 py-3 text-right shadow-sm">
-                      <div className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">Bootcamp Progress</div>
-                      <div className="mt-1 text-2xl font-black text-slate-900">{overallJourneyProgress}%</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-5 overflow-x-auto pb-2">
-                  <div className="flex min-w-[1040px] items-start">
-                    {roadmapSteps.map((step, index) => {
-                      const isCompleted = step.progress >= 100;
-                      const isActive = step.moduleId === activeModule?.id;
-                      const connectorWidth = isCompleted ? '100%' : step.progress >= 50 ? '70%' : step.progress > 0 ? '36%' : '16%';
-
-                      return (
-                        <div key={step.key} className="flex items-start">
-                          <button
-                            type="button"
-                            onClick={() => openLesson(step.launchLectureId)}
-                            className={cn(
-                              'group w-[176px] shrink-0 rounded-[1.6rem] border px-4 py-4 text-center transition',
-                              isActive
-                                ? 'border-violet-300 bg-violet-50 shadow-[0_14px_35px_rgba(139,92,246,0.12)]'
-                                : isCompleted
-                                  ? 'border-emerald-200 bg-emerald-50/70'
-                                  : 'border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-white'
-                            )}
-                          >
-                            <div
-                              className={cn(
-                                'mx-auto flex h-14 w-14 items-center justify-center rounded-full border-4 text-sm font-black transition',
-                                isActive
-                                  ? 'border-violet-200 bg-violet-600 text-white'
-                                  : isCompleted
-                                    ? 'border-emerald-200 bg-emerald-500 text-white'
-                                    : 'border-slate-200 bg-white text-slate-500'
-                              )}
-                            >
-                              {isCompleted ? <CheckCircle2 className="h-6 w-6" /> : isActive ? <Play className="ml-0.5 h-5 w-5" /> : <span>{index + 1}</span>}
-                            </div>
-                            <div className="mt-3 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">{step.label}</div>
-                            <div className="mt-1 line-clamp-2 text-sm font-bold leading-5 text-slate-900">{step.title}</div>
-                            <div className="mt-2 text-[11px] text-slate-500">{step.subjectName}</div>
-                            <div className="mt-3 flex items-center justify-center gap-2">
-                              <DeliveryPill mode={step.mode} compact />
-                            </div>
-                            <div className="mt-3 inline-flex rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-slate-600 shadow-sm">
-                              {step.completedLectures}/{step.totalLectures} lessons
-                            </div>
-                          </button>
-
-                          {index < roadmapSteps.length - 1 ? (
-                            <div className="flex h-[72px] w-20 shrink-0 items-center justify-center">
-                              <div className="h-1.5 w-full rounded-full bg-slate-200">
-                                <div className={cn('h-full rounded-full', isCompleted ? 'bg-emerald-500' : isActive ? 'bg-violet-500' : 'bg-slate-300')} style={{ width: connectorWidth }} />
-                              </div>
-                            </div>
-                          ) : null}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className="mt-5 flex flex-col gap-4 rounded-[1.6rem] bg-[linear-gradient(135deg,#312e81_0%,#4338ca_52%,#1d4ed8_100%)] p-4 text-white lg:flex-row lg:items-center lg:justify-between">
-                  <div>
-                    <div className="text-xs font-black uppercase tracking-[0.18em] text-white/70">Boarding Pass</div>
-                    <div className="mt-2 text-xl font-black">{activeRoadmapStep?.title || activeLecture?.title || payload.course.title}</div>
-                    <div className="mt-1 text-sm text-white/75">
-                      Bootcamp progress {overallJourneyProgress}% with {completedCount}/{payload.enrollment.totalLectures} lessons completed.
-                    </div>
-                  </div>
-
-                  <div className="flex flex-wrap gap-3">
-                    <button
-                      type="button"
-                      onClick={() => openLesson(activeRoadmapStep?.launchLectureId || activeLectureId)}
-                      className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-white/90"
-                    >
-                      Open current lesson
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => openLesson(nextIncompleteLesson?.lecture.id || activeLectureId)}
-                      className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/15"
-                    >
-                      Continue your journey <ArrowRight className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
               {message ? (
                 <div className={cn('rounded-2xl border px-4 py-3 text-sm', messageIsError ? 'border-red-200 bg-red-50 text-red-600' : 'border-emerald-200 bg-emerald-50 text-emerald-700')}>
                   {message}
                 </div>
               ) : null}
 
-              <div className="grid gap-6 xl:grid-cols-[1.04fr_0.96fr]">
-                <div className="space-y-6">
-                  <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <div className="text-lg font-bold text-slate-900">Course overview</div>
-                        <div className="mt-1 text-sm text-slate-500">Open a lesson from the roadmap or left contents panel to enter the clean player page.</div>
-                      </div>
-                      <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{learningInsights.modules} modules</span>
-                    </div>
-
-                    <div className="mt-5 grid gap-3 md:grid-cols-4">
-                      <PanelStat label="Lessons" value={String(payload.enrollment.totalLectures)} />
-                      <PanelStat label="Recorded" value={String(learningInsights.recorded)} />
-                      <PanelStat label="Live" value={String(learningInsights.live + learningInsights.hybrid)} />
-                      <PanelStat label="Progress" value={overallJourneyProgress + '%'} />
-                    </div>
-
-                    <div className="mt-5 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4 text-sm leading-7 text-slate-600">
-                      {payload.course.description || 'Select a lesson from the roadmap to open the dedicated learning player.'}
-                    </div>
+              <div className="overflow-hidden rounded-[2.4rem] border border-slate-200 bg-white shadow-sm">
+                <div className="relative overflow-hidden border-b border-slate-200 bg-[radial-gradient(circle_at_top_right,#312e81_0%,#4338ca_22%,#eef2ff_22%,#f8fafc_100%)] px-6 py-8 sm:px-8">
+                  <div className="max-w-4xl">
+                    <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-indigo-700 shadow-sm">Purchased course journey</div>
+                    <h2 className="mt-4 text-2xl font-black text-slate-900 sm:text-[2.2rem]">{payload.course.title}</h2>
+                    <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
+                      Click any roadmap circle to open the dedicated lesson player page. The overview stays clean here, and the actual learning opens separately just like your reference.
+                    </p>
                   </div>
 
-                  <div ref={liveSectionRef} className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <div className="text-lg font-bold text-slate-900">Live classroom schedule</div>
-                        <div className="mt-1 text-sm text-slate-500">Recorded lessons and live sessions stay connected inside the same purchased course flow.</div>
-                      </div>
-                      <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{payload.liveSessions.length} sessions</span>
-                    </div>
-
-                    <div className="mt-5 space-y-4">
-                      {payload.liveSessions.length ? payload.liveSessions.map((session) => (
-                        <div key={session.id} className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
-                          <div className="flex flex-wrap items-start justify-between gap-3">
-                            <div>
-                              <div className="font-semibold text-slate-900">{session.title}</div>
-                              <div className="mt-1 text-sm text-slate-500">{session.description || session.hostName || 'Managed from admin live classroom controls'}</div>
-                            </div>
-                            <span className={cn('rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]', getSessionStatusClasses(session.status))}>
-                              {session.status || 'scheduled'}
-                            </span>
-                          </div>
-
-                          <div className="mt-4 grid gap-3 text-sm text-slate-600 sm:grid-cols-2">
-                            <InfoPill icon={<Clock className="h-4 w-4" />} text={formatDate(session.startTime)} />
-                            <InfoPill icon={<BookOpen className="h-4 w-4" />} text={session.attendanceRequired ? 'Attendance required' : 'Attendance optional'} />
-                            <InfoPill icon={<Award className="h-4 w-4" />} text={session.hostName || 'Mentor assigned'} />
-                            <InfoPill icon={<MonitorPlay className="h-4 w-4" />} text={session.recordingUrl ? 'Recording linked' : 'Recording pending'} />
-                          </div>
-
-                          <div className="mt-4 flex flex-wrap gap-3">
-                            <button
-                              type="button"
-                              disabled={session.status !== 'live'}
-                              onClick={() => joinLiveSession(session.id, session.meetingUrl)}
-                              className="rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
-                            >
-                              {session.status === 'live' ? 'Join live now' : session.status === 'completed' ? 'Session completed' : 'Available at start time'}
-                            </button>
-                            {session.recordingUrl ? (
-                              <a className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50" href={session.recordingUrl} target="_blank" rel="noreferrer">
-                                Open recording <ArrowUpRight className="h-3.5 w-3.5" />
-                              </a>
-                            ) : null}
-                          </div>
-                        </div>
-                      )) : (
-                        <div className="rounded-[1.5rem] border border-dashed border-slate-200 px-4 py-10 text-center text-sm text-slate-500">
-                          No live sessions are available yet. Admin can attach them from the course controls.
-                        </div>
-                      )}
-                    </div>
+                  <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:max-w-[520px] xl:grid-cols-4">
+                    <PanelStat label="Modules" value={String(learningInsights.modules)} />
+                    <PanelStat label="Lessons" value={String(payload.enrollment.totalLectures)} />
+                    <PanelStat label="Live" value={String(learningInsights.live + learningInsights.hybrid)} />
+                    <PanelStat label="Progress" value={overallJourneyProgress + '%'} />
                   </div>
                 </div>
 
-                <div className="space-y-6">
-                  <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
-                    <div className="text-lg font-bold text-slate-900">Course summary</div>
-                    <div className="mt-5 space-y-3">
-                      <SummaryRow label="Progress" value={completedCount + '/' + payload.enrollment.totalLectures + ' lessons'} />
-                      <SummaryRow label="Delivery" value={payload.course.deliveryMode || 'Recorded'} />
-                      <SummaryRow label="Modules" value={String(learningInsights.modules)} />
-                      <SummaryRow label="Support" value={payload.course.supportEmail || 'Support managed by admin'} />
-                      <SummaryRow label="Duration" value={payload.course.duration || 'Flexible'} />
+                <div className="p-6 sm:p-8">
+                  <div ref={liveSectionRef} className="flex flex-wrap items-center justify-between gap-4 rounded-[1.7rem] border border-amber-200 bg-[linear-gradient(135deg,#fff7cc_0%,#fff4d9_52%,#ffffff_100%)] px-5 py-4">
+                    <div className="max-w-3xl">
+                      <div className="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Course access</div>
+                      <div className="mt-2 text-sm font-semibold text-slate-900">Recorded lessons and live sessions stay connected in one bootcamp roadmap.</div>
+                      <div className="mt-1 text-sm text-slate-600">{payload.course.description || 'Open any circle below to enter the lesson workspace.'}</div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-3">
+                      {recommendedLiveSession ? (
+                        <button
+                          type="button"
+                          onClick={() => joinLiveSession(recommendedLiveSession.id, recommendedLiveSession.meetingUrl || recommendedLiveSession.recordingUrl)}
+                          className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                        >
+                          {recommendedLiveSession.status === 'live' ? 'Join live class now' : 'Open live access'}
+                        </button>
+                      ) : null}
+
+                      <button
+                        type="button"
+                        onClick={() => openLesson(nextIncompleteLesson?.lecture.id || activeLectureId)}
+                        className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
+                      >
+                        Continue your journey <ArrowRight className="h-4 w-4" />
+                      </button>
                     </div>
                   </div>
 
-                  <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
-                    <div className="text-lg font-bold text-slate-900">Certificate status</div>
-                    {payload.certificate ? (
-                      <div className="mt-4 rounded-[1.5rem] bg-emerald-50 p-4 text-sm text-emerald-700">
-                        <div className="font-semibold">Certificate ready</div>
-                        <div className="mt-1">{payload.certificate.certificateNumber}</div>
-                        <a className="mt-3 inline-flex items-center gap-2 font-semibold underline" href={payload.certificate.credentialUrl} target="_blank" rel="noreferrer">
-                          Open credential <ArrowUpRight className="h-4 w-4" />
-                        </a>
+                  <div className="mt-8 overflow-x-auto pb-4">
+                    <div className="flex min-w-[1220px] items-center">
+                      <div className="mr-6 hidden shrink-0 rounded-full bg-[linear-gradient(135deg,#f59e0b_0%,#f97316_100%)] px-5 py-4 text-center text-white md:block">
+                        <div className="text-[10px] font-black uppercase tracking-[0.18em] text-white/75">Start</div>
+                        <div className="mt-1 text-sm font-black">Bootcamp</div>
                       </div>
-                    ) : (
-                      <div className="mt-4 rounded-[1.5rem] bg-slate-50 p-4 text-sm leading-7 text-slate-600">
-                        {payload.enrollment.certificateEligible
-                          ? 'You are eligible. Your certificate will appear here after the completion rule is applied.'
-                          : 'Complete the recorded roadmap, attend live requirements, and meet the performance rule to unlock the certificate.'}
+
+                      {roadmapSteps.map((step, index) => {
+                        const isCompleted = step.progress >= 100;
+                        const isActive = step.moduleId === activeModule?.id;
+                        const connectorWidth = isCompleted ? '100%' : step.progress >= 50 ? '70%' : step.progress > 0 ? '36%' : '16%';
+
+                        return (
+                          <div key={step.key} className="flex items-center">
+                            <button
+                              type="button"
+                              onClick={() => openLesson(step.launchLectureId)}
+                              className={cn(
+                                'group w-[188px] shrink-0 rounded-[1.8rem] border px-4 py-5 text-center transition',
+                                isActive
+                                  ? 'border-violet-300 bg-violet-50 shadow-[0_14px_35px_rgba(139,92,246,0.12)]'
+                                  : isCompleted
+                                    ? 'border-emerald-200 bg-emerald-50/70'
+                                    : 'border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-white'
+                              )}
+                            >
+                              <div
+                                className={cn(
+                                  'mx-auto flex h-16 w-16 items-center justify-center rounded-full border-4 text-base font-black transition',
+                                  isActive
+                                    ? 'border-violet-200 bg-violet-600 text-white'
+                                    : isCompleted
+                                      ? 'border-emerald-200 bg-emerald-500 text-white'
+                                      : 'border-slate-200 bg-white text-slate-500'
+                                )}
+                              >
+                                {isCompleted ? <CheckCircle2 className="h-7 w-7" /> : isActive ? <Play className="ml-0.5 h-5 w-5" /> : <span>{index + 1}</span>}
+                              </div>
+                              <div className="mt-4 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">{step.label}</div>
+                              <div className="mt-1 line-clamp-2 text-sm font-bold leading-5 text-slate-900">{step.title}</div>
+                              <div className="mt-2 text-[11px] text-slate-500">{step.subjectName}</div>
+                              <div className="mt-3 flex items-center justify-center gap-2">
+                                <DeliveryPill mode={step.mode} compact />
+                              </div>
+                              <div className="mt-3 inline-flex rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-slate-600 shadow-sm">
+                                {step.completedLectures}/{step.totalLectures} lessons
+                              </div>
+                            </button>
+
+                            {index < roadmapSteps.length - 1 ? (
+                              <div className="flex h-[72px] w-24 shrink-0 items-center justify-center">
+                                <div className="h-1.5 w-full rounded-full bg-slate-200">
+                                  <div className={cn('h-full rounded-full', isCompleted ? 'bg-emerald-500' : isActive ? 'bg-violet-500' : 'bg-slate-300')} style={{ width: connectorWidth }} />
+                                </div>
+                              </div>
+                            ) : null}
+                          </div>
+                        );
+                      })}
+
+                      <div className="ml-6 hidden shrink-0 rounded-full border border-sky-200 bg-sky-50 px-5 py-4 text-center text-sky-700 md:block">
+                        <div className="text-[10px] font-black uppercase tracking-[0.18em] text-sky-500">Finish</div>
+                        <div className="mt-1 text-sm font-black">Bootcamp</div>
                       </div>
-                    )}
+                    </div>
+                  </div>
+
+                  <div className="rounded-[1.7rem] bg-[linear-gradient(135deg,#312e81_0%,#4338ca_52%,#1d4ed8_100%)] p-5 text-white">
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                      <div>
+                        <div className="text-xs font-black uppercase tracking-[0.18em] text-white/70">Boarding Pass</div>
+                        <div className="mt-2 text-2xl font-black">{activeRoadmapStep?.title || activeLecture?.title || payload.course.title}</div>
+                        <div className="mt-2 text-sm text-white/80">Bootcamp progress {overallJourneyProgress}% with {completedCount}/{payload.enrollment.totalLectures} lessons completed.</div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-3">
+                        <button
+                          type="button"
+                          onClick={() => openLesson(activeRoadmapStep?.launchLectureId || activeLectureId)}
+                          className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-white/90"
+                        >
+                          Open current lesson
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => openLesson(nextIncompleteLesson?.lecture.id || activeLectureId)}
+                          className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/15"
+                        >
+                          Continue your journey <ArrowRight className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
