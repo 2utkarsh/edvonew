@@ -9,6 +9,7 @@ import { config } from 'dotenv';
 import { CourseModel } from '../src/models/Course';
 import { UserModel } from '../src/models/User';
 import { hashPassword } from '../src/lib/auth';
+import { fillCurriculumRecordedVideoUrls } from '../src/lib/course-recorded-videos';
 
 config({ path: '.env.local' });
 
@@ -273,7 +274,7 @@ async function seedCourses() {
     }
 
     await mongoose.connect(process.env.MONGODB_URI);
-    console.log('✓ Connected to database');
+    console.log('Connected to database');
 
     // Find or create an instructor user
     let instructor = await UserModel.findOne({ role: 'instructor' });
@@ -291,7 +292,7 @@ async function seedCourses() {
         headline: 'Senior Software Engineer & Educator',
         skills: ['Python', 'React', 'Machine Learning', 'AWS'],
       });
-      console.log('✓ Created instructor user');
+      console.log('Created instructor user');
     }
 
     // Seed courses
@@ -300,22 +301,25 @@ async function seedCourses() {
 
     for (const courseData of sampleCourses) {
       const slug = courseData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      const curriculum = fillCurriculumRecordedVideoUrls(slug, courseData.curriculum).curriculum;
       
       const existingCourse = await CourseModel.findOne({ slug });
       
       if (existingCourse) {
         await CourseModel.updateOne({ slug }, {
           ...courseData,
+          curriculum,
           instructorId: instructor!._id,
           instructorName: instructor!.name,
           updatedAt: new Date(),
         });
         updatedCount++;
-        console.log(`✓ Updated: ${courseData.title}`);
+        console.log(`Updated: ${courseData.title}`);
       } else {
         await CourseModel.create({
           ...courseData,
           slug,
+          curriculum,
           instructorId: instructor!._id,
           instructorName: instructor!.name,
           status: 'published',
@@ -325,11 +329,11 @@ async function seedCourses() {
           publishedAt: new Date(),
         });
         createdCount++;
-        console.log(`✓ Created: ${courseData.title}`);
+        console.log(`Created: ${courseData.title}`);
       }
     }
 
-    console.log(`\n✓ Seeding complete: ${createdCount} created, ${updatedCount} updated`);
+    console.log(`\nSeeding complete: ${createdCount} created, ${updatedCount} updated`);
     console.log(`\nInstructor credentials:`);
     console.log({
       email: instructor!.email,
@@ -339,9 +343,10 @@ async function seedCourses() {
     await mongoose.disconnect();
     process.exit(0);
   } catch (error: any) {
-    console.error('✗ Error seeding courses:', error.message);
+    console.error('Error seeding courses:', error.message);
     process.exit(1);
   }
 }
 
 seedCourses();
+

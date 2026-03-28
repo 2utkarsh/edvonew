@@ -1,3 +1,4 @@
+import { fillCurriculumRecordedVideoUrls } from '@/lib/course-recorded-videos';
 import { slugify } from '@/lib/query';
 
 type LegacyCourseSeedInput = {
@@ -93,6 +94,7 @@ function createCurriculum(title: string, outcomes: string[]) {
 
 function createLegacyCourse(input: LegacyCourseSeedInput) {
   const price = input.price;
+  const slug = slugify(input.title);
   const originalPrice = input.originalPrice || Math.round(price * 1.8);
   const featuredOutcomes = input.featuredOutcomes || [
     'Build practical ' + input.category.toLowerCase() + ' work',
@@ -105,10 +107,11 @@ function createLegacyCourse(input: LegacyCourseSeedInput) {
     'Delivery, storytelling, and career positioning',
   ];
   const requirements = input.requirements || ['Laptop with internet access', 'Consistency for guided practice', 'Beginner-friendly mindset'];
+  const curriculum = fillCurriculumRecordedVideoUrls(slug, createCurriculum(input.title, featuredOutcomes)).curriculum;
 
   return {
     title: input.title,
-    slug: slugify(input.title),
+    slug,
     shortDescription: input.shortDescription,
     description: input.description,
     category: input.category,
@@ -134,11 +137,11 @@ function createLegacyCourse(input: LegacyCourseSeedInput) {
       careerTransitions: '12K+',
       highestPackage: '24 LPA',
     },
-    tags: [slugify(input.category), slugify(input.title)].filter(Boolean),
+    tags: [slugify(input.category), slug].filter(Boolean),
     requirements,
     whatYouWillLearn,
     featuredOutcomes,
-    curriculum: createCurriculum(input.title, featuredOutcomes),
+    curriculum,
     liveSessions: input.deliveryMode === 'live' || input.deliveryMode === 'hybrid'
       ? [
           {
@@ -245,3 +248,4 @@ export const legacyCourses = [
   createLegacyCourse({ order: 19, title: 'Digital Marketing Masterclass', category: 'Marketing', level: 'beginner', price: 3999, originalPrice: 7999, duration: '30 hours', shortDescription: 'SEO, social media, ads, content, email, and analytics in one practical marketing track.', description: 'A beginner-friendly marketing course for professionals who want usable frameworks for campaigns, growth, and measurement.' }),
   createLegacyCourse({ order: 20, title: 'AWS Certified Solutions Architect', category: 'Cloud Computing', level: 'intermediate', price: 6999, originalPrice: 12999, duration: '45 hours', shortDescription: 'Cloud architecture and AWS certification preparation with practical labs and best practices.', description: 'A certification-oriented AWS track that covers infrastructure, architecture decisions, security, and exam readiness.' }),
 ];
+
