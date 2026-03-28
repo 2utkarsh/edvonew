@@ -25,6 +25,7 @@ import {
   summarizeDeliveryModes,
 } from '@/lib/learning-delivery';
 import { cn } from '@/lib/utils';
+import { Navbar } from '@/components/layout';
 
 type LectureItem = {
   id: string;
@@ -421,15 +422,25 @@ export default function StudentLearningPage() {
   };
 
   if (loading) {
-    return <main className="min-h-screen bg-[#f5f7fb] dark:bg-slate-950" />;
+    return (
+      <>
+        <Navbar />
+        <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(79,70,229,0.08),_transparent_26%),radial-gradient(circle_at_bottom_right,_rgba(245,158,11,0.1),_transparent_28%),linear-gradient(180deg,#fffef9_0%,#f8fafc_52%,#f5f7fb_100%)] pt-32 dark:bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.16),_transparent_24%),radial-gradient(circle_at_bottom_right,_rgba(245,158,11,0.08),_transparent_26%),linear-gradient(180deg,#020617_0%,#0f172a_48%,#111827_100%)]" />
+      </>
+    );
   }
 
   if (!payload) {
     return (
-      <main className="min-h-screen bg-[#f5f7fb] dark:bg-slate-950 px-4 py-16 text-slate-900 dark:text-white">
-        <p>{error || 'Learning workspace unavailable'}</p>
-        <Link className="mt-4 inline-flex underline" href="/dashboard/student">Back to dashboard</Link>
-      </main>
+      <>
+        <Navbar />
+        <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(79,70,229,0.08),_transparent_26%),radial-gradient(circle_at_bottom_right,_rgba(245,158,11,0.1),_transparent_28%),linear-gradient(180deg,#fffef9_0%,#f8fafc_52%,#f5f7fb_100%)] px-4 pb-16 pt-36 text-slate-900 dark:bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.16),_transparent_24%),radial-gradient(circle_at_bottom_right,_rgba(245,158,11,0.08),_transparent_26%),linear-gradient(180deg,#020617_0%,#0f172a_48%,#111827_100%)] dark:text-white">
+          <div className="mx-auto max-w-5xl rounded-[2rem] border border-slate-200 bg-white/90 p-8 shadow-sm dark:border-white/10 dark:bg-slate-900/85 dark:shadow-none">
+            <p>{error || 'Learning workspace unavailable'}</p>
+            <Link className="mt-4 inline-flex underline" href="/dashboard/student">Back to dashboard</Link>
+          </div>
+        </main>
+      </>
     );
   }
 
@@ -446,29 +457,28 @@ export default function StudentLearningPage() {
       : 'recorded';
 
   return (
-    <main className="min-h-screen bg-[#f5f7fb] dark:bg-slate-950 text-slate-900 dark:text-white">
-      <div className="border-b border-slate-200 dark:border-white/10 bg-white/95 dark:bg-slate-950/90 backdrop-blur">
-        <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-          <div>
-            <Link href={isLessonWorkspace ? buildLearningUrl() : '/dashboard/student'} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300 transition hover:text-slate-950 dark:hover:text-white">
-              <ArrowLeft className="h-4 w-4" /> {isLessonWorkspace ? 'Go to roadmap' : 'Go to Home'}
-            </Link>
-            <div className="mt-3 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400 dark:text-slate-500">{isLessonWorkspace ? 'Daily learning workspace' : 'Purchased course journey'}</div>
-            <h1 className="mt-2 text-xl font-black sm:text-2xl">{isLessonWorkspace ? activeLecture?.title || payload.course.title : payload.course.title}</h1>
-          </div>
+    <>
+      <Navbar />
+      <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(79,70,229,0.08),_transparent_26%),radial-gradient(circle_at_bottom_right,_rgba(245,158,11,0.1),_transparent_28%),linear-gradient(180deg,#fffef9_0%,#f8fafc_52%,#f5f7fb_100%)] text-slate-900 dark:bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.16),_transparent_24%),radial-gradient(circle_at_bottom_right,_rgba(245,158,11,0.08),_transparent_26%),linear-gradient(180deg,#020617_0%,#0f172a_48%,#111827_100%)] dark:text-white">
+        <div className="border-b border-slate-200/70 bg-white/70 backdrop-blur dark:border-white/10 dark:bg-slate-950/50">
+          <div className="mx-auto flex max-w-[1600px] flex-wrap items-end justify-between gap-4 px-4 pb-5 pt-32 sm:px-6 sm:pt-36 lg:px-8">
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400 dark:text-slate-500">{isLessonWorkspace ? 'Daily learning workspace' : 'Purchased course journey'}</div>
+              <h1 className="mt-3 text-2xl font-black sm:text-3xl">{isLessonWorkspace ? activeLecture?.title || payload.course.title : payload.course.title}</h1>
+            </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="rounded-full bg-violet-100 dark:bg-violet-500/15 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-violet-700 dark:text-violet-200">
-              {getDeliveryLabel(isLessonWorkspace ? activeDeliveryMode : overviewDeliveryMode)}
-            </span>
-            <span className="rounded-full bg-slate-100 dark:bg-white/10 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-              {payload.enrollment.progress}% completed
-            </span>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="rounded-full bg-violet-100 dark:bg-violet-500/15 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-violet-700 dark:text-violet-200">
+                {getDeliveryLabel(isLessonWorkspace ? activeDeliveryMode : overviewDeliveryMode)}
+              </span>
+              <span className="rounded-full bg-slate-100 dark:bg-white/10 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
+                {payload.enrollment.progress}% completed
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className={cn('mx-auto gap-6 px-4 py-6 sm:px-6 lg:px-8', isLessonWorkspace ? 'grid max-w-[1600px] xl:grid-cols-[320px_1fr]' : 'max-w-[1500px]')}>
+        <div className={cn('mx-auto gap-6 px-4 py-6 sm:px-6 lg:px-8', isLessonWorkspace ? 'grid max-w-[1600px] xl:grid-cols-[320px_1fr]' : 'max-w-[1500px]')}>
         {isLessonWorkspace ? (
           <aside className="overflow-hidden rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-sm dark:shadow-none xl:sticky xl:top-24 xl:h-fit">
             <div className="border-b border-slate-200 dark:border-white/10 px-5 py-4">
@@ -838,8 +848,9 @@ export default function StudentLearningPage() {
             </>
           )}
         </section>
-      </div>
-    </main>
+        </div>
+      </main>
+    </>
   );
 }
 
