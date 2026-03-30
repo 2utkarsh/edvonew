@@ -614,9 +614,16 @@ const adminRichAllowedTags = new Set([
   'th', 'thead', 'tr', 'u', 'ul',
 ]);
 
+const adminRichDiscardTags = new Set([
+  'button', 'canvas', 'datalist', 'embed', 'form', 'head', 'iframe', 'input', 'link', 'meta', 'noscript',
+  'object', 'option', 'script', 'select', 'style', 'svg', 'template', 'textarea', 'title',
+]);
+
 const adminRichAllowedStyles = new Set([
-  'background-color', 'color', 'font-family', 'font-size', 'font-style', 'font-weight', 'letter-spacing',
-  'line-height', 'list-style-type', 'margin-left', 'padding-left', 'text-align', 'text-decoration',
+  'background', 'background-color', 'color', 'font-family', 'font-size', 'font-style', 'font-weight',
+  'letter-spacing', 'line-height', 'list-style-type', 'margin', 'margin-bottom', 'margin-left',
+  'margin-right', 'margin-top', 'padding', 'padding-left', 'text-align', 'text-decoration',
+  'text-decoration-color', 'text-decoration-line', 'text-indent', 'vertical-align', 'white-space',
 ]);
 
 const adminRichPositiveHintPattern = /description|desc\b|content|bio|comment|note|summary|overview|details|message|answer|text|quote|objective|review|story|body|copy|caption|statement|excerpt|full description|short description/i;
@@ -766,6 +773,62 @@ function sanitizeAdminRichStyle(value) {
     .join('; ');
 }
 
+function parseAdminRichCssRules(value) {
+  const source = String(value || '')
+    .replace(/<!--|-->/g, ' ')
+    .replace(/\/\*[\s\S]*?\*\//g, ' ');
+
+  const rules = [];
+  const pattern = /([^{}]+)\{([^{}]+)\}/g;
+  let match = pattern.exec(source);
+
+  while (match) {
+    const selectorText = String(match[1] || '').trim();
+    const declarations = String(match[2] || '').trim();
+
+    if (selectorText && declarations && !selectorText.startsWith('@')) {
+      const selectors = selectorText
+        .split(',')
+        .map((selector) => selector.replace(/\s+/g, ' ').trim())
+        .filter(Boolean)
+        .filter((selector) => !selector.startsWith('@'))
+        .filter((selector) => !selector.includes(':'))
+        .filter((selector) => !selector.includes('['));
+
+      if (selectors.length) {
+        rules.push({ selectors, declarations });
+      }
+    }
+
+    match = pattern.exec(source);
+  }
+
+  return rules;
+}
+
+function inlineAdminRichCssRules(parsedDocument) {
+  const styleText = [...parsedDocument.querySelectorAll('style')]
+    .map((styleNode) => styleNode.textContent || '')
+    .join('\n');
+
+  if (!styleText.trim()) {
+    return;
+  }
+
+  parseAdminRichCssRules(styleText).forEach(({ selectors, declarations }) => {
+    selectors.forEach((selector) => {
+      try {
+        parsedDocument.querySelectorAll(selector).forEach((element) => {
+          const currentStyle = element.getAttribute('style') || '';
+          element.setAttribute('style', [declarations, currentStyle].filter(Boolean).join('; '));
+        });
+      } catch (_error) {
+        // Ignore unsupported selectors from pasted HTML.
+      }
+    });
+  });
+}
+
 function sanitizeAdminRichNode(node, ownerDocument) {
   if (node.nodeType === Node.TEXT_NODE) {
     return ownerDocument.createTextNode(node.textContent || '');
@@ -778,6 +841,10 @@ function sanitizeAdminRichNode(node, ownerDocument) {
   const sourceElement = node;
   const sourceTag = sourceElement.tagName.toLowerCase();
   const normalizedTag = sourceTag === 'b' ? 'strong' : sourceTag === 'i' ? 'em' : sourceTag;
+
+  if (adminRichDiscardTags.has(normalizedTag)) {
+    return null;
+  }
 
   if (!adminRichAllowedTags.has(normalizedTag)) {
     const fragment = ownerDocument.createDocumentFragment();
@@ -854,6 +921,7 @@ function sanitizeAdminRichHtml(value) {
 
   const parser = new DOMParser();
   const parsed = parser.parseFromString(html, 'text/html');
+  inlineAdminRichCssRules(parsed);
   const fragment = document.createDocumentFragment();
 
   parsed.body.childNodes.forEach((node) => {
@@ -1329,9 +1397,20 @@ function initAdminRichTextEditors(root = document) {
         return;
       }
 
+      const clipboardTypes = [...clipboardData.types];
       const html = clipboardData.getData('text/html');
       const text = clipboardData.getData('text/plain');
       const imageItems = [...clipboardData.items].filter((item) => item.kind === 'file' && item.type.startsWith('image/'));
+      const hasRtfPayload = clipboardTypes.some((type) => /rtf/i.test(type));
+
+      if (!html && hasRtfPayload && imageItems.length === 0) {
+        window.setTimeout(() => {
+          normalizeAdminRichMarkup(editor);
+          syncTextareaFromRichEditor(textarea);
+          updateRichToolbarState(textarea);
+        }, 0);
+        return;
+      }
 
       if (!html && !text && imageItems.length === 0) {
         return;
