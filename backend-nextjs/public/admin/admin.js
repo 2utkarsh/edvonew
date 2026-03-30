@@ -208,6 +208,20 @@ richEditorStyle.textContent = `
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    align-items: center;
+  }
+  .admin-rich-toolbar-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+  .admin-rich-toolbar-divider {
+    width: 1px;
+    align-self: stretch;
+    min-height: 36px;
+    background: #d7deef;
+    border-radius: 999px;
   }
   .admin-rich-button {
     min-height: 36px;
@@ -225,6 +239,31 @@ richEditorStyle.textContent = `
     border-color: #667eea;
     box-shadow: 0 10px 22px rgba(102, 126, 234, 0.14);
     transform: translateY(-1px);
+  }
+  .admin-rich-button.is-active {
+    border-color: #667eea;
+    background: #eef2ff;
+    color: #3c4bb7;
+    box-shadow: 0 10px 22px rgba(102, 126, 234, 0.16);
+  }
+  .admin-rich-select,
+  .admin-rich-color {
+    min-height: 36px;
+    border: 1px solid #d7deef;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #334155;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+  .admin-rich-select {
+    min-width: 118px;
+    padding: 0 12px;
+  }
+  .admin-rich-color {
+    width: 44px;
+    padding: 4px;
+    cursor: pointer;
   }
   .admin-rich-surface {
     min-height: 200px;
@@ -250,6 +289,12 @@ richEditorStyle.textContent = `
   .admin-rich-surface p {
     margin: 0 0 12px;
   }
+  .admin-rich-surface blockquote {
+    margin: 0 0 12px;
+    padding-left: 16px;
+    border-left: 4px solid #c7d2fe;
+    color: #475569;
+  }
   .admin-rich-surface ul,
   .admin-rich-surface ol {
     margin: 0 0 12px;
@@ -258,6 +303,24 @@ richEditorStyle.textContent = `
   .admin-rich-surface a {
     color: #4f46e5;
     text-decoration: underline;
+  }
+  .admin-rich-surface img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 0 14px;
+    border-radius: 14px;
+  }
+  .admin-rich-surface table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 0 14px;
+  }
+  .admin-rich-surface th,
+  .admin-rich-surface td {
+    border: 1px solid #d7deef;
+    padding: 10px 12px;
+    vertical-align: top;
   }
 `;
 document.head.appendChild(richEditorStyle);
@@ -545,6 +608,64 @@ const adminTextareaValueDescriptor = typeof HTMLTextAreaElement !== 'undefined'
   ? Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value')
   : null;
 
+const adminRichAllowedTags = new Set([
+  'a', 'b', 'blockquote', 'br', 'code', 'div', 'em', 'figure', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+  'hr', 'i', 'img', 'li', 'ol', 'p', 'pre', 's', 'span', 'strong', 'sub', 'sup', 'table', 'tbody', 'td',
+  'th', 'thead', 'tr', 'u', 'ul',
+]);
+
+const adminRichAllowedStyles = new Set([
+  'background-color', 'color', 'font-family', 'font-size', 'font-style', 'font-weight', 'letter-spacing',
+  'line-height', 'list-style-type', 'margin-left', 'padding-left', 'text-align', 'text-decoration',
+]);
+
+const adminRichPositiveHintPattern = /description|desc\b|content|bio|comment|note|summary|overview|details|message|answer|text|quote|objective|review|story|body|copy|caption|statement|excerpt|full description|short description/i;
+const adminRichNegativeHintPattern = /one per line|starter code|test case|expected output|roadmap steps|skills\b|tags\b|slug\b|search\b|url\b|link\b|email\b|input\b|output\b|options\b|eligibility\b|rules\b|steps\b|deliverables\b|tools\b|requirements\b|offerings\b|what students learn\b|featured outcomes\b/i;
+
+function appendAdminRichStyle(target, property, value) {
+  const nextValue = String(value || '').trim();
+  if (!nextValue) {
+    return;
+  }
+
+  const current = target.getAttribute('style') || '';
+  const withoutProperty = current
+    .split(';')
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .filter((part) => !part.toLowerCase().startsWith(`${property.toLowerCase()}:`));
+
+  withoutProperty.push(`${property}: ${nextValue}`);
+  target.setAttribute('style', withoutProperty.join('; '));
+}
+
+function getAdminRichHint(control) {
+  const parts = [
+    control.id || '',
+    control.name || '',
+    control.getAttribute('placeholder') || '',
+    control.getAttribute('aria-label') || '',
+    control.dataset.adminRichHint || '',
+  ];
+
+  if (control.id) {
+    document.querySelectorAll(`label[for="${control.id}"]`).forEach((label) => {
+      parts.push(label.textContent || '');
+    });
+  }
+
+  const nearbyField = control.closest('.field-shell, .admin-field, .field, .thumb-wrap');
+  if (nearbyField) {
+    [...nearbyField.children].forEach((child) => {
+      if (child.tagName === 'LABEL') {
+        parts.push(child.textContent || '');
+      }
+    });
+  }
+
+  return parts.join(' ').replace(/\s+/g, ' ').trim().toLowerCase();
+}
+
 function shouldEnhanceRichText(control) {
   if (!(control instanceof HTMLTextAreaElement)) {
     return false;
@@ -564,8 +685,15 @@ function shouldEnhanceRichText(control) {
     return false;
   }
 
-  const hint = `${control.id || ''} ${control.name || ''} ${control.getAttribute('placeholder') || ''}`.toLowerCase();
-  return /description|content|bio|comment|note|summary|overview|details|message|answer|text/i.test(hint) || control.classList.contains('textarea');
+  const hint = getAdminRichHint(control);
+  if (control.dataset.adminRich === 'true') {
+    return true;
+  }
+  if (control.dataset.adminRich === 'false' || adminRichNegativeHintPattern.test(hint)) {
+    return false;
+  }
+
+  return adminRichPositiveHintPattern.test(hint);
 }
 
 function escapeAdminHtml(value) {
@@ -591,6 +719,212 @@ function toRichEditorHtml(value) {
     .split(/\n{2,}/)
     .map((block) => `<p>${escapeAdminHtml(block).replace(/\n/g, '<br>')}</p>`)
     .join('');
+}
+
+function sanitizeAdminRichUrl(value, attribute) {
+  const candidate = String(value || '').trim();
+  if (!candidate) {
+    return '';
+  }
+
+  if (attribute === 'src' && /^(data:image\/|blob:|https?:\/\/|\/)/i.test(candidate)) {
+    return candidate;
+  }
+
+  if (attribute === 'href' && /^(https?:\/\/|mailto:|tel:|#|\/)/i.test(candidate)) {
+    return candidate;
+  }
+
+  return '';
+}
+
+function sanitizeAdminRichStyle(value) {
+  return String(value || '')
+    .split(';')
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .reduce((styles, entry) => {
+      const separatorIndex = entry.indexOf(':');
+      if (separatorIndex === -1) {
+        return styles;
+      }
+
+      const property = entry.slice(0, separatorIndex).trim().toLowerCase();
+      const rawValue = entry.slice(separatorIndex + 1).trim();
+      if (!adminRichAllowedStyles.has(property) || !rawValue) {
+        return styles;
+      }
+
+      const normalizedValue = rawValue.replace(/\s+/g, ' ').trim();
+      if (/url\s*\(|expression\s*\(|javascript:/i.test(normalizedValue)) {
+        return styles;
+      }
+
+      styles.push(`${property}: ${normalizedValue.replace(/[<>]/g, '')}`);
+      return styles;
+    }, [])
+    .join('; ');
+}
+
+function sanitizeAdminRichNode(node, ownerDocument) {
+  if (node.nodeType === Node.TEXT_NODE) {
+    return ownerDocument.createTextNode(node.textContent || '');
+  }
+
+  if (node.nodeType !== Node.ELEMENT_NODE) {
+    return null;
+  }
+
+  const sourceElement = node;
+  const sourceTag = sourceElement.tagName.toLowerCase();
+  const normalizedTag = sourceTag === 'b' ? 'strong' : sourceTag === 'i' ? 'em' : sourceTag;
+
+  if (!adminRichAllowedTags.has(normalizedTag)) {
+    const fragment = ownerDocument.createDocumentFragment();
+    sourceElement.childNodes.forEach((childNode) => {
+      const safeChild = sanitizeAdminRichNode(childNode, ownerDocument);
+      if (safeChild) {
+        fragment.appendChild(safeChild);
+      }
+    });
+    return fragment;
+  }
+
+  const safeElement = ownerDocument.createElement(normalizedTag);
+  const style = sanitizeAdminRichStyle(sourceElement.getAttribute('style') || '');
+  if (style) {
+    safeElement.setAttribute('style', style);
+  }
+
+  const align = String(sourceElement.getAttribute('align') || '').trim().toLowerCase();
+  if (align && ['left', 'center', 'right', 'justify'].includes(align)) {
+    appendAdminRichStyle(safeElement, 'text-align', align);
+  }
+
+  if (normalizedTag === 'a') {
+    const href = sanitizeAdminRichUrl(sourceElement.getAttribute('href'), 'href');
+    if (href) {
+      safeElement.setAttribute('href', href);
+      safeElement.setAttribute('target', '_blank');
+      safeElement.setAttribute('rel', 'noopener noreferrer');
+    }
+  }
+
+  if (normalizedTag === 'img') {
+    const src = sanitizeAdminRichUrl(sourceElement.getAttribute('src'), 'src');
+    if (!src) {
+      return null;
+    }
+
+    safeElement.setAttribute('src', src);
+    safeElement.setAttribute('alt', sourceElement.getAttribute('alt') || 'Pasted image');
+
+    ['width', 'height'].forEach((attribute) => {
+      const value = parseInt(String(sourceElement.getAttribute(attribute) || ''), 10);
+      if (value > 0 && Number.isFinite(value)) {
+        safeElement.setAttribute(attribute, String(value));
+      }
+    });
+  }
+
+  if (normalizedTag === 'td' || normalizedTag === 'th') {
+    ['colspan', 'rowspan'].forEach((attribute) => {
+      const value = parseInt(String(sourceElement.getAttribute(attribute) || ''), 10);
+      if (value > 0 && Number.isFinite(value)) {
+        safeElement.setAttribute(attribute, String(value));
+      }
+    });
+  }
+
+  sourceElement.childNodes.forEach((childNode) => {
+    const safeChild = sanitizeAdminRichNode(childNode, ownerDocument);
+    if (safeChild) {
+      safeElement.appendChild(safeChild);
+    }
+  });
+
+  return safeElement;
+}
+
+function sanitizeAdminRichHtml(value) {
+  const html = String(value || '').trim();
+  if (!html) {
+    return '';
+  }
+
+  const parser = new DOMParser();
+  const parsed = parser.parseFromString(html, 'text/html');
+  const fragment = document.createDocumentFragment();
+
+  parsed.body.childNodes.forEach((node) => {
+    const safeNode = sanitizeAdminRichNode(node, document);
+    if (safeNode) {
+      fragment.appendChild(safeNode);
+    }
+  });
+
+  const container = document.createElement('div');
+  container.appendChild(fragment);
+  return container.innerHTML
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .trim();
+}
+
+function normalizeAdminRichMarkup(editor) {
+  if (!editor) {
+    return;
+  }
+
+  editor.querySelectorAll('font').forEach((fontNode) => {
+    const span = document.createElement('span');
+    const size = parseInt(String(fontNode.getAttribute('size') || ''), 10);
+    const face = fontNode.getAttribute('face');
+    const color = fontNode.getAttribute('color');
+
+    if (size > 0) {
+      const fontSizeMap = {
+        1: '12px',
+        2: '14px',
+        3: '16px',
+        4: '18px',
+        5: '24px',
+        6: '32px',
+        7: '40px',
+      };
+      appendAdminRichStyle(span, 'font-size', fontSizeMap[size] || '16px');
+    }
+
+    if (face) {
+      appendAdminRichStyle(span, 'font-family', face);
+    }
+
+    if (color) {
+      appendAdminRichStyle(span, 'color', color);
+    }
+
+    const extraStyle = sanitizeAdminRichStyle(fontNode.getAttribute('style') || '');
+    if (extraStyle) {
+      span.setAttribute('style', [span.getAttribute('style') || '', extraStyle].filter(Boolean).join('; '));
+    }
+
+    while (fontNode.firstChild) {
+      span.appendChild(fontNode.firstChild);
+    }
+
+    fontNode.replaceWith(span);
+  });
+
+  editor.querySelectorAll('[style]').forEach((node) => {
+    const style = sanitizeAdminRichStyle(node.getAttribute('style') || '');
+    if (style) {
+      node.setAttribute('style', style);
+      return;
+    }
+
+    node.removeAttribute('style');
+  });
 }
 
 function toggleRichEditorPlaceholder(editor) {
@@ -621,10 +955,11 @@ function syncRichEditorFromTextarea(textarea) {
   }
 
   textarea.dataset.adminRichSyncing = 'true';
-  const nextHtml = toRichEditorHtml(getNativeTextareaValue(textarea));
+  const nextHtml = sanitizeAdminRichHtml(toRichEditorHtml(getNativeTextareaValue(textarea)));
   if (editor.innerHTML !== nextHtml) {
     editor.innerHTML = nextHtml;
   }
+  normalizeAdminRichMarkup(editor);
   toggleRichEditorPlaceholder(editor);
   textarea.dataset.adminRichSyncing = 'false';
 }
@@ -635,10 +970,8 @@ function syncTextareaFromRichEditor(textarea) {
     return;
   }
 
-  const cleaned = editor.innerHTML
-    .replace(/<script[\s\S]*?<\/script>/gi, '')
-    .replace(/<style[\s\S]*?<\/style>/gi, '')
-    .trim();
+  normalizeAdminRichMarkup(editor);
+  const cleaned = sanitizeAdminRichHtml(editor.innerHTML);
 
   setNativeTextareaValue(textarea, cleaned);
   toggleRichEditorPlaceholder(editor);
@@ -664,6 +997,199 @@ function patchRichTextareaValue(textarea) {
   textarea.dataset.adminRichValuePatched = 'true';
 }
 
+function enableAdminStyleWithCss() {
+  try {
+    document.execCommand('styleWithCSS', false, true);
+  } catch (_error) {
+    // Ignore browsers that do not support styleWithCSS.
+  }
+}
+
+function insertAdminRichHtml(textarea, html) {
+  const editor = textarea._adminRichEditor;
+  if (!editor || !html) {
+    return;
+  }
+
+  editor.focus();
+  enableAdminStyleWithCss();
+  document.execCommand('insertHTML', false, sanitizeAdminRichHtml(html));
+  normalizeAdminRichMarkup(editor);
+  syncTextareaFromRichEditor(textarea);
+  updateRichToolbarState(textarea);
+}
+
+function insertAdminRichPlainText(textarea, value) {
+  const text = String(value || '');
+  if (!text) {
+    return;
+  }
+
+  insertAdminRichHtml(textarea, toRichEditorHtml(text));
+}
+
+function readAdminClipboardImages(items) {
+  return Promise.all(items.map((item) => new Promise((resolve) => {
+    const file = item.getAsFile();
+    if (!file) {
+      resolve('');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      resolve(`<p><img src="${String(reader.result || '')}" alt="${escapeAdminHtml(file.name || 'Pasted image')}" /></p>`);
+    };
+    reader.onerror = () => resolve('');
+    reader.readAsDataURL(file);
+  })));
+}
+
+function toAdminHexColor(value, fallback = '#1e293b') {
+  const source = String(value || '').trim();
+  if (!source || source === 'transparent') {
+    return fallback;
+  }
+
+  if (/rgba\(\s*\d+,\s*\d+,\s*\d+,\s*0(?:\.0+)?\s*\)/i.test(source)) {
+    return fallback;
+  }
+
+  if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(source)) {
+    if (source.length === 4) {
+      return `#${source.slice(1).split('').map((char) => char + char).join('')}`.toLowerCase();
+    }
+    return source.toLowerCase();
+  }
+
+  const match = source.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+  if (!match) {
+    return fallback;
+  }
+
+  const toHex = (part) => Number(part).toString(16).padStart(2, '0');
+  return `#${toHex(match[1])}${toHex(match[2])}${toHex(match[3])}`;
+}
+
+function findAdminSelectionContainer(editor) {
+  const selection = window.getSelection();
+  if (!selection || selection.rangeCount === 0) {
+    return null;
+  }
+
+  const anchorNode = selection.anchorNode;
+  const element = anchorNode?.nodeType === Node.ELEMENT_NODE ? anchorNode : anchorNode?.parentElement;
+  return element && editor.contains(element) ? element : null;
+}
+
+function updateRichToolbarState(textarea) {
+  const editor = textarea._adminRichEditor;
+  const controls = textarea._adminRichControls;
+  if (!editor || !controls) {
+    return;
+  }
+
+  const activeNode = findAdminSelectionContainer(editor) || editor;
+  const computed = window.getComputedStyle(activeNode);
+
+  const activeStates = {
+    bold: document.queryCommandState('bold'),
+    italic: document.queryCommandState('italic'),
+    underline: document.queryCommandState('underline'),
+    insertUnorderedList: document.queryCommandState('insertUnorderedList'),
+    insertOrderedList: document.queryCommandState('insertOrderedList'),
+    justifyLeft: document.queryCommandState('justifyLeft'),
+    justifyCenter: document.queryCommandState('justifyCenter'),
+    justifyRight: document.queryCommandState('justifyRight'),
+  };
+
+  Object.entries(controls.buttons).forEach(([command, button]) => {
+    button.classList.toggle('is-active', Boolean(activeStates[command]));
+  });
+
+  const fontFamily = String(computed.fontFamily || '').replace(/["']/g, '').split(',')[0].trim();
+  const availableFont = controls.fontFamilyOptions.find((option) => option.toLowerCase() === fontFamily.toLowerCase());
+  controls.fontFamily.value = availableFont || '';
+
+  const fontSize = `${Math.round(parseFloat(computed.fontSize || '16'))}px`;
+  controls.fontSize.value = controls.fontSizeOptions.includes(fontSize) ? fontSize : '';
+  controls.foreColor.value = toAdminHexColor(computed.color, '#1e293b');
+  controls.highlightColor.value = toAdminHexColor(computed.backgroundColor, '#fff59d');
+}
+
+function applyAdminFontSize(textarea, value) {
+  if (!value) {
+    return;
+  }
+
+  const editor = textarea._adminRichEditor;
+  if (!editor) {
+    return;
+  }
+
+  editor.focus();
+  enableAdminStyleWithCss();
+  document.execCommand('fontSize', false, '7');
+  editor.querySelectorAll('font[size="7"]').forEach((node) => {
+    node.removeAttribute('size');
+    appendAdminRichStyle(node, 'font-size', value);
+  });
+  normalizeAdminRichMarkup(editor);
+  syncTextareaFromRichEditor(textarea);
+  updateRichToolbarState(textarea);
+}
+
+function buildRichEditorButton(textarea, label, command, value) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'admin-rich-button';
+  button.textContent = label;
+  button.addEventListener('click', () => runRichTextCommand(textarea, command, value));
+  return button;
+}
+
+function buildRichEditorSelect(options) {
+  const select = document.createElement('select');
+  select.className = 'admin-rich-select';
+  select.setAttribute('aria-label', options.label);
+
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = options.label;
+  select.appendChild(placeholder);
+
+  options.values.forEach((option) => {
+    const element = document.createElement('option');
+    element.value = option.value;
+    element.textContent = option.label;
+    if (option.style) {
+      element.style.cssText = option.style;
+    }
+    select.appendChild(element);
+  });
+
+  select.addEventListener('change', () => {
+    if (!select.value) {
+      return;
+    }
+
+    options.onChange(select.value);
+  });
+
+  return select;
+}
+
+function buildRichEditorColor(options) {
+  const input = document.createElement('input');
+  input.type = 'color';
+  input.className = 'admin-rich-color';
+  input.value = options.defaultValue;
+  input.title = options.label;
+  input.setAttribute('aria-label', options.label);
+  input.addEventListener('input', () => options.onChange(input.value));
+  return input;
+}
+
 function runRichTextCommand(textarea, command, value) {
   const editor = textarea._adminRichEditor;
   if (!editor) {
@@ -671,6 +1197,7 @@ function runRichTextCommand(textarea, command, value) {
   }
 
   editor.focus();
+  enableAdminStyleWithCss();
 
   if (command === 'createLink') {
     const link = window.prompt('Paste the full URL');
@@ -682,16 +1209,9 @@ function runRichTextCommand(textarea, command, value) {
     document.execCommand(command, false, value || null);
   }
 
+  normalizeAdminRichMarkup(editor);
   syncTextareaFromRichEditor(textarea);
-}
-
-function buildRichEditorButton(textarea, label, command, value) {
-  const button = document.createElement('button');
-  button.type = 'button';
-  button.className = 'admin-rich-button';
-  button.textContent = label;
-  button.addEventListener('click', () => runRichTextCommand(textarea, command, value));
-  return button;
+  updateRichToolbarState(textarea);
 }
 
 function syncAllRichTextEditors(root = document) {
@@ -712,6 +1232,19 @@ function initAdminRichTextEditors(root = document) {
     const toolbar = document.createElement('div');
     toolbar.className = 'admin-rich-toolbar';
 
+    const controls = {
+      buttons: {},
+      fontFamily: null,
+      fontFamilyOptions: ['Arial', 'Georgia', 'Times New Roman', 'Trebuchet MS', 'Verdana', 'Tahoma', 'Courier New'],
+      fontSize: null,
+      fontSizeOptions: ['12px', '14px', '16px', '18px', '24px', '32px', '40px'],
+      foreColor: null,
+      highlightColor: null,
+    };
+
+    const formatGroup = document.createElement('div');
+    formatGroup.className = 'admin-rich-toolbar-group';
+
     [
       ['Paragraph', 'formatBlock', '<p>'],
       ['Heading', 'formatBlock', '<h2>'],
@@ -721,20 +1254,111 @@ function initAdminRichTextEditors(root = document) {
       ['Bullets', 'insertUnorderedList'],
       ['Numbers', 'insertOrderedList'],
       ['Link', 'createLink'],
+      ['Left', 'justifyLeft'],
+      ['Center', 'justifyCenter'],
+      ['Right', 'justifyRight'],
       ['Clear', 'removeFormat'],
     ].forEach(([label, command, buttonValue]) => {
-      toolbar.appendChild(buildRichEditorButton(textarea, label, command, buttonValue));
+      const button = buildRichEditorButton(textarea, label, command, buttonValue);
+      formatGroup.appendChild(button);
+      controls.buttons[command] = button;
     });
+    toolbar.appendChild(formatGroup);
+
+    const divider = document.createElement('div');
+    divider.className = 'admin-rich-toolbar-divider';
+    divider.setAttribute('aria-hidden', 'true');
+    toolbar.appendChild(divider);
+
+    const designGroup = document.createElement('div');
+    designGroup.className = 'admin-rich-toolbar-group';
+
+    controls.fontFamily = buildRichEditorSelect({
+      label: 'Font',
+      values: controls.fontFamilyOptions.map((fontName) => ({
+        value: fontName,
+        label: fontName,
+        style: `font-family: ${fontName};`,
+      })),
+      onChange: (fontName) => runRichTextCommand(textarea, 'fontName', fontName),
+    });
+    designGroup.appendChild(controls.fontFamily);
+
+    controls.fontSize = buildRichEditorSelect({
+      label: 'Size',
+      values: controls.fontSizeOptions.map((fontSize) => ({ value: fontSize, label: fontSize })),
+      onChange: (fontSize) => applyAdminFontSize(textarea, fontSize),
+    });
+    designGroup.appendChild(controls.fontSize);
+
+    controls.foreColor = buildRichEditorColor({
+      label: 'Text color',
+      defaultValue: '#1e293b',
+      onChange: (color) => runRichTextCommand(textarea, 'foreColor', color),
+    });
+    designGroup.appendChild(controls.foreColor);
+
+    controls.highlightColor = buildRichEditorColor({
+      label: 'Highlight color',
+      defaultValue: '#fff59d',
+      onChange: (color) => runRichTextCommand(textarea, 'hiliteColor', color),
+    });
+    designGroup.appendChild(controls.highlightColor);
+
+    toolbar.appendChild(designGroup);
 
     const editor = document.createElement('div');
     editor.className = 'admin-rich-surface';
     editor.contentEditable = 'true';
     editor.dataset.placeholder = textarea.getAttribute('placeholder') || 'Write here...';
 
-    editor.addEventListener('input', () => syncTextareaFromRichEditor(textarea));
-    editor.addEventListener('blur', () => syncTextareaFromRichEditor(textarea));
-    editor.addEventListener('paste', () => {
-      window.setTimeout(() => syncTextareaFromRichEditor(textarea), 0);
+    editor.addEventListener('input', () => {
+      syncTextareaFromRichEditor(textarea);
+      updateRichToolbarState(textarea);
+    });
+    editor.addEventListener('blur', () => {
+      syncTextareaFromRichEditor(textarea);
+      updateRichToolbarState(textarea);
+    });
+    editor.addEventListener('focus', () => updateRichToolbarState(textarea));
+    editor.addEventListener('keyup', () => updateRichToolbarState(textarea));
+    editor.addEventListener('mouseup', () => updateRichToolbarState(textarea));
+    editor.addEventListener('paste', (event) => {
+      const clipboardData = event.clipboardData;
+      if (!clipboardData) {
+        return;
+      }
+
+      const html = clipboardData.getData('text/html');
+      const text = clipboardData.getData('text/plain');
+      const imageItems = [...clipboardData.items].filter((item) => item.kind === 'file' && item.type.startsWith('image/'));
+
+      if (!html && !text && imageItems.length === 0) {
+        return;
+      }
+
+      event.preventDefault();
+
+      readAdminClipboardImages(imageItems).then((images) => {
+        const parts = [];
+        if (html) {
+          parts.push(sanitizeAdminRichHtml(html));
+        } else if (text) {
+          parts.push(toRichEditorHtml(text));
+        }
+
+        if (images.length) {
+          parts.push(images.filter(Boolean).join(''));
+        }
+
+        const markup = parts.filter(Boolean).join('<p><br></p>');
+        if (!markup && text) {
+          insertAdminRichPlainText(textarea, text);
+          return;
+        }
+
+        insertAdminRichHtml(textarea, markup);
+      });
     });
 
     textarea.classList.add('admin-rich-textarea-native');
@@ -747,8 +1371,10 @@ function initAdminRichTextEditors(root = document) {
     shell.appendChild(editor);
 
     textarea._adminRichEditor = editor;
+    textarea._adminRichControls = controls;
     patchRichTextareaValue(textarea);
     syncRichEditorFromTextarea(textarea);
+    updateRichToolbarState(textarea);
   });
 
   root.querySelectorAll('.dashboard-content form').forEach((form) => {
