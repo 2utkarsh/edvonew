@@ -1058,11 +1058,220 @@ function patchRichTextareaValue(textarea) {
     },
     set(nextValue) {
       adminTextareaValueDescriptor.set.call(this, nextValue);
+      if (this._adminCkEditor) {
+        syncCkEditorFromTextarea(this);
+        return;
+      }
       syncRichEditorFromTextarea(this);
     },
   });
 
   textarea.dataset.adminRichValuePatched = 'true';
+}
+
+const ADMIN_CKEDITOR_VERSION = '47.6.1';
+let adminCkEditorLoaderPromise = null;
+
+function loadAdminCkEditorAssets() {
+  if (window.CKEDITOR?.ClassicEditor) {
+    return Promise.resolve(window.CKEDITOR);
+  }
+
+  if (adminCkEditorLoaderPromise) {
+    return adminCkEditorLoaderPromise;
+  }
+
+  adminCkEditorLoaderPromise = new Promise((resolve, reject) => {
+    const existingLink = document.querySelector('link[data-admin-ckeditor-style="true"]');
+    if (!existingLink) {
+      const styleLink = document.createElement('link');
+      styleLink.rel = 'stylesheet';
+      styleLink.href = `https://cdn.ckeditor.com/ckeditor5/${ADMIN_CKEDITOR_VERSION}/ckeditor5.css`;
+      styleLink.dataset.adminCkeditorStyle = 'true';
+      document.head.appendChild(styleLink);
+    }
+
+    const existingScript = document.querySelector('script[data-admin-ckeditor-script="true"]');
+    if (existingScript) {
+      existingScript.addEventListener('load', () => resolve(window.CKEDITOR), { once: true });
+      existingScript.addEventListener('error', () => reject(new Error('Unable to load CKEditor script')), { once: true });
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = `https://cdn.ckeditor.com/ckeditor5/${ADMIN_CKEDITOR_VERSION}/ckeditor5.umd.js`;
+    script.async = true;
+    script.dataset.adminCkeditorScript = 'true';
+    script.onload = () => resolve(window.CKEDITOR);
+    script.onerror = () => reject(new Error('Unable to load CKEditor script'));
+    document.head.appendChild(script);
+  }).catch((error) => {
+    adminCkEditorLoaderPromise = null;
+    throw error;
+  });
+
+  return adminCkEditorLoaderPromise;
+}
+
+function getAdminCkEditorConfig(textarea) {
+  const ck = window.CKEDITOR || {};
+  const {
+    Alignment,
+    AutoImage,
+    AutoLink,
+    Base64UploadAdapter,
+    BlockQuote,
+    Bold,
+    Essentials,
+    Font,
+    GeneralHtmlSupport,
+    Heading,
+    HorizontalLine,
+    Image,
+    ImageCaption,
+    ImageInsert,
+    ImageResize,
+    ImageStyle,
+    ImageToolbar,
+    ImageUpload,
+    Italic,
+    Link,
+    List,
+    Paragraph,
+    PasteFromOffice,
+    RemoveFormat,
+    Table,
+    TableToolbar,
+    Underline,
+    Undo,
+  } = ck;
+
+  return {
+    licenseKey: window.EDVO_CKEDITOR_LICENSE_KEY || 'GPL',
+    placeholder: textarea.getAttribute('placeholder') || 'Write here...',
+    plugins: [
+      Essentials,
+      Paragraph,
+      Heading,
+      Bold,
+      Italic,
+      Underline,
+      Font,
+      Alignment,
+      Link,
+      List,
+      Table,
+      TableToolbar,
+      BlockQuote,
+      HorizontalLine,
+      RemoveFormat,
+      PasteFromOffice,
+      GeneralHtmlSupport,
+      Image,
+      ImageUpload,
+      ImageToolbar,
+      ImageCaption,
+      ImageStyle,
+      ImageResize,
+      ImageInsert,
+      Base64UploadAdapter,
+      AutoImage,
+      AutoLink,
+      Undo,
+    ].filter(Boolean),
+    toolbar: {
+      shouldNotGroupWhenFull: true,
+      items: [
+        'undo', 'redo',
+        '|',
+        'heading',
+        '|',
+        'fontFamily', 'fontSize', 'fontColor', 'fontBackgroundColor',
+        '|',
+        'bold', 'italic', 'underline', 'removeFormat',
+        '|',
+        'link', 'bulletedList', 'numberedList',
+        '|',
+        'alignment',
+        '|',
+        'insertTable', 'blockQuote', 'horizontalLine', 'imageUpload',
+      ],
+    },
+    table: {
+      contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells'],
+    },
+    image: {
+      toolbar: ['imageTextAlternative', 'toggleImageCaption', 'imageStyle:inline', 'imageStyle:block', 'resizeImage'],
+    },
+    link: {
+      addTargetToExternalLinks: true,
+      defaultProtocol: 'https://',
+    },
+    htmlSupport: {
+      allow: [
+        {
+          name: /.*/,
+          attributes: true,
+          classes: true,
+          styles: true,
+        },
+      ],
+    },
+    updateSourceElementOnDestroy: true,
+  };
+}
+
+function syncTextareaFromCkEditor(textarea) {
+  const editor = textarea._adminCkEditor;
+  if (!editor) {
+    return;
+  }
+
+  const cleaned = sanitizeAdminRichHtml(editor.getData());
+  textarea.dataset.adminRichSyncing = 'true';
+  setNativeTextareaValue(textarea, cleaned);
+  textarea.dataset.adminRichSyncing = 'false';
+}
+
+function syncCkEditorFromTextarea(textarea) {
+  const editor = textarea._adminCkEditor;
+  if (!editor || textarea.dataset.adminRichSyncing === 'true') {
+    return;
+  }
+
+  const nextHtml = sanitizeAdminRichHtml(toRichEditorHtml(getNativeTextareaValue(textarea)));
+  if (editor.getData() !== nextHtml) {
+    textarea.dataset.adminRichSyncing = 'true';
+    editor.setData(nextHtml);
+    textarea.dataset.adminRichSyncing = 'false';
+  }
+}
+
+function initAdminCkEditor(textarea) {
+  if (textarea._adminCkEditor || textarea.dataset.adminCkInitializing === 'true') {
+    return;
+  }
+
+  textarea.dataset.adminCkInitializing = 'true';
+  patchRichTextareaValue(textarea);
+
+  loadAdminCkEditorAssets()
+    .then(() => window.CKEDITOR.ClassicEditor.create(textarea, getAdminCkEditorConfig(textarea)))
+    .then((editor) => {
+      textarea._adminCkEditor = editor;
+      textarea.dataset.adminRichEnhanced = 'true';
+      textarea.setAttribute('data-admin-rich-enhanced', 'true');
+      editor.model.document.on('change:data', () => syncTextareaFromCkEditor(textarea));
+      syncCkEditorFromTextarea(textarea);
+    })
+    .catch((error) => {
+      console.error('CKEditor initialization failed:', error);
+      showToast('CKEditor could not load. The plain textarea is still available.', 'error');
+      textarea.dataset.adminRichEnhanced = 'false';
+    })
+    .finally(() => {
+      textarea.dataset.adminCkInitializing = 'false';
+    });
 }
 
 function enableAdminStyleWithCss() {
@@ -1284,6 +1493,10 @@ function runRichTextCommand(textarea, command, value) {
 
 function syncAllRichTextEditors(root = document) {
   root.querySelectorAll('textarea[data-admin-rich-enhanced="true"]').forEach((textarea) => {
+    if (textarea._adminCkEditor) {
+      syncTextareaFromCkEditor(textarea);
+      return;
+    }
     syncTextareaFromRichEditor(textarea);
   });
 }
@@ -1293,167 +1506,7 @@ function initAdminRichTextEditors(root = document) {
     if (!shouldEnhanceRichText(textarea)) {
       return;
     }
-
-    const shell = document.createElement('div');
-    shell.className = 'admin-rich-editor';
-
-    const toolbar = document.createElement('div');
-    toolbar.className = 'admin-rich-toolbar';
-
-    const controls = {
-      buttons: {},
-      fontFamily: null,
-      fontFamilyOptions: ['Arial', 'Georgia', 'Times New Roman', 'Trebuchet MS', 'Verdana', 'Tahoma', 'Courier New'],
-      fontSize: null,
-      fontSizeOptions: ['12px', '14px', '16px', '18px', '24px', '32px', '40px'],
-      foreColor: null,
-      highlightColor: null,
-    };
-
-    const formatGroup = document.createElement('div');
-    formatGroup.className = 'admin-rich-toolbar-group';
-
-    [
-      ['Paragraph', 'formatBlock', '<p>'],
-      ['Heading', 'formatBlock', '<h2>'],
-      ['Bold', 'bold'],
-      ['Italic', 'italic'],
-      ['Underline', 'underline'],
-      ['Bullets', 'insertUnorderedList'],
-      ['Numbers', 'insertOrderedList'],
-      ['Link', 'createLink'],
-      ['Left', 'justifyLeft'],
-      ['Center', 'justifyCenter'],
-      ['Right', 'justifyRight'],
-      ['Clear', 'removeFormat'],
-    ].forEach(([label, command, buttonValue]) => {
-      const button = buildRichEditorButton(textarea, label, command, buttonValue);
-      formatGroup.appendChild(button);
-      controls.buttons[command] = button;
-    });
-    toolbar.appendChild(formatGroup);
-
-    const divider = document.createElement('div');
-    divider.className = 'admin-rich-toolbar-divider';
-    divider.setAttribute('aria-hidden', 'true');
-    toolbar.appendChild(divider);
-
-    const designGroup = document.createElement('div');
-    designGroup.className = 'admin-rich-toolbar-group';
-
-    controls.fontFamily = buildRichEditorSelect({
-      label: 'Font',
-      values: controls.fontFamilyOptions.map((fontName) => ({
-        value: fontName,
-        label: fontName,
-        style: `font-family: ${fontName};`,
-      })),
-      onChange: (fontName) => runRichTextCommand(textarea, 'fontName', fontName),
-    });
-    designGroup.appendChild(controls.fontFamily);
-
-    controls.fontSize = buildRichEditorSelect({
-      label: 'Size',
-      values: controls.fontSizeOptions.map((fontSize) => ({ value: fontSize, label: fontSize })),
-      onChange: (fontSize) => applyAdminFontSize(textarea, fontSize),
-    });
-    designGroup.appendChild(controls.fontSize);
-
-    controls.foreColor = buildRichEditorColor({
-      label: 'Text color',
-      defaultValue: '#1e293b',
-      onChange: (color) => runRichTextCommand(textarea, 'foreColor', color),
-    });
-    designGroup.appendChild(controls.foreColor);
-
-    controls.highlightColor = buildRichEditorColor({
-      label: 'Highlight color',
-      defaultValue: '#fff59d',
-      onChange: (color) => runRichTextCommand(textarea, 'hiliteColor', color),
-    });
-    designGroup.appendChild(controls.highlightColor);
-
-    toolbar.appendChild(designGroup);
-
-    const editor = document.createElement('div');
-    editor.className = 'admin-rich-surface';
-    editor.contentEditable = 'true';
-    editor.dataset.placeholder = textarea.getAttribute('placeholder') || 'Write here...';
-
-    editor.addEventListener('input', () => {
-      syncTextareaFromRichEditor(textarea);
-      updateRichToolbarState(textarea);
-    });
-    editor.addEventListener('blur', () => {
-      syncTextareaFromRichEditor(textarea);
-      updateRichToolbarState(textarea);
-    });
-    editor.addEventListener('focus', () => updateRichToolbarState(textarea));
-    editor.addEventListener('keyup', () => updateRichToolbarState(textarea));
-    editor.addEventListener('mouseup', () => updateRichToolbarState(textarea));
-    editor.addEventListener('paste', (event) => {
-      const clipboardData = event.clipboardData;
-      if (!clipboardData) {
-        return;
-      }
-
-      const clipboardTypes = [...clipboardData.types];
-      const html = clipboardData.getData('text/html');
-      const text = clipboardData.getData('text/plain');
-      const imageItems = [...clipboardData.items].filter((item) => item.kind === 'file' && item.type.startsWith('image/'));
-      const hasRtfPayload = clipboardTypes.some((type) => /rtf/i.test(type));
-
-      if (!html && hasRtfPayload && imageItems.length === 0) {
-        window.setTimeout(() => {
-          normalizeAdminRichMarkup(editor);
-          syncTextareaFromRichEditor(textarea);
-          updateRichToolbarState(textarea);
-        }, 0);
-        return;
-      }
-
-      if (!html && !text && imageItems.length === 0) {
-        return;
-      }
-
-      event.preventDefault();
-
-      readAdminClipboardImages(imageItems).then((images) => {
-        const parts = [];
-        if (html) {
-          parts.push(sanitizeAdminRichHtml(html));
-        } else if (text) {
-          parts.push(toRichEditorHtml(text));
-        }
-
-        if (images.length) {
-          parts.push(images.filter(Boolean).join(''));
-        }
-
-        const markup = parts.filter(Boolean).join('<p><br></p>');
-        if (!markup && text) {
-          insertAdminRichPlainText(textarea, text);
-          return;
-        }
-
-        insertAdminRichHtml(textarea, markup);
-      });
-    });
-
-    textarea.classList.add('admin-rich-textarea-native');
-    textarea.setAttribute('aria-hidden', 'true');
-    textarea.dataset.adminRichEnhanced = 'true';
-    textarea.setAttribute('data-admin-rich-enhanced', 'true');
-
-    textarea.insertAdjacentElement('afterend', shell);
-    shell.appendChild(toolbar);
-    shell.appendChild(editor);
-
-    textarea._adminRichEditor = editor;
-    textarea._adminRichControls = controls;
-    patchRichTextareaValue(textarea);
-    syncRichEditorFromTextarea(textarea);
-    updateRichToolbarState(textarea);
+    initAdminCkEditor(textarea);
   });
 
   root.querySelectorAll('.dashboard-content form').forEach((form) => {
@@ -1464,7 +1517,14 @@ function initAdminRichTextEditors(root = document) {
     form.dataset.adminRichBound = 'true';
     form.addEventListener('submit', () => syncAllRichTextEditors(form), true);
     form.addEventListener('reset', () => {
-      window.setTimeout(() => syncAllRichTextEditors(form), 0);
+      window.setTimeout(() => {
+        form.querySelectorAll('textarea[data-admin-rich-enhanced="true"]').forEach((textarea) => {
+          if (textarea._adminCkEditor) {
+            syncCkEditorFromTextarea(textarea);
+          }
+        });
+        syncAllRichTextEditors(form);
+      }, 0);
     });
   });
 }
