@@ -1069,7 +1069,7 @@ function patchRichTextareaValue(textarea) {
   textarea.dataset.adminRichValuePatched = 'true';
 }
 
-const ADMIN_CKEDITOR_VERSION = '47.6.1';
+const ADMIN_CKEDITOR_ASSET_TOKEN = '20260331d';
 let adminCkEditorLoaderPromise = null;
 
 function loadAdminCkEditorAssets() {
@@ -1086,7 +1086,7 @@ function loadAdminCkEditorAssets() {
     if (!existingLink) {
       const styleLink = document.createElement('link');
       styleLink.rel = 'stylesheet';
-      styleLink.href = `https://cdn.ckeditor.com/ckeditor5/${ADMIN_CKEDITOR_VERSION}/ckeditor5.css`;
+      styleLink.href = `/backend/admin/vendor/ckeditor5/ckeditor5.css?v=${ADMIN_CKEDITOR_ASSET_TOKEN}`;
       styleLink.dataset.adminCkeditorStyle = 'true';
       document.head.appendChild(styleLink);
     }
@@ -1099,7 +1099,7 @@ function loadAdminCkEditorAssets() {
     }
 
     const script = document.createElement('script');
-    script.src = `https://cdn.ckeditor.com/ckeditor5/${ADMIN_CKEDITOR_VERSION}/ckeditor5.umd.js`;
+    script.src = `/backend/admin/vendor/ckeditor5/ckeditor5.umd.js?v=${ADMIN_CKEDITOR_ASSET_TOKEN}`;
     script.async = true;
     script.dataset.adminCkeditorScript = 'true';
     script.onload = () => resolve(window.CKEDITOR);
