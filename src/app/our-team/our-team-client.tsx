@@ -72,18 +72,11 @@ const directoryCopy: Record<DirectoryMode, { badge: string; title: string; descr
 };
 
 function normalizeItems(items: Record<string, unknown>[]) {
-  const stripHtml = (value: unknown) =>
-    String(value || '')
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/&nbsp;/gi, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
-
   return items.map((item, index) => ({
     id: String(item.id || `member-${index}`),
     name: String(item.name || 'EDVO Member'),
     title: String(item.title || 'Mentor, EDVO'),
-    bio: stripHtml(item.bio || 'Experienced mentor guiding learners with practical, industry-focused knowledge.'),
+    bio: String(item.bio || 'Experienced mentor guiding learners with practical, industry-focused knowledge.'),
     image: String(item.image || '/images/edvo-official-logo-v10.png'),
   }));
 }
@@ -200,7 +193,10 @@ export default function OurTeamClient() {
                 <img src={member.image} alt={member.name} className="mb-5 h-40 w-40 rounded-2xl object-cover object-center shadow-lg shadow-primary-500/20" />
                 <h2 className="mb-2 text-2xl font-bold text-white">{member.name}</h2>
                 <p className="mb-4 text-sm font-medium leading-6 text-sky-300">{member.title}</p>
-                <p className="text-sm leading-7 text-slate-300">{member.bio}</p>
+                <div
+                  className="text-sm leading-7 text-slate-300"
+                  dangerouslySetInnerHTML={{ __html: member.bio }}
+                />
               </article>
             ))}
           </div>
