@@ -72,11 +72,18 @@ const directoryCopy: Record<DirectoryMode, { badge: string; title: string; descr
 };
 
 function normalizeItems(items: Record<string, unknown>[]) {
+  const stripHtml = (value: unknown) =>
+    String(value || '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
   return items.map((item, index) => ({
     id: String(item.id || `member-${index}`),
     name: String(item.name || 'EDVO Member'),
     title: String(item.title || 'Mentor, EDVO'),
-    bio: String(item.bio || 'Experienced mentor guiding learners with practical, industry-focused knowledge.'),
+    bio: stripHtml(item.bio || 'Experienced mentor guiding learners with practical, industry-focused knowledge.'),
     image: String(item.image || '/images/edvo-official-logo-v10.png'),
   }));
 }
