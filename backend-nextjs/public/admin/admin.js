@@ -1069,7 +1069,7 @@ function patchRichTextareaValue(textarea) {
   textarea.dataset.adminRichValuePatched = 'true';
 }
 
-const ADMIN_CKEDITOR_ASSET_TOKEN = '20260331d';
+const ADMIN_CKEDITOR_ASSET_TOKEN = '20260401a';
 let adminCkEditorLoaderPromise = null;
 
 function loadAdminCkEditorAssets() {
