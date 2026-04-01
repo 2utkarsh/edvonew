@@ -1069,7 +1069,7 @@ function patchRichTextareaValue(textarea) {
   textarea.dataset.adminRichValuePatched = 'true';
 }
 
-const ADMIN_CKEDITOR_ASSET_TOKEN = '20260401a';
+const ADMIN_CKEDITOR_ASSET_TOKEN = '20260401b';
 let adminCkEditorLoaderPromise = null;
 
 function loadAdminCkEditorAssets() {
@@ -2018,12 +2018,288 @@ function enhanceAdminTopBar(root = document) {
   }
 }
 
+function getAdminRouteLinks() {
+  return [
+    { href: '/backend/admin/home-content', name: 'Homepage', copy: 'Hero, social proof, and section flow.', meta: 'CMS' },
+    { href: '/backend/admin/courses', name: 'Courses', copy: 'Catalog, modules, plans, and tracking.', meta: 'Learning' },
+    { href: '/backend/admin/blogs', name: 'Blogs', copy: 'Editorial publishing and categories.', meta: 'Content' },
+    { href: '/backend/admin/tutorials', name: 'Free Courses', copy: 'Lead magnets, assets, and free learning.', meta: 'Growth' },
+    { href: '/backend/admin/guides', name: 'Guides', copy: 'Roadmaps and downloadable resources.', meta: 'Resources' },
+    { href: '/backend/admin/events', name: 'Events', copy: 'Master classes, workshops, and hackathons.', meta: 'Live' },
+  ];
+}
+
+function getAdminFrontendTargets() {
+  const path = window.location.pathname;
+  const map = {
+    '/backend/admin/home-content': [
+      { href: '/', label: 'Open Website', primary: true },
+    ],
+    '/backend/admin/hiring-partners': [
+      { href: '/hire-from-us', label: 'Open Hiring Page', primary: true },
+    ],
+    '/backend/admin/courses': [
+      { href: '/courses', label: 'Open Courses', primary: true },
+    ],
+    '/backend/admin/blogs': [
+      { href: '/blogs', label: 'Open Blog Index', primary: true },
+    ],
+    '/backend/admin/tutorials': [
+      { href: '/free-courses', label: 'Open Free Courses', primary: true },
+    ],
+    '/backend/admin/guides': [
+      { href: '/guides', label: 'Open Guides', primary: true },
+    ],
+    '/backend/admin/team': [
+      { href: '/about', label: 'Open Team Area', primary: true },
+    ],
+    '/backend/admin/course-reviews': [
+      { href: '/course-reviews', label: 'Open Reviews', primary: true },
+    ],
+    '/backend/admin/job-success-stories': [
+      { href: '/job-success-stories', label: 'Open Success Stories', primary: true },
+    ],
+    '/backend/admin/events': [
+      { href: '/events', label: 'Open Events', primary: true },
+    ],
+    '/backend/admin/challenges': [
+      { href: '/challenges', label: 'Open Challenges', primary: true },
+    ],
+    '/backend/admin/dashboard': [
+      { href: '/', label: 'Open Website', primary: true },
+      { href: '/courses', label: 'Open Courses' },
+    ],
+  };
+
+  return map[path] || [];
+}
+
+function injectAdminCommandBar(root = document) {
+  const content = root.querySelector('.dashboard-content');
+  if (!content || content.querySelector('.admin-command-bar')) {
+    return;
+  }
+
+  const presentation = getAdminPagePresentation();
+  const targets = getAdminFrontendTargets();
+  const routeLinks = getAdminRouteLinks();
+  const commandBar = document.createElement('section');
+  commandBar.className = 'admin-command-bar';
+  commandBar.innerHTML = `
+    <div class="admin-command-card">
+      <div class="admin-command-eyebrow">${presentation.kicker}</div>
+      <div class="admin-command-title">${presentation.title}</div>
+      <div class="admin-command-copy">${presentation.subtitle}</div>
+      <div class="admin-command-actions">
+        ${targets.map((target) => `<a class="admin-action-link${target.primary ? ' primary' : ''}" href="${target.href}" target="_blank" rel="noreferrer">${target.label}</a>`).join('')}
+      </div>
+      <div class="admin-command-metrics">
+        <div class="admin-metric-pill">Operator-first controls</div>
+        <div class="admin-metric-pill">Compact editing workflow</div>
+        <div class="admin-metric-pill">Live page shortcuts</div>
+      </div>
+    </div>
+    <div class="admin-route-grid">
+      ${routeLinks.map((item) => `
+        <div class="admin-route-card">
+          <a class="admin-route-link" href="${item.href}">
+            <div class="admin-route-name">${item.name}</div>
+            <div class="admin-route-copy">${item.copy}</div>
+            <div class="admin-route-meta">Open ${item.meta}</div>
+          </a>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  content.insertBefore(commandBar, content.firstChild);
+}
+
+function summarizePanel(panel) {
+  const inputCount = panel.querySelectorAll('input, select, textarea').length;
+  const tableCount = panel.querySelectorAll('table').length;
+  const buttonCount = panel.querySelectorAll('button').length;
+  const parts = [];
+  if (inputCount) {
+    parts.push(`${inputCount} controls`);
+  }
+  if (tableCount) {
+    parts.push(`${tableCount} table${tableCount === 1 ? '' : 's'}`);
+  }
+  if (buttonCount) {
+    parts.push(`${buttonCount} actions`);
+  }
+  return parts.join(' · ') || 'Ready to manage';
+}
+
+function enhanceAdminPanels(root = document) {
+  root.querySelectorAll('.dashboard-content .panel').forEach((panel, index) => {
+    if (panel.dataset.adminPanelEnhanced === 'true') {
+      return;
+    }
+
+    panel.dataset.adminPanelEnhanced = 'true';
+
+    const titleNode = panel.querySelector('.table-title, .section-title, h2, h3');
+    const form = panel.querySelector('form');
+    const summary = document.createElement('div');
+    summary.className = 'admin-panel-summary';
+    summary.textContent = summarizePanel(panel);
+
+    const actions = document.createElement('div');
+    actions.className = 'admin-panel-actions';
+
+    if (form) {
+      const toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'admin-panel-toggle';
+      toggle.textContent = 'Hide editor';
+      toggle.addEventListener('click', () => {
+        const collapsed = panel.classList.toggle('admin-panel-collapsed');
+        toggle.textContent = collapsed ? 'Open editor' : 'Hide editor';
+      });
+      actions.appendChild(toggle);
+
+      if (index > 0 && !panel.querySelector('.admin-dashboard-module')) {
+        panel.classList.add('admin-panel-collapsed');
+        toggle.textContent = 'Open editor';
+      }
+    }
+
+    const firstTable = panel.querySelector('table');
+    if (firstTable) {
+      const openList = document.createElement('button');
+      openList.type = 'button';
+      openList.className = 'admin-panel-toggle';
+      openList.textContent = 'Jump to table';
+      openList.addEventListener('click', () => {
+        firstTable.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      actions.appendChild(openList);
+    }
+
+    if (!actions.children.length) {
+      return;
+    }
+
+    const toolbar = document.createElement('div');
+    toolbar.className = 'admin-panel-toolbar';
+    toolbar.appendChild(summary);
+    toolbar.appendChild(actions);
+
+    const toolbarHost = panel.querySelector('.toolbar, .head') || titleNode?.parentElement || panel.firstElementChild || panel;
+    if (toolbarHost && toolbarHost.parentElement === panel) {
+      toolbarHost.insertAdjacentElement('afterend', toolbar);
+    } else {
+      panel.insertBefore(toolbar, panel.firstChild);
+    }
+  });
+}
+
+function enhanceEditorSections(root = document) {
+  root.querySelectorAll('.editor .section').forEach((section, index) => {
+    if (section.dataset.adminSectionEnhanced === 'true') {
+      return;
+    }
+
+    section.dataset.adminSectionEnhanced = 'true';
+    section.classList.add('admin-editor-section');
+    const heading = section.querySelector('h3');
+    if (!heading) {
+      return;
+    }
+
+    const head = document.createElement('div');
+    head.className = 'admin-section-head';
+
+    const headingWrap = document.createElement('div');
+    headingWrap.className = 'admin-section-heading';
+    headingWrap.appendChild(heading);
+
+    const count = document.createElement('span');
+    count.className = 'admin-section-count';
+    count.textContent = `${section.querySelectorAll('input, select, textarea').length} fields`;
+    headingWrap.appendChild(count);
+
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'admin-section-toggle';
+    toggle.textContent = index < 2 ? 'Collapse' : 'Open section';
+
+    const body = document.createElement('div');
+    body.className = 'admin-section-body';
+    while (section.children.length) {
+      const child = section.children[0];
+      if (child === head) {
+        break;
+      }
+      body.appendChild(child);
+    }
+
+    head.appendChild(headingWrap);
+    head.appendChild(toggle);
+    section.appendChild(head);
+    section.appendChild(body);
+
+    if (index >= 2) {
+      section.classList.add('is-collapsed');
+    }
+
+    toggle.addEventListener('click', () => {
+      const collapsed = section.classList.toggle('is-collapsed');
+      toggle.textContent = collapsed ? 'Open section' : 'Collapse';
+    });
+  });
+}
+
+function injectDashboardModules(root = document) {
+  if (window.location.pathname !== '/backend/admin/dashboard') {
+    return;
+  }
+
+  const content = root.querySelector('.dashboard-content');
+  if (!content || content.querySelector('.admin-dashboard-grid')) {
+    return;
+  }
+
+  const modules = [
+    { kicker: 'Content', title: 'Website Publishing', copy: 'Home content, blogs, guides, and free course funnels.', href: '/backend/admin/home-content', secondaryHref: '/backend/admin/blogs' },
+    { kicker: 'Learning', title: 'Catalog Operations', copy: 'Courses, pricing, mentors, curriculum, and learner tracking.', href: '/backend/admin/courses', secondaryHref: '/courses' },
+    { kicker: 'Brand', title: 'Trust and Growth', copy: 'Hiring partners, reviews, success stories, team, and events.', href: '/backend/admin/hiring-partners', secondaryHref: '/backend/admin/events' },
+  ];
+
+  const grid = document.createElement('section');
+  grid.className = 'admin-dashboard-grid';
+  grid.innerHTML = modules.map((module) => `
+    <div class="admin-dashboard-module">
+      <div class="admin-dashboard-kicker">${module.kicker}</div>
+      <div class="admin-dashboard-title">${module.title}</div>
+      <div class="admin-dashboard-copy">${module.copy}</div>
+      <div class="admin-dashboard-actions">
+        <a class="admin-action-link primary" href="${module.href}">Open admin</a>
+        <a class="admin-action-link" href="${module.secondaryHref}">Open section</a>
+      </div>
+    </div>
+  `).join('');
+
+  const statsGrid = content.querySelector('.stats-grid, .stats');
+  if (statsGrid) {
+    statsGrid.insertAdjacentElement('afterend', grid);
+  } else {
+    content.insertBefore(grid, content.firstChild);
+  }
+}
+
 let adminUiEnhancementsQueued = false;
 
 function runAdminUiEnhancements() {
   adminUiEnhancementsQueued = false;
   decorateAdminNavigation(document);
   enhanceAdminTopBar(document);
+  injectAdminCommandBar(document);
+  injectDashboardModules(document);
+  enhanceAdminPanels(document);
+  enhanceEditorSections(document);
   enhanceAdminForms(document);
   initAdminRichTextEditors(document);
   normalizeAdminCopy(document);
