@@ -1767,10 +1767,263 @@ function enhanceReorderButtons(root = document) {
   });
 }
 
+function getAdminPagePresentation() {
+  const path = window.location.pathname;
+  const pageMap = {
+    '/backend/admin/dashboard': {
+      kicker: 'Operations',
+      title: 'Executive Dashboard',
+      subtitle: 'Track platform health, recent learning activity, and the content pipeline from one focused control surface.',
+      chip: 'Live overview',
+    },
+    '/backend/admin/home-content': {
+      kicker: 'Website CMS',
+      title: 'Homepage Studio',
+      subtitle: 'Shape the public landing experience, section flow, and supporting copy with cleaner editorial controls.',
+      chip: 'Content workspace',
+    },
+    '/backend/admin/hiring-partners': {
+      kicker: 'Partnerships',
+      title: 'Hiring Partner Network',
+      subtitle: 'Manage partner stories, social proof, and employer-facing content with a polished review workflow.',
+      chip: 'Partner directory',
+    },
+    '/backend/admin/courses': {
+      kicker: 'Learning Catalog',
+      title: 'Courses Control Center',
+      subtitle: 'Operate the catalog, pricing, mentors, and learner experience in a single structured workflow.',
+      chip: 'Catalog ops',
+    },
+    '/backend/admin/blogs': {
+      kicker: 'Editorial',
+      title: 'Blogs Workspace',
+      subtitle: 'Publish, reorder, and refine articles with better editorial clarity and category control.',
+      chip: 'Editorial queue',
+    },
+    '/backend/admin/tutorials': {
+      kicker: 'Lead Generation',
+      title: 'Free Courses Studio',
+      subtitle: 'Maintain the free-learning library, downloadable resources, and conversion-ready messaging.',
+      chip: 'Growth content',
+    },
+    '/backend/admin/guides': {
+      kicker: 'Resources',
+      title: 'Guides Library',
+      subtitle: 'Organize roadmap content, downloadable assets, and structured knowledge pages for visitors.',
+      chip: 'Knowledge base',
+    },
+    '/backend/admin/team': {
+      kicker: 'Brand',
+      title: 'Team Profiles',
+      subtitle: 'Keep leadership and mentor presence sharp with consistent bios, imagery, and public-facing details.',
+      chip: 'People directory',
+    },
+    '/backend/admin/course-reviews': {
+      kicker: 'Trust',
+      title: 'Course Reviews Console',
+      subtitle: 'Moderate review content, highlight proof points, and keep learner testimonials publication-ready.',
+      chip: 'Reputation',
+    },
+    '/backend/admin/job-success-stories': {
+      kicker: 'Outcomes',
+      title: 'Success Stories Archive',
+      subtitle: 'Curate graduate wins, employer outcomes, and transformation narratives with a tighter publishing flow.',
+      chip: 'Outcome proof',
+    },
+    '/backend/admin/events': {
+      kicker: 'Programming',
+      title: 'Events Command Center',
+      subtitle: 'Coordinate live sessions, registrations, and event visibility through a calmer operational layout.',
+      chip: 'Live schedule',
+    },
+    '/backend/admin/challenges': {
+      kicker: 'Community',
+      title: 'Challenges Hub',
+      subtitle: 'Manage challenge launches, participation flow, and storytelling around community momentum.',
+      chip: 'Community ops',
+    },
+  };
+
+  return pageMap[path] || {
+    kicker: 'Admin',
+    title: document.querySelector('.page-title')?.textContent?.trim() || 'EDVO Admin',
+    subtitle: 'Operate the EDVO platform with a cleaner, more structured workspace.',
+    chip: 'Secure admin',
+  };
+}
+
+function decorateAdminNavigation(root = document) {
+  const iconMap = {
+    Dashboard: '◆',
+    'Home Content': '⌂',
+    'Hiring Partners': '◌',
+    Courses: '◫',
+    Blogs: '✦',
+    'Free Courses': '△',
+    Guides: '▤',
+    Team: '◍',
+    'Course Reviews': '★',
+    'Job Success Stories': '↗',
+    Events: '◔',
+    Challenges: '⬢',
+    Logout: '⎋',
+  };
+
+  root.querySelectorAll('.nav-item').forEach((item) => {
+    const label = item.querySelector('.nav-label');
+    if (!label) {
+      return;
+    }
+
+    let icon = item.querySelector('.nav-icon');
+    if (!icon) {
+      icon = document.createElement('span');
+      icon.className = 'nav-icon';
+      item.insertBefore(icon, label);
+    }
+
+    icon.textContent = iconMap[label.textContent.trim()] || '•';
+  });
+
+  const logo = root.querySelector('.sidebar-logo');
+  if (logo && !logo.querySelector('small')) {
+    const subtitle = document.createElement('small');
+    subtitle.textContent = 'Admin Command';
+    logo.appendChild(subtitle);
+  }
+
+  const sidebar = root.querySelector('.sidebar');
+  if (sidebar && !sidebar.querySelector('.sidebar-footer')) {
+    const footer = document.createElement('div');
+    footer.className = 'sidebar-footer';
+    footer.innerHTML = `
+      <div class="sidebar-footer-label">Workspace</div>
+      <div class="sidebar-footer-copy">Professional publishing, catalog, and operations controls for the EDVO platform.</div>
+    `;
+    sidebar.appendChild(footer);
+  }
+}
+
+function enhanceAdminTopBar(root = document) {
+  const topBar = root.querySelector('.top-bar');
+  if (!topBar) {
+    return;
+  }
+
+  const presentation = getAdminPagePresentation();
+  const existingTitle = topBar.querySelector('.page-title');
+  let topBarLeft = topBar.querySelector('.top-bar-left');
+  if (!topBarLeft) {
+    topBarLeft = document.createElement('div');
+    topBarLeft.className = 'top-bar-left';
+    topBar.insertBefore(topBarLeft, topBar.firstChild);
+  }
+
+  let heading = topBarLeft.querySelector('.page-heading');
+  if (!heading) {
+    heading = document.createElement('div');
+    heading.className = 'page-heading';
+    topBarLeft.appendChild(heading);
+  }
+
+  let kicker = heading.querySelector('.page-kicker');
+  if (!kicker) {
+    kicker = document.createElement('div');
+    kicker.className = 'page-kicker';
+    heading.appendChild(kicker);
+  }
+  kicker.textContent = presentation.kicker;
+
+  if (existingTitle && existingTitle.parentElement !== heading) {
+    heading.appendChild(existingTitle);
+  }
+  if (existingTitle) {
+    existingTitle.textContent = presentation.title;
+  }
+
+  let subtitle = heading.querySelector('.page-subtitle');
+  if (!subtitle) {
+    subtitle = document.createElement('div');
+    subtitle.className = 'page-subtitle';
+    heading.appendChild(subtitle);
+  }
+  subtitle.textContent = presentation.subtitle;
+
+  let topBarRight = topBar.querySelector('.top-bar-right');
+  if (!topBarRight) {
+    topBarRight = document.createElement('div');
+    topBarRight.className = 'top-bar-right';
+    topBar.appendChild(topBarRight);
+  }
+
+  let chip = topBarRight.querySelector('.admin-chip');
+  if (!chip) {
+    chip = document.createElement('div');
+    chip.className = 'admin-chip';
+    topBarRight.appendChild(chip);
+  }
+  chip.textContent = presentation.chip;
+
+  let userMenu = topBar.querySelector('.user-menu');
+  const userAvatar = topBar.querySelector('.user-avatar');
+  if (!userMenu && userAvatar) {
+    userMenu = document.createElement('div');
+    userMenu.className = 'user-menu';
+    topBarRight.appendChild(userMenu);
+    userMenu.appendChild(userAvatar);
+  } else if (userMenu && userMenu.parentElement !== topBarRight) {
+    topBarRight.appendChild(userMenu);
+  }
+
+  if (!userMenu) {
+    return;
+  }
+
+  const user = (() => {
+    try {
+      return JSON.parse(localStorage.getItem('adminUser') || '{}');
+    } catch (_error) {
+      return {};
+    }
+  })();
+
+  let userInfo = userMenu.querySelector('.user-info');
+  if (!userInfo) {
+    userInfo = document.createElement('div');
+    userInfo.className = 'user-info';
+    userMenu.insertBefore(userInfo, userMenu.firstChild);
+  }
+
+  let userName = userInfo.querySelector('.user-name');
+  if (!userName) {
+    userName = document.createElement('div');
+    userName.className = 'user-name';
+    userInfo.appendChild(userName);
+  }
+
+  let userRole = userInfo.querySelector('.user-role');
+  if (!userRole) {
+    userRole = document.createElement('div');
+    userRole.className = 'user-role';
+    userInfo.appendChild(userRole);
+  }
+
+  const adminEmail = getStoredAdminEmail() || user.email || 'admin@edvo.com';
+  userName.textContent = user.name || adminEmail;
+  userRole.textContent = 'Platform Admin';
+
+  const avatar = userMenu.querySelector('.user-avatar');
+  if (avatar) {
+    avatar.textContent = String(userName.textContent || 'A').trim().charAt(0).toUpperCase();
+  }
+}
+
 let adminUiEnhancementsQueued = false;
 
 function runAdminUiEnhancements() {
   adminUiEnhancementsQueued = false;
+  decorateAdminNavigation(document);
+  enhanceAdminTopBar(document);
   enhanceAdminForms(document);
   initAdminRichTextEditors(document);
   normalizeAdminCopy(document);
