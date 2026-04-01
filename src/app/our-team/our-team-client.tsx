@@ -61,7 +61,7 @@ export default function OurTeamClient() {
 
         const [teamPayload, instructorPayload] = await Promise.all([
           publicFetchJson<PublicListResponse<Record<string, unknown>>>('/api/team'),
-          publicFetchJson<PublicListResponse<Record<string, unknown>>>('/api/instructors'),
+          publicFetchJson<PublicListResponse<Record<string, unknown>>>('/api/directory/instructors'),
         ]);
 
         if (!cancelled) {
