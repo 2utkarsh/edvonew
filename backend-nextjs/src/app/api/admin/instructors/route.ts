@@ -1,6 +1,6 @@
 import { requireAuth } from '@/lib/auth';
 import { connectToDatabase } from '@/lib/db';
-import { created, fail, handleError, ok, parseJson } from '@/lib/http';
+import { created, fail, handleError, ok, toResponse } from '@/lib/http';
 import { InstructorModel } from '@/models/Instructor';
 import { UserModel } from '@/models/User';
 
@@ -47,13 +47,13 @@ function serializeInstructor(item: any) {
 export async function GET() {
   try {
     const auth = await requireAuth(['admin']);
-    if ('error' in auth) return auth.error;
+    if ('error' in auth) return toResponse(auth.error);
     await connectToDatabase();
     const items = await InstructorModel.find()
       .populate('userId', 'name email mobile role isActive bio headline skills photo avatar')
       .sort({ updatedAt: -1 })
       .lean();
-    return ok(items.map(serializeInstructor));
+    return toResponse(ok(items.map(serializeInstructor)));
   } catch (error) {
     return handleError(error);
   }
@@ -62,23 +62,23 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const auth = await requireAuth(['admin']);
-    if ('error' in auth) return auth.error;
+    if ('error' in auth) return toResponse(auth.error);
     await connectToDatabase();
-    const body = await parseJson<Record<string, unknown>>(request);
+    const body = await request.json().catch(() => ({} as Record<string, unknown>));
 
     const userId = String(body.userId || '').trim();
     if (!userId) {
-      return fail('User is required', 422);
+      return toResponse(fail('User is required', 'INTERNAL_ERROR', undefined, 422));
     }
 
     const user = await UserModel.findById(userId);
     if (!user) {
-      return fail('Instructor user not found', 404);
+      return toResponse(fail('Instructor user not found', 'INTERNAL_ERROR', undefined, 404));
     }
 
     const existingInstructor = await InstructorModel.findOne({ userId }).lean();
     if (existingInstructor) {
-      return fail('Instructor profile already exists for this user', 409);
+      return toResponse(fail('Instructor profile already exists for this user', 'INTERNAL_ERROR', undefined, 409));
     }
 
     const expertise = Array.isArray(body.expertise)
@@ -118,7 +118,7 @@ export async function POST(request: Request) {
       .populate('userId', 'name email mobile role isActive bio headline skills photo avatar')
       .lean();
 
-    return created(serializeInstructor(populated));
+    return toResponse(created(serializeInstructor(populated)));
   } catch (error) {
     return handleError(error);
   }

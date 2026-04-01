@@ -1,6 +1,6 @@
 import { hashPassword, requireAuth } from '@/lib/auth';
 import { connectToDatabase } from '@/lib/db';
-import { fail, handleError, ok, parseJson } from '@/lib/http';
+import { fail, handleError, ok, toResponse } from '@/lib/http';
 import { UserModel } from '@/models/User';
 
 function serializeUser(user: any) {
@@ -33,12 +33,12 @@ function serializeUser(user: any) {
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = await requireAuth(['admin']);
-    if ('error' in auth) return auth.error;
+    if ('error' in auth) return toResponse(auth.error);
     await connectToDatabase();
     const { id } = await params;
     const user = await UserModel.findById(id).lean();
-    if (!user) return fail('User not found', 404);
-    return ok(serializeUser(user));
+    if (!user) return toResponse(fail('User not found', 'INTERNAL_ERROR', undefined, 404));
+    return toResponse(ok(serializeUser(user)));
   } catch (error) {
     return handleError(error);
   }
@@ -47,10 +47,10 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = await requireAuth(['admin']);
-    if ('error' in auth) return auth.error;
+    if ('error' in auth) return toResponse(auth.error);
     await connectToDatabase();
     const { id } = await params;
-    const body = await parseJson<Record<string, unknown>>(request);
+    const body = await request.json().catch(() => ({} as Record<string, unknown>));
     const update: Record<string, unknown> = {
       name: body.name,
       email: body.email ? String(body.email).toLowerCase() : undefined,
@@ -74,8 +74,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     }
 
     const user = await UserModel.findByIdAndUpdate(id, update, { new: true }).lean();
-    if (!user) return fail('User not found', 404);
-    return ok(serializeUser(user));
+    if (!user) return toResponse(fail('User not found', 'INTERNAL_ERROR', undefined, 404));
+    return toResponse(ok(serializeUser(user)));
   } catch (error) {
     return handleError(error);
   }
@@ -84,12 +84,12 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = await requireAuth(['admin']);
-    if ('error' in auth) return auth.error;
+    if ('error' in auth) return toResponse(auth.error);
     await connectToDatabase();
     const { id } = await params;
     const user = await UserModel.findByIdAndDelete(id).lean();
-    if (!user) return fail('User not found', 404);
-    return ok({ deleted: true, id });
+    if (!user) return toResponse(fail('User not found', 'INTERNAL_ERROR', undefined, 404));
+    return toResponse(ok({ deleted: true, id }));
   } catch (error) {
     return handleError(error);
   }

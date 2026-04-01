@@ -1,6 +1,6 @@
 import { requireAuth } from '@/lib/auth';
 import { connectToDatabase } from '@/lib/db';
-import { created, fail, handleError, ok, parseJson } from '@/lib/http';
+import { created, fail, handleError, ok, toResponse } from '@/lib/http';
 import { UserModel } from '@/models/User';
 
 function serializeUser(user: any) {
@@ -33,10 +33,10 @@ function serializeUser(user: any) {
 export async function GET() {
   try {
     const auth = await requireAuth(['admin']);
-    if ('error' in auth) return auth.error;
+    if ('error' in auth) return toResponse(auth.error);
     await connectToDatabase();
     const users = await UserModel.find().sort({ createdAt: -1 }).lean();
-    return ok(users.map(serializeUser));
+    return toResponse(ok(users.map(serializeUser)));
   } catch (error) {
     return handleError(error);
   }
@@ -45,12 +45,12 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const auth = await requireAuth(['admin']);
-    if ('error' in auth) return auth.error;
+    if ('error' in auth) return toResponse(auth.error);
     await connectToDatabase();
-    const body = await parseJson<Record<string, unknown>>(request);
+    const body = await request.json().catch(() => ({} as Record<string, unknown>));
 
     if (!body.name || !body.email || !body.role) {
-      return fail('Name, email, and role are required', 422);
+      return toResponse(fail('Name, email, and role are required', 'INTERNAL_ERROR', undefined, 422));
     }
 
     const { hashPassword } = await import('@/lib/auth');
@@ -75,7 +75,7 @@ export async function POST(request: Request) {
       passwordHash,
     });
 
-    return created(serializeUser(user.toObject()));
+    return toResponse(created(serializeUser(user.toObject())));
   } catch (error) {
     return handleError(error);
   }

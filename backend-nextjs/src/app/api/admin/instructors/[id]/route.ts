@@ -1,6 +1,6 @@
 import { requireAuth } from '@/lib/auth';
 import { connectToDatabase } from '@/lib/db';
-import { fail, handleError, ok, parseJson } from '@/lib/http';
+import { fail, handleError, ok, toResponse } from '@/lib/http';
 import { InstructorModel } from '@/models/Instructor';
 import { UserModel } from '@/models/User';
 
@@ -47,14 +47,14 @@ function serializeInstructor(item: any) {
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = await requireAuth(['admin']);
-    if ('error' in auth) return auth.error;
+    if ('error' in auth) return toResponse(auth.error);
     await connectToDatabase();
     const { id } = await params;
     const item = await InstructorModel.findById(id)
       .populate('userId', 'name email mobile role isActive bio headline skills photo avatar')
       .lean();
-    if (!item) return fail('Instructor not found', 404);
-    return ok(serializeInstructor(item));
+    if (!item) return toResponse(fail('Instructor not found', 'INTERNAL_ERROR', undefined, 404));
+    return toResponse(ok(serializeInstructor(item)));
   } catch (error) {
     return handleError(error);
   }
@@ -63,10 +63,10 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = await requireAuth(['admin']);
-    if ('error' in auth) return auth.error;
+    if ('error' in auth) return toResponse(auth.error);
     await connectToDatabase();
     const { id } = await params;
-    const body = await parseJson<Record<string, unknown>>(request);
+    const body = await request.json().catch(() => ({} as Record<string, unknown>));
     const expertise = Array.isArray(body.expertise)
       ? body.expertise
       : Array.isArray(body.skills)
@@ -97,7 +97,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
     const item = await InstructorModel.findByIdAndUpdate(id, update, { new: true })
       .populate('userId', 'name email mobile role isActive bio headline skills photo avatar');
-    if (!item) return fail('Instructor not found', 404);
+    if (!item) return toResponse(fail('Instructor not found', 'INTERNAL_ERROR', undefined, 404));
 
     if (item.userId) {
       await UserModel.findByIdAndUpdate(item.userId, {
@@ -108,7 +108,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       });
     }
 
-    return ok(serializeInstructor(item.toObject ? item.toObject() : item));
+    return toResponse(ok(serializeInstructor(item.toObject ? item.toObject() : item)));
   } catch (error) {
     return handleError(error);
   }
@@ -117,18 +117,18 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = await requireAuth(['admin']);
-    if ('error' in auth) return auth.error;
+    if ('error' in auth) return toResponse(auth.error);
     await connectToDatabase();
     const { id } = await params;
     const item = await InstructorModel.findByIdAndDelete(id).lean();
-    if (!item) return fail('Instructor not found', 404);
+    if (!item) return toResponse(fail('Instructor not found', 'INTERNAL_ERROR', undefined, 404));
     if (item.userId) {
       await UserModel.findByIdAndUpdate(item.userId, {
         $unset: { instructorId: 1 },
         role: 'student',
       });
     }
-    return ok({ deleted: true, id });
+    return toResponse(ok({ deleted: true, id }));
   } catch (error) {
     return handleError(error);
   }
