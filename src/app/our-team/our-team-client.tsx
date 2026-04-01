@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { publicFetchJson } from '@/lib/backend-api';
 import Badge from '@/components/ui/Badge';
 
 type DirectoryItem = {
@@ -16,6 +15,20 @@ type PublicListResponse<T> = {
   success: boolean;
   data: T[];
 };
+
+async function fetchLocalJson<T>(path: string): Promise<T> {
+  const response = await fetch(path, {
+    headers: { Accept: 'application/json' },
+    cache: 'no-store',
+  });
+
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(payload?.error?.message || payload?.message || 'Request failed');
+  }
+
+  return payload as T;
+}
 
 type DirectoryMode = 'team' | 'instructors';
 
@@ -84,8 +97,8 @@ export default function OurTeamClient() {
         setLoadError({ team: '', instructors: '' });
 
         const [teamResult, instructorResult] = await Promise.allSettled([
-          publicFetchJson<PublicListResponse<Record<string, unknown>>>('/api/team'),
-          publicFetchJson<PublicListResponse<Record<string, unknown>>>('/api/public-instructors'),
+          fetchLocalJson<PublicListResponse<Record<string, unknown>>>('/api/team'),
+          fetchLocalJson<PublicListResponse<Record<string, unknown>>>('/api/public-instructors'),
         ]);
 
         if (!cancelled) {
