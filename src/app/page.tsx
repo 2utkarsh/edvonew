@@ -71,13 +71,13 @@ export default function HomePage() {
       <DataAnalyticsSection />
       <AIDataScienceSection />
       <ProfessionalSkillsSection />
-      <InstructorsSection intro={homeContent.instructorsIntro as any} />
+      <InstructorsSection />
       <CinematicSection content={homeContent.cinematicSection as any} />
       <JobReadyPortfoliosSection intro={homeContent.portfoliosIntro as any} portfolios={homeContent.portfolios as any[]} />
       <YouTubeSection section={homeContent.youtubeSection as any} videos={homeContent.youtubeVideos as any[]} />
       <FreeCoursesSection />
-      <HiringPartnersSection section={homeContent.hiringPartnersSection as any} partners={homeContent.hiringPartners as any[]} />
-      <TestimonialsSection intro={homeContent.testimonialsIntro as any} testimonials={homeContent.homeTestimonials as any[]} />
+      <HiringPartnersSection partners={homeContent.hiringPartners as any[]} />
+      <TestimonialsSection />
     </main>
   );
 }

@@ -39,14 +39,11 @@
     <div id='stats' class='stats'></div>
     <div id='objectPanels' class='stack'></div>
     <div id='listPanels' class='stack'></div>
-    <section class='panel'><div class='section-title'>Dedicated Admin Areas</div><div class='info-grid'><div class='info-card'><strong>Hiring Partners & Testimonials</strong><div class='help'>Partner logos and hiring-partner testimonials already have a dedicated admin page, so they stay managed there instead of duplicating another editor here.</div><div class='actions' style='margin-top:12px'><a class='btn-link' href='/backend/admin/hiring-partners'>Open Hiring Partners Admin</a></div></div><div class='info-card'><strong>Scope Covered Here</strong><div class='help'>Hero slides, social stats, feature cards, career transformations, portfolio cards, YouTube cards, home testimonials, and all homepage copy sections.</div></div></div></section>
+    <section class='panel'><div class='section-title'>Dedicated Admin Areas</div><div class='info-grid'><div class='info-card'><strong>Instructors</strong><div class='help'>Homepage instructors already use the shared instructors/team source. Manage them from the dedicated instructors admin instead of duplicating homepage records.</div><div class='actions' style='margin-top:12px'><a class='btn-link' href='/backend/admin/instructors'>Open Instructors Admin</a></div></div><div class='info-card'><strong>Hiring Partners</strong><div class='help'>Partner logos and company proof are already managed in the hiring partners admin. The homepage pulls from that shared source.</div><div class='actions' style='margin-top:12px'><a class='btn-link' href='/backend/admin/hiring-partners'>Open Hiring Partners Admin</a></div></div><div class='info-card'><strong>Testimonials</strong><div class='help'>Homepage testimonials now reuse approved course reviews instead of a separate homepage-only testimonial editor.</div><div class='actions' style='margin-top:12px'><a class='btn-link' href='/backend/admin/course-reviews'>Open Course Reviews Admin</a></div></div><div class='info-card'><strong>Scope Covered Here</strong><div class='help'>Hero slides, social stats, feature cards, career transformations, portfolio cards, YouTube cards, cinematic copy, and homepage CTA sections.</div></div></div></section>
   </div></div></main>
   <script src='/backend/admin/admin.js?v=20260401d'></script>
   <script>
     const objectConfigs = [
-      { key: 'instructorsIntro', title: 'Instructors Intro', help: 'Copy above the instructors section.', fields: [
-        { path: 'badge', label: 'Badge' }, { path: 'title', label: 'Title' }, { path: 'accent', label: 'Accent Text' }, { path: 'description', label: 'Description', type: 'textarea', wide: true },
-      ]},
       { key: 'cinematicSection', title: 'Cinematic Section', help: 'Section copy and CTA for the cinematic learning panel.', fields: [
         { path: 'badge', label: 'Badge' }, { path: 'title', label: 'Title' }, { path: 'accent', label: 'Accent Text' }, { path: 'buttonLabel', label: 'Button Label' }, { path: 'previewEmoji', label: 'Preview Emoji / Label' }, { path: 'previewTitle', label: 'Preview Title' }, { path: 'previewSubtitle', label: 'Preview Subtitle' }, { path: 'description', label: 'Description', type: 'textarea', wide: true },
       ]},
@@ -55,12 +52,6 @@
       ]},
       { key: 'youtubeSection', title: 'YouTube Intro', help: 'Heading and channel CTA for the YouTube section.', fields: [
         { path: 'title', label: 'Title' }, { path: 'subscribers', label: 'Subscribers Text' }, { path: 'buttonLabel', label: 'Button Label' }, { path: 'channelUrl', label: 'Channel URL', wide: true },
-      ]},
-      { key: 'hiringPartnersSection', title: 'Hiring Partners Intro', help: 'Copy above the homepage hiring partners slider.', fields: [
-        { path: 'title', label: 'Title' }, { path: 'buttonLabel', label: 'Button Label' }, { path: 'buttonHref', label: 'Button Link' }, { path: 'description', label: 'Description', type: 'textarea', wide: true },
-      ]},
-      { key: 'testimonialsIntro', title: 'Testimonials Intro', help: 'Heading and supporting text above the testimonial cards.', fields: [
-        { path: 'badge', label: 'Badge' }, { path: 'title', label: 'Title' }, { path: 'accent', label: 'Accent Text' }, { path: 'description', label: 'Description', type: 'textarea', wide: true },
       ]},
       { key: 'ctaSection', title: 'Bottom CTA', help: 'Final homepage CTA section.', fields: [
         { path: 'title', label: 'Title' }, { path: 'primaryLabel', label: 'Primary Button Label' }, { path: 'primaryHref', label: 'Primary Button Link' }, { path: 'secondaryLabel', label: 'Secondary Button Label' }, { path: 'secondaryHref', label: 'Secondary Button Link' }, { path: 'description', label: 'Description', type: 'textarea', wide: true },
@@ -109,13 +100,6 @@
         { label: 'Video', render: (item) => `<strong>${escapeHtml(item.title || 'Untitled video')}</strong>` },
         { label: 'Views', render: (item) => escapeHtml(item.views || '-') },
         { label: 'Duration', render: (item) => escapeHtml(item.duration || '-') },
-      ]},
-      { key: 'homeTestimonials', title: 'Home Testimonials', help: 'Homepage learner testimonial cards.', empty: 'No testimonials found.', create: () => ({ name: '', role: '', badge: '', quote: '', linkedin: '', video: false }), fields: [
-        { path: 'name', label: 'Name' }, { path: 'role', label: 'Role' }, { path: 'badge', label: 'Badge' }, { path: 'linkedin', label: 'Link / LinkedIn URL', wide: true }, { path: 'video', label: 'Show Video Badge', type: 'checkbox' }, { path: 'quote', label: 'Quote', type: 'textarea', wide: true },
-      ], columns: [
-        { label: 'Learner', render: (item) => `<strong>${escapeHtml(item.name || 'Unnamed')}</strong><div class='help'>${escapeHtml(item.role || '')}</div>` },
-        { label: 'Badge', render: (item) => escapeHtml(item.badge || '-') },
-        { label: 'Type', render: (item) => `<span class='tag'>${item.video ? 'Video' : 'Text'}</span>` },
       ]},
     ];
 
