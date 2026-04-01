@@ -10,6 +10,7 @@ export interface HomeContentPayload {
   portfolios?: any[];
   youtubeSection?: Record<string, unknown>;
   youtubeVideos?: any[];
+  hiringPartnersSection?: Record<string, unknown>;
   hiringPartners?: any[];
   hireTalentHero?: Record<string, unknown>;
   hireTalentTestimonials?: any[];
