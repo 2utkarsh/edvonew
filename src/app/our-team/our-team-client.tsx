@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { ChevronDown } from 'lucide-react';
 import { publicFetchJson } from '@/lib/backend-api';
 import Badge from '@/components/ui/Badge';
 
@@ -99,22 +98,21 @@ export default function OurTeamClient() {
           <h1 className="text-4xl font-black tracking-tight text-white md:text-6xl">{content.title}</h1>
           <p className="mx-auto mt-5 max-w-3xl text-lg text-slate-300">{content.description}</p>
 
-          <div className="mx-auto mt-8 max-w-xs text-left">
-            <label htmlFor="directory-view" className="mb-2 block text-xs font-bold uppercase tracking-[0.24em] text-slate-400">
-              Directory View
-            </label>
-            <div className="relative">
-              <select
-                id="directory-view"
-                value={mode}
-                onChange={(event) => setMode(event.target.value as DirectoryMode)}
-                className="w-full appearance-none rounded-2xl border border-white/10 bg-slate-900 px-5 py-4 text-base font-semibold text-white shadow-lg outline-none transition focus:border-primary-400"
-              >
-                <option value="team">Our Team</option>
-                <option value="instructors">Instructors</option>
-              </select>
-              <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-            </div>
+          <div className="mx-auto mt-8 inline-flex rounded-full border border-white/10 bg-slate-900/80 p-1 shadow-lg">
+            <button
+              type="button"
+              onClick={() => setMode('team')}
+              className={`rounded-full px-5 py-3 text-sm font-semibold transition ${mode === 'team' ? 'bg-white text-slate-950' : 'text-slate-300 hover:text-white'}`}
+            >
+              Our Team
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode('instructors')}
+              className={`rounded-full px-5 py-3 text-sm font-semibold transition ${mode === 'instructors' ? 'bg-white text-slate-950' : 'text-slate-300 hover:text-white'}`}
+            >
+              Instructors
+            </button>
           </div>
         </div>
 
