@@ -1,5 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+const configuredBackendBaseUrl =
+  process.env.BACKEND_URL ||
+  (/^https?:\/\//.test(process.env.NEXT_PUBLIC_BACKEND_URL || '') ? process.env.NEXT_PUBLIC_BACKEND_URL : '') ||
+  'http://localhost:3001';
+
+const backendBaseUrl = configuredBackendBaseUrl.replace(/\/$/, '');
+
 function normalizePerson(item: Record<string, unknown>, index: number) {
   return {
     id: String(item.id || item._id || `person-${index}`),
@@ -11,10 +18,8 @@ function normalizePerson(item: Record<string, unknown>, index: number) {
 }
 
 export async function GET(request: NextRequest) {
-  const origin = request.nextUrl.origin;
-
   try {
-    const response = await fetch(`${origin}/backend/api/instructors`, {
+    const response = await fetch(`${backendBaseUrl}/backend/api/instructors`, {
       headers: { Accept: 'application/json' },
       cache: 'no-store',
     });

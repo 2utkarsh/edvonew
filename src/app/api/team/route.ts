@@ -1,5 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+const configuredBackendBaseUrl =
+  process.env.BACKEND_URL ||
+  (/^https?:\/\//.test(process.env.NEXT_PUBLIC_BACKEND_URL || '') ? process.env.NEXT_PUBLIC_BACKEND_URL : '') ||
+  'http://localhost:3001';
+
+const backendBaseUrl = configuredBackendBaseUrl.replace(/\/$/, '');
+
 const FALLBACK_TEAM_MEMBERS = [
   {
     id: 'alok-pandey',
@@ -25,10 +32,8 @@ const FALLBACK_TEAM_MEMBERS = [
 ];
 
 export async function GET(request: NextRequest) {
-  const origin = request.nextUrl.origin;
-
   try {
-    const response = await fetch(`${origin}/backend/api/team`, {
+    const response = await fetch(`${backendBaseUrl}/backend/api/team`, {
       headers: { Accept: 'application/json' },
       cache: 'no-store',
     });
