@@ -1,371 +1,309 @@
 'use client';
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { 
-  BookOpen, Users, DollarSign, TrendingUp, Plus, Edit, Trash2, 
-  Eye, MessageSquare, Star, BarChart3, Upload, Video, FileText, Award 
+import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import {
+  BookOpen,
+  CalendarDays,
+  DollarSign,
+  Eye,
+  MessageSquare,
+  Plus,
+  Star,
+  TrendingUp,
+  Users,
 } from 'lucide-react';
+import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
-import Badge from '@/components/ui/Badge';
-import { FadeIn, StaggerGrid } from '@/components/animations';
+import { authFetchJson, getStoredAuthToken, getStoredAuthUser } from '@/lib/backend-api';
+
+type InstructorDashboardPayload = {
+  data?: {
+    courses?: Array<{
+      _id?: string;
+      title?: string;
+      status?: string;
+      studentsEnrolled?: number;
+      rating?: number;
+      price?: number;
+      updatedAt?: string;
+    }>;
+    stats?: {
+      totalCourses?: number;
+      totalStudents?: number;
+      totalRevenue?: number;
+      averageRating?: string | number;
+    };
+    recentEnrollments?: Array<{
+      _id?: string;
+      userId?: {
+        name?: string;
+        email?: string;
+      };
+      createdAt?: string;
+    }>;
+  };
+};
+
+type AuthUser = {
+  name?: string;
+  role?: string;
+};
+
+function formatCurrency(value: number) {
+  return `Rs${Number(value || 0).toLocaleString()}`;
+}
+
+function formatDate(value?: string) {
+  if (!value) return 'Recently updated';
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return 'Recently updated';
+  return parsed.toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+}
 
 export default function InstructorDashboard() {
-  const [activeTab, setActiveTab] = useState('courses');
+  const router = useRouter();
+  const [accessChecked, setAccessChecked] = useState(false);
+  const [displayName, setDisplayName] = useState('Teacher');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [dashboard, setDashboard] = useState<InstructorDashboardPayload['data'] | null>(null);
 
-  const instructorCourses = [
-    {
-      id: '1',
-      title: 'Complete Python Programming Masterclass',
-      students: 89543,
-      rating: 4.8,
-      reviews: 15420,
-      revenue: 268629,
-      status: 'published',
-      thumbnail: '/images/courses/python.jpg',
-      lastUpdated: '2 days ago',
-    },
-    {
-      id: '2',
-      title: 'Advanced Machine Learning with Python',
-      students: 34200,
-      rating: 4.7,
-      reviews: 5680,
-      revenue: 102600,
-      status: 'published',
-      thumbnail: '/images/courses/ml.jpg',
-      lastUpdated: '1 week ago',
-    },
-    {
-      id: '3',
-      title: 'Web Scraping and Automation',
-      students: 12500,
-      rating: 4.6,
-      reviews: 2340,
-      revenue: 37500,
-      status: 'draft',
-      thumbnail: '/images/courses/scraping.jpg',
-      lastUpdated: '3 days ago',
-    },
-  ];
+  useEffect(() => {
+    const token = getStoredAuthToken();
+    const user = getStoredAuthUser() as AuthUser | null;
 
-  const recentReviews = [
-    { student: 'Priya S.', course: 'Python Programming', rating: 5, comment: 'Excellent course! Very detailed and easy to follow.', date: '2 hours ago' },
-    { student: 'Rahul M.', course: 'Machine Learning', rating: 5, comment: 'Best ML course I have taken. Highly recommended!', date: '5 hours ago' },
-    { student: 'Ananya K.', course: 'Python Programming', rating: 4, comment: 'Great content, but would love more practice exercises.', date: '1 day ago' },
-  ];
+    if (!token) {
+      router.replace('/auth/login');
+      return;
+    }
 
-  const stats = [
-    { label: 'Total Students', value: '136,243', icon: Users, change: '+12% this month', color: 'blue' },
-    { label: 'Total Revenue', value: '₹4.08L', icon: DollarSign, change: '+28% this month', color: 'green' },
-    { label: 'Average Rating', value: '4.7', icon: Star, change: 'Top 5% instructor', color: 'yellow' },
-    { label: 'Courses Published', value: '8', icon: BookOpen, change: '2 in draft', color: 'purple' },
-  ];
+    if (user?.role === 'admin') {
+      router.replace('/backend/admin/dashboard');
+      return;
+    }
 
-  return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Header */}
-        <FadeIn>
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-12">
-            <div>
-              <Badge variant="gradient" className="mb-4">Instructor Dashboard</Badge>
-              <h1 className="text-4xl font-bold mb-2 gradient-text">
-                Welcome back, Dr. Rajesh! 👨‍🏫
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400">
-                Manage your courses and track your performance
-              </p>
-            </div>
-            <Button variant="primary" size="lg" className="group">
-              <Plus className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
-              Create New Course
-            </Button>
-          </div>
-        </FadeIn>
+    if (user?.role !== 'instructor') {
+      router.replace('/dashboard/student');
+      return;
+    }
 
-        {/* Stats Grid */}
-        <StaggerGrid staggerDelay={0.1}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {stats.map((stat, index) => (
-              <Card key={stat.label} className="!p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className={`w-12 h-12 rounded-xl bg-${stat.color}-100 dark:bg-${stat.color}-900/30 flex items-center justify-center`}>
-                    <stat.icon className={`w-6 h-6 text-${stat.color}-600`} />
-                  </div>
-                  <Badge variant={stat.color === 'green' ? 'success' : stat.color === 'yellow' ? 'warning' : 'info'} size="sm">
-                    {stat.change}
-                  </Badge>
-                </div>
-                <div className="text-3xl font-bold gradient-text mb-1">{stat.value}</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">{stat.label}</div>
-              </Card>
-            ))}
-          </div>
-        </StaggerGrid>
+    setDisplayName(user?.name || 'Teacher');
+    setAccessChecked(true);
+  }, [router]);
 
-        {/* Tabs */}
-        <FadeIn delay={0.2}>
-          <div className="flex gap-4 mb-8 overflow-x-auto">
-            {[
-              { id: 'courses', label: 'My Courses', icon: BookOpen },
-              { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-              { id: 'reviews', label: 'Reviews', icon: MessageSquare },
-              { id: 'earnings', label: 'Earnings', icon: DollarSign },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all duration-300 whitespace-nowrap ${
-                  activeTab === tab.id
-                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
-                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                }`}
-              >
-                <tab.icon className="w-5 h-5" />
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </FadeIn>
+  useEffect(() => {
+    if (!accessChecked) return;
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {activeTab === 'courses' && (
-              <>
-                <FadeIn>
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-bold">Your Courses</h2>
-                    <Button variant="outline" size="sm">
-                      <Upload className="w-4 h-4 mr-2" />
-                      Upload New
-                    </Button>
-                  </div>
-                </FadeIn>
+    let active = true;
 
-                <StaggerGrid staggerDelay={0.1}>
-                  <div className="space-y-6">
-                    {instructorCourses.map((course) => (
-                      <Card key={course.id} className="!p-6">
-                        <div className="flex flex-col md:flex-row gap-6">
-                          <div className="w-full md:w-48 h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex-shrink-0 flex items-center justify-center">
-                            <Video className="w-12 h-12 text-white/30" />
-                          </div>
-                          
-                          <div className="flex-1">
-                            <div className="flex items-start justify-between mb-2">
-                              <h3 className="text-xl font-bold line-clamp-2">{course.title}</h3>
-                              <Badge variant={course.status === 'published' ? 'success' : 'warning'}>
-                                {course.status === 'published' ? 'Published' : 'Draft'}
-                              </Badge>
-                            </div>
-                            
-                            <div className="flex flex-wrap items-center gap-4 mb-4 text-sm">
-                              <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
-                                <Users className="w-4 h-4" />
-                                {course.students.toLocaleString()} students
-                              </div>
-                              <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
-                                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                                {course.rating} ({course.reviews.toLocaleString()} reviews)
-                              </div>
-                              <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
-                                <DollarSign className="w-4 h-4" />
-                                ₹{course.revenue.toLocaleString()}
-                              </div>
-                            </div>
+    authFetchJson<InstructorDashboardPayload>('/api/v1/dashboard/instructor')
+      .then((payload) => {
+        if (active) {
+          setDashboard(payload.data || null);
+        }
+      })
+      .catch((loadError: any) => {
+        if (active) {
+          setError(loadError?.message || 'Unable to load the teacher panel right now.');
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setLoading(false);
+        }
+      });
 
-                            <div className="flex items-center gap-3">
-                              <Button variant="outline" size="sm">
-                                <Edit className="w-4 h-4 mr-2" />
-                                Edit
-                              </Button>
-                              <Button variant="outline" size="sm">
-                                <Eye className="w-4 h-4 mr-2" />
-                                Preview
-                              </Button>
-                              <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Delete
-                              </Button>
-                              <span className="text-xs text-gray-500 dark:text-gray-400 ml-auto">
-                                Updated {course.lastUpdated}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </Card>
-                    ))}
-                  </div>
-                </StaggerGrid>
-              </>
-            )}
+    return () => {
+      active = false;
+    };
+  }, [accessChecked]);
 
-            {activeTab === 'reviews' && (
-              <FadeIn>
-                <h2 className="text-2xl font-bold mb-6">Recent Reviews</h2>
-                <div className="space-y-6">
-                  {recentReviews.map((review, index) => (
-                    <Card key={index} className="!p-6">
-                      <div className="flex items-start gap-4 mb-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-                          {review.student.charAt(0)}
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-2">
-                            <div>
-                              <h4 className="font-semibold">{review.student}</h4>
-                              <p className="text-sm text-gray-500 dark:text-gray-400">{review.course}</p>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              {[...Array(5)].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`w-4 h-4 ${
-                                    i < review.rating
-                                      ? 'fill-yellow-400 text-yellow-400'
-                                      : 'text-gray-300'
-                                  }`}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                          <p className="text-gray-700 dark:text-gray-300 mb-2">{review.comment}</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">{review.date}</p>
-                        </div>
-                      </div>
-                      <Button variant="ghost" size="sm">
-                        <MessageSquare className="w-4 h-4 mr-2" />
-                        Reply
-                      </Button>
-                    </Card>
-                  ))}
-                </div>
-              </FadeIn>
-            )}
-          </div>
+  const stats = useMemo(
+    () => [
+      {
+        label: 'Courses',
+        value: Number(dashboard?.stats?.totalCourses || 0).toLocaleString(),
+        icon: BookOpen,
+        tone: 'blue',
+      },
+      {
+        label: 'Students',
+        value: Number(dashboard?.stats?.totalStudents || 0).toLocaleString(),
+        icon: Users,
+        tone: 'emerald',
+      },
+      {
+        label: 'Revenue',
+        value: formatCurrency(Number(dashboard?.stats?.totalRevenue || 0)),
+        icon: DollarSign,
+        tone: 'amber',
+      },
+      {
+        label: 'Average Rating',
+        value: String(dashboard?.stats?.averageRating || '0.0'),
+        icon: Star,
+        tone: 'violet',
+      },
+    ],
+    [dashboard]
+  );
 
-          {/* Sidebar */}
-          <div className="space-y-8">
-            {/* Quick Actions */}
-            <FadeIn delay={0.2}>
-              <Card>
-                <div className="p-6">
-                  <h3 className="text-lg font-bold mb-4">Quick Actions</h3>
-                  <div className="space-y-3">
-                    <Button variant="outline" fullWidth className="justify-start">
-                      <Video className="w-4 h-4 mr-2" />
-                      Upload Lecture
-                    </Button>
-                    <Button variant="outline" fullWidth className="justify-start">
-                      <FileText className="w-4 h-4 mr-2" />
-                      Create Assignment
-                    </Button>
-                    <Button variant="outline" fullWidth className="justify-start">
-                      <MessageSquare className="w-4 h-4 mr-2" />
-                      Announce to Students
-                    </Button>
-                    <Button variant="outline" fullWidth className="justify-start">
-                      <BarChart3 className="w-4 h-4 mr-2" />
-                      View Analytics
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            </FadeIn>
-
-            {/* Performance Overview */}
-            <FadeIn delay={0.3}>
-              <Card>
-                <div className="p-6">
-                  <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 text-blue-600" />
-                    Performance
-                  </h3>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex items-center justify-between text-sm mb-2">
-                        <span className="text-gray-600 dark:text-gray-400">Course Completion Rate</span>
-                        <span className="font-semibold">78%</span>
-                      </div>
-                      <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                        <motion.div
-                          className="h-full bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"
-                          initial={{ width: 0 }}
-                          animate={{ width: '78%' }}
-                          transition={{ duration: 1 }}
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="flex items-center justify-between text-sm mb-2">
-                        <span className="text-gray-600 dark:text-gray-400">Student Satisfaction</span>
-                        <span className="font-semibold">94%</span>
-                      </div>
-                      <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                        <motion.div
-                          className="h-full bg-gradient-to-r from-green-600 to-emerald-600 rounded-full"
-                          initial={{ width: 0 }}
-                          animate={{ width: '94%' }}
-                          transition={{ duration: 1 }}
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="flex items-center justify-between text-sm mb-2">
-                        <span className="text-gray-600 dark:text-gray-400">Response Time</span>
-                        <span className="font-semibold">2.5 hrs</span>
-                      </div>
-                      <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                        <motion.div
-                          className="h-full bg-gradient-to-r from-purple-600 to-pink-600 rounded-full"
-                          initial={{ width: 0 }}
-                          animate={{ width: '85%' }}
-                          transition={{ duration: 1 }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </FadeIn>
-
-            {/* Top Performing Course */}
-            <FadeIn delay={0.4}>
-              <Card>
-                <div className="p-6">
-                  <h3 className="text-lg font-bold mb-4">🏆 Top Performer</h3>
-                  <div className="text-center">
-                    <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                      <Award className="w-10 h-10 text-white" />
-                    </div>
-                    <h4 className="font-bold mb-2">Python Programming</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                      Your most popular course with 89K+ students
-                    </p>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <div className="font-bold text-green-600">₹2.68L</div>
-                        <div className="text-gray-500">Revenue</div>
-                      </div>
-                      <div>
-                        <div className="font-bold text-blue-600">4.8★</div>
-                        <div className="text-gray-500">Rating</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </FadeIn>
+  if (!accessChecked) {
+    return (
+      <main className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-8">
+        <div className="mx-auto flex min-h-[60vh] max-w-7xl items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+          <div className="rounded-3xl border border-slate-200 bg-white px-6 py-5 text-sm font-medium text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
+            Verifying teacher access...
           </div>
         </div>
+      </main>
+    );
+  }
+
+  return (
+    <main className="min-h-screen bg-gray-50 pt-8 dark:bg-gray-900">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <section className="mb-10 rounded-[2rem] bg-[linear-gradient(135deg,#0f172a_0%,#1d4ed8_48%,#2563eb_100%)] px-8 py-10 text-white shadow-[0_30px_80px_rgba(15,23,42,0.22)]">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <Badge variant="gradient" className="mb-4 bg-white/10 text-white">Teacher Panel</Badge>
+              <h1 className="text-4xl font-black">Welcome back, {displayName}!</h1>
+              <p className="mt-3 max-w-2xl text-sm text-white/80 sm:text-base">
+                Manage your courses, track enrollments, and monitor student activity from the same EDVO login.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Button variant="secondary" className="rounded-full border-0 bg-white text-slate-950 hover:bg-white/90">
+                <Plus className="mr-2 h-4 w-4" />
+                Create Course
+              </Button>
+              <Button variant="outline" className="rounded-full border-white/25 bg-white/10 text-white hover:bg-white/15">
+                <CalendarDays className="mr-2 h-4 w-4" />
+                Schedule Class
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        <section className="mb-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {stats.map((item) => (
+            <Card key={item.label} className="rounded-[1.6rem] border border-white/70 bg-white/90 p-5 shadow-[0_20px_50px_rgba(15,23,42,0.05)] dark:border-white/10 dark:bg-slate-900/80">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <div className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">{item.label}</div>
+                  <div className="mt-3 text-3xl font-black text-slate-950 dark:text-white">{item.value}</div>
+                </div>
+                <div className="rounded-2xl bg-slate-100 p-3 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                  <item.icon className="h-5 w-5" />
+                </div>
+              </div>
+            </Card>
+          ))}
+        </section>
+
+        {error ? (
+          <div className="mb-8 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
+            {error}
+          </div>
+        ) : null}
+
+        <section className="grid gap-6 lg:grid-cols-[minmax(0,1.5fr),380px]">
+          <Card className="rounded-[1.8rem] border border-white/70 bg-white/90 p-6 shadow-[0_20px_50px_rgba(15,23,42,0.05)] dark:border-white/10 dark:bg-slate-900/80">
+            <div className="mb-6 flex items-center justify-between gap-4">
+              <div>
+                <h2 className="text-2xl font-black text-slate-950 dark:text-white">My Courses</h2>
+                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Published and draft courses assigned to your teacher account.</p>
+              </div>
+              <Button variant="outline" className="rounded-full">
+                <TrendingUp className="mr-2 h-4 w-4" />
+                Analytics
+              </Button>
+            </div>
+
+            {loading ? (
+              <div className="rounded-2xl border border-dashed border-slate-200 px-4 py-10 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+                Loading teacher dashboard...
+              </div>
+            ) : dashboard?.courses?.length ? (
+              <div className="space-y-4">
+                {dashboard.courses.map((course) => (
+                  <div
+                    key={course._id || course.title}
+                    className="rounded-[1.4rem] border border-slate-200/80 bg-slate-50/80 p-5 dark:border-white/10 dark:bg-slate-950/60"
+                  >
+                    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                      <div className="space-y-3">
+                        <div className="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700 dark:bg-blue-500/10 dark:text-blue-200">
+                          {course.status || 'draft'}
+                        </div>
+                        <h3 className="text-xl font-black text-slate-950 dark:text-white">{course.title || 'Untitled course'}</h3>
+                        <div className="flex flex-wrap gap-3 text-sm text-slate-500 dark:text-slate-400">
+                          <span>{Number(course.studentsEnrolled || 0).toLocaleString()} students</span>
+                          <span>{Number(course.rating || 0).toFixed(1)} rating</span>
+                          <span>{formatCurrency(Number(course.price || 0))}</span>
+                          <span>Updated {formatDate(course.updatedAt)}</span>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        <Button variant="outline" className="rounded-full">
+                          <Eye className="mr-2 h-4 w-4" />
+                          Preview
+                        </Button>
+                        <Button variant="outline" className="rounded-full">
+                          <MessageSquare className="mr-2 h-4 w-4" />
+                          Reviews
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-dashed border-slate-200 px-4 py-10 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+                No teacher courses found yet. Admin can assign or create teacher accounts from the admin side.
+              </div>
+            )}
+          </Card>
+
+          <Card className="rounded-[1.8rem] border border-white/70 bg-white/90 p-6 shadow-[0_20px_50px_rgba(15,23,42,0.05)] dark:border-white/10 dark:bg-slate-900/80">
+            <div className="mb-6">
+              <h2 className="text-2xl font-black text-slate-950 dark:text-white">Recent Enrollments</h2>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Latest student activity across your assigned programs.</p>
+            </div>
+
+            {loading ? (
+              <div className="rounded-2xl border border-dashed border-slate-200 px-4 py-10 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+                Loading enrollments...
+              </div>
+            ) : dashboard?.recentEnrollments?.length ? (
+              <div className="space-y-4">
+                {dashboard.recentEnrollments.map((entry) => (
+                  <div
+                    key={entry._id || `${entry.userId?.email}-${entry.createdAt}`}
+                    className="rounded-[1.3rem] border border-slate-200/80 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-slate-950/60"
+                  >
+                    <div className="text-sm font-semibold text-slate-950 dark:text-white">{entry.userId?.name || 'Student'}</div>
+                    <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">{entry.userId?.email || 'No email available'}</div>
+                    <div className="mt-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                      Joined {formatDate(entry.createdAt)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-dashed border-slate-200 px-4 py-10 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+                Recent enrollments will appear here once students join your courses.
+              </div>
+            )}
+          </Card>
+        </section>
       </div>
     </main>
   );
 }
-

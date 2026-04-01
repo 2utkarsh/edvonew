@@ -20,6 +20,17 @@ export default function LoginPage() {
   });
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
+  const getPostLoginDestination = (role?: string) => {
+    switch (role) {
+      case 'admin':
+        return '/backend/admin/dashboard';
+      case 'instructor':
+        return '/dashboard/instructor';
+      default:
+        return '/dashboard/student';
+    }
+  };
+
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
 
@@ -66,9 +77,10 @@ export default function LoginPage() {
       }
       window.dispatchEvent(new Event('auth-changed'));
 
+      const redirectTo = getPostLoginDestination(payload?.user?.role);
       setSubmitSuccess(payload?.message || 'Login successful. Redirecting...');
       setTimeout(() => {
-        router.replace('/');
+        router.replace(redirectTo);
         router.refresh();
       }, 300);
     } catch (error: any) {

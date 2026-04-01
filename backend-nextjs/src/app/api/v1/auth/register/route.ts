@@ -13,7 +13,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     if (validation.error) return validation.error;
     if (!validation.data) return toResponse(validationError([{ field: 'body', message: 'Request body is required' }]));
 
-    const { name, email, password, role, mobile } = validation.data;
+    const { name, email, password, mobile } = validation.data;
 
     await connectToDatabase();
 
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest): Promise<Response> {
       name,
       email: email.toLowerCase(),
       passwordHash,
-      role: role || 'student',
+      role: 'student',
       mobile,
       isActive: true,
       status: 1,

@@ -1147,7 +1147,7 @@ function getAdminCkEditorConfig(textarea) {
   } = ck;
 
   return {
-    licenseKey: window.EDVO_CKEDITOR_LICENSE_KEY || 'GPL',
+    licenseKey: 'GPL',
     placeholder: textarea.getAttribute('placeholder') || 'Write here...',
     plugins: [
       Essentials,
