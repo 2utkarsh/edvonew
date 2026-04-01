@@ -14,30 +14,19 @@ export async function GET(request: NextRequest) {
   const origin = request.nextUrl.origin;
 
   try {
-    const [teamResponse, instructorResponse] = await Promise.allSettled([
-      fetch(`${origin}/backend/api/team`, { headers: { Accept: 'application/json' }, cache: 'no-store' }),
-      fetch(`${origin}/backend/api/instructors`, { headers: { Accept: 'application/json' }, cache: 'no-store' }),
-    ]);
-
-    const teamPayload =
-      teamResponse.status === 'fulfilled' && teamResponse.value.ok
-        ? await teamResponse.value.json().catch(() => ({}))
-        : {};
-    const instructorPayload =
-      instructorResponse.status === 'fulfilled' && instructorResponse.value.ok
-        ? await instructorResponse.value.json().catch(() => ({}))
-        : {};
-
-    const teamItems = (Array.isArray(teamPayload?.data) ? teamPayload.data : []).map(normalizePerson);
-    const instructorItems = (Array.isArray(instructorPayload?.data) ? instructorPayload.data : []).map(normalizePerson);
-
-    const teamNames = new Set(teamItems.map((item) => item.name.trim().toLowerCase()).filter(Boolean));
-    const filteredInstructors = instructorItems.filter((item) => {
-      const normalizedName = item.name.trim().toLowerCase();
-      return normalizedName && !teamNames.has(normalizedName);
+    const response = await fetch(`${origin}/backend/api/instructors`, {
+      headers: { Accept: 'application/json' },
+      cache: 'no-store',
     });
 
-    return NextResponse.json({ success: true, data: filteredInstructors });
+    if (!response.ok) {
+      throw new Error('Backend instructors route unavailable');
+    }
+
+    const payload = await response.json().catch(() => ({}));
+    const instructorItems = (Array.isArray(payload?.data) ? payload.data : []).map(normalizePerson);
+
+    return NextResponse.json({ success: true, data: instructorItems });
   } catch {
     return NextResponse.json({ success: true, data: [] });
   }
