@@ -19,6 +19,30 @@ type PublicListResponse<T> = {
 
 type DirectoryMode = 'team' | 'instructors';
 
+const FALLBACK_TEAM_MEMBERS: DirectoryItem[] = [
+  {
+    id: 'alok-pandey',
+    name: 'Alok Pandey',
+    title: 'Chief Mentor, EDVO | Mentor of Change, NITI Aayog | Startup & MSME Growth Catalyst',
+    bio: 'Alok Pandey is an experienced entrepreneurship mentor and ecosystem builder with 17+ years of expertise in innovation, startup development, and MSME growth.',
+    image: '/images/profiles/alok-pandey.png',
+  },
+  {
+    id: 'akanksha-singh',
+    name: 'Akanksha Singh',
+    title: 'Mentor, EDVO | Marketing & Growth Architect | AI Marketing Strategist',
+    bio: 'Akanksha Singh is a Marketing & Growth Architect with 10+ years of experience in performance marketing, brand strategy, and digital business growth.',
+    image: '/images/profiles/akanksha-singh.jpeg',
+  },
+  {
+    id: 'krishna-bhushan-mishra',
+    name: 'Krishna Bhushan Mishra',
+    title: 'Mentor, EDVO | Marketing Engineer | Performance & Growth Strategist',
+    bio: 'Krishna Bhushan Mishra is a Marketing Engineer and Performance & Growth Strategist with 8+ years of experience in performance marketing, data-driven strategy, and growth systems.',
+    image: '/images/profiles/krishna-bhushan-mishra.jpeg',
+  },
+];
+
 const directoryCopy: Record<DirectoryMode, { badge: string; title: string; description: string; empty: string }> = {
   team: {
     badge: 'Our Team',
@@ -46,10 +70,10 @@ function normalizeItems(items: Record<string, unknown>[]) {
 
 export default function OurTeamClient() {
   const [mode, setMode] = useState<DirectoryMode>('team');
-  const [teamMembers, setTeamMembers] = useState<DirectoryItem[]>([]);
+  const [teamMembers, setTeamMembers] = useState<DirectoryItem[]>(FALLBACK_TEAM_MEMBERS);
   const [instructors, setInstructors] = useState<DirectoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [loadError, setLoadError] = useState('');
+  const [loadError, setLoadError] = useState<Record<DirectoryMode, string>>({ team: '', instructors: '' });
 
   useEffect(() => {
     let cancelled = false;
@@ -57,20 +81,40 @@ export default function OurTeamClient() {
     async function loadDirectory() {
       try {
         setIsLoading(true);
-        setLoadError('');
+        setLoadError({ team: '', instructors: '' });
 
-        const [teamPayload, instructorPayload] = await Promise.all([
+        const [teamResult, instructorResult] = await Promise.allSettled([
           publicFetchJson<PublicListResponse<Record<string, unknown>>>('/api/team'),
           publicFetchJson<PublicListResponse<Record<string, unknown>>>('/api/directory/instructors'),
         ]);
 
         if (!cancelled) {
-          setTeamMembers(normalizeItems(Array.isArray(teamPayload?.data) ? teamPayload.data : []));
-          setInstructors(normalizeItems(Array.isArray(instructorPayload?.data) ? instructorPayload.data : []));
+          if (teamResult.status === 'fulfilled') {
+            const items = normalizeItems(Array.isArray(teamResult.value?.data) ? teamResult.value.data : []);
+            setTeamMembers(items.length ? items : FALLBACK_TEAM_MEMBERS);
+          } else {
+            setTeamMembers(FALLBACK_TEAM_MEMBERS);
+          }
+
+          if (instructorResult.status === 'fulfilled') {
+            setInstructors(normalizeItems(Array.isArray(instructorResult.value?.data) ? instructorResult.value.data : []));
+          } else {
+            setInstructors([]);
+          }
+
+          setLoadError({
+            team: teamResult.status === 'rejected' ? teamResult.reason?.message || 'Unable to load team information right now.' : '',
+            instructors: instructorResult.status === 'rejected' ? instructorResult.reason?.message || 'Unable to load instructor information right now.' : '',
+          });
         }
       } catch (error: any) {
         if (!cancelled) {
-          setLoadError(error?.message || 'Unable to load team information right now.');
+          setTeamMembers(FALLBACK_TEAM_MEMBERS);
+          setInstructors([]);
+          setLoadError({
+            team: error?.message || 'Unable to load team information right now.',
+            instructors: error?.message || 'Unable to load instructor information right now.',
+          });
         }
       } finally {
         if (!cancelled) {
@@ -87,6 +131,7 @@ export default function OurTeamClient() {
 
   const content = directoryCopy[mode];
   const members = useMemo(() => (mode === 'team' ? teamMembers : instructors), [instructors, mode, teamMembers]);
+  const activeError = loadError[mode];
 
   return (
     <main className="min-h-screen bg-slate-950 px-4 py-16 text-white">
@@ -116,9 +161,9 @@ export default function OurTeamClient() {
           </div>
         </div>
 
-        {loadError ? (
+        {activeError ? (
           <div className="mb-8 rounded-3xl border border-red-900/40 bg-red-950/30 px-6 py-5 text-sm font-medium text-red-300">
-            {loadError}
+            {activeError}
           </div>
         ) : null}
 
