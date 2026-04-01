@@ -1274,6 +1274,180 @@ function initAdminCkEditor(textarea) {
     });
 }
 
+function initAdminRichEditor(textarea) {
+  if (textarea._adminRichEditor || textarea._adminCkEditor) {
+    return;
+  }
+
+  patchRichTextareaValue(textarea);
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'admin-rich-editor';
+
+  const toolbar = document.createElement('div');
+  toolbar.className = 'admin-rich-toolbar';
+
+  const primaryGroup = document.createElement('div');
+  primaryGroup.className = 'admin-rich-toolbar-group';
+
+  const buttons = {
+    bold: buildRichEditorButton(textarea, 'Bold', 'bold'),
+    italic: buildRichEditorButton(textarea, 'Italic', 'italic'),
+    underline: buildRichEditorButton(textarea, 'Underline', 'underline'),
+    insertUnorderedList: buildRichEditorButton(textarea, 'Bullets', 'insertUnorderedList'),
+    insertOrderedList: buildRichEditorButton(textarea, 'Numbered', 'insertOrderedList'),
+    justifyLeft: buildRichEditorButton(textarea, 'Left', 'justifyLeft'),
+    justifyCenter: buildRichEditorButton(textarea, 'Center', 'justifyCenter'),
+    justifyRight: buildRichEditorButton(textarea, 'Right', 'justifyRight'),
+    createLink: buildRichEditorButton(textarea, 'Link', 'createLink'),
+    removeFormat: buildRichEditorButton(textarea, 'Clear', 'removeFormat'),
+  };
+
+  [
+    buttons.bold,
+    buttons.italic,
+    buttons.underline,
+    buttons.insertUnorderedList,
+    buttons.insertOrderedList,
+    buttons.justifyLeft,
+    buttons.justifyCenter,
+    buttons.justifyRight,
+    buttons.createLink,
+    buttons.removeFormat,
+  ].forEach((button) => primaryGroup.appendChild(button));
+
+  const divider = document.createElement('div');
+  divider.className = 'admin-rich-toolbar-divider';
+
+  const fontFamilyOptions = [
+    'Arial',
+    'Georgia',
+    'Helvetica',
+    'Times New Roman',
+    'Trebuchet MS',
+    'Verdana',
+  ];
+  const fontSizeOptions = ['14px', '16px', '18px', '24px', '32px'];
+
+  const secondaryGroup = document.createElement('div');
+  secondaryGroup.className = 'admin-rich-toolbar-group';
+
+  const fontFamily = buildRichEditorSelect({
+    label: 'Font',
+    values: fontFamilyOptions.map((option) => ({
+      value: option,
+      label: option,
+      style: `font-family: ${option};`,
+    })),
+    onChange(value) {
+      const editor = textarea._adminRichEditor;
+      if (!editor) {
+        return;
+      }
+      editor.focus();
+      enableAdminStyleWithCss();
+      document.execCommand('fontName', false, value);
+      normalizeAdminRichMarkup(editor);
+      syncTextareaFromRichEditor(textarea);
+      updateRichToolbarState(textarea);
+      fontFamily.value = '';
+    },
+  });
+
+  const fontSize = buildRichEditorSelect({
+    label: 'Size',
+    values: fontSizeOptions.map((option) => ({ value: option, label: option })),
+    onChange(value) {
+      applyAdminFontSize(textarea, value);
+      fontSize.value = '';
+    },
+  });
+
+  const foreColor = buildRichEditorColor({
+    label: 'Text color',
+    defaultValue: '#1e293b',
+    onChange(value) {
+      runRichTextCommand(textarea, 'foreColor', value);
+    },
+  });
+
+  const highlightColor = buildRichEditorColor({
+    label: 'Highlight color',
+    defaultValue: '#fff59d',
+    onChange(value) {
+      runRichTextCommand(textarea, 'hiliteColor', value);
+    },
+  });
+
+  [fontFamily, fontSize, foreColor, highlightColor].forEach((control) => secondaryGroup.appendChild(control));
+
+  toolbar.appendChild(primaryGroup);
+  toolbar.appendChild(divider);
+  toolbar.appendChild(secondaryGroup);
+
+  const editor = document.createElement('div');
+  editor.className = 'admin-rich-surface';
+  editor.contentEditable = 'true';
+  editor.spellcheck = true;
+  editor.dataset.placeholder = textarea.getAttribute('placeholder') || 'Write here...';
+
+  wrapper.appendChild(toolbar);
+  wrapper.appendChild(editor);
+
+  textarea.classList.add('admin-rich-textarea-native');
+  textarea.setAttribute('data-admin-rich-enhanced', 'true');
+  textarea.dataset.adminRichEnhanced = 'true';
+  textarea.insertAdjacentElement('afterend', wrapper);
+
+  textarea._adminRichEditor = editor;
+  textarea._adminRichControls = {
+    buttons,
+    fontFamily,
+    fontFamilyOptions,
+    fontSize,
+    fontSizeOptions,
+    foreColor,
+    highlightColor,
+  };
+
+  syncRichEditorFromTextarea(textarea);
+
+  editor.addEventListener('input', () => {
+    syncTextareaFromRichEditor(textarea);
+    updateRichToolbarState(textarea);
+  });
+  editor.addEventListener('focus', () => updateRichToolbarState(textarea));
+  editor.addEventListener('click', () => updateRichToolbarState(textarea));
+  editor.addEventListener('keyup', () => updateRichToolbarState(textarea));
+  editor.addEventListener('mouseup', () => updateRichToolbarState(textarea));
+  editor.addEventListener('blur', () => syncTextareaFromRichEditor(textarea));
+  editor.addEventListener('paste', (event) => {
+    const clipboard = event.clipboardData;
+    if (!clipboard) {
+      return;
+    }
+
+    event.preventDefault();
+    const imageItems = Array.from(clipboard.items || []).filter((item) => item.type.startsWith('image/'));
+    if (imageItems.length) {
+      readAdminClipboardImages(imageItems).then((chunks) => {
+        insertAdminRichHtml(textarea, chunks.filter(Boolean).join(''));
+      });
+      return;
+    }
+
+    const html = clipboard.getData('text/html');
+    if (html) {
+      insertAdminRichHtml(textarea, html);
+      return;
+    }
+
+    insertAdminRichPlainText(textarea, clipboard.getData('text/plain'));
+  });
+
+  updateRichToolbarState(textarea);
+}
+
 function enableAdminStyleWithCss() {
   try {
     document.execCommand('styleWithCSS', false, true);
@@ -1506,7 +1680,7 @@ function initAdminRichTextEditors(root = document) {
     if (!shouldEnhanceRichText(textarea)) {
       return;
     }
-    initAdminCkEditor(textarea);
+    initAdminRichEditor(textarea);
   });
 
   root.querySelectorAll('.dashboard-content form').forEach((form) => {
@@ -1521,7 +1695,9 @@ function initAdminRichTextEditors(root = document) {
         form.querySelectorAll('textarea[data-admin-rich-enhanced="true"]').forEach((textarea) => {
           if (textarea._adminCkEditor) {
             syncCkEditorFromTextarea(textarea);
+            return;
           }
+          syncRichEditorFromTextarea(textarea);
         });
         syncAllRichTextEditors(form);
       }, 0);
