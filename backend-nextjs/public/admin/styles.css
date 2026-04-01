@@ -2079,19 +2079,28 @@ textarea:focus {
   text-transform: uppercase;
 }
 
-.admin-section-body {
-  display: block;
+.admin-editor-section.is-compact {
+  padding-bottom: 16px;
 }
 
-.admin-editor-section.is-collapsed .admin-section-body {
-  display: none;
+.admin-editor-section.is-compact .grid2,
+.admin-editor-section.is-compact .grid3,
+.admin-editor-section.is-compact .grid4,
+.admin-editor-section.is-compact .minit,
+.admin-editor-section.is-compact .students,
+.admin-editor-section.is-compact .thumb-grid,
+.admin-editor-section.is-compact .field.full,
+.admin-editor-section.is-compact .actions,
+.admin-editor-section.is-compact .acts,
+.admin-editor-section.is-compact .hint {
+  display: none !important;
 }
 
-.admin-editor-section.is-collapsed {
-  background: rgba(255, 255, 255, 0.66);
+.admin-editor-section.is-compact .field {
+  display: none !important;
 }
 
-.admin-editor-section.is-collapsed .admin-section-head {
+.admin-editor-section.is-compact .admin-section-head {
   margin-bottom: 0;
 }
 

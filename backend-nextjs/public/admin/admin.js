@@ -1069,7 +1069,7 @@ function patchRichTextareaValue(textarea) {
   textarea.dataset.adminRichValuePatched = 'true';
 }
 
-const ADMIN_CKEDITOR_ASSET_TOKEN = '20260401b';
+const ADMIN_CKEDITOR_ASSET_TOKEN = '20260401c';
 let adminCkEditorLoaderPromise = null;
 
 function loadAdminCkEditorAssets() {
@@ -2160,10 +2160,6 @@ function enhanceAdminPanels(root = document) {
       });
       actions.appendChild(toggle);
 
-      if (index > 0 && !panel.querySelector('.admin-dashboard-module')) {
-        panel.classList.add('admin-panel-collapsed');
-        toggle.textContent = 'Open editor';
-      }
     }
 
     const firstTable = panel.querySelector('table');
@@ -2197,7 +2193,7 @@ function enhanceAdminPanels(root = document) {
 }
 
 function enhanceEditorSections(root = document) {
-  root.querySelectorAll('.editor .section').forEach((section, index) => {
+  root.querySelectorAll('.editor .section').forEach((section) => {
     if (section.dataset.adminSectionEnhanced === 'true') {
       return;
     }
@@ -2209,45 +2205,30 @@ function enhanceEditorSections(root = document) {
       return;
     }
 
-    const head = document.createElement('div');
-    head.className = 'admin-section-head';
+    const sectionHeader = document.createElement('div');
+    sectionHeader.className = 'admin-section-head';
 
     const headingWrap = document.createElement('div');
     headingWrap.className = 'admin-section-heading';
-    headingWrap.appendChild(heading);
 
     const count = document.createElement('span');
     count.className = 'admin-section-count';
     count.textContent = `${section.querySelectorAll('input, select, textarea').length} fields`;
-    headingWrap.appendChild(count);
 
     const toggle = document.createElement('button');
     toggle.type = 'button';
     toggle.className = 'admin-section-toggle';
-    toggle.textContent = index < 2 ? 'Collapse' : 'Open section';
+    toggle.textContent = 'Compact';
 
-    const body = document.createElement('div');
-    body.className = 'admin-section-body';
-    while (section.children.length) {
-      const child = section.children[0];
-      if (child === head) {
-        break;
-      }
-      body.appendChild(child);
-    }
-
-    head.appendChild(headingWrap);
-    head.appendChild(toggle);
-    section.appendChild(head);
-    section.appendChild(body);
-
-    if (index >= 2) {
-      section.classList.add('is-collapsed');
-    }
+    heading.parentElement.insertBefore(sectionHeader, heading);
+    headingWrap.appendChild(heading);
+    headingWrap.appendChild(count);
+    sectionHeader.appendChild(headingWrap);
+    sectionHeader.appendChild(toggle);
 
     toggle.addEventListener('click', () => {
-      const collapsed = section.classList.toggle('is-collapsed');
-      toggle.textContent = collapsed ? 'Open section' : 'Collapse';
+      const compact = section.classList.toggle('is-compact');
+      toggle.textContent = compact ? 'Expand' : 'Compact';
     });
   });
 }
