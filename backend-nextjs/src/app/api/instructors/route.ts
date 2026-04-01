@@ -18,21 +18,25 @@ function serializePublicInstructor(item: any) {
 }
 
 export async function GET() {
-  if (!hasConfiguredMongoUri()) {
+  try {
+    if (!hasConfiguredMongoUri()) {
+      return toResponse(ok([]));
+    }
+
+    await connectToDatabase();
+
+    const items = await InstructorModel.find()
+      .populate('userId', 'name headline bio photo avatar role isActive')
+      .sort({ isFeatured: -1, updatedAt: -1 })
+      .lean();
+
+    const activeItems = items.filter((item: any) => {
+      const user = item?.userId && typeof item.userId === 'object' ? item.userId : null;
+      return user && user.role === 'instructor' && user.isActive !== false;
+    });
+
+    return toResponse(ok(activeItems.map(serializePublicInstructor)));
+  } catch (_error) {
     return toResponse(ok([]));
   }
-
-  await connectToDatabase();
-
-  const items = await InstructorModel.find()
-    .populate('userId', 'name headline bio photo avatar role isActive')
-    .sort({ isFeatured: -1, updatedAt: -1 })
-    .lean();
-
-  const activeItems = items.filter((item: any) => {
-    const user = item?.userId && typeof item.userId === 'object' ? item.userId : null;
-    return user && user.role === 'instructor' && user.isActive !== false;
-  });
-
-  return toResponse(ok(activeItems.map(serializePublicInstructor)));
 }
