@@ -5,6 +5,13 @@ import Button from '@/components/ui/Button';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
+const DEFAULT_SECTION = {
+  title: 'Trusted by Hiring Teams Building Data & AI Talent',
+  description: 'Explore the companies hiring from EDVO and how our vetted talent pipeline helps teams move faster with zero-cost hiring support.',
+  buttonLabel: 'Explore Hire Talent',
+  buttonHref: '/hire-talent',
+};
+
 const HiringPartnersSection = ({
   section,
   partners = [] as any[],
@@ -23,7 +30,10 @@ const HiringPartnersSection = ({
     { name: 'OLA ELECTRIC', logo: '/images/partners/ola.png' },
   ];
   const displayRows = rows.length ? rows : fallbackRows;
-  const successStoriesHref = section?.buttonHref && section.buttonHref !== '/alumni-achievements' ? section.buttonHref : '/testimonials/success-stories';
+  const resolvedSection = { ...DEFAULT_SECTION, ...(section || {}) };
+  const buttonHref = resolvedSection.buttonHref && resolvedSection.buttonHref !== '/alumni-achievements'
+    ? resolvedSection.buttonHref
+    : DEFAULT_SECTION.buttonHref;
 
   return (
     <motion.section
@@ -36,8 +46,8 @@ const HiringPartnersSection = ({
       <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-primary-500/5 to-transparent dark:from-primary-500/10" />
       <div className="mx-auto max-w-7xl">
         <div className="mb-12 text-center">
-          <h2 className="mb-3 text-3xl font-bold text-slate-900 dark:text-white">{section?.title || 'Our Alumni Work at Top Companies'}</h2>
-          <p className="text-slate-600 dark:text-slate-300">{section?.description || "Join 76K+ learners who've transformed their careers"}</p>
+          <h2 className="mb-3 text-3xl font-bold text-slate-900 dark:text-white">{resolvedSection.title}</h2>
+          <p className="text-slate-600 dark:text-slate-300">{resolvedSection.description}</p>
         </div>
 
         <div className="group relative mb-12 flex flex-col gap-6 overflow-hidden">
@@ -58,9 +68,9 @@ const HiringPartnersSection = ({
         </div>
 
         <div className="text-center">
-          <Link href={successStoriesHref}>
+          <Link href={buttonHref}>
             <Button variant="outline" className="gap-2">
-              {section?.buttonLabel || 'View All Success Stories'}
+              {resolvedSection.buttonLabel}
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
