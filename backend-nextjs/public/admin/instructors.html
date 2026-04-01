@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instructors - EDVO</title>
+  <link rel="stylesheet" href="/backend/admin/styles.css" />
+  <style>
+    .stack{display:flex;flex-direction:column;gap:24px}.panel,.stat{background:#fff;border:1px solid #e2e8f0;border-radius:20px;box-shadow:0 8px 30px rgba(15,23,42,.06);padding:24px}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}.label{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:#718096;margin-bottom:8px;font-weight:700}.value{font-size:2rem;font-weight:800}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.input,.textarea,.select{width:100%;padding:12px 16px;border:1px solid #cbd5e0;border-radius:12px;font-size:.95rem;background:#fff}.textarea{min-height:120px;resize:vertical}.actions,.table-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.toolbar{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}.table-wrap{overflow:auto}.badge{display:inline-flex;align-items:center;border-radius:999px;padding:6px 12px;font-size:.78rem;font-weight:700}.badge-role{background:rgba(102,126,234,.12);color:#5a67d8}.badge-verified{background:rgba(34,197,94,.12);color:#15803d}.badge-featured{background:rgba(245,158,11,.16);color:#b45309}.btn{border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}.btn-primary{background:#667eea;color:#fff}.btn-secondary{background:#edf2f7;color:#1a202c}.btn-danger{background:#f56565;color:#fff}.help{color:#718096;font-size:.88rem}.inline-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}@media (max-width: 900px){.inline-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-logo"><span>ED</span>VO</div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Main Menu</div>
+      <a href="/backend/admin/dashboard" class="nav-item"><span class="nav-label">Dashboard</span></a>
+      <a href="/backend/admin/home-content" class="nav-item"><span class="nav-label">Home Content</span></a>
+      <a href="/backend/admin/hiring-partners" class="nav-item"><span class="nav-label">Hiring Partners</span></a>
+      <a href="/backend/admin/courses" class="nav-item"><span class="nav-label">Courses</span></a>
+      <a href="/backend/admin/instructors" class="nav-item active"><span class="nav-label">Instructors</span></a>
+      <a href="/backend/admin/blogs" class="nav-item"><span class="nav-label">Blogs</span></a>
+      <a href="/backend/admin/tutorials" class="nav-item"><span class="nav-label">Free Courses</span></a>
+      <a href="/backend/admin/guides" class="nav-item"><span class="nav-label">Guides</span></a>
+      <a href="/backend/admin/team" class="nav-item"><span class="nav-label">Team</span></a>
+      <a href="/backend/admin/course-reviews" class="nav-item"><span class="nav-label">Course Reviews</span></a>
+      <a href="/backend/admin/job-success-stories" class="nav-item"><span class="nav-label">Job Success Stories</span></a>
+      <a href="/backend/admin/events" class="nav-item"><span class="nav-label">Events</span></a>
+      <a href="/backend/admin/challenges" class="nav-item"><span class="nav-label">Challenges</span></a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Settings</div>
+      <a href="#" class="nav-item" onclick="logout()"><span class="nav-label">Logout</span></a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="top-bar">
+      <h1 class="page-title">Instructors</h1>
+      <div class="user-avatar">A</div>
+    </div>
+
+    <div class="dashboard-content">
+      <div class="stack">
+        <div class="stats">
+          <div class="stat"><div class="label">Total Instructors</div><div class="value" id="totalInstructors">0</div></div>
+          <div class="stat"><div class="label">Verified</div><div class="value" id="verifiedInstructors">0</div></div>
+          <div class="stat"><div class="label">Featured</div><div class="value" id="featuredInstructors">0</div></div>
+        </div>
+
+        <section class="panel">
+          <div class="toolbar">
+            <div>
+              <div class="table-title" id="formTitle">Add Instructor</div>
+              <div class="help">Create instructor accounts from admin. This is the only place where teachers should be onboarded.</div>
+            </div>
+          </div>
+
+          <form id="instructorForm" class="stack">
+            <div class="inline-grid">
+              <input id="name" class="input" placeholder="Full name" required />
+              <input id="email" class="input" type="email" placeholder="Email address" required />
+              <input id="password" class="input" placeholder="Password (min 6 chars)" />
+              <input id="mobile" class="input" placeholder="Mobile number" />
+              <input id="headline" class="input" placeholder="Headline" />
+              <input id="experience" class="input" placeholder="Experience summary" />
+              <input id="education" class="input" placeholder="Education" />
+              <input id="expertise" class="input" placeholder="Expertise comma separated" />
+              <input id="certifications" class="input" placeholder="Certifications comma separated" />
+              <input id="linkedin" class="input" placeholder="LinkedIn URL" />
+              <input id="twitter" class="input" placeholder="Twitter URL" />
+              <input id="website" class="input" placeholder="Website URL" />
+            </div>
+            <textarea id="bio" class="textarea" placeholder="Instructor bio" required></textarea>
+            <div class="actions">
+              <label class="help" style="display:flex;align-items:center;gap:10px"><input id="isVerified" type="checkbox" /> Verified instructor</label>
+              <label class="help" style="display:flex;align-items:center;gap:10px"><input id="isFeatured" type="checkbox" /> Featured instructor</label>
+              <label class="help" style="display:flex;align-items:center;gap:10px"><input id="isActive" type="checkbox" checked /> Active account</label>
+            </div>
+            <div class="actions">
+              <button id="submitButton" class="btn btn-primary" type="submit">Create Instructor</button>
+              <button id="cancelEdit" class="btn btn-secondary" type="button" style="display:none">Cancel Edit</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel">
+          <div class="toolbar">
+            <div>
+              <div class="table-title">Manage Instructors</div>
+              <div class="help">Edit expertise, bio, and account details, or remove instructor access from here.</div>
+            </div>
+            <input id="searchInput" class="input" type="search" placeholder="Search instructors" style="max-width:280px" />
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Headline</th>
+                  <th>Expertise</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="instructorRows">
+                <tr><td colspan="5" class="help">Loading instructors...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script src="/backend/admin/admin.js?v=20260401d"></script>
+  <script>
+    let instructors = [];
+    let editingInstructorId = null;
+    let editingUserId = null;
+    const refs = new Proxy({}, { get: (_, key) => document.getElementById(String(key)) });
+
+    function e(value){return String(value ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+    function splitComma(value){return String(value || '').split(',').map((item)=>item.trim()).filter(Boolean)}
+
+    function resetForm() {
+      editingInstructorId = null;
+      editingUserId = null;
+      refs.instructorForm.reset();
+      refs.isActive.checked = true;
+      refs.formTitle.textContent = 'Add Instructor';
+      refs.submitButton.textContent = 'Create Instructor';
+      refs.cancelEdit.style.display = 'none';
+    }
+
+    function updateStats() {
+      refs.totalInstructors.textContent = instructors.length;
+      refs.verifiedInstructors.textContent = instructors.filter((item) => item.isVerified).length;
+      refs.featuredInstructors.textContent = instructors.filter((item) => item.isFeatured).length;
+    }
+
+    function renderRows() {
+      const query = refs.searchInput.value.trim().toLowerCase();
+      const list = instructors.filter((item) => {
+        const haystack = [
+          item.user?.name || '',
+          item.user?.email || '',
+          item.headline || '',
+          ...(item.expertise || []),
+        ].join(' ').toLowerCase();
+        return !query || haystack.includes(query);
+      });
+
+      refs.instructorRows.innerHTML = list.length ? list.map((item) => `
+        <tr>
+          <td>
+            <strong>${e(item.user?.name || 'Unknown')}</strong>
+            <div class="help">${e(item.user?.email || '')}</div>
+          </td>
+          <td>${e(item.headline || item.user?.headline || 'No headline')}</td>
+          <td>${(item.expertise || []).length ? (item.expertise || []).map((entry) => `<span class="badge badge-role">${e(entry)}</span>`).join(' ') : '<span class="help">No expertise</span>'}</td>
+          <td>
+            ${item.isVerified ? '<span class="badge badge-verified">Verified</span>' : '<span class="badge badge-role">Pending</span>'}
+            ${item.isFeatured ? '<span class="badge badge-featured">Featured</span>' : ''}
+            ${item.user?.isActive === false ? '<span class="badge">Inactive</span>' : '<span class="badge badge-verified">Active</span>'}
+          </td>
+          <td>
+            <div class="table-actions">
+              <button class="btn btn-secondary" type="button" onclick="startEdit('${item.id}')">Edit</button>
+              <button class="btn btn-danger" type="button" onclick="deleteInstructor('${item.id}')">Delete</button>
+            </div>
+          </td>
+        </tr>
+      `).join('') : '<tr><td colspan="5" class="help">No instructors found.</td></tr>';
+    }
+
+    function fillForm(item) {
+      refs.name.value = item.user?.name || '';
+      refs.email.value = item.user?.email || '';
+      refs.password.value = '';
+      refs.mobile.value = item.user?.mobile || '';
+      refs.headline.value = item.headline || item.user?.headline || '';
+      refs.bio.value = item.bio || item.user?.bio || '';
+      refs.experience.value = item.experience || '';
+      refs.education.value = item.education || '';
+      refs.expertise.value = (item.expertise || []).join(', ');
+      refs.certifications.value = (item.certifications || []).join(', ');
+      refs.linkedin.value = item.socialLinks?.linkedin || '';
+      refs.twitter.value = item.socialLinks?.twitter || '';
+      refs.website.value = item.socialLinks?.website || '';
+      refs.isVerified.checked = item.isVerified === true;
+      refs.isFeatured.checked = item.isFeatured === true;
+      refs.isActive.checked = item.user?.isActive !== false;
+    }
+
+    function startEdit(id) {
+      const item = instructors.find((entry) => entry.id === id);
+      if (!item) return;
+      editingInstructorId = item.id;
+      editingUserId = item.user?.id || item.userId;
+      fillForm(item);
+      refs.formTitle.textContent = 'Edit Instructor';
+      refs.submitButton.textContent = 'Update Instructor';
+      refs.cancelEdit.style.display = 'inline-flex';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function loadInstructors() {
+      const payload = await adminFetch('/backend/api/admin/instructors');
+      instructors = Array.isArray(payload.data) ? payload.data : [];
+      renderRows();
+      updateStats();
+    }
+
+    async function createInstructor() {
+      const userPayload = {
+        name: refs.name.value.trim(),
+        email: refs.email.value.trim(),
+        password: refs.password.value.trim() || 'Admin@123',
+        mobile: refs.mobile.value.trim(),
+        role: 'instructor',
+        isActive: refs.isActive.checked,
+        bio: refs.bio.value.trim(),
+        headline: refs.headline.value.trim(),
+        skills: splitComma(refs.expertise.value),
+      };
+
+      const userResponse = await adminFetch('/backend/api/admin/users', {
+        method: 'POST',
+        body: JSON.stringify(userPayload),
+      });
+
+      const instructorResponse = await adminFetch('/backend/api/admin/instructors', {
+        method: 'POST',
+        body: JSON.stringify({
+          userId: userResponse.data.id,
+          bio: refs.bio.value.trim(),
+          headline: refs.headline.value.trim(),
+          expertise: splitComma(refs.expertise.value),
+          experience: refs.experience.value.trim(),
+          education: refs.education.value.trim(),
+          certifications: splitComma(refs.certifications.value),
+          socialLinks: {
+            linkedin: refs.linkedin.value.trim(),
+            twitter: refs.twitter.value.trim(),
+            website: refs.website.value.trim(),
+          },
+          isVerified: refs.isVerified.checked,
+          isFeatured: refs.isFeatured.checked,
+        }),
+      });
+
+      return instructorResponse.data;
+    }
+
+    async function updateInstructor() {
+      await adminFetch(`/backend/api/admin/users/${editingUserId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          name: refs.name.value.trim(),
+          email: refs.email.value.trim(),
+          password: refs.password.value.trim() || undefined,
+          mobile: refs.mobile.value.trim(),
+          role: 'instructor',
+          isActive: refs.isActive.checked,
+          bio: refs.bio.value.trim(),
+          headline: refs.headline.value.trim(),
+          skills: splitComma(refs.expertise.value),
+        }),
+      });
+
+      await adminFetch(`/backend/api/admin/instructors/${editingInstructorId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          bio: refs.bio.value.trim(),
+          headline: refs.headline.value.trim(),
+          expertise: splitComma(refs.expertise.value),
+          experience: refs.experience.value.trim(),
+          education: refs.education.value.trim(),
+          certifications: splitComma(refs.certifications.value),
+          socialLinks: {
+            linkedin: refs.linkedin.value.trim(),
+            twitter: refs.twitter.value.trim(),
+            website: refs.website.value.trim(),
+          },
+          isVerified: refs.isVerified.checked,
+          isFeatured: refs.isFeatured.checked,
+        }),
+      });
+    }
+
+    async function deleteInstructor(id) {
+      if (!window.confirm('Delete this instructor profile?')) return;
+      await adminFetch(`/backend/api/admin/instructors/${id}`, { method: 'DELETE' });
+      showToast('Instructor removed', 'success');
+      if (editingInstructorId === id) resetForm();
+      await loadInstructors();
+    }
+
+    refs.instructorForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      try {
+        if (editingInstructorId && editingUserId) {
+          await updateInstructor();
+          showToast('Instructor updated', 'success');
+        } else {
+          await createInstructor();
+          showToast('Instructor created', 'success');
+        }
+        resetForm();
+        await loadInstructors();
+      } catch (error) {
+        showToast(error.message || 'Failed to save instructor', 'error');
+      }
+    });
+
+    refs.cancelEdit.addEventListener('click', resetForm);
+    refs.searchInput.addEventListener('input', renderRows);
+
+    loadInstructors().catch((error) => showToast(error.message || 'Failed to load instructors', 'error'));
+  </script>
+</body>
+</html>

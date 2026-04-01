@@ -1069,7 +1069,7 @@ function patchRichTextareaValue(textarea) {
   textarea.dataset.adminRichValuePatched = 'true';
 }
 
-const ADMIN_CKEDITOR_ASSET_TOKEN = '20260401c';
+const ADMIN_CKEDITOR_ASSET_TOKEN = '20260401d';
 let adminCkEditorLoaderPromise = null;
 
 function loadAdminCkEditorAssets() {
@@ -1794,6 +1794,12 @@ function getAdminPagePresentation() {
       subtitle: 'Operate the catalog, pricing, mentors, and learner experience in a single structured workflow.',
       chip: 'Catalog ops',
     },
+    '/backend/admin/instructors': {
+      kicker: 'Faculty',
+      title: 'Instructor Management',
+      subtitle: 'Create instructor accounts, maintain expert profiles, and control who can teach on the platform.',
+      chip: 'Mentor roster',
+    },
     '/backend/admin/blogs': {
       kicker: 'Editorial',
       title: 'Blogs Workspace',
@@ -1858,6 +1864,7 @@ function decorateAdminNavigation(root = document) {
     'Home Content': '⌂',
     'Hiring Partners': '◌',
     Courses: '◫',
+    Instructors: '◈',
     Blogs: '✦',
     'Free Courses': '△',
     Guides: '▤',
@@ -1884,6 +1891,20 @@ function decorateAdminNavigation(root = document) {
 
     icon.textContent = iconMap[label.textContent.trim()] || '•';
   });
+
+  const navSection = root.querySelector('.nav-section');
+  if (navSection && !navSection.querySelector('a[href="/backend/admin/instructors"]')) {
+    const referenceNode = navSection.querySelector('a[href="/backend/admin/blogs"]');
+    const link = document.createElement('a');
+    link.href = '/backend/admin/instructors';
+    link.className = `nav-item${window.location.pathname === '/backend/admin/instructors' ? ' active' : ''}`;
+    link.innerHTML = '<span class="nav-label">Instructors</span>';
+    if (referenceNode) {
+      navSection.insertBefore(link, referenceNode);
+    } else {
+      navSection.appendChild(link);
+    }
+  }
 
   const logo = root.querySelector('.sidebar-logo');
   if (logo && !logo.querySelector('small')) {
@@ -2022,10 +2043,10 @@ function getAdminRouteLinks() {
   return [
     { href: '/backend/admin/home-content', name: 'Homepage', copy: 'Hero, social proof, and section flow.', meta: 'CMS' },
     { href: '/backend/admin/courses', name: 'Courses', copy: 'Catalog, modules, plans, and tracking.', meta: 'Learning' },
+    { href: '/backend/admin/instructors', name: 'Instructors', copy: 'Faculty accounts, bios, and expertise.', meta: 'Faculty' },
     { href: '/backend/admin/blogs', name: 'Blogs', copy: 'Editorial publishing and categories.', meta: 'Content' },
     { href: '/backend/admin/tutorials', name: 'Free Courses', copy: 'Lead magnets, assets, and free learning.', meta: 'Growth' },
     { href: '/backend/admin/guides', name: 'Guides', copy: 'Roadmaps and downloadable resources.', meta: 'Resources' },
-    { href: '/backend/admin/events', name: 'Events', copy: 'Master classes, workshops, and hackathons.', meta: 'Live' },
   ];
 }
 
@@ -2040,6 +2061,9 @@ function getAdminFrontendTargets() {
     ],
     '/backend/admin/courses': [
       { href: '/courses', label: 'Open Courses', primary: true },
+    ],
+    '/backend/admin/instructors': [
+      { href: '/team', label: 'Open Team Page', primary: true },
     ],
     '/backend/admin/blogs': [
       { href: '/blogs', label: 'Open Blog Index', primary: true },
