@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import InstructorsSection from '@/components/home/instructors-section';
+import OurTeamClient from './our-team-client';
 
 export const metadata: Metadata = {
   title: 'Our Team | EDVO',
@@ -7,9 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function OurTeamPage() {
-  return (
-    <main className="min-h-screen bg-white dark:bg-slate-950">
-      <InstructorsSection />
-    </main>
-  );
+  return <OurTeamClient />;
 }
