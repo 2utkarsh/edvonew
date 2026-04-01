@@ -81,6 +81,7 @@
             </div>
             <div class="actions">
               <button id="submitButton" class="btn btn-primary" type="submit">Create Instructor</button>
+              <button id="loadDemoButton" class="btn btn-secondary" type="button">Demo Instructor</button>
               <button id="cancelEdit" class="btn btn-secondary" type="button" style="display:none">Cancel Edit</button>
             </div>
           </form>
@@ -124,6 +125,7 @@
 
     function e(value){return String(value ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
     function splitComma(value){return String(value || '').split(',').map((item)=>item.trim()).filter(Boolean)}
+    function createDemoEmail(){return `demo.instructor.${Date.now()}@edvo.com`}
 
     function resetForm() {
       editingInstructorId = null;
@@ -193,6 +195,31 @@
       refs.isVerified.checked = item.isVerified === true;
       refs.isFeatured.checked = item.isFeatured === true;
       refs.isActive.checked = item.user?.isActive !== false;
+    }
+
+    function loadDemoInstructor() {
+      editingInstructorId = null;
+      editingUserId = null;
+      refs.name.value = 'Aarav Mehta';
+      refs.email.value = createDemoEmail();
+      refs.password.value = 'Admin@123';
+      refs.mobile.value = '+91 9876543210';
+      refs.headline.value = 'Senior Data Analytics Mentor';
+      refs.bio.value = 'A demo instructor profile for admin testing. Aarav mentors learners in analytics, dashboards, SQL workflows, and portfolio reviews with a practical industry-first teaching style.';
+      refs.experience.value = '8+ years in analytics consulting, BI delivery, and learner mentoring.';
+      refs.education.value = 'B.Tech in Computer Science, PG Certification in Business Analytics';
+      refs.expertise.value = 'SQL, Power BI, Python, Data Analytics, Dashboarding';
+      refs.certifications.value = 'Microsoft Power BI, Google Data Analytics';
+      refs.linkedin.value = 'https://www.linkedin.com/in/aarav-mehta-demo';
+      refs.twitter.value = '';
+      refs.website.value = 'https://edvo.com/demo-instructor';
+      refs.isVerified.checked = true;
+      refs.isFeatured.checked = true;
+      refs.isActive.checked = true;
+      refs.formTitle.textContent = 'Add Instructor';
+      refs.submitButton.textContent = 'Create Instructor';
+      refs.cancelEdit.style.display = 'none';
+      showToast('Demo instructor data loaded', 'success');
     }
 
     function startEdit(id) {
@@ -317,6 +344,7 @@
     });
 
     refs.cancelEdit.addEventListener('click', resetForm);
+    refs.loadDemoButton.addEventListener('click', loadDemoInstructor);
     refs.searchInput.addEventListener('input', renderRows);
 
     loadInstructors().catch((error) => showToast(error.message || 'Failed to load instructors', 'error'));
