@@ -8,3 +8,4 @@ backend/vendor/
 deploy/packages/backend-edvo-laravel/vendor/
 deploy/packages/backend-edvo-laravel/node_modules/
 deploy/packages/packages.zip
+*.tsbuildinfo
