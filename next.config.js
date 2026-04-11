@@ -11,6 +11,11 @@ const configuredLiveKitProxyTarget =
     ? process.env.NEXT_PUBLIC_LIVEKIT_PROXY_TARGET
     : '');
 const liveKitProxyTarget = configuredLiveKitProxyTarget.replace(/\/$/, '');
+const configuredLiveBaseUrl =
+  process.env.LIVE_URL ||
+  (/^https?:\/\//.test(process.env.NEXT_PUBLIC_LIVE_URL || '') ? process.env.NEXT_PUBLIC_LIVE_URL : '') ||
+  'https://live.edvo.in';
+const liveBaseUrl = configuredLiveBaseUrl.replace(/\/$/, '');
 
 const nextConfig = {
   experimental: {
@@ -45,6 +50,19 @@ const nextConfig = {
         destination: `${backendBaseUrl}/backend/:path*`,
       },
     ];
+
+    if (liveBaseUrl) {
+      rewrites.push(
+        {
+          source: '/live/:path*',
+          destination: `${liveBaseUrl}/live/:path*`,
+        },
+        {
+          source: '/backend/live/:path*',
+          destination: `${liveBaseUrl}/live/:path*`,
+        }
+      );
+    }
 
     if (liveKitProxyTarget) {
       rewrites.push({

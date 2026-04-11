@@ -23,6 +23,14 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
+        source: '/live/:path*',
+        destination: `${process.env.LIVE_URL || 'https://live.edvo.in'}/live/:path*`,
+      },
+      {
+        source: '/backend/live/:path*',
+        destination: `${process.env.LIVE_URL || 'https://live.edvo.in'}/live/:path*`,
+      },
+      {
         source: '/admin/:adminPath*/backend/api/:path*',
         destination: '/api/:path*',
       },
