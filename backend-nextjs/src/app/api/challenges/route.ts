@@ -1,7 +1,7 @@
 import { getFallbackChallenges } from '@/lib/content-fallback';
 import { connectToDatabase, hasConfiguredMongoUri } from '@/lib/db';
 import { ensureSeededContent } from '@/lib/content-seeder';
-import { handleError, ok, toResponse } from '@/lib/http';
+import { ok, toResponse } from '@/lib/http';
 import { mapChallengeDocumentToPublicChallenge } from '@/lib/challenge-data';
 import { ChallengeItemModel } from '@/models/ChallengeItem';
 
@@ -34,6 +34,7 @@ export async function GET(request: Request) {
     const items = await ChallengeItemModel.find(query).sort({ phase: 1, order: 1, updatedAt: -1 }).lean();
     return toResponse(ok(items.map(mapChallengeDocumentToPublicChallenge)));
   } catch (error) {
-    return handleError(error);
+    console.error('Falling back to built-in challenges', error);
+    return toResponse(ok(getFallbackChallenges()));
   }
 }

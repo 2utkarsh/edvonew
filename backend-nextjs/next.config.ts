@@ -23,6 +23,10 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
+        source: '/admin/:adminPath*/backend/api/:path*',
+        destination: '/api/:path*',
+      },
+      {
         source: '/backend/api/:path*',
         destination: '/api/:path*',
       },
