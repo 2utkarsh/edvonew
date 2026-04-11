@@ -47,7 +47,7 @@ export default function ParticipantLoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/participant-login', {
+      const response = await fetch(apiUrl('/api/participant-login'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -198,3 +198,4 @@ export default function ParticipantLoginPage() {
     </main>
   );
 }
+import { apiUrl } from '@/lib/url';

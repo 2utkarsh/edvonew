@@ -31,7 +31,7 @@ const RecordingsList = () => {
       setLoading(true);
       setError(null);
 
-      const response = await fetch('/api/recordings/list');
+      const response = await fetch(apiUrl('/api/recordings/list'));
       const data = await response.json();
 
       if (response.ok) {
@@ -89,7 +89,7 @@ const RecordingsList = () => {
       }
       setPlayingVideo({
         ...recording,
-        url: `/api/recordings/stream?key=${encodeURIComponent(recording.key)}`,
+        url: apiUrl(`/api/recordings/stream?key=${encodeURIComponent(recording.key)}`),
         contentType: recording.contentType || `video/${recording.format || 'mp4'}`
       });
     } catch (err) {
@@ -111,7 +111,7 @@ const RecordingsList = () => {
         throw new Error('Recording key is unavailable');
       }
       const link = document.createElement("a");
-      link.href = `/api/recordings/download?key=${encodeURIComponent(key)}`;
+      link.href = apiUrl(`/api/recordings/download?key=${encodeURIComponent(key)}`);
       link.download = filename || "recording.mp4"; // Browser uses this
       document.body.appendChild(link);
 
@@ -346,3 +346,4 @@ const RecordingsList = () => {
 };
 
 export default RecordingsList; 
+import { apiUrl } from '@/lib/url';

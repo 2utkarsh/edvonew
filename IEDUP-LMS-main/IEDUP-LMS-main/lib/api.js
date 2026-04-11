@@ -1,9 +1,11 @@
 // Simple API functions for meeting operations
 
+import { apiUrl } from '@/lib/url';
+
 // Fetch all meetings
 export async function fetchMeetings() {
   try {
-    const response = await fetch("/api/meetings", {
+    const response = await fetch(apiUrl("/api/meetings"), {
       cache: "no-store",
       headers: {
         "Cache-Control": "no-cache",
@@ -20,7 +22,7 @@ export async function fetchMeetings() {
 // Create a new meeting
 export async function createMeeting(meetingData) {
   try {
-    const response = await fetch("/api/meetings", {
+    const response = await fetch(apiUrl("/api/meetings"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -39,7 +41,7 @@ export async function createMeeting(meetingData) {
 // Update an existing meeting (e.g., title)
 export async function updateMeeting(updateData) {
   try {
-    const response = await fetch("/api/meetings", {
+    const response = await fetch(apiUrl("/api/meetings"), {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

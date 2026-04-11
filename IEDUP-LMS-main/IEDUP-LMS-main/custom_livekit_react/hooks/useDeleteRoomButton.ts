@@ -10,7 +10,7 @@ export function useDeleteRoomButton(props: React.ButtonHTMLAttributes<HTMLButton
     if (!room?.name) return;
     setLoading(true);
     try {
-      await fetch('/api/participant-control', {
+      await fetch(apiUrl('/api/participant-control'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -37,3 +37,4 @@ export function useDeleteRoomButton(props: React.ButtonHTMLAttributes<HTMLButton
 
   return { buttonProps };
 } 
+import { apiUrl } from '@/lib/url';

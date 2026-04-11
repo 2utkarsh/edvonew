@@ -33,7 +33,7 @@ export default function Page() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/verify-password', {
+      const response = await fetch(apiUrl('/api/verify-password'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -170,3 +170,4 @@ export default function Page() {
     </main>
   );
 }
+import { apiUrl } from '@/lib/url';

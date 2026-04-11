@@ -211,7 +211,7 @@ export default function FaceVerificationMonitor({ room }: { room: Room }) {
   const sendFaceEvent = React.useCallback(
     async (action: 'record-face-reference' | 'face-verification', payload: Record<string, unknown>) => {
       try {
-        await fetch('/api/participant-control', {
+        await fetch(apiUrl('/api/participant-control'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -494,3 +494,4 @@ export default function FaceVerificationMonitor({ room }: { room: Room }) {
     </div>
   );
 }
+import { apiUrl } from '@/lib/url';

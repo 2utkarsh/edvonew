@@ -30,7 +30,9 @@ import Notification from '@/components/Notification';
 import { MassControl } from '@/components/MassControl';
 import FaceVerificationMonitor from '@/components/FaceVerificationMonitor';
 
-const CONN_DETAILS_ENDPOINT = process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? '/api/connection-details';
+import { apiUrl } from '@/lib/url';
+
+const CONN_DETAILS_ENDPOINT = process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? apiUrl('/api/connection-details');
 const SHOW_SETTINGS_MENU = process.env.NEXT_PUBLIC_SHOW_SETTINGS_MENU == 'true';
 
 export function PageClientImpl(props: {
@@ -73,7 +75,7 @@ export function PageClientImpl(props: {
     setJoinError(null);
     setPreJoinChoices(values);
 
-    const accessTokenURL = new URL("/api/auth/accessToken", window.location.origin);
+    const accessTokenURL = new URL(apiUrl("/api/auth/accessToken"), window.location.origin);
     accessTokenURL.searchParams.append('participantName', values.username);
     const accessTokenResp = await fetch(accessTokenURL.toString());
     if (accessTokenResp.status !== 200) {
@@ -81,7 +83,7 @@ export function PageClientImpl(props: {
       return;
     }
 
-    const roomExistsURL = new URL("/api/auth/roomExists", window.location.origin);
+    const roomExistsURL = new URL(apiUrl("/api/auth/roomExists"), window.location.origin);
     roomExistsURL.searchParams.append('roomName', (props.roomName).split('$')[0]);
     const roomExistsResp = await fetch(roomExistsURL.toString());
     if (roomExistsResp.status !== 200) {
@@ -262,7 +264,7 @@ function VideoConferenceComponent(props: {
   const markAttendance = async () => {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    const CONN_DETAILS_ENDPOINT = '/api/participant-control';
+    const CONN_DETAILS_ENDPOINT = apiUrl('/api/participant-control');
 
     const url = new URL(CONN_DETAILS_ENDPOINT, window.location.origin);
 

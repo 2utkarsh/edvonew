@@ -10,7 +10,9 @@ import { MyGlobalContext } from '@/state_mangement/MyGlobalContext';
 import { MultiTypePublishingToggle } from './components/MultiTypePublishingToggle';
 import React from 'react';
 
-const CONN_DETAILS_ENDPOINT = '/api/participant-control';
+import { apiUrl } from '@/lib/url';
+
+const CONN_DETAILS_ENDPOINT = apiUrl('/api/participant-control');
 
 interface ParticipantListProps {
   handVisible: boolean;

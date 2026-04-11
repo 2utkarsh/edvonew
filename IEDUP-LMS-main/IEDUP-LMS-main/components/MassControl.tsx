@@ -47,7 +47,7 @@ export function MassControl() {
     setIsProcessing(true);
 
     try {
-      const response = await fetch('/api/participant-control', {
+      const response = await fetch(apiUrl('/api/participant-control'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -75,7 +75,7 @@ export function MassControl() {
 
     try {
       const action = massAudioMuted ? 'mass-unmute-audio' : 'mass-mute-audio';
-      const response = await fetch('/api/participant-control', {
+      const response = await fetch(apiUrl('/api/participant-control'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ export function MassControl() {
     try {
       const action = massVideoMuted ? 'mass-unmute-video' : 'mass-mute-video';
 
-      await fetch('/api/participant-control', {
+      await fetch(apiUrl('/api/participant-control'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -216,3 +216,4 @@ export function MassControl() {
     </>
   );
 }
+import { apiUrl } from '@/lib/url';
