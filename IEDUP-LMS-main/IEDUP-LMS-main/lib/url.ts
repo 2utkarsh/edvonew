@@ -18,5 +18,14 @@ export function withBasePath(path: string) {
 }
 
 export function apiUrl(path: string) {
-  return joinBase(API_BASE_URL, path);
+  const lowerBase = API_BASE_URL.toLowerCase();
+  const isBackendBase = lowerBase.includes('/backend') || lowerBase.includes('backend.');
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+
+  if (isBackendBase && normalizedPath.startsWith('/api/')) {
+    // LMS APIs live in the LMS app; avoid CORS by keeping them same-origin.
+    return joinBase(APP_BASE_PATH, normalizedPath);
+  }
+
+  return joinBase(API_BASE_URL, normalizedPath);
 }
