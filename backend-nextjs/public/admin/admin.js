@@ -193,6 +193,15 @@ richEditorStyle.textContent = `
     opacity: 0 !important;
     pointer-events: none !important;
   }
+  .admin-ckeditor-host {
+    width: 100%;
+  }
+  .admin-ckeditor-host .ck-editor {
+    width: 100%;
+  }
+  .admin-ckeditor-host .ck-editor__editable_inline {
+    min-height: 180px;
+  }
   .admin-rich-editor {
     display: flex;
     flex-direction: column;
@@ -1252,9 +1261,20 @@ function initAdminCkEditor(textarea) {
 
   textarea.dataset.adminCkInitializing = 'true';
   patchRichTextareaValue(textarea);
+  textarea.classList.add('admin-rich-textarea-native');
+
+  if (textarea._adminCkHost?.isConnected) {
+    textarea._adminCkHost.remove();
+  }
+
+  const host = document.createElement('div');
+  host.className = 'admin-ckeditor-host';
+  host.innerHTML = sanitizeAdminRichHtml(toRichEditorHtml(getNativeTextareaValue(textarea)));
+  textarea.insertAdjacentElement('afterend', host);
+  textarea._adminCkHost = host;
 
   loadAdminCkEditorAssets()
-    .then(() => window.CKEDITOR.ClassicEditor.create(textarea, getAdminCkEditorConfig(textarea)))
+    .then(() => window.CKEDITOR.ClassicEditor.create(host, getAdminCkEditorConfig(textarea)))
     .then((editor) => {
       textarea._adminCkEditor = editor;
       textarea.dataset.adminRichEnhanced = 'true';
@@ -1264,6 +1284,11 @@ function initAdminCkEditor(textarea) {
     })
     .catch((error) => {
       console.error('CKEditor initialization failed:', error);
+      if (textarea._adminCkHost?.isConnected) {
+        textarea._adminCkHost.remove();
+      }
+      textarea._adminCkHost = null;
+      textarea.classList.remove('admin-rich-textarea-native');
       showToast('CKEditor could not load. Using the built-in editor instead.', 'error');
       textarea.dataset.adminRichEnhanced = 'false';
       initAdminRichEditor(textarea);
