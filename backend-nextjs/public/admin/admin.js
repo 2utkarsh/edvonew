@@ -1083,7 +1083,7 @@ function patchRichTextareaValue(textarea) {
   textarea.dataset.adminRichValuePatched = 'true';
 }
 
-const ADMIN_CKEDITOR_ASSET_TOKEN = '20260412c';
+const ADMIN_CKEDITOR_ASSET_TOKEN = '20260412d';
 const ADMIN_CKEDITOR4_CDN = 'https://cdn.ckeditor.com/4.22.1/standard-all/ckeditor.js';
 let adminCkEditorLoaderPromise = null;
 let adminCkEditorSequence = 0;
@@ -2298,7 +2298,25 @@ function initAdminUiEnhancements() {
   queueAdminUiEnhancements();
 
   const observer = new MutationObserver((mutations) => {
-    if (mutations.some((mutation) => mutation.type === 'childList' && mutation.addedNodes.length)) {
+    const shouldQueue = mutations.some((mutation) => {
+      if (mutation.type !== 'childList' || !mutation.addedNodes.length) {
+        return false;
+      }
+
+      return [...mutation.addedNodes].some((node) => {
+        if (!(node instanceof HTMLElement)) {
+          return false;
+        }
+
+        if (node.closest('.cke, .ck, .admin-rich-editor')) {
+          return false;
+        }
+
+        return true;
+      });
+    });
+
+    if (shouldQueue) {
       queueAdminUiEnhancements();
     }
   });
