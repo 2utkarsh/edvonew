@@ -2,8 +2,7 @@ import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET, hasJwtSecret } from '@/lib/jwtSecret';
 
-// In a real application, you should use environment variables and proper password hashing
-const CORRECT_PASSWORD = 'admin123'; // This is just for demonstration
+const CORRECT_PASSWORD = (process.env.LMS_HOST_PASSWORD || 'admin123').trim();
 
 export async function POST(request: Request) {
   try {
