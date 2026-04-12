@@ -1083,9 +1083,9 @@ function patchRichTextareaValue(textarea) {
   textarea.dataset.adminRichValuePatched = 'true';
 }
 
-const ADMIN_CKEDITOR_ASSET_TOKEN = '20260413e';
-const ADMIN_CKEDITOR5_SCRIPT = '/backend/admin/vendor/ckeditor5/ckeditor5.umd.js';
-const ADMIN_CKEDITOR5_STYLE = '/backend/admin/vendor/ckeditor5/ckeditor5.css';
+const ADMIN_CKEDITOR_ASSET_TOKEN = '20260413f';
+const ADMIN_CKEDITOR5_SCRIPT = 'https://cdn.ckeditor.com/ckeditor5/48.0.0/ckeditor5.umd.js';
+const ADMIN_CKEDITOR5_STYLE = 'https://cdn.ckeditor.com/ckeditor5/48.0.0/ckeditor5.css';
 let adminCkEditorLoaderPromise = null;
 let adminCkEditorSequence = 0;
 
