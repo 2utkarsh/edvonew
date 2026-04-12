@@ -12,6 +12,7 @@ import {
   FaUser,
   FaUsers,
 } from 'react-icons/fa';
+import { apiUrl, withBasePath } from '@/lib/url';
 
 const demoAccounts = [
   {
@@ -171,7 +172,7 @@ export default function ParticipantLoginPage() {
         >
           <div className="preview-media">
             <img
-              src="/images/itech-innovation-foundation.jpeg"
+              src={withBasePath('/images/itech-innovation-foundation.jpeg')}
               alt="Itech Innovation Foundation"
             />
           </div>
@@ -198,4 +199,3 @@ export default function ParticipantLoginPage() {
     </main>
   );
 }
-import { apiUrl } from '@/lib/url';

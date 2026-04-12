@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaArrowRight } from 'react-icons/fa';
 import styles from '../styles/Home.module.css';
+import { withBasePath } from '@/lib/url';
 
 export default function Page() {
   const [lastRoomRoute, setLastRoomRoute] = useState<string | null>(null);
@@ -76,7 +77,7 @@ export default function Page() {
         <aside className={styles.visualPanel}>
           <div className={styles.imageFrame}>
             <Image
-              src="/images/itech-innovation-foundation.jpeg"
+              src={withBasePath('/images/itech-innovation-foundation.jpeg')}
               alt="Itech Innovation Foundation"
               width={900}
               height={900}

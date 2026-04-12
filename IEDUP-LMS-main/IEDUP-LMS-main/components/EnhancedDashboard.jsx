@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { generateRoomId } from '@/lib/client-utils';
 import { createMeeting, fetchMeetings, updateMeeting } from '@/lib/api';
+import { withBasePath } from '@/lib/url';
 import RecordingsList from './RecordingsList';
 import {
   FaArrowRight,
@@ -276,7 +277,7 @@ export default function EnhancedDashboard({
       return;
     }
 
-    router.push(`/rooms/${roomSlug}`);
+    router.push(withBasePath(`/rooms/${roomSlug}`));
   };
 
   const copyMeetingLink = async (meeting) => {
@@ -287,7 +288,7 @@ export default function EnhancedDashboard({
     }
 
     try {
-      await navigator.clipboard.writeText(`${window.location.origin}/rooms/${slug}`);
+      await navigator.clipboard.writeText(`${window.location.origin}${withBasePath(`/rooms/${slug}`)}`);
       notify('Meeting link copied.');
     } catch (error) {
       notify('Clipboard access is unavailable in this browser.', 'error');
@@ -569,7 +570,7 @@ export default function EnhancedDashboard({
             <div className="workspace-brand-row">
               <div className="brand-mark">
                 <img
-                  src="/images/itech-innovation-foundation.jpeg"
+                  src={withBasePath("/images/itech-innovation-foundation.jpeg")}
                   alt="Itech Innovation Foundation"
                 />
               </div>

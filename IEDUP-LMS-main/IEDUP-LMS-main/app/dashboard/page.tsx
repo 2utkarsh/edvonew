@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { FaArrowRight, FaLock, FaShieldAlt } from 'react-icons/fa';
 import EnhancedDashboard from '../../components/EnhancedDashboard';
+import { apiUrl, withBasePath } from '@/lib/url';
 
 const hostNotes = ['Live rooms', 'Meeting schedule', 'Recording archive'];
 
@@ -149,7 +150,7 @@ export default function Page() {
         >
           <div className="preview-media">
             <img
-              src="/images/itech-innovation-foundation.jpeg"
+              src={withBasePath('/images/itech-innovation-foundation.jpeg')}
               alt="Itech Innovation Foundation"
             />
           </div>
@@ -170,4 +171,3 @@ export default function Page() {
     </main>
   );
 }
-import { apiUrl } from '@/lib/url';
