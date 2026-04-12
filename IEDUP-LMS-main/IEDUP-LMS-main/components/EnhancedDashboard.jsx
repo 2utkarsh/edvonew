@@ -277,7 +277,7 @@ export default function EnhancedDashboard({
       return;
     }
 
-    router.push(withBasePath(`/rooms/${roomSlug}`));
+    router.push(`/rooms/${roomSlug}`);
   };
 
   const copyMeetingLink = async (meeting) => {
@@ -288,7 +288,7 @@ export default function EnhancedDashboard({
     }
 
     try {
-      await navigator.clipboard.writeText(`${window.location.origin}${withBasePath(`/rooms/${slug}`)}`);
+      await navigator.clipboard.writeText(`${window.location.origin}/rooms/${slug}`);
       notify('Meeting link copied.');
     } catch (error) {
       notify('Clipboard access is unavailable in this browser.', 'error');
