@@ -288,8 +288,7 @@ export default function EnhancedDashboard({
     }
 
     try {
-      const basePath = window.location.pathname.split('/rooms/')[0].replace(/\/$/, '');
-      await navigator.clipboard.writeText(`${window.location.origin}${basePath}/rooms/${slug}`);
+      await navigator.clipboard.writeText(`${window.location.origin}${withBasePath(`/rooms/${slug}`)}`);
       notify('Meeting link copied.');
     } catch (error) {
       notify('Clipboard access is unavailable in this browser.', 'error');
