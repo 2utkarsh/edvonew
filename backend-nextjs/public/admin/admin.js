@@ -1083,7 +1083,7 @@ function patchRichTextareaValue(textarea) {
   textarea.dataset.adminRichValuePatched = 'true';
 }
 
-const ADMIN_CKEDITOR_ASSET_TOKEN = '20260413d';
+const ADMIN_CKEDITOR_ASSET_TOKEN = '20260413e';
 const ADMIN_CKEDITOR5_SCRIPT = '/backend/admin/vendor/ckeditor5/ckeditor5.umd.js';
 const ADMIN_CKEDITOR5_STYLE = '/backend/admin/vendor/ckeditor5/ckeditor5.css';
 let adminCkEditorLoaderPromise = null;
@@ -1093,6 +1093,16 @@ function getAdminCkEditorLicenseKey() {
   const licenseKey = String(
     window.__EDVO_CKEDITOR4_LICENSE_KEY__
     || window.CKEDITOR4_LICENSE_KEY
+    || '',
+  ).trim();
+
+  return licenseKey;
+}
+
+function getAdminCkEditor5LicenseKey() {
+  const licenseKey = String(
+    window.__EDVO_CKEDITOR5_LICENSE_KEY__
+    || window.CKEDITOR5_LICENSE_KEY
     || '',
   ).trim();
 
@@ -1230,8 +1240,9 @@ function getAdminCkEditorToolbarItems() {
 function getAdminCkEditorConfig(textarea) {
   const toolbarItems = getAdminCkEditorToolbarItems();
   const plugins = getAdminCkEditorPlugins();
+  const licenseKey = getAdminCkEditor5LicenseKey() || 'GPL';
   const config = {
-    licenseKey: 'GPL',
+    licenseKey,
     placeholder: textarea.placeholder || '',
     toolbar: {
       items: toolbarItems.length ? toolbarItems : ['undo', 'redo'],
