@@ -81,6 +81,15 @@ const nextConfig = {
 
     return rewrites;
   },
+  async redirects() {
+    return [
+      {
+        source: '/backend',
+        destination: '/backend/admin',
+        permanent: false,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
