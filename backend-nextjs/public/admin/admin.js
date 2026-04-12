@@ -650,6 +650,7 @@ function getAdminRichHint(control) {
   const parts = [
     control.id || '',
     control.name || '',
+    control.dataset.k || '',
     control.getAttribute('placeholder') || '',
     control.getAttribute('aria-label') || '',
     control.dataset.adminRichHint || '',
@@ -685,9 +686,6 @@ function shouldEnhanceRichText(control) {
   if (
     control.closest('.toolbar')
     || control.closest('.filters')
-    || control.closest('.table-wrap')
-    || control.closest('tbody')
-    || control.closest('thead')
   ) {
     return false;
   }
@@ -1266,8 +1264,9 @@ function initAdminCkEditor(textarea) {
     })
     .catch((error) => {
       console.error('CKEditor initialization failed:', error);
-      showToast('CKEditor could not load. The plain textarea is still available.', 'error');
+      showToast('CKEditor could not load. Using the built-in editor instead.', 'error');
       textarea.dataset.adminRichEnhanced = 'false';
+      initAdminRichEditor(textarea);
     })
     .finally(() => {
       textarea.dataset.adminCkInitializing = 'false';
@@ -1680,7 +1679,7 @@ function initAdminRichTextEditors(root = document) {
     if (!shouldEnhanceRichText(textarea)) {
       return;
     }
-    initAdminRichEditor(textarea);
+    initAdminCkEditor(textarea);
   });
 
   root.querySelectorAll('.dashboard-content form').forEach((form) => {
