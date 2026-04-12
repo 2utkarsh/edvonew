@@ -6,13 +6,6 @@ const CORRECT_PASSWORD = (process.env.LMS_HOST_PASSWORD || 'admin123').trim();
 
 export async function POST(request: Request) {
   try {
-    if (!hasJwtSecret) {
-      return NextResponse.json(
-        { error: 'Server authentication is not configured' },
-        { status: 500 }
-      );
-    }
-
     const { password } = await request.json();
 
     if (!password) {
@@ -32,18 +25,19 @@ export async function POST(request: Request) {
       };
 
       // Sign the JWT
-      const accessToken = jwt.sign(payload, JWT_SECRET as jwt.Secret, {
-        algorithm: 'HS256'
-      });
-
       const response = NextResponse.json({ success: true });
-      
-      // Set secure cookie with actual JWT
-      response.cookies.set('accessToken', accessToken, {
-        httpOnly: true,
-        sameSite: 'strict',
-        path: '/',
-      });
+
+      if (hasJwtSecret) {
+        const accessToken = jwt.sign(payload, JWT_SECRET as jwt.Secret, {
+          algorithm: 'HS256'
+        });
+
+        response.cookies.set('accessToken', accessToken, {
+          httpOnly: true,
+          sameSite: 'strict',
+          path: '/',
+        });
+      }
 
       return response;
     }
