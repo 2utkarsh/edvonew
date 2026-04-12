@@ -283,7 +283,7 @@ export default function FaceVerificationMonitor({ room }: { room: Room }) {
     const participantSession = loadParticipantSession();
     const savedReference = loadStoredFaceReference();
 
-    if (participantSession && faceReferenceMatchesParticipant(savedReference, participantSession)) {
+    if (participantSession && savedReference && faceReferenceMatchesParticipant(savedReference, participantSession)) {
       referenceSignatureRef.current = savedReference.signature;
       setStatusTone('success');
       setStatusText('Sign-in face reference loaded.');
