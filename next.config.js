@@ -54,8 +54,16 @@ const nextConfig = {
     if (liveBaseUrl) {
       rewrites.push(
         {
+          source: '/live',
+          destination: `${liveBaseUrl}/live`,
+        },
+        {
           source: '/live/:path*',
           destination: `${liveBaseUrl}/live/:path*`,
+        },
+        {
+          source: '/backend/live',
+          destination: `${liveBaseUrl}/live`,
         },
         {
           source: '/backend/live/:path*',
