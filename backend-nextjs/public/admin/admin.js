@@ -643,7 +643,7 @@ const adminRichAllowedStyles = new Set([
 ]);
 
 const adminRichPositiveHintPattern = /description|desc\b|content|bio|comment|note|summary|overview|details|message|answer|text|quote|objective|review|story|body|copy|caption|statement|excerpt|full description|short description/i;
-const adminRichNegativeHintPattern = /one per line|starter code|test case|expected output|roadmap steps|skills\b|tags\b|slug\b|search\b|url\b|link\b|email\b|input\b|output\b|options\b|eligibility\b|rules\b|steps\b|deliverables\b|tools\b|requirements\b|offerings\b|what students learn\b|featured outcomes\b/i;
+const adminRichNegativeHintPattern = /one per line|starter code|test case|expected output|roadmap steps|skills\b|tags\b|slug\b|search\b|url\b|link\b|email\b|input\b|output\b|options\b|eligibility\b|rules\b|steps\b|deliverables\b|tools\b|requirements\b|offerings\b|what students learn\b|featured outcomes\b|features\b/i;
 
 function appendAdminRichStyle(target, property, value) {
   const nextValue = String(value || '').trim();
@@ -714,7 +714,7 @@ function shouldEnhanceRichText(control) {
     return false;
   }
 
-  return adminRichPositiveHintPattern.test(hint);
+  return adminRichPositiveHintPattern.test(hint) || !adminRichNegativeHintPattern.test(hint);
 }
 
 function escapeAdminHtml(value) {
@@ -1083,10 +1083,24 @@ function patchRichTextareaValue(textarea) {
   textarea.dataset.adminRichValuePatched = 'true';
 }
 
-const ADMIN_CKEDITOR_ASSET_TOKEN = '20260412d';
+const ADMIN_CKEDITOR_ASSET_TOKEN = '20260413c';
 const ADMIN_CKEDITOR4_CDN = 'https://cdn.ckeditor.com/4.22.1/standard-all/ckeditor.js';
 let adminCkEditorLoaderPromise = null;
 let adminCkEditorSequence = 0;
+
+function getAdminCkEditorLicenseKey() {
+  const licenseKey = String(
+    window.__EDVO_CKEDITOR4_LICENSE_KEY__
+    || window.CKEDITOR4_LICENSE_KEY
+    || '',
+  ).trim();
+
+  return licenseKey;
+}
+
+function getAdminCkEditorScriptSrc() {
+  return ADMIN_CKEDITOR4_CDN;
+}
 
 function loadAdminCkEditorAssets() {
   if (window.CKEDITOR?.replace) {
@@ -1117,7 +1131,7 @@ function loadAdminCkEditorAssets() {
     }
 
     const script = document.createElement('script');
-    script.src = `${ADMIN_CKEDITOR4_CDN}?v=${ADMIN_CKEDITOR_ASSET_TOKEN}`;
+    script.src = `${getAdminCkEditorScriptSrc()}?v=${ADMIN_CKEDITOR_ASSET_TOKEN}`;
     script.async = true;
     script.dataset.adminCkeditorScript = 'true';
     script.onload = () => {
@@ -1138,7 +1152,8 @@ function loadAdminCkEditorAssets() {
 }
 
 function getAdminCkEditorConfig(textarea) {
-  return {
+  const licenseKey = getAdminCkEditorLicenseKey();
+  const config = {
     allowedContent: true,
     autoParagraph: true,
     disableNativeSpellChecker: false,
@@ -1162,6 +1177,12 @@ function getAdminCkEditorConfig(textarea) {
     ],
     toolbarCanCollapse: true,
   };
+
+  if (licenseKey) {
+    config.licenseKey = licenseKey;
+  }
+
+  return config;
 }
 
 function syncTextareaFromCkEditor(textarea) {

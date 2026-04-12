@@ -41,7 +41,7 @@
     <div id='listPanels' class='stack'></div>
     <section class='panel'><div class='section-title'>Dedicated Admin Areas</div><div class='info-grid'><div class='info-card'><strong>Instructors</strong><div class='help'>Homepage instructors already use the shared instructors/team source. Manage them from the dedicated instructors admin instead of duplicating homepage records.</div><div class='actions' style='margin-top:12px'><a class='btn-link' href='/backend/admin/instructors'>Open Instructors Admin</a></div></div><div class='info-card'><strong>Hiring Partners</strong><div class='help'>Partner logos and company proof are already managed in the hiring partners admin. The homepage pulls from that shared source.</div><div class='actions' style='margin-top:12px'><a class='btn-link' href='/backend/admin/hiring-partners'>Open Hiring Partners Admin</a></div></div><div class='info-card'><strong>Testimonials</strong><div class='help'>Homepage testimonials now reuse approved course reviews instead of a separate homepage-only testimonial editor.</div><div class='actions' style='margin-top:12px'><a class='btn-link' href='/backend/admin/course-reviews'>Open Course Reviews Admin</a></div></div><div class='info-card'><strong>Scope Covered Here</strong><div class='help'>Hero slides, social stats, feature cards, career transformations, portfolio cards, YouTube cards, cinematic copy, and homepage CTA sections.</div></div></div></section>
   </div></div></main>
-  <script src='/backend/admin/admin.js?v=20260412d'></script>
+  <script src='/backend/admin/admin.js?v=20260413c'></script>
   <script>
     const objectConfigs = [
       { key: 'cinematicSection', title: 'Cinematic Section', help: 'Section copy and CTA for the cinematic learning panel.', fields: [
@@ -124,7 +124,8 @@
       const id = fieldId(sectionKey, field.path);
       const wide = field.wide ? 'wide' : '';
       if (field.type === 'checkbox') return `<div class='field ${wide}'><label class='checkbox' for='${id}'><input id='${id}' type='checkbox' /> ${escapeHtml(field.label)}</label></div>`;
-      if (field.type === 'textarea' || field.type === 'skills') return `<div class='field ${wide}'><label for='${id}'>${escapeHtml(field.label)}</label><textarea id='${id}' class='textarea'></textarea></div>`;
+      if (field.type === 'skills') return `<div class='field ${wide}'><label for='${id}'>${escapeHtml(field.label)}</label><textarea id='${id}' class='textarea' data-admin-rich='false'></textarea></div>`;
+      if (field.type === 'textarea') return `<div class='field ${wide}'><label for='${id}'>${escapeHtml(field.label)}</label><textarea id='${id}' class='textarea' data-admin-rich='true'></textarea></div>`;
       return `<div class='field ${wide}'><label for='${id}'>${escapeHtml(field.label)}</label><input id='${id}' class='input' /></div>`;
     }
 
