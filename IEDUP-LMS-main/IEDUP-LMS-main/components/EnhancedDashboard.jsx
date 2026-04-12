@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { generateRoomId } from '@/lib/client-utils';
 import { createMeeting, fetchMeetings, updateMeeting } from '@/lib/api';
+import { clearStoredFaceReference } from '@/lib/face-verification';
 import { withBasePath } from '@/lib/url';
 import RecordingsList from './RecordingsList';
 import {
@@ -378,6 +379,7 @@ export default function EnhancedDashboard({
     try {
       localStorage.removeItem('participantToken');
       localStorage.removeItem('participantData');
+      clearStoredFaceReference();
     } catch (error) {
       console.error('Unable to clear participant session:', error);
     }

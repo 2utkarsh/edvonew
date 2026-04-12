@@ -13,6 +13,8 @@ import {
   FaUsers,
 } from 'react-icons/fa';
 import { apiUrl, withBasePath } from '@/lib/url';
+import ParticipantFaceEnrollment from '@/components/ParticipantFaceEnrollment';
+import { saveStoredFaceReference, type StoredFaceReference } from '@/lib/face-verification';
 
 const demoAccounts = [
   {
@@ -40,6 +42,16 @@ export default function ParticipantLoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [pendingSession, setPendingSession] = useState<{
+    participant: {
+      id: string;
+      name: string;
+      email: string;
+      role: string;
+      permissions: string[];
+    };
+    token: string;
+  } | null>(null);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -63,18 +75,33 @@ export default function ParticipantLoginPage() {
         return;
       }
 
-      localStorage.setItem('participantData', JSON.stringify(data.participant));
-      localStorage.setItem('participantToken', data.token);
-      setSuccess('Opening...');
-
-      setTimeout(() => {
-        router.push('/participant');
-      }, 900);
+      setPendingSession({
+        participant: data.participant,
+        token: data.token,
+      });
+      setSuccess('');
     } catch (err) {
       setError('Unable to sign in right now. Please try again.');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleFaceEnrollmentSuccess = async (reference: StoredFaceReference) => {
+    if (!pendingSession) {
+      setError('Your session expired. Please sign in again.');
+      setPendingSession(null);
+      return;
+    }
+
+    saveStoredFaceReference(reference);
+    localStorage.setItem('participantData', JSON.stringify(pendingSession.participant));
+    localStorage.setItem('participantToken', pendingSession.token);
+    setSuccess('Opening...');
+
+    setTimeout(() => {
+      router.push('/participant');
+    }, 900);
   };
 
   const useDemoAccount = (account: (typeof demoAccounts)[number]) => {
@@ -93,75 +120,89 @@ export default function ParticipantLoginPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <span className="auth-badge">
-            <FaUsers />
-            Participant Access
-          </span>
-          <div>
-            <h1 className="auth-title">Participant Sign In</h1>
-            <p className="auth-subtitle">Enter your account details.</p>
-          </div>
-
-          <form className="auth-form" onSubmit={handleSubmit}>
-            <label className="auth-field" htmlFor="participant-email">
-              <span className="auth-label">Email</span>
-              <span className="auth-input-wrap">
-                <FaUser className="auth-input-icon" />
-                <input
-                  id="participant-email"
-                  type="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  className="auth-input"
-                  placeholder="Enter email"
-                  autoComplete="email"
-                  required
-                />
+          {pendingSession ? (
+            <ParticipantFaceEnrollment
+              participant={pendingSession.participant}
+              onBack={() => {
+                setPendingSession(null);
+                setError('');
+                setSuccess('');
+              }}
+              onSuccess={handleFaceEnrollmentSuccess}
+            />
+          ) : (
+            <>
+              <span className="auth-badge">
+                <FaUsers />
+                Participant Access
               </span>
-            </label>
+              <div>
+                <h1 className="auth-title">Participant Sign In</h1>
+                <p className="auth-subtitle">Enter your account details.</p>
+              </div>
 
-            <label className="auth-field" htmlFor="participant-password">
-              <span className="auth-label">Password</span>
-              <span className="auth-input-wrap">
-                <FaLock className="auth-input-icon" />
-                <input
-                  id="participant-password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  className="auth-input"
-                  placeholder="Enter password"
-                  autoComplete="current-password"
-                  required
-                />
-                <button
-                  type="button"
-                  className="auth-password-toggle"
-                  onClick={() => setShowPassword((current) => !current)}
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+              <form className="auth-form" onSubmit={handleSubmit}>
+                <label className="auth-field" htmlFor="participant-email">
+                  <span className="auth-label">Email</span>
+                  <span className="auth-input-wrap">
+                    <FaUser className="auth-input-icon" />
+                    <input
+                      id="participant-email"
+                      type="email"
+                      value={email}
+                      onChange={(event) => setEmail(event.target.value)}
+                      className="auth-input"
+                      placeholder="Enter email"
+                      autoComplete="email"
+                      required
+                    />
+                  </span>
+                </label>
+
+                <label className="auth-field" htmlFor="participant-password">
+                  <span className="auth-label">Password</span>
+                  <span className="auth-input-wrap">
+                    <FaLock className="auth-input-icon" />
+                    <input
+                      id="participant-password"
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
+                      className="auth-input"
+                      placeholder="Enter password"
+                      autoComplete="current-password"
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="auth-password-toggle"
+                      onClick={() => setShowPassword((current) => !current)}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  </span>
+                </label>
+
+                {error ? <div className="auth-message auth-message--error">{error}</div> : null}
+                {success ? <div className="auth-message auth-message--success">{success}</div> : null}
+
+                <button type="submit" className="auth-submit" disabled={isLoading}>
+                  {isLoading ? <span className="button-spinner" /> : <FaArrowRight />}
+                  {isLoading ? 'Signing in' : 'Continue'}
                 </button>
-              </span>
-            </label>
+              </form>
 
-            {error ? <div className="auth-message auth-message--error">{error}</div> : null}
-            {success ? <div className="auth-message auth-message--success">{success}</div> : null}
-
-            <button type="submit" className="auth-submit" disabled={isLoading}>
-              {isLoading ? <span className="button-spinner" /> : <FaArrowRight />}
-              {isLoading ? 'Signing in' : 'Continue'}
-            </button>
-          </form>
-
-          <div className="auth-link-row">
-            <Link href="/" className="auth-secondary-link">
-              Home
-            </Link>
-            <Link href="/dashboard" className="auth-secondary-link">
-              Host sign in
-            </Link>
-          </div>
+              <div className="auth-link-row">
+                <Link href="/" className="auth-secondary-link">
+                  Home
+                </Link>
+                <Link href="/dashboard" className="auth-secondary-link">
+                  Host sign in
+                </Link>
+              </div>
+            </>
+          )}
         </motion.section>
 
         <motion.aside
@@ -178,22 +219,37 @@ export default function ParticipantLoginPage() {
           </div>
 
           <div className="preview-shell">
-            <h2 className="preview-title">Available Accounts</h2>
+            <h2 className="preview-title">
+              {pendingSession ? 'Verification Ready' : 'Available Accounts'}
+            </h2>
           </div>
 
-          <div className="auth-demo-grid">
-            {demoAccounts.map((account) => (
-              <button
-                key={account.email}
-                type="button"
-                className="auth-demo-button"
-                onClick={() => useDemoAccount(account)}
-              >
-                <strong>{account.name}</strong>
-                <span>{account.email}</span>
-              </button>
-            ))}
-          </div>
+          {pendingSession ? (
+            <div className="auth-demo-grid">
+              <div className="auth-demo-button" style={{ cursor: 'default' }}>
+                <strong>{pendingSession.participant.name}</strong>
+                <span>{pendingSession.participant.email}</span>
+              </div>
+              <div className="auth-demo-button" style={{ cursor: 'default' }}>
+                <strong>What happens next</strong>
+                <span>Your face reference is stored locally in this browser and checked in the room.</span>
+              </div>
+            </div>
+          ) : (
+            <div className="auth-demo-grid">
+              {demoAccounts.map((account) => (
+                <button
+                  key={account.email}
+                  type="button"
+                  className="auth-demo-button"
+                  onClick={() => useDemoAccount(account)}
+                >
+                  <strong>{account.name}</strong>
+                  <span>{account.email}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </motion.aside>
       </div>
     </main>

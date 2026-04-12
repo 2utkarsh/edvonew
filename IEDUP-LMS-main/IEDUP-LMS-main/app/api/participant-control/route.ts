@@ -144,6 +144,7 @@ export async function POST(req: Request) {
           verified: body.verified === true,
           score: typeof body.score === 'number' ? body.score : null,
           reason: typeof body.reason === 'string' ? body.reason : null,
+          engine: typeof body.engine === 'string' ? body.engine : null,
         });
 
         const mergedMetadata = {
@@ -152,12 +153,22 @@ export async function POST(req: Request) {
             ...existingFaceVerification,
             referenceCapturedAt:
               action === 'record-face-reference'
-                ? checkedAt
+                ? typeof body.referenceCapturedAt === 'string'
+                  ? body.referenceCapturedAt
+                  : checkedAt
                 : existingFaceVerification.referenceCapturedAt || checkedAt,
             latestCheckAt: checkedAt,
             verified: body.verified === true,
             lastScore: typeof body.score === 'number' ? body.score : null,
             lastReason: typeof body.reason === 'string' ? body.reason : null,
+            engine:
+              typeof body.engine === 'string'
+                ? body.engine
+                : existingFaceVerification.engine || null,
+            referenceSource:
+              typeof body.referenceSource === 'string'
+                ? body.referenceSource
+                : existingFaceVerification.referenceSource || null,
             intervalMinutes:
               typeof body.intervalMinutes === 'number'
                 ? body.intervalMinutes

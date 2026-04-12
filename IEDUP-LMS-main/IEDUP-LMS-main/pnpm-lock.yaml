@@ -29,6 +29,9 @@ importers:
       '@livekit/track-processors':
         specifier: ^0.5.4
         version: 0.5.8(@types/dom-mediacapture-transform@0.1.11)(livekit-client@2.15.7(@types/dom-mediacapture-record@1.0.22))
+      '@mediapipe/tasks-vision':
+        specifier: 0.10.14
+        version: 0.10.14
       clsx:
         specifier: ^2.1.1
         version: 2.1.1

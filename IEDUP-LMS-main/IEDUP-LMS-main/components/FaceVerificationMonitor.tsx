@@ -3,10 +3,15 @@
 import React from 'react';
 import { ConnectionState, Room, RoomEvent, Track } from 'livekit-client';
 import { FaCamera, FaCheckCircle, FaClock, FaExclamationTriangle, FaUserShield } from 'react-icons/fa';
+import { apiUrl } from '@/lib/url';
+import {
+  compareFaceSignatures,
+  detectFaceSignature,
+  FACE_MATCH_THRESHOLD,
+  faceReferenceMatchesParticipant,
+  loadStoredFaceReference,
+} from '@/lib/face-verification';
 
-const FACE_CAPTURE_SIZE = 64;
-const FACE_BLOCKS_PER_SIDE = 8;
-const FACE_MATCH_THRESHOLD = 0.72;
 const REFERENCE_RETRY_MS = 15000;
 const DEFAULT_INTERVAL_MINUTES = Math.max(
   1,
@@ -25,97 +30,21 @@ function safeParseMetadata(metadata?: string) {
   }
 }
 
-function createFaceSignature(data: Uint8ClampedArray) {
-  const blockSize = FACE_CAPTURE_SIZE / FACE_BLOCKS_PER_SIDE;
-  const values: number[] = [];
-
-  for (let blockY = 0; blockY < FACE_BLOCKS_PER_SIDE; blockY += 1) {
-    for (let blockX = 0; blockX < FACE_BLOCKS_PER_SIDE; blockX += 1) {
-      let total = 0;
-      let count = 0;
-
-      for (let y = 0; y < blockSize; y += 1) {
-        for (let x = 0; x < blockSize; x += 1) {
-          const pixelX = blockX * blockSize + x;
-          const pixelY = blockY * blockSize + y;
-          const index = (pixelY * FACE_CAPTURE_SIZE + pixelX) * 4;
-          total += data[index] * 0.299 + data[index + 1] * 0.587 + data[index + 2] * 0.114;
-          count += 1;
-        }
-      }
-
-      values.push(total / Math.max(1, count));
-    }
-  }
-
-  const mean = values.reduce((sum, value) => sum + value, 0) / Math.max(1, values.length);
-  const centered = values.map((value) => value - mean);
-  const magnitude = Math.sqrt(centered.reduce((sum, value) => sum + value * value, 0)) || 1;
-
-  return centered.map((value) => value / magnitude);
+function formatTime(value: Date | string | number) {
+  return new Date(value).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
-function compareFaceSignatures(reference: number[], current: number[]) {
-  return reference.reduce((sum, value, index) => sum + value * current[index], 0);
-}
-
-function normalizeBoundingBox(bounds: DOMRectReadOnly, width: number, height: number) {
-  const x = Math.max(0, Math.floor(bounds.x));
-  const y = Math.max(0, Math.floor(bounds.y));
-  const boxWidth = Math.min(width - x, Math.ceil(bounds.width));
-  const boxHeight = Math.min(height - y, Math.ceil(bounds.height));
-
-  return {
-    x,
-    y,
-    width: Math.max(1, boxWidth),
-    height: Math.max(1, boxHeight),
-  };
-}
-
-async function detectFaceSignature(detector: FaceDetectorInstance, video: HTMLVideoElement) {
-  if (!video.videoWidth || !video.videoHeight) {
-    return { ok: false as const, reason: 'Camera is not ready.' };
+function loadParticipantSession() {
+  if (typeof window === 'undefined') {
+    return null;
   }
 
-  const faces = await detector.detect(video);
-
-  if (!faces.length) {
-    return { ok: false as const, reason: 'No face detected.' };
+  try {
+    const rawValue = window.localStorage.getItem('participantData');
+    return rawValue ? JSON.parse(rawValue) : null;
+  } catch {
+    return null;
   }
-
-  if (faces.length > 1) {
-    return { ok: false as const, reason: 'Only one face should be visible.' };
-  }
-
-  const bounds = normalizeBoundingBox(faces[0].boundingBox, video.videoWidth, video.videoHeight);
-  const canvas = document.createElement('canvas');
-  canvas.width = FACE_CAPTURE_SIZE;
-  canvas.height = FACE_CAPTURE_SIZE;
-
-  const context = canvas.getContext('2d', { willReadFrequently: true });
-  if (!context) {
-    return { ok: false as const, reason: 'Unable to read camera frames.' };
-  }
-
-  context.drawImage(
-    video,
-    bounds.x,
-    bounds.y,
-    bounds.width,
-    bounds.height,
-    0,
-    0,
-    FACE_CAPTURE_SIZE,
-    FACE_CAPTURE_SIZE,
-  );
-
-  const imageData = context.getImageData(0, 0, FACE_CAPTURE_SIZE, FACE_CAPTURE_SIZE);
-
-  return {
-    ok: true as const,
-    signature: createFaceSignature(imageData.data),
-  };
 }
 
 async function attachCameraPreview(room: Room) {
@@ -180,7 +109,6 @@ export default function FaceVerificationMonitor({ room }: { room: Room }) {
   const [nextCheckAt, setNextCheckAt] = React.useState<string | null>(null);
   const [lastCheckedAt, setLastCheckedAt] = React.useState<string | null>(null);
 
-  const detectorRef = React.useRef<FaceDetectorInstance | null>(null);
   const videoRef = React.useRef<HTMLVideoElement | null>(null);
   const videoCleanupRef = React.useRef<(() => void) | null>(null);
   const referenceSignatureRef = React.useRef<number[] | null>(null);
@@ -247,7 +175,7 @@ export default function FaceVerificationMonitor({ room }: { room: Room }) {
   }, [room]);
 
   const runScheduledCheck = React.useCallback(async () => {
-    if (!detectorRef.current || !referenceSignatureRef.current) {
+    if (!referenceSignatureRef.current) {
       return;
     }
 
@@ -255,7 +183,7 @@ export default function FaceVerificationMonitor({ room }: { room: Room }) {
     if (!preview) {
       setStatusTone('warning');
       setStatusText('Enable camera for face check.');
-      setNextCheckAt(new Date(Date.now() + intervalMs).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+      setNextCheckAt(formatTime(Date.now() + intervalMs));
       await sendFaceEvent('face-verification', {
         verified: false,
         reason: 'camera-unavailable',
@@ -263,12 +191,10 @@ export default function FaceVerificationMonitor({ room }: { room: Room }) {
       return;
     }
 
-    const result = await detectFaceSignature(detectorRef.current, preview);
+    const result = await detectFaceSignature(preview);
     const checkedAt = new Date();
-    setLastCheckedAt(checkedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-    setNextCheckAt(
-      new Date(Date.now() + intervalMs).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    );
+    setLastCheckedAt(formatTime(checkedAt));
+    setNextCheckAt(formatTime(Date.now() + intervalMs));
 
     if (!result.ok) {
       setStatusTone('warning');
@@ -276,6 +202,7 @@ export default function FaceVerificationMonitor({ room }: { room: Room }) {
       await sendFaceEvent('face-verification', {
         verified: false,
         reason: result.reason,
+        engine: result.engine,
       });
       return;
     }
@@ -290,21 +217,20 @@ export default function FaceVerificationMonitor({ room }: { room: Room }) {
       verified,
       score: Number(score.toFixed(3)),
       reason: verified ? 'verified' : 'face-mismatch',
+      engine: result.engine,
     });
   }, [ensurePreview, intervalMs, sendFaceEvent]);
 
   const startScheduledChecks = React.useCallback(() => {
     clearTimers();
-    setNextCheckAt(
-      new Date(Date.now() + intervalMs).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    );
+    setNextCheckAt(formatTime(Date.now() + intervalMs));
     verificationIntervalRef.current = window.setInterval(() => {
       void runScheduledCheck();
     }, intervalMs);
   }, [clearTimers, intervalMs, runScheduledCheck]);
 
   const captureReference = React.useCallback(async () => {
-    if (!detectorRef.current || referenceSignatureRef.current) {
+    if (referenceSignatureRef.current) {
       return;
     }
 
@@ -318,7 +244,7 @@ export default function FaceVerificationMonitor({ room }: { room: Room }) {
     setStatusTone('neutral');
     setStatusText('Capturing reference face...');
 
-    const result = await detectFaceSignature(detectorRef.current, preview);
+    const result = await detectFaceSignature(preview);
     if (!result.ok) {
       setStatusTone('warning');
       setStatusText(result.reason);
@@ -328,12 +254,14 @@ export default function FaceVerificationMonitor({ room }: { room: Room }) {
     referenceSignatureRef.current = result.signature;
     setStatusTone('success');
     setStatusText(`Reference captured. Checking every ${intervalMinutes} min.`);
-    setLastCheckedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    setLastCheckedAt(formatTime(new Date()));
 
     await sendFaceEvent('record-face-reference', {
       verified: true,
       score: 1,
       reason: 'reference-captured',
+      engine: result.engine,
+      referenceSource: 'room-reference',
     });
 
     startScheduledChecks();
@@ -352,20 +280,28 @@ export default function FaceVerificationMonitor({ room }: { room: Room }) {
     startedRef.current = true;
     setIsVisible(true);
 
-    if (typeof window === 'undefined' || !window.FaceDetector) {
-      setStatusTone('error');
-      setStatusText('Face detection is not available in this browser.');
-      await sendFaceEvent('face-verification', {
-        verified: false,
-        reason: 'unsupported-browser',
+    const participantSession = loadParticipantSession();
+    const savedReference = loadStoredFaceReference();
+
+    if (participantSession && faceReferenceMatchesParticipant(savedReference, participantSession)) {
+      referenceSignatureRef.current = savedReference.signature;
+      setStatusTone('success');
+      setStatusText('Sign-in face reference loaded.');
+      setLastCheckedAt(null);
+
+      await sendFaceEvent('record-face-reference', {
+        verified: true,
+        score: 1,
+        reason: 'login-face-reference-loaded',
+        engine: savedReference.engine,
+        referenceCapturedAt: savedReference.capturedAt,
+        referenceSource: savedReference.source,
       });
+
+      await runScheduledCheck();
+      startScheduledChecks();
       return;
     }
-
-    detectorRef.current = new window.FaceDetector({
-      fastMode: true,
-      maxDetectedFaces: 1,
-    });
 
     await captureReference();
 
@@ -374,13 +310,12 @@ export default function FaceVerificationMonitor({ room }: { room: Room }) {
         void captureReference();
       }, REFERENCE_RETRY_MS);
     }
-  }, [captureReference, room.localParticipant.metadata, sendFaceEvent]);
+  }, [captureReference, room.localParticipant.metadata, runScheduledCheck, sendFaceEvent, startScheduledChecks]);
 
   const stopMonitoring = React.useCallback(() => {
     clearTimers();
     cleanupPreview();
     referenceSignatureRef.current = null;
-    detectorRef.current = null;
     startedRef.current = false;
     setNextCheckAt(null);
     setLastCheckedAt(null);
@@ -494,4 +429,3 @@ export default function FaceVerificationMonitor({ room }: { room: Room }) {
     </div>
   );
 }
-import { apiUrl } from '@/lib/url';
