@@ -3,8 +3,8 @@ import { connectToDatabase } from '@/lib/db';
 import { requireAuth } from '@/lib/auth';
 import { success, fail } from '@/lib/http';
 import { CourseModel } from '@/models/Course';
-import { UserModel } from '@/models/User';
 import { EnrollmentModel } from '@/models/Enrollment';
+import { Types } from 'mongoose';
 
 // GET instructor dashboard data
 export async function GET(request: NextRequest) {
@@ -15,30 +15,55 @@ export async function GET(request: NextRequest) {
     if (authResult.error) return authResult.error;
 
     const userId = authResult.payload.sub;
+    const isValidUserId = Types.ObjectId.isValid(userId);
+
+    if (!isValidUserId) {
+      return success(
+        {
+          courses: [],
+          stats: {
+            totalCourses: 0,
+            totalStudents: 0,
+            totalRevenue: 0,
+            averageRating: '0.0',
+          },
+          recentEnrollments: [],
+        },
+        'Instructor dashboard data retrieved successfully'
+      );
+    }
 
     // Get instructor's courses
-    const courses = await CourseModel.find({ instructorId: userId })
+    const courses = await CourseModel.find({ instructorId: new Types.ObjectId(userId) })
       .sort({ createdAt: -1 })
       .lean();
 
     // Get total students across all courses
-    const totalStudents = courses.reduce((sum, course) => sum + course.studentsEnrolled, 0);
+    const totalStudents = courses.reduce(
+      (sum, course) => sum + Number(course.studentsEnrolled ?? 0),
+      0
+    );
 
     // Get total revenue (simplified - would come from payments in real app)
-    const totalRevenue = courses.reduce((sum, course) => sum + (course.price * course.studentsEnrolled), 0);
+    const totalRevenue = courses.reduce(
+      (sum, course) => sum + (Number(course.price ?? 0) * Number(course.studentsEnrolled ?? 0)),
+      0
+    );
 
     // Get average rating
     const avgRating = courses.length > 0
-      ? courses.reduce((sum, course) => sum + course.rating, 0) / courses.length
+      ? courses.reduce((sum, course) => sum + Number(course.rating ?? 0), 0) / courses.length
       : 0;
 
     // Get recent enrollments
-    const courseIds = courses.map((c) => c._id);
-    const recentEnrollments = await EnrollmentModel.find({ courseId: { $in: courseIds } })
-      .populate('userId', 'name email')
-      .sort({ createdAt: -1 })
-      .limit(10)
-      .lean();
+    const courseIds = courses.map((c) => c._id).filter(Boolean);
+    const recentEnrollments = courseIds.length > 0
+      ? await EnrollmentModel.find({ courseId: { $in: courseIds } })
+          .populate('userId', 'name email')
+          .sort({ createdAt: -1 })
+          .limit(10)
+          .lean()
+      : [];
 
     return success(
       {
