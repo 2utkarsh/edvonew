@@ -193,13 +193,20 @@ richEditorStyle.textContent = `
     opacity: 0 !important;
     pointer-events: none !important;
   }
-  .admin-ckeditor-host {
-    width: 100%;
+  .cke {
+    width: 100% !important;
   }
-  .admin-ckeditor-host .ck-editor {
-    width: 100%;
+  .cke_chrome {
+    border: 1px solid #d7deef !important;
+    border-radius: 18px !important;
+    overflow: hidden;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82);
   }
-  .admin-ckeditor-host .ck-editor__editable_inline {
+  .cke_top {
+    border-bottom: 1px solid rgba(148, 163, 184, 0.24) !important;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+  }
+  .cke_contents {
     min-height: 180px;
   }
   .admin-rich-editor {
@@ -1076,11 +1083,13 @@ function patchRichTextareaValue(textarea) {
   textarea.dataset.adminRichValuePatched = 'true';
 }
 
-const ADMIN_CKEDITOR_ASSET_TOKEN = '20260401d';
+const ADMIN_CKEDITOR_ASSET_TOKEN = '20260412c';
+const ADMIN_CKEDITOR4_CDN = 'https://cdn.ckeditor.com/4.22.1/standard-all/ckeditor.js';
 let adminCkEditorLoaderPromise = null;
+let adminCkEditorSequence = 0;
 
 function loadAdminCkEditorAssets() {
-  if (window.CKEDITOR?.ClassicEditor) {
+  if (window.CKEDITOR?.replace) {
     return Promise.resolve(window.CKEDITOR);
   }
 
@@ -1089,27 +1098,35 @@ function loadAdminCkEditorAssets() {
   }
 
   adminCkEditorLoaderPromise = new Promise((resolve, reject) => {
-    const existingLink = document.querySelector('link[data-admin-ckeditor-style="true"]');
-    if (!existingLink) {
-      const styleLink = document.createElement('link');
-      styleLink.rel = 'stylesheet';
-      styleLink.href = `/backend/admin/vendor/ckeditor5/ckeditor5.css?v=${ADMIN_CKEDITOR_ASSET_TOKEN}`;
-      styleLink.dataset.adminCkeditorStyle = 'true';
-      document.head.appendChild(styleLink);
-    }
-
     const existingScript = document.querySelector('script[data-admin-ckeditor-script="true"]');
     if (existingScript) {
-      existingScript.addEventListener('load', () => resolve(window.CKEDITOR), { once: true });
+      if (window.CKEDITOR?.replace) {
+        resolve(window.CKEDITOR);
+        return;
+      }
+
+      existingScript.addEventListener('load', () => {
+        if (window.CKEDITOR?.replace) {
+          resolve(window.CKEDITOR);
+          return;
+        }
+        reject(new Error('CKEditor 4 did not initialize'));
+      }, { once: true });
       existingScript.addEventListener('error', () => reject(new Error('Unable to load CKEditor script')), { once: true });
       return;
     }
 
     const script = document.createElement('script');
-    script.src = `/backend/admin/vendor/ckeditor5/ckeditor5.umd.js?v=${ADMIN_CKEDITOR_ASSET_TOKEN}`;
+    script.src = `${ADMIN_CKEDITOR4_CDN}?v=${ADMIN_CKEDITOR_ASSET_TOKEN}`;
     script.async = true;
     script.dataset.adminCkeditorScript = 'true';
-    script.onload = () => resolve(window.CKEDITOR);
+    script.onload = () => {
+      if (window.CKEDITOR?.replace) {
+        resolve(window.CKEDITOR);
+        return;
+      }
+      reject(new Error('CKEditor 4 did not initialize'));
+    };
     script.onerror = () => reject(new Error('Unable to load CKEditor script'));
     document.head.appendChild(script);
   }).catch((error) => {
@@ -1121,116 +1138,35 @@ function loadAdminCkEditorAssets() {
 }
 
 function getAdminCkEditorConfig(textarea) {
-  const ck = window.CKEDITOR || {};
-  const {
-    Alignment,
-    AutoImage,
-    AutoLink,
-    Base64UploadAdapter,
-    BlockQuote,
-    Bold,
-    Essentials,
-    Font,
-    GeneralHtmlSupport,
-    Heading,
-    HorizontalLine,
-    Image,
-    ImageCaption,
-    ImageInsert,
-    ImageResize,
-    ImageStyle,
-    ImageToolbar,
-    ImageUpload,
-    Italic,
-    Link,
-    List,
-    Paragraph,
-    PasteFromOffice,
-    RemoveFormat,
-    Table,
-    TableToolbar,
-    Underline,
-    Undo,
-  } = ck;
-
   return {
-    licenseKey: 'GPL',
-    placeholder: textarea.getAttribute('placeholder') || 'Write here...',
-    plugins: [
-      Essentials,
-      Paragraph,
-      Heading,
-      Bold,
-      Italic,
-      Underline,
-      Font,
-      Alignment,
-      Link,
-      List,
-      Table,
-      TableToolbar,
-      BlockQuote,
-      HorizontalLine,
-      RemoveFormat,
-      PasteFromOffice,
-      GeneralHtmlSupport,
-      Image,
-      ImageUpload,
-      ImageToolbar,
-      ImageCaption,
-      ImageStyle,
-      ImageResize,
-      ImageInsert,
-      Base64UploadAdapter,
-      AutoImage,
-      AutoLink,
-      Undo,
-    ].filter(Boolean),
-    toolbar: {
-      shouldNotGroupWhenFull: true,
-      items: [
-        'undo', 'redo',
-        '|',
-        'heading',
-        '|',
-        'fontFamily', 'fontSize', 'fontColor', 'fontBackgroundColor',
-        '|',
-        'bold', 'italic', 'underline', 'removeFormat',
-        '|',
-        'link', 'bulletedList', 'numberedList',
-        '|',
-        'alignment',
-        '|',
-        'insertTable', 'blockQuote', 'horizontalLine', 'imageUpload',
-      ],
-    },
-    table: {
-      contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells'],
-    },
-    image: {
-      toolbar: ['imageTextAlternative', 'toggleImageCaption', 'imageStyle:inline', 'imageStyle:block', 'resizeImage'],
-    },
-    link: {
-      addTargetToExternalLinks: true,
-      defaultProtocol: 'https://',
-    },
-    htmlSupport: {
-      allow: [
-        {
-          name: /.*/,
-          attributes: true,
-          classes: true,
-          styles: true,
-        },
-      ],
-    },
-    updateSourceElementOnDestroy: true,
+    allowedContent: true,
+    autoParagraph: true,
+    disableNativeSpellChecker: false,
+    extraAllowedContent: '*(*);*{*};*[*]',
+    extraPlugins: 'colorbutton,font,justify',
+    format_tags: 'p;h2;h3;h4;pre',
+    height: Math.max((Number(textarea.rows) || 0) * 22, 220),
+    removeButtons: 'Cut,Copy,Paste,PasteText,PasteFromWord,Anchor,Subscript,Superscript,SpecialChar,About',
+    removePlugins: 'elementspath',
+    resize_enabled: true,
+    shiftEnterMode: window.CKEDITOR?.ENTER_BR,
+    toolbar: [
+      { name: 'clipboard', items: ['Undo', 'Redo'] },
+      { name: 'styles', items: ['Format', 'Font', 'FontSize'] },
+      { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'RemoveFormat'] },
+      { name: 'colors', items: ['TextColor', 'BGColor'] },
+      { name: 'paragraph', items: ['NumberedList', 'BulletedList', 'Outdent', 'Indent', 'Blockquote', 'JustifyLeft', 'JustifyCenter', 'JustifyRight'] },
+      { name: 'links', items: ['Link', 'Unlink'] },
+      { name: 'insert', items: ['Image', 'Table', 'HorizontalRule'] },
+      { name: 'document', items: ['Source', 'Maximize'] },
+    ],
+    toolbarCanCollapse: true,
   };
 }
 
 function syncTextareaFromCkEditor(textarea) {
   const editor = textarea._adminCkEditor;
-  if (!editor) {
+  if (!editor || editor.status !== 'ready') {
     return;
   }
 
@@ -1242,20 +1178,27 @@ function syncTextareaFromCkEditor(textarea) {
 
 function syncCkEditorFromTextarea(textarea) {
   const editor = textarea._adminCkEditor;
-  if (!editor || textarea.dataset.adminRichSyncing === 'true') {
+  if (!editor || editor.status !== 'ready' || textarea.dataset.adminRichSyncing === 'true') {
     return;
   }
 
   const nextHtml = sanitizeAdminRichHtml(toRichEditorHtml(getNativeTextareaValue(textarea)));
   if (editor.getData() !== nextHtml) {
     textarea.dataset.adminRichSyncing = 'true';
-    editor.setData(nextHtml);
-    textarea.dataset.adminRichSyncing = 'false';
+    editor.once('dataReady', () => {
+      textarea.dataset.adminRichSyncing = 'false';
+    });
+    try {
+      editor.setData(nextHtml);
+    } catch (error) {
+      textarea.dataset.adminRichSyncing = 'false';
+      throw error;
+    }
   }
 }
 
 function initAdminCkEditor(textarea) {
-  if (textarea._adminCkEditor || textarea.dataset.adminCkInitializing === 'true') {
+  if (textarea._adminRichEditor || textarea._adminCkEditor || textarea.dataset.adminCkInitializing === 'true') {
     return;
   }
 
@@ -1263,33 +1206,36 @@ function initAdminCkEditor(textarea) {
   patchRichTextareaValue(textarea);
   textarea.classList.add('admin-rich-textarea-native');
 
-  if (textarea._adminCkHost?.isConnected) {
-    textarea._adminCkHost.remove();
+  if (!textarea.id) {
+    adminCkEditorSequence += 1;
+    textarea.id = `admin-rich-editor-${adminCkEditorSequence}`;
   }
 
-  const host = document.createElement('div');
-  host.className = 'admin-ckeditor-host';
-  host.innerHTML = sanitizeAdminRichHtml(toRichEditorHtml(getNativeTextareaValue(textarea)));
-  textarea.insertAdjacentElement('afterend', host);
-  textarea._adminCkHost = host;
-
   loadAdminCkEditorAssets()
-    .then(() => window.CKEDITOR.ClassicEditor.create(host, getAdminCkEditorConfig(textarea)))
+    .then((CKEDITOR) => new Promise((resolve, reject) => {
+      const editor = CKEDITOR.replace(textarea.id, getAdminCkEditorConfig(textarea));
+      editor.once('instanceReady', () => resolve(editor));
+      editor.once('error', (event) => reject(event?.data || new Error('CKEditor failed to initialize')));
+    }))
     .then((editor) => {
       textarea._adminCkEditor = editor;
+      textarea._adminCkHost = editor.container?.$ || null;
       textarea.dataset.adminRichEnhanced = 'true';
       textarea.setAttribute('data-admin-rich-enhanced', 'true');
-      editor.model.document.on('change:data', () => syncTextareaFromCkEditor(textarea));
+      editor.on('change', () => syncTextareaFromCkEditor(textarea));
+      editor.on('blur', () => syncTextareaFromCkEditor(textarea));
+      editor.on('mode', () => syncTextareaFromCkEditor(textarea));
       syncCkEditorFromTextarea(textarea);
     })
     .catch((error) => {
       console.error('CKEditor initialization failed:', error);
-      if (textarea._adminCkHost?.isConnected) {
-        textarea._adminCkHost.remove();
+      if (textarea._adminCkEditor && typeof textarea._adminCkEditor.destroy === 'function') {
+        textarea._adminCkEditor.destroy();
       }
+      textarea._adminCkEditor = null;
       textarea._adminCkHost = null;
       textarea.classList.remove('admin-rich-textarea-native');
-      showToast('CKEditor could not load. Using the built-in editor instead.', 'error');
+      showToast('CKEditor 4 could not load. Using the built-in editor instead.', 'error');
       textarea.dataset.adminRichEnhanced = 'false';
       initAdminRichEditor(textarea);
     })
