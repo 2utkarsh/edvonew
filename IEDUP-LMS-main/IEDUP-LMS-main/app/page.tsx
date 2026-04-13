@@ -53,8 +53,8 @@ export default function Page() {
             <Link href="/dashboard" className={styles.primaryAction}>
               Host sign in
             </Link>
-            <Link href="/participant-login" className={styles.secondaryAction}>
-              Participant sign in
+            <Link href="/participant" className={styles.secondaryAction}>
+              Participant access
             </Link>
             {lastRoomRoute ? (
               <button
@@ -93,7 +93,7 @@ export default function Page() {
             </div>
             <div className={styles.sideRow}>
               <span className={styles.sideLabel}>Participant</span>
-              <strong className={styles.sideValue}>Email and password sign in</strong>
+              <strong className={styles.sideValue}>Direct dashboard and room access</strong>
             </div>
             <div className={styles.sideRow}>
               <span className={styles.sideLabel}>Rooms</span>

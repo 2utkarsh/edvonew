@@ -384,7 +384,7 @@ export default function EnhancedDashboard({
       console.error('Unable to clear participant session:', error);
     }
 
-    router.push('/participant-login');
+    router.push('/');
   };
 
   const navItems = [
@@ -619,7 +619,7 @@ export default function EnhancedDashboard({
               onClick={handleExit}
             >
               <FaSignOutAlt />
-              Sign out
+              {isAdmin ? 'Sign out' : 'Back home'}
             </button>
           </div>
         </aside>
@@ -633,7 +633,7 @@ export default function EnhancedDashboard({
                 <p className="hero-copy">
                   {isAdmin
                     ? 'Manage rooms, schedule sessions, and review recordings.'
-                    : `Signed in as ${participantInfo?.name || 'Participant'}. View upcoming rooms and recordings.`}
+                    : 'Open rooms, join by link, and review shared recordings without a separate sign-in.'}
                 </p>
               </div>
 

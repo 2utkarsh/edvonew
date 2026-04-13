@@ -84,6 +84,6 @@ export const AudioTrack: (
       }
     }, [props.muted, pub, track]);
 
-    return <audio ref={mediaEl} {...elementProps} />;
+    return <audio ref={mediaEl} autoPlay playsInline {...elementProps} />;
   },
 );

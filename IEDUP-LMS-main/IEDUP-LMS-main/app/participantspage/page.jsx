@@ -1,31 +1,29 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import EnhancedDashboard from '../../components/EnhancedDashboard';
 
+const fallbackParticipant = {
+  name: 'Participant',
+  email: 'Direct access',
+};
+
 export default function ParticipantPage() {
-  const router = useRouter();
-  const [participantInfo, setParticipantInfo] = useState(null);
+  const [participantInfo, setParticipantInfo] = useState(fallbackParticipant);
 
   useEffect(() => {
     try {
       const rawParticipant = localStorage.getItem('participantData');
 
       if (!rawParticipant) {
-        router.replace('/participant-login');
         return;
       }
 
       setParticipantInfo(JSON.parse(rawParticipant));
     } catch (error) {
-      router.replace('/participant-login');
+      setParticipantInfo(fallbackParticipant);
     }
-  }, [router]);
-
-  if (!participantInfo) {
-    return null;
-  }
+  }, []);
 
   return <EnhancedDashboard variant="participant" participantInfo={participantInfo} />;
 }

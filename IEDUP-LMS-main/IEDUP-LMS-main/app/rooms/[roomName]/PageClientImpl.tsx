@@ -172,12 +172,15 @@ function VideoConferenceComponent(props: {
   const e2eePassphrase =
     typeof window !== 'undefined' && decodePassphrase(location.hash.substring(1));
 
-  const worker =
-    typeof window !== 'undefined' &&
-    e2eePassphrase &&
-    new Worker(new URL('livekit-client/e2ee-worker', import.meta.url));
+  const worker = React.useMemo(
+    () =>
+      typeof window !== 'undefined' && e2eePassphrase
+        ? new Worker(new URL('livekit-client/e2ee-worker', import.meta.url))
+        : undefined,
+    [e2eePassphrase],
+  );
   const e2eeEnabled = !!(e2eePassphrase && worker);
-  const keyProvider = new ExternalE2EEKeyProvider();
+  const keyProvider = React.useMemo(() => new ExternalE2EEKeyProvider(), []);
   const [e2eeSetupComplete, setE2eeSetupComplete] = React.useState(false);
 
   const roomOptions = React.useMemo((): RoomOptions => {
@@ -210,7 +213,7 @@ function VideoConferenceComponent(props: {
           }
         : undefined,
     };
-  }, [props.userChoices, props.options.hq, props.options.codec]);
+  }, [props.userChoices, props.options.hq, props.options.codec, e2eeEnabled, keyProvider, worker]);
 
   const room = React.useMemo(() => new Room(roomOptions), []);
   const micRetryAttemptedRef = React.useRef(false);
@@ -253,7 +256,13 @@ function VideoConferenceComponent(props: {
     } else {
       setE2eeSetupComplete(true);
     }
-  }, [e2eeEnabled, room, e2eePassphrase]);
+  }, [e2eeEnabled, room, e2eePassphrase, keyProvider]);
+
+  React.useEffect(() => {
+    return () => {
+      worker?.terminate();
+    };
+  }, [worker]);
 
   const connectOptions = React.useMemo((): RoomConnectOptions => {
     return {
@@ -261,7 +270,7 @@ function VideoConferenceComponent(props: {
     };
   }, []);
 
-  const markAttendance = async () => {
+  const markAttendance = React.useCallback(async () => {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     const CONN_DETAILS_ENDPOINT = apiUrl('/api/participant-control');
@@ -282,7 +291,7 @@ function VideoConferenceComponent(props: {
       },
       body: JSON.stringify(payload),
     });
-  }
+  }, [room]);
 
   const router = useRouter();
   const handleOnLeave = React.useCallback(() => router.push('/'), [router]);
@@ -314,49 +323,72 @@ function VideoConferenceComponent(props: {
 
 
   React.useEffect(() => {
-      room.on(RoomEvent.Disconnected, handleOnLeave);
-      room.on(RoomEvent.EncryptionError, handleEncryptionError);
-      room.on(RoomEvent.MediaDevicesError, handleMediaDevicesError);
-      room.on(RoomEvent.Connected, markAttendance);
-      room.on(RoomEvent.Disconnected, markAttendance)
-      if (e2eeSetupComplete) {
-        room
-          .connect(
+    let isActive = true;
+
+    room.on(RoomEvent.Disconnected, handleOnLeave);
+    room.on(RoomEvent.EncryptionError, handleEncryptionError);
+    room.on(RoomEvent.MediaDevicesError, handleMediaDevicesError);
+    room.on(RoomEvent.Connected, markAttendance);
+
+    const connectToRoom = async () => {
+      if (!e2eeSetupComplete) {
+        return;
+      }
+
+      try {
+        await room.connect(
           props.connectionDetails.serverUrl,
           props.connectionDetails.participantToken,
           connectOptions,
-        )
-        .catch((error: Error) => {
-          handleError(error);
-        });
-      if (props.userChoices.videoEnabled) {
-        room.localParticipant.setCameraEnabled(true).catch((error: Error) => {
-          handleError(error);
-        });
+        );
+
+        if (!isActive) {
+          room.disconnect();
+          return;
+        }
+
+        try {
+          await room.startAudio();
+        } catch (error) {
+          console.warn('Audio playback still requires an explicit browser gesture.', error);
+        }
+
+        if (props.userChoices.videoEnabled) {
+          await room.localParticipant.setCameraEnabled(true);
+        }
+
+        if (props.userChoices.audioEnabled) {
+          await enableMicrophoneWithFallback();
+        }
+      } catch (error) {
+        if (isActive) {
+          handleError(error as Error);
+        }
       }
-      if (props.userChoices.audioEnabled) {
-        enableMicrophoneWithFallback().catch((error: Error) => {
-          handleError(error);
-        });
-      }
-    }
-    
+    };
+
+    connectToRoom();
+
     return () => {
+      isActive = false;
       room.off(RoomEvent.Disconnected, handleOnLeave);
       room.off(RoomEvent.EncryptionError, handleEncryptionError);
       room.off(RoomEvent.MediaDevicesError, handleMediaDevicesError);
       room.off(RoomEvent.Connected, markAttendance);
-      room.off(RoomEvent.Disconnected, markAttendance)
+      room.disconnect();
     };
   }, [
     e2eeSetupComplete,
     room,
     props.connectionDetails,
     props.userChoices,
+    connectOptions,
     enableMicrophoneWithFallback,
+    handleError,
     handleOnLeave,
     handleEncryptionError,
     handleMediaDevicesError,
+    markAttendance,
   ]);
 
   const [notify, setNotify] = useState<boolean>(false);

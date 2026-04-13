@@ -136,8 +136,8 @@ export default function Page() {
             <Link href="/" className="auth-secondary-link">
               Home
             </Link>
-            <Link href="/participant-login" className="auth-secondary-link">
-              Participant sign in
+            <Link href="/participant" className="auth-secondary-link">
+              Participant access
             </Link>
           </div>
         </motion.section>

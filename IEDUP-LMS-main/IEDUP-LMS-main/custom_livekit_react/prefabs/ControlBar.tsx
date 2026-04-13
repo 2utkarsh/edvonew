@@ -245,9 +245,11 @@ export function ControlBar({
   return (
     <div 
       style={{
+        position: "relative",
+        zIndex: 90,
         justifyContent: "start",
-        overflowX: "scroll",
-        overflowY: "hidden"
+        overflowX: "auto",
+        overflowY: "visible"
       }}
 
       {...htmlProps}

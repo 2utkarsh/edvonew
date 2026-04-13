@@ -117,7 +117,13 @@ export function MediaDeviceMenu({
         <div
           className="lk-device-menu"
           ref={tooltip}
-          style={{ visibility: isOpen ? 'visible' : 'hidden' }}
+          style={{
+            position: 'fixed',
+            zIndex: 1400,
+            maxHeight: 'min(22rem, calc(100vh - 1.5rem))',
+            overflowY: 'auto',
+            visibility: isOpen ? 'visible' : 'hidden',
+          }}
         >
           {kind ? (
             <MediaDeviceSelect
