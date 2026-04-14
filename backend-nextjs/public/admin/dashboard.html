@@ -9,6 +9,34 @@
     .stats-grid {
       margin-bottom: 24px;
     }
+    .report-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+    .summary-ribbon {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .summary-pill {
+      padding: 14px 16px;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: #ffffff;
+    }
+    .summary-pill .label {
+      color: #64748b;
+      font-size: 0.8rem;
+      margin-bottom: 6px;
+    }
+    .summary-pill .value {
+      color: #0f172a;
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
   </style>
 </head>
 <body>
@@ -47,42 +75,65 @@
       <div class="stats-grid" id="statsGrid">
         <div class="stat-card">
           <div class="stat-info">
-            <h3>Total Users</h3>
-            <div class="stat-value" id="totalUsers">0</div>
-            <div class="stat-change positive">Up 12% from last month</div>
+            <h3>Total Students</h3>
+            <div class="stat-value" id="totalStudents">0</div>
+            <div class="stat-change positive">Student accounts</div>
           </div>
           <div class="stat-icon blue">U</div>
         </div>
         <div class="stat-card">
           <div class="stat-info">
-            <h3>Total Courses</h3>
-            <div class="stat-value" id="totalCourses">0</div>
-            <div class="stat-change positive">Up 8% from last month</div>
+            <h3>Enrolled Students</h3>
+            <div class="stat-value" id="enrolledStudents">0</div>
+            <div class="stat-change positive">Students with active enrollments</div>
           </div>
           <div class="stat-icon purple">C</div>
         </div>
         <div class="stat-card">
           <div class="stat-info">
-            <h3>Enrollments</h3>
-            <div class="stat-value" id="totalEnrollments">0</div>
-            <div class="stat-change positive">Up 23% from last month</div>
+            <h3>Course Completions</h3>
+            <div class="stat-value" id="totalCompletions">0</div>
+            <div class="stat-change positive">Completed course enrollments</div>
           </div>
           <div class="stat-icon green">E</div>
         </div>
         <div class="stat-card">
           <div class="stat-info">
-            <h3>Revenue</h3>
-            <div class="stat-value" id="totalRevenue">INR 0</div>
-            <div class="stat-change positive">Up 15% from last month</div>
+            <h3>Collected Fees</h3>
+            <div class="stat-value" id="totalCollectedFees">INR 0</div>
+            <div class="stat-change positive">Completed paid enrollments</div>
           </div>
           <div class="stat-icon orange">R</div>
         </div>
       </div>
 
+      <div class="summary-ribbon">
+        <div class="summary-pill">
+          <div class="label">Average Progress</div>
+          <div class="value" id="averageProgress">0%</div>
+        </div>
+        <div class="summary-pill">
+          <div class="label">Average Completion Rate</div>
+          <div class="value" id="averageCompletionRate">0%</div>
+        </div>
+        <div class="summary-pill">
+          <div class="label">Pending Fee Cases</div>
+          <div class="value" id="pendingFeeEnrollments">0</div>
+        </div>
+        <div class="summary-pill">
+          <div class="label">Generated</div>
+          <div class="value" id="generatedAt">-</div>
+        </div>
+      </div>
+
       <div class="table-container">
         <div class="table-header">
-          <h2 class="table-title">Recent Courses</h2>
-          <button class="btn btn-primary" onclick="window.location.href='/backend/admin/courses'">View All</button>
+          <h2 class="table-title">Course-wise Enrollment Report</h2>
+          <div class="report-toolbar">
+            <button class="btn btn-secondary" type="button" onclick="downloadReport('courses')">Course CSV</button>
+            <button class="btn btn-secondary" type="button" onclick="downloadReport('enrollments')">Enrollment CSV</button>
+            <button class="btn btn-primary" type="button" onclick="downloadReport('payments')">Payment CSV</button>
+          </div>
         </div>
         <div class="table-wrapper">
           <table>
@@ -90,17 +141,17 @@
               <tr>
                 <th>Course Name</th>
                 <th>Category</th>
-                <th>Students</th>
-                <th>Price</th>
-                <th>Rating</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th>Enrollments</th>
+                <th>Avg Progress</th>
+                <th>Completed</th>
+                <th>Fees Collected</th>
+                <th>Pending Fee Cases</th>
               </tr>
             </thead>
             <tbody id="coursesTableBody">
               <tr>
                 <td colspan="7" style="text-align: center; color: #718096; padding: 40px;">
-                  Loading courses...
+                  Loading report...
                 </td>
               </tr>
             </tbody>
@@ -113,35 +164,33 @@
   <script src="/backend/admin/admin.js?v=20260413f"></script>
 <script>
   async function loadDashboard() {
-    const [overviewResult, coursesResult] = await Promise.allSettled([
-      adminFetch('/backend/api/dashboard/admin/overview'),
-      adminFetch('/backend/api/admin/courses'),
-    ]);
+    try {
+      const payload = await adminFetch('/backend/api/admin/reports');
+      const summary = payload.data?.summary || {};
+      const tables = payload.data?.tables || {};
 
-    if (overviewResult.status === 'fulfilled') {
-      const metrics = overviewResult.value.data.metrics || {};
-      document.getElementById('totalUsers').textContent = Number(metrics.users || 0).toLocaleString();
-      document.getElementById('totalCourses').textContent = Number(metrics.courses || 0).toLocaleString();
-      document.getElementById('totalEnrollments').textContent = Number(metrics.enrollments || 0).toLocaleString();
-    } else {
-      showToast(overviewResult.reason?.message || 'Unable to load dashboard metrics', 'error');
-    }
+      document.getElementById('totalStudents').textContent = Number(summary.totalStudents || 0).toLocaleString();
+      document.getElementById('enrolledStudents').textContent = Number(summary.enrolledStudents || 0).toLocaleString();
+      document.getElementById('totalCompletions').textContent = Number(summary.courseCompletions || 0).toLocaleString();
+      document.getElementById('totalCollectedFees').textContent = 'INR ' + Number(summary.totalCollectedFees || 0).toLocaleString();
+      document.getElementById('averageProgress').textContent = Number(summary.averageProgress || 0).toFixed(1) + '%';
+      document.getElementById('averageCompletionRate').textContent = Number(summary.averageCompletionRate || 0).toFixed(1) + '%';
+      document.getElementById('pendingFeeEnrollments').textContent = Number(summary.pendingFeeEnrollments || 0).toLocaleString();
+      document.getElementById('generatedAt').textContent = payload.data?.generatedAt
+        ? new Date(payload.data.generatedAt).toLocaleString()
+        : '-';
 
-    if (coursesResult.status === 'fulfilled') {
-      const courses = (coursesResult.value.data.courses || []).slice(0, 6);
-      const revenue = courses.reduce((sum, course) => sum + ((course.price || 0) * (course.studentMetrics?.totalStudents || 0)), 0);
-      document.getElementById('totalRevenue').textContent = 'INR ' + (revenue / 100000).toFixed(1) + 'L';
-      renderCourses(courses);
-    } else {
-      renderCourses([]);
-      showToast(coursesResult.reason?.message || 'Unable to load recent courses', 'error');
+      renderCourseReport(tables.courses || []);
+    } catch (error) {
+      renderCourseReport([]);
+      showToast(error?.message || 'Unable to load admin reports', 'error');
     }
   }
 
-  function renderCourses(courses) {
+  function renderCourseReport(courses) {
     const tbody = document.getElementById('coursesTableBody');
     if (!courses.length) {
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#718096;padding:40px;">No courses available yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#718096;padding:40px;">No report data available yet.</td></tr>';
       return;
     }
 
@@ -149,21 +198,54 @@
       <tr>
         <td>
           <div class="course-cell">
-            ${course.thumbnail ? `<img src="${course.thumbnail}" alt="${course.title}" class="course-thumb" />` : `<div class="course-fallback">${course.title.charAt(0)}</div>`}
+            <div class="course-fallback">${String(course.courseTitle || 'C').charAt(0)}</div>
             <div>
-              <div style="font-weight:600;">${course.title}</div>
-              <div style="font-size:0.85rem;color:#718096;">${course.instructorName || 'Lead Mentor'}</div>
+              <div style="font-weight:600;">${course.courseTitle}</div>
+              <div style="font-size:0.85rem;color:#718096;">Fee: INR ${(course.listedFee || 0).toLocaleString()}</div>
             </div>
           </div>
         </td>
         <td><span class="badge badge-info">${course.category || 'General'}</span></td>
-        <td>${course.studentMetrics?.totalStudents || 0}</td>
-        <td>INR ${(course.price || 0).toLocaleString()}</td>
-        <td>${course.studentMetrics?.averagePerformance || 0}%</td>
-        <td><span class="badge badge-success">${course.status || 'draft'}</span></td>
-        <td><div class="action-btns"><button class="action-btn edit" onclick="window.location.href='/backend/admin/courses'">Open</button></div></td>
+        <td>${Number(course.totalEnrollments || 0).toLocaleString()}</td>
+        <td>${Number(course.averageProgress || 0).toFixed(1)}%</td>
+        <td>${Number(course.completedEnrollments || 0).toLocaleString()}</td>
+        <td>INR ${Number(course.totalCollectedFees || 0).toLocaleString()}</td>
+        <td>${Number(course.pendingFeeEnrollments || 0).toLocaleString()}</td>
       </tr>
     `).join('');
+  }
+
+  async function downloadReport(scope) {
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch(`/backend/api/admin/reports?format=csv&scope=${encodeURIComponent(scope)}`, {
+        method: 'GET',
+        headers: {
+          Accept: 'text/csv',
+          'X-Admin-Demo': 'true',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        cache: 'no-store',
+      });
+
+      if (!response.ok) {
+        const message = await response.text().catch(() => '');
+        throw new Error(message || 'Unable to download report');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `edvo-${scope}-report.csv`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      showToast(`${scope.charAt(0).toUpperCase() + scope.slice(1)} report downloaded`, 'success');
+    } catch (error) {
+      showToast(error?.message || 'Unable to download report', 'error');
+    }
   }
 
   loadDashboard();

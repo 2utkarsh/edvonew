@@ -499,6 +499,14 @@ GET /api/v1/dashboard/admin
 Authorization: Bearer <token>
 ```
 
+### Admin Reports
+```http
+GET /api/admin/reports
+GET /api/admin/reports?format=csv&scope=courses
+GET /api/admin/reports?format=csv&scope=enrollments
+GET /api/admin/reports?format=csv&scope=payments
+```
+
 ---
 
 ## ⚙️ Settings & CMS Endpoints

@@ -153,6 +153,7 @@ After running seed scripts:
 | GET | `/api/v1/dashboard/student` | Student dashboard |
 | GET | `/api/v1/dashboard/instructor` | Instructor dashboard |
 | GET | `/api/v1/dashboard/admin` | Admin dashboard |
+| GET | `/api/admin/reports` | Admin reporting summary + sheet-ready tables |
 
 For complete API documentation, see [API_DOCUMENTATION.md](./API_DOCUMENTATION.md)
 
