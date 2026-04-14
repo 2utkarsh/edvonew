@@ -33,10 +33,12 @@ export interface VideoConferenceProps extends React.HTMLAttributes<HTMLDivElemen
   chatMessageDecoder?: MessageDecoder;
   /** @alpha */
   SettingsComponent?: React.ComponentType;
+  onWhiteboardToggle?: () => void;
   /**
    * Array of participant identities who have raised their hand.
    */
   raisedHandIdentities?: string[];
+  whiteboardOpen?: boolean;
   /**
    * Callback for hand state changes from the local participant
    */
@@ -67,6 +69,8 @@ export function VideoConference({
   chatMessageEncoder,
   SettingsComponent,
   raisedHandIdentities,
+  whiteboardOpen,
+  onWhiteboardToggle,
   onHandStateChange,
   ...props
 }: VideoConferenceProps) {
@@ -165,7 +169,18 @@ export function VideoConference({
                 </FocusLayoutContainer>
               </div>
             )}
-            <ControlBar controls={{ chat: true, settings: !!SettingsComponent, camera: false, microphone: false, screenShare: false }} onHandStateChange={onHandStateChange} />
+            <ControlBar
+              controls={{
+                chat: true,
+                settings: !!SettingsComponent,
+                camera: false,
+                microphone: false,
+                screenShare: false,
+              }}
+              onHandStateChange={onHandStateChange}
+              onWhiteboardToggle={onWhiteboardToggle}
+              whiteboardOpen={whiteboardOpen}
+            />
           </div>
           <Chat
             style={{ display: widgetState.showChat ? 'grid' : 'none' }}

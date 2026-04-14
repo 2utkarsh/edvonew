@@ -23,6 +23,7 @@ import { DeleteRoomButton } from '../components/controls/DeleteRoomButton';
 import { GiSpikyExplosion } from "react-icons/gi";
 import { RecordButton } from '../../components/RecordButton';
 import { RaiseHandButton } from '../components/controls/RaiseHandButton';
+import { FaPen } from 'react-icons/fa';
 
 /** @public */
 export type ControlBarControls = {
@@ -51,6 +52,8 @@ export interface ControlBarProps extends React.HTMLAttributes<HTMLDivElement> {
    * Callback for hand state changes from the local participant
    */
   onHandStateChange?: (action: 'raise' | 'lower', identity: string) => void;
+  onWhiteboardToggle?: () => void;
+  whiteboardOpen?: boolean;
 }
 
 /**
@@ -75,6 +78,8 @@ export function ControlBar({
   saveUserChoices = true,
   onDeviceError,
   onHandStateChange,
+  onWhiteboardToggle,
+  whiteboardOpen = false,
   ...props
 }: ControlBarProps) {
   const [isChatOpen, setIsChatOpen] = React.useState(false);
@@ -334,6 +339,21 @@ export function ControlBar({
           {showIcon && <IoMdPerson />}
           {'Participant'}
         </ParticipantButton>
+      )}
+      {onWhiteboardToggle && (
+        <button
+          type="button"
+          className="lk-button"
+          onClick={onWhiteboardToggle}
+          aria-pressed={whiteboardOpen}
+          title={whiteboardOpen ? 'Hide whiteboard' : 'Show whiteboard'}
+          style={{
+            border: whiteboardOpen ? '2px solid rgba(255, 255, 255, 0.9)' : undefined,
+          }}
+        >
+          {showIcon && <FaPen />}
+          {'Whiteboard'}
+        </button>
       )}
       <RaiseHandButton onHandStateChange={onHandStateChange} />
       {isHost && (

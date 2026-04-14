@@ -29,6 +29,7 @@ import React, { useState } from 'react';
 import Notification from '@/components/Notification';
 import { MassControl } from '@/components/MassControl';
 import FaceVerificationMonitor from '@/components/FaceVerificationMonitor';
+import RoomWhiteboard from '@/components/RoomWhiteboard';
 
 import { apiUrl } from '@/lib/url';
 
@@ -396,6 +397,7 @@ function VideoConferenceComponent(props: {
   const [handVisible, setHandVisible] = useState(false)
   const [participantIdentityHand, setParticipantIdentityHand] = useState("")
   const [raisedHandIdentities, setRaisedHandIdentities] = useState<string[]>([]);
+  const [whiteboardOpen, setWhiteboardOpen] = useState(false);
 
   // Callback to handle local participant hand state changes
   const handleLocalHandStateChange = React.useCallback((action: 'raise' | 'lower', identity: string) => {
@@ -448,7 +450,14 @@ function VideoConferenceComponent(props: {
             SettingsComponent={SHOW_SETTINGS_MENU ? SettingsMenu : undefined}
             raisedHandIdentities={raisedHandIdentities}
             onHandStateChange={handleLocalHandStateChange}
+            onWhiteboardToggle={() => setWhiteboardOpen((current) => !current)}
+            whiteboardOpen={whiteboardOpen}
           />
+        <RoomWhiteboard
+          isOpen={whiteboardOpen}
+          onClose={() => setWhiteboardOpen(false)}
+          room={room}
+        />
         <FaceVerificationMonitor room={room} />
         <MassControl/>
         <ParticipantList handVisible={handVisible} participantIdentityHand={participantIdentityHand} />

@@ -132,7 +132,6 @@
 }
 
 .primaryAction,
-.secondaryAction,
 .tertiaryAction {
   display: inline-flex;
   align-items: center;
@@ -149,7 +148,6 @@
   color: #09201c;
 }
 
-.secondaryAction,
 .tertiaryAction {
   border: 1px solid var(--border);
   background: rgba(248, 243, 232, 0.05);
@@ -157,7 +155,6 @@
 }
 
 .primaryAction:hover,
-.secondaryAction:hover,
 .tertiaryAction:hover,
 .returnPill:hover {
   transform: translateY(-1px);
@@ -257,7 +254,6 @@
   }
 
   .primaryAction,
-  .secondaryAction,
   .tertiaryAction {
     width: 100%;
   }

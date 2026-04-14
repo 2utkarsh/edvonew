@@ -53,9 +53,6 @@ export default function Page() {
             <Link href="/dashboard" className={styles.primaryAction}>
               Host sign in
             </Link>
-            <Link href="/participant" className={styles.secondaryAction}>
-              Participant access
-            </Link>
             {lastRoomRoute ? (
               <button
                 type="button"
