@@ -443,7 +443,7 @@ function VideoConferenceComponent(props: {
   }, [room.state]);
 
   return (
-    <div className="lk-room-container" style={{ position: 'relative', height: '100vh' }}>
+    <div className="lk-room-container" style={{ position: 'relative', minHeight: '100vh', height: '100svh' }}>
       <RoomContext.Provider value={room}>
           <VideoConference
             chatMessageFormatter={formatChatMessageLinks}

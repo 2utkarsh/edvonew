@@ -1,10 +1,12 @@
 .dashboard-container {
   min-height: 100vh;
+  min-height: 100svh;
 }
 
 .auth-shell {
   position: relative;
   min-height: 100vh;
+  min-height: 100svh;
   display: grid;
   place-items: center;
   padding: 32px 18px;
@@ -421,6 +423,7 @@
 .workspace-shell {
   position: relative;
   min-height: 100vh;
+  min-height: 100svh;
   width: min(1380px, 100%);
   margin: 0 auto;
   display: grid;
@@ -446,6 +449,7 @@
 
 .workspace-brand-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 14px;
   align-items: center;
 }
@@ -646,10 +650,12 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  max-width: 100%;
   padding: 11px 14px;
   border-radius: 999px;
   border: 1px solid rgba(248, 243, 232, 0.08);
   background: rgba(248, 243, 232, 0.05);
+  line-height: 1.45;
 }
 
 .hero-spotlight,
@@ -716,6 +722,10 @@
   gap: 10px;
 }
 
+.hero-toolbar-meta {
+  min-width: 0;
+}
+
 .hero-next-row {
   position: relative;
   z-index: 1;
@@ -739,6 +749,7 @@
 
 .hero-next-details strong {
   font-size: 1rem;
+  overflow-wrap: anywhere;
 }
 
 .hero-next-details span {
@@ -1002,10 +1013,11 @@
 .meeting-card-title {
   margin: 8px 0 0;
   font-size: 1.18rem;
+  overflow-wrap: anywhere;
 }
 
 .meeting-date-pill {
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .meeting-card-description {
@@ -1210,6 +1222,7 @@
 .recording-header h3 {
   margin: 0;
   font-size: 1.08rem;
+  overflow-wrap: anywhere;
 }
 
 .recording-date,
@@ -1222,6 +1235,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .recording-details {
@@ -1243,6 +1257,9 @@
 
 .video-modal-content {
   width: min(920px, 100%);
+  max-height: calc(100svh - 40px);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
   overflow: hidden;
   border-radius: 28px;
   border: 1px solid var(--border);
@@ -1264,6 +1281,7 @@
 }
 
 .video-player-container {
+  min-height: 0;
   padding: 20px;
   background: rgba(0, 0, 0, 0.24);
 }
@@ -1307,6 +1325,11 @@
     padding: 16px;
   }
 
+  .auth-grid,
+  .workspace-shell {
+    gap: 14px;
+  }
+
   .auth-card,
   .workspace-sidebar,
   .workspace-hero,
@@ -1314,6 +1337,10 @@
   .modal-card {
     padding: 20px;
     border-radius: 24px;
+  }
+
+  .auth-showcase {
+    display: none;
   }
 
   .preview-stat-row,
@@ -1332,14 +1359,68 @@
     width: 100%;
   }
 
+  .workspace-sidebar {
+    gap: 16px;
+  }
+
+  .workspace-brand-row {
+    align-items: flex-start;
+  }
+
+  .brand-mark {
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+  }
+
+  .brand-name {
+    font-size: 1.2rem;
+  }
+
+  .hero-title {
+    max-width: none;
+    font-size: clamp(2.2rem, 11vw, 3rem);
+  }
+
+  .hero-copy {
+    max-width: none;
+    font-size: 0.95rem;
+  }
+
+  .hero-summary-row {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-toolbar-meta {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .hero-pill {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .content-tabs {
+    display: none;
+  }
+
   .side-nav {
     display: flex;
     overflow-x: auto;
+    margin: 0 -4px;
+    padding-inline: 4px;
     padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  .side-nav::-webkit-scrollbar {
+    display: none;
   }
 
   .side-nav-button {
-    min-width: 160px;
+    flex: 0 0 auto;
+    min-width: 140px;
   }
 
   .panel-header,
@@ -1364,9 +1445,53 @@
     width: 100%;
   }
 
+  .modal-overlay,
+  .video-modal-overlay {
+    padding: 12px;
+  }
+
+  .video-modal-header {
+    align-items: flex-start;
+  }
+
+  .video-player-container {
+    padding: 12px;
+  }
+
   .toast {
     right: 16px;
     left: 16px;
     bottom: 16px;
+  }
+}
+
+@media (max-width: 520px) {
+  .auth-shell,
+  .workspace-shell {
+    padding: 12px;
+  }
+
+  .auth-card,
+  .workspace-sidebar,
+  .workspace-hero,
+  .content-panel,
+  .modal-card {
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  .hero-kicker,
+  .brand-overline,
+  .meeting-card-kicker,
+  .spotlight-label {
+    font-size: 0.7rem;
+  }
+
+  .modal-header h3 {
+    font-size: 1.55rem;
+  }
+
+  .video-modal-content {
+    border-radius: 22px;
   }
 }
