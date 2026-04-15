@@ -99,6 +99,7 @@ export function ControlBar({
   const [visibleControls, setVisibleControls] = React.useState({ leave: true, participant: true,  ...controls });
 
   const localPermissions = useLocalParticipantPermissions();
+  const browserSupportsScreenSharing = supportsScreenSharing();
    
   const [isHost, setIsHost] = React.useState(false);
 
@@ -107,32 +108,13 @@ export function ControlBar({
   }, [localPermissions])
 
   React.useEffect(() => {
-    if (!localPermissions) {
-      setVisibleControls({
-        ...visibleControls,
-        camera: false,
-        microphone: false,
-        screenShare: false
-      })
-    } else {
-      if(isHost) {
-        setVisibleControls({
-          ...visibleControls,
-          camera: localPermissions.canPublish,
-          microphone: localPermissions.canPublish,
-          screenShare: localPermissions.canPublish,
-        })
-      } else {
-        // console.log(localPermissions)
-        setVisibleControls({
-          ...visibleControls,
-          camera: localPermissions.canPublish,
-          microphone: localPermissions.canPublish,
-          screenShare: localPermissions.canPublish,
-        })
-      }
-   }
-  }, [localPermissions, isHost])
+    setVisibleControls((current) => ({
+      ...current,
+      camera: Boolean(localPermissions?.canPublish),
+      microphone: Boolean(localPermissions?.canPublish),
+      screenShare: browserSupportsScreenSharing,
+    }));
+  }, [browserSupportsScreenSharing, localPermissions?.canPublish]);
 
   // React.useEffect(() => {
   //   room.registerRpcMethod(
@@ -214,8 +196,6 @@ export function ControlBar({
     () => variation === 'textOnly' || variation === 'verbose',
     [variation],
   );
-
-  const browserSupportsScreenSharing = supportsScreenSharing();
 
   const [isScreenShareEnabled, setIsScreenShareEnabled] = React.useState(false);
 
@@ -305,6 +285,7 @@ export function ControlBar({
           captureOptions={{ audio: true, selfBrowserSurface: 'include' }}
           showIcon={showIcon}
           onChange={onScreenShareChange}
+          disabled={localPermissions?.canPublish === false && !isHost}
           onDeviceError={(error) => onDeviceError?.({ source: Track.Source.ScreenShare, error })}
         >
           {(isScreenShareEnabled ? 'Stop screen share' : 'Share screen')}

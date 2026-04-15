@@ -9,7 +9,9 @@ import {
   formatChatMessageLinks,
   LocalUserChoices,
   PreJoin,
+  useConnectionState,
   RoomContext,
+  useAudioPlayback,
   VideoConference,
 } from '../../../custom_livekit_react';
 import {
@@ -22,7 +24,6 @@ import {
   RoomConnectOptions,
   RoomEvent,
   RemoteParticipant,
-  LocalParticipant,
 } from 'livekit-client';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
@@ -35,6 +36,7 @@ import { apiUrl } from '@/lib/url';
 
 const CONN_DETAILS_ENDPOINT = process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? apiUrl('/api/connection-details');
 const SHOW_SETTINGS_MENU = process.env.NEXT_PUBLIC_SHOW_SETTINGS_MENU == 'true';
+const encoder = new TextEncoder();
 
 export function PageClientImpl(props: {
   roomName: string;
@@ -218,6 +220,9 @@ function VideoConferenceComponent(props: {
 
   const room = React.useMemo(() => new Room(roomOptions), []);
   const micRetryAttemptedRef = React.useRef(false);
+  const audioUnlockAttemptRef = React.useRef(false);
+  const connectionState = useConnectionState(room);
+  const { canPlayAudio, startAudio } = useAudioPlayback(room);
 
   const enableMicrophoneWithFallback = React.useCallback(async () => {
     try {
@@ -392,12 +397,94 @@ function VideoConferenceComponent(props: {
     markAttendance,
   ]);
 
+  React.useEffect(() => {
+    if (connectionState !== 'connected' || canPlayAudio) {
+      return;
+    }
+
+    const unlockAudio = async () => {
+      if (audioUnlockAttemptRef.current) {
+        return;
+      }
+
+      audioUnlockAttemptRef.current = true;
+
+      try {
+        await startAudio();
+      } catch (error) {
+        console.warn('Retrying audio playback after user interaction failed.', error);
+      } finally {
+        audioUnlockAttemptRef.current = false;
+      }
+    };
+
+    const handleInteraction = () => {
+      void unlockAudio();
+    };
+
+    const listenerOptions: AddEventListenerOptions = {
+      capture: true,
+      passive: true,
+    };
+
+    window.addEventListener('pointerdown', handleInteraction, listenerOptions);
+    window.addEventListener('touchstart', handleInteraction, listenerOptions);
+    window.addEventListener('keydown', handleInteraction, { capture: true });
+
+    return () => {
+      window.removeEventListener('pointerdown', handleInteraction, listenerOptions);
+      window.removeEventListener('touchstart', handleInteraction, listenerOptions);
+      window.removeEventListener('keydown', handleInteraction, { capture: true });
+    };
+  }, [canPlayAudio, connectionState, startAudio]);
+
   const [notify, setNotify] = useState<boolean>(false);
   const [notifyText, setNotifyText] = useState<string>('');
   const [handVisible, setHandVisible] = useState(false)
   const [participantIdentityHand, setParticipantIdentityHand] = useState("")
   const [raisedHandIdentities, setRaisedHandIdentities] = useState<string[]>([]);
   const [whiteboardOpen, setWhiteboardOpen] = useState(false);
+
+  const publishWhiteboardVisibility = React.useCallback(
+    async (nextOpen: boolean, destinationIdentities?: string[]) => {
+      try {
+        await room.localParticipant.publishData(
+          encoder.encode(
+            JSON.stringify({
+              type: 'whiteboard-control',
+              action: nextOpen ? 'open' : 'close',
+              actor: room.localParticipant.identity,
+            }),
+          ),
+          {
+            reliable: true,
+            destinationIdentities,
+          },
+        );
+      } catch (error) {
+        console.error('Failed to broadcast whiteboard state:', error);
+      }
+    },
+    [room],
+  );
+
+  const handleWhiteboardToggle = React.useCallback(() => {
+    setWhiteboardOpen((current) => {
+      const nextOpen = !current;
+      void publishWhiteboardVisibility(nextOpen);
+      return nextOpen;
+    });
+  }, [publishWhiteboardVisibility]);
+
+  const handleWhiteboardClose = React.useCallback(() => {
+    setWhiteboardOpen((current) => {
+      if (current) {
+        void publishWhiteboardVisibility(false);
+      }
+
+      return false;
+    });
+  }, [publishWhiteboardVisibility]);
 
   // Callback to handle local participant hand state changes
   const handleLocalHandStateChange = React.useCallback((action: 'raise' | 'lower', identity: string) => {
@@ -430,6 +517,8 @@ function VideoConferenceComponent(props: {
             setNotify(true)
             setNotifyText("You can enable camera, microphone and share screen")
           }
+        } else if (data.type === 'whiteboard-control') {
+          setWhiteboardOpen(data.action === 'open');
         }
       } catch (error) {
         console.error('Error handling data message:', error);
@@ -440,7 +529,22 @@ function VideoConferenceComponent(props: {
     return () => {
       room.off('dataReceived', handleData);
     };
-  }, [room.state]);
+  }, [room]);
+
+  React.useEffect(() => {
+    const handleParticipantConnected = (participant: RemoteParticipant) => {
+      if (!whiteboardOpen) {
+        return;
+      }
+
+      void publishWhiteboardVisibility(true, [participant.identity]);
+    };
+
+    room.on(RoomEvent.ParticipantConnected, handleParticipantConnected);
+    return () => {
+      room.off(RoomEvent.ParticipantConnected, handleParticipantConnected);
+    };
+  }, [publishWhiteboardVisibility, room, whiteboardOpen]);
 
   return (
     <div className="lk-room-container" style={{ position: 'relative', minHeight: '100vh', height: '100svh' }}>
@@ -450,12 +554,12 @@ function VideoConferenceComponent(props: {
             SettingsComponent={SHOW_SETTINGS_MENU ? SettingsMenu : undefined}
             raisedHandIdentities={raisedHandIdentities}
             onHandStateChange={handleLocalHandStateChange}
-            onWhiteboardToggle={() => setWhiteboardOpen((current) => !current)}
+            onWhiteboardToggle={handleWhiteboardToggle}
             whiteboardOpen={whiteboardOpen}
           />
         <RoomWhiteboard
           isOpen={whiteboardOpen}
-          onClose={() => setWhiteboardOpen(false)}
+          onClose={handleWhiteboardClose}
           room={room}
         />
         <FaceVerificationMonitor room={room} />
