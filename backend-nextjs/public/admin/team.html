@@ -1,35 +1,59 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Team - EDVO</title><link rel="stylesheet" href="/backend/admin/styles.css" />
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Team - EDVO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>.stack{display:flex;flex-direction:column;gap:24px}.panel,.stat{background:#fff;border:1px solid #e2e8f0;border-radius:20px;box-shadow:0 8px 30px rgba(15,23,42,.06);padding:24px}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}.label{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:#718096;margin-bottom:8px;font-weight:700}.value{font-size:2rem;font-weight:800}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.input,.textarea,.select,.file{width:100%;padding:12px 16px;border:1px solid #cbd5e0;border-radius:12px;font-size:.95rem;background:#fff}.textarea{min-height:120px;resize:vertical}.actions,.table-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.toolbar{display:flex;justify-content:space-between;gap:16px;align-items:center}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}.card{background:#fff;border-radius:24px;border:1px solid #e2e8f0;box-shadow:0 8px 30px rgba(15,23,42,.06);overflow:hidden}.card img{width:100%;height:220px;object-fit:cover;background:#edf2f7}.content{padding:20px}.name{font-size:1.2rem;font-weight:800}.title{color:#5a67d8;font-weight:700;margin:8px 0 12px}.bio{color:#718096;line-height:1.6}.badge{display:inline-flex;align-items:center;border-radius:999px;padding:6px 12px;font-size:.78rem;font-weight:700}.badge-status-active{background:rgba(72,187,120,.14);color:#2f855a}.badge-status-inactive{background:rgba(113,128,150,.14);color:#4a5568}.btn{border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}.btn-primary{background:#667eea;color:#fff}.btn-secondary{background:#edf2f7;color:#1a202c}.btn-danger{background:#f56565;color:#fff}.preview{width:180px;height:180px;border-radius:20px;object-fit:cover;border:1px solid #e2e8f0;background:#f8fafc}.help{color:#718096;font-size:.88rem}</style>
 </head>
 <body>
-  <aside class="sidebar">
-    <div class="sidebar-logo"><span>ED</span>VO</div>
-
-    <div class="nav-section">
-      <div class="nav-section-title">Main Menu</div>
-      <a href="/backend/admin/dashboard" class="nav-item"><span class="nav-label">Dashboard</span></a>
-      <a href="/backend/admin/home-content" class="nav-item"><span class="nav-label">Home Content</span></a>
-      <a href="/backend/admin/hiring-partners" class="nav-item"><span class="nav-label">Hiring Partners</span></a>
-      <a href="/backend/admin/courses" class="nav-item"><span class="nav-label">Courses</span></a>
-      <a href="/backend/admin/blogs" class="nav-item"><span class="nav-label">Blogs</span></a>
-      <a href="/backend/admin/tutorials" class="nav-item"><span class="nav-label">Free Courses</span></a>
-      <a href="/backend/admin/guides" class="nav-item"><span class="nav-label">Guides</span></a>
-      <a href="/backend/admin/team" class="nav-item active"><span class="nav-label">Team</span></a>
-      <a href="/backend/admin/course-reviews" class="nav-item"><span class="nav-label">Course Reviews</span></a>
-      <a href="/backend/admin/job-success-stories" class="nav-item"><span class="nav-label">Job Success Stories</span></a>
-      <a href="/backend/admin/events" class="nav-item"><span class="nav-label">Events</span></a>
-      <a href="/backend/admin/challenges" class="nav-item"><span class="nav-label">Challenges</span></a>
-    </div>
-
-    <div class="nav-section">
-      <div class="nav-section-title">Settings</div>
-      <a href="#" class="nav-item" onclick="logout()"><span class="nav-label">Logout</span></a>
-    </div>
+  <aside class="sidebar" id="sidebar">
+    <a href="/backend/admin/dashboard" class="sidebar-logo">
+      <span>ED</span>
+      <div class="logo-text">
+        <span class="logo-name">EDVO</span>
+        <span class="logo-sub">Admin Panel</span>
+      </div>
+    </a>
+    <nav class="nav-section">
+      <p class="nav-section-title">Main Menu</p>
+      <a href="/backend/admin/dashboard"       class="nav-item"><span class="nav-icon">📊</span><span class="nav-label">Dashboard</span></a>
+      <a href="/backend/admin/home-content"    class="nav-item"><span class="nav-icon">🏠</span><span class="nav-label">Home Content</span></a>
+      <a href="/backend/admin/hiring-partners" class="nav-item"><span class="nav-icon">🤝</span><span class="nav-label">Hiring Partners</span></a>
+      <a href="/backend/admin/courses"         class="nav-item"><span class="nav-icon">📚</span><span class="nav-label">Courses</span></a>
+      <a href="/backend/admin/blogs"           class="nav-item"><span class="nav-icon">✍️</span><span class="nav-label">Blogs</span></a>
+      <a href="/backend/admin/tutorials"       class="nav-item"><span class="nav-icon">🎬</span><span class="nav-label">Free Courses</span></a>
+      <a href="/backend/admin/guides"          class="nav-item"><span class="nav-icon">📖</span><span class="nav-label">Guides</span></a>
+      <a href="/backend/admin/events"          class="nav-item"><span class="nav-icon">📅</span><span class="nav-label">Events</span></a>
+      <a href="/backend/admin/challenges"      class="nav-item"><span class="nav-icon">🏆</span><span class="nav-label">Challenges</span></a>
+    </nav>
+    <nav class="nav-section">
+      <p class="nav-section-title">People</p>
+      <a href="/backend/admin/team"                class="nav-item active"><span class="nav-icon">👥</span><span class="nav-label">Team</span></a>
+      <a href="/backend/admin/instructors"         class="nav-item"><span class="nav-icon">🎓</span><span class="nav-label">Instructors</span></a>
+      <a href="/backend/admin/course-reviews"      class="nav-item"><span class="nav-icon">⭐</span><span class="nav-label">Course Reviews</span></a>
+      <a href="/backend/admin/job-success-stories" class="nav-item"><span class="nav-icon">💼</span><span class="nav-label">Success Stories</span></a>
+    </nav>
+    <nav class="nav-section">
+      <p class="nav-section-title">Account</p>
+      <a href="#" class="nav-item" onclick="logout(); return false;"><span class="nav-icon">🚪</span><span class="nav-label">Sign Out</span></a>
+    </nav>
   </aside>
-<main class="main-content"><div class="top-bar"><h1 class="page-title">Our Team</h1><div class="user-avatar">A</div></div><div class="dashboard-content"><div class="stack">
+<main class="main-content"><header class="top-bar">
+      <div class="top-bar-left">
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="page-title">Team</div>
+      </div>
+      <div class="top-bar-right">
+        <div class="user-menu">
+          <div class="user-info"><div class="user-name">Admin</div><div class="user-role">Super Admin</div></div>
+          <div class="user-avatar">A</div>
+        </div>
+      </div>
+    </header><div class="dashboard-content"><div class="stack">
 <div class="stats"><div class="stat"><div class="label">Team Members</div><div class="value" id="totalMembers">0</div></div><div class="stat"><div class="label">Active</div><div class="value" id="activeMembers">0</div></div><div class="stat"><div class="label">Inactive</div><div class="value" id="inactiveMembers">0</div></div></div>
 <section class="panel"><div class="toolbar"><div><div class="table-title" id="formTitle">Create Team Member</div><div class="help">Uploaded photos and order changes affect the frontend team section.</div></div></div><form id="teamForm" class="stack"><div class="grid"><input id="name" class="input" placeholder="Full name" required /><input id="title" class="input" placeholder="Role / title" required /><input id="order" class="input" type="number" min="0" value="0" placeholder="Display order" /><select id="status" class="select"><option value="active">Active</option><option value="inactive">Inactive</option></select><input id="imageFile" class="file" type="file" accept="image/*" /></div><img id="imagePreview" class="preview" src="/images/edvo-official-logo-v10.png" alt="Team preview" /><textarea id="bio" class="textarea" placeholder="Bio" required></textarea><div class="actions"><button id="submitButton" class="btn btn-primary" type="submit">Create Team Member</button><button id="cancelEdit" class="btn btn-secondary" type="button" style="display:none">Cancel Edit</button></div></form></section>
 <section class="panel"><div class="toolbar"><div><div class="table-title">Manage Team</div><div class="help">Use the Move Up and Move Down buttons to reorder cards on the frontend.</div></div><input id="searchInput" class="input" type="search" placeholder="Search team members" /></div><div id="memberCards" class="cards"></div></section>
@@ -49,6 +73,32 @@ async function deleteMember(id){if(!confirm('Delete this team member?'))return;a
 document.getElementById('imageFile').addEventListener('change',()=>{const file=document.getElementById('imageFile').files?.[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{if(typeof reader.result==='string'){imageValue=reader.result;document.getElementById('imagePreview').src=imageValue;}};reader.readAsDataURL(file)});
 form.addEventListener('submit',async(e)=>{e.preventDefault();const payload={name:document.getElementById('name').value,title:document.getElementById('title').value,bio:document.getElementById('bio').value,status:document.getElementById('status').value,order:document.getElementById('order').value,image:imageValue};if(editingId){await adminFetch(`/backend/api/admin/team/${editingId}`,{method:'PATCH',body:JSON.stringify(payload)});showToast('Team member updated','success')}else{await adminFetch('/backend/api/admin/team',{method:'POST',body:JSON.stringify(payload)});showToast('Team member created','success')}resetForm();await loadMembers()});
 document.getElementById('cancelEdit').addEventListener('click',resetForm);document.getElementById('searchInput').addEventListener('input',renderMembers);loadMembers().then(resetForm)
+</script>
+
+<script>
+(function() {
+  const sidebar = document.getElementById('sidebar');
+  const toggle  = document.getElementById('sidebarToggle');
+  if (toggle && sidebar) {
+    toggle.addEventListener('click', function() { sidebar.classList.toggle('open'); });
+    document.addEventListener('click', function(e) {
+      if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && !toggle.contains(e.target)) {
+        sidebar.classList.remove('open');
+      }
+    });
+  }
+  // Populate user info
+  try {
+    var raw  = localStorage.getItem('adminUser');
+    var user = raw ? JSON.parse(raw) : {};
+    var email = localStorage.getItem('adminEmail') || '';
+    var name  = user.name || user.firstName || (email.split('@')[0] || 'Admin');
+    var el = document.getElementById('userName');
+    var av = document.getElementById('userAvatar');
+    if (el) el.textContent = name;
+    if (av) av.textContent = name.charAt(0).toUpperCase();
+  } catch(e) {}
+})();
 </script>
 </body>
 </html>
