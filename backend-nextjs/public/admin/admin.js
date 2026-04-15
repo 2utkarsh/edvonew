@@ -1937,20 +1937,22 @@ function getAdminPagePresentation() {
 
 function decorateAdminNavigation(root = document) {
   const iconMap = {
-    Dashboard: '◆',
-    'Home Content': '⌂',
-    'Hiring Partners': '◌',
-    Courses: '◫',
-    Instructors: '◈',
-    Blogs: '✦',
-    'Free Courses': '△',
-    Guides: '▤',
-    Team: '◍',
-    'Course Reviews': '★',
-    'Job Success Stories': '↗',
-    Events: '◔',
-    Challenges: '⬢',
-    Logout: '⎋',
+    Dashboard: '📊',
+    'Home Content': '🏠',
+    'Hiring Partners': '🤝',
+    Courses: '📚',
+    Instructors: '🎓',
+    Blogs: '✍️',
+    'Free Courses': '🎬',
+    Guides: '📖',
+    Team: '👥',
+    'Course Reviews': '⭐',
+    'Job Success Stories': '💼',
+    'Success Stories': '💼',
+    Events: '📅',
+    Challenges: '🏆',
+    'Sign Out': '🚪',
+    Logout: '🚪',
   };
 
   root.querySelectorAll('.nav-item').forEach((item) => {
@@ -2178,6 +2180,10 @@ function getAdminFrontendTargets() {
 function injectAdminCommandBar(root = document) {
   const content = root.querySelector('.dashboard-content');
   if (!content || content.querySelector('.admin-command-bar')) {
+    return;
+  }
+  // Skip if the page already has its own KPI/analytics layout
+  if (content.querySelector('.kpi-grid, .kpi-card, .ribbon')) {
     return;
   }
 
