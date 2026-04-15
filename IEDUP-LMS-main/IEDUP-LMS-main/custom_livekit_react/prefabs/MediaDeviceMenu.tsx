@@ -2,6 +2,7 @@ import { computeMenuPosition, wasClickOutside, log } from '@livekit/components-c
 import * as React from 'react';
 import { MediaDeviceSelect } from '../components/controls/MediaDeviceSelect';
 import type { LocalAudioTrack, LocalVideoTrack } from 'livekit-client';
+import { mergeProps } from '../mergeProps';
 
 /** @public */
 export interface MediaDeviceMenuProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -48,6 +49,15 @@ export function MediaDeviceMenu({
   const [devices, setDevices] = React.useState<MediaDeviceInfo[]>([]);
   const [updateRequired, setUpdateRequired] = React.useState<boolean>(true);
   const [needPermissions, setNeedPermissions] = React.useState(requestPermissions);
+  const buttonProps = React.useMemo(
+    () =>
+      mergeProps(
+        { className: 'lk-button lk-button-menu', 'aria-pressed': isOpen },
+        props,
+        { onClick: () => setIsOpen(!isOpen) },
+      ),
+    [isOpen, props],
+  );
 
   const handleActiveDeviceChange = (kind: MediaDeviceKind, deviceId: string) => {
     log.debug('handle device change');
@@ -103,13 +113,7 @@ export function MediaDeviceMenu({
 
   return (
     <>
-      <button
-        className="lk-button lk-button-menu"
-        aria-pressed={isOpen}
-        {...props}
-        onClick={() => setIsOpen(!isOpen)}
-        ref={button}
-      >
+      <button {...buttonProps} ref={button}>
         {props.children}
       </button>
       {/** only render when enabled in order to make sure that the permissions are requested only if the menu is enabled */}
