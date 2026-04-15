@@ -68,7 +68,7 @@
 
     <section class="panel"><div class="toolbar"><div><div class="table-title">Manage Course Reviews</div><div class="help">Submitted reviews can be reordered and toggled. Manual reviews can also be edited or deleted.</div></div><input id="searchInput" class="input" type="search" placeholder="Search reviews" style="max-width:280px" /><select id="categoryFilter" class="select" style="max-width:220px"><option value="all">All Categories</option></select></div><div class="table-wrap"><table><thead><tr><th>Reviewer</th><th>Course</th><th>Category</th><th>Review</th><th>Order</th><th>Status</th><th>Actions</th></tr></thead><tbody id="reviewRows"><tr><td colspan="7" class="help">Loading reviews...</td></tr></tbody></table></div></section>
   </div></div></main>
-  <script src="/backend/admin/admin.js?v=20260413f"></script>
+  <script src="/backend/admin/admin.js?v=20260416"></script>
   <script>
     let reviews=[]; let categories=[]; let editingId=null; let editingCategoryId=null; let avatarValue='/images/edvo-official-logo-v10.png';const refs=new Proxy({}, { get: (_, key) => document.getElementById(String(key)) });
     function e(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}

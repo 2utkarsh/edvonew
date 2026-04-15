@@ -1,4 +1,4 @@
-function logout() {
+﻿function logout() {
   localStorage.removeItem('adminToken');
   localStorage.removeItem('adminLoggedIn');
   localStorage.removeItem('adminEmail');
@@ -2384,8 +2384,6 @@ function runAdminUiEnhancements() {
   adminUiEnhancementsQueued = false;
   decorateAdminNavigation(document);
   enhanceAdminTopBar(document);
-  injectAdminCommandBar(document);
-  injectDashboardModules(document);
   enhanceAdminPanels(document);
   enhanceEditorSections(document);
   enhanceAdminForms(document);
