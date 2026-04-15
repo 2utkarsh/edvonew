@@ -413,7 +413,7 @@ export function PreJoin({
         </div>
       </div>
 
-      <form className="lk-username-container">
+      <form className="lk-username-container" onSubmit={handleSubmit}>
         <input
           className="lk-form-control"
           id="username"
@@ -427,7 +427,6 @@ export function PreJoin({
         <button
           className="lk-button lk-join-button"
           type="submit"
-          onClick={handleSubmit}
           disabled={!isValid}
         >
           {joinLabel}

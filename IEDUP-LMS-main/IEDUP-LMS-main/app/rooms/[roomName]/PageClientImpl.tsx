@@ -125,10 +125,10 @@ export function PageClientImpl(props: {
   }, [props.roomName]);
 
   return (
-    <main data-lk-theme="default" style={{ height: '100%' }}>
+    <main data-lk-theme="default">
       {(!connectionDetails || preJoinChoices === undefined) ? (
-        <div style={{ display: 'grid', placeItems: 'center', height: '100%' }}>
-          <div style={{ display: 'grid', gap: '1rem', width: 'min(100%, 32rem)' }}>
+        <div className="lk-prejoin-page">
+          <div className="lk-prejoin-stage">
             {joinError && (
               <div
                 style={{
