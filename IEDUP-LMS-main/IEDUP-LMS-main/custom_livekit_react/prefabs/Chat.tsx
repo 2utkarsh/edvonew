@@ -6,6 +6,7 @@ import { cloneSingleChild } from '../utils';
 import type { MessageFormatter } from '../components/ChatEntry';
 import { ChatEntry } from '../components/ChatEntry';
 import { useChat } from '../hooks/useChat';
+import { useLocalParticipantPermissions } from '../hooks/useLocalParticipantPermissions';
 import { useRemoteParticipants } from '../hooks/useRemoteParticipants';
 import { ChatToggle } from '../components';
 import ChatCloseIcon from '../assets/icons/ChatCloseIcon';
@@ -54,9 +55,11 @@ export function Chat({
   const [selectedParticipant, setSelectedParticipant] = React.useState<string>('all');
   const remoteParticipants = useRemoteParticipants();
   const { localParticipant } = useLocalParticipant();
+  const localPermissions = useLocalParticipantPermissions();
   const room = useRoomContext();
   const [isHost, setIsHost] = React.useState(false);
   const [hosts, setHosts] = React.useState<typeof remoteParticipants>([]);
+  const canSendChat = isHost || localPermissions?.canPublishData !== false;
 
   const chatOptions: ChatOptions = React.useMemo(() => {
     return { messageDecoder, messageEncoder, channelTopic };
@@ -79,8 +82,12 @@ export function Chat({
     };
 
     const updateParticipants = () => {
-      setIsHost(getMetadataRole(localParticipant) === 'host');
-      const remoteHosts = remoteParticipants.filter((p) => getMetadataRole(p) === 'host');
+      const localRole = getMetadataRole(localParticipant);
+      setIsHost(localRole === 'host' || localRole === 'co-host');
+      const remoteHosts = remoteParticipants.filter((p) => {
+        const role = getMetadataRole(p);
+        return role === 'host' || role === 'co-host';
+      });
       setHosts(remoteHosts);
     };
 
@@ -99,6 +106,10 @@ export function Chat({
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+    if (!canSendChat) {
+      return;
+    }
+
     if (send && inputRef.current && inputRef.current.value.trim() !== '') {
       const destinationIdentities =
         selectedParticipant === 'all' ? undefined : [selectedParticipant];
@@ -139,6 +150,14 @@ export function Chat({
       widget.dispatch?.({ msg: 'unread_msg', count: unreadMessageCount });
     }
   }, [chatMessages, layoutContext?.widget]);
+
+  React.useEffect(() => {
+    if (!layoutContext?.widget.state?.showChat || canSendChat) {
+      return;
+    }
+
+    layoutContext.widget.dispatch?.({ msg: 'hide_chat' });
+  }, [canSendChat, layoutContext]);
 
   return (
     <div
@@ -193,6 +212,7 @@ export function Chat({
             onChange={(e) => setSelectedParticipant(e.target.value)}
             className="lk-form-control"
             style={{ flexShrink: 0 }}
+            disabled={!canSendChat}
           >
             <option value="all">All</option>
             {(isHost ? remoteParticipants : hosts).map((p) => (
@@ -203,17 +223,21 @@ export function Chat({
           </select>
           <input
             className="lk-form-control lk-chat-form-input"
-            disabled={isSending}
+            disabled={isSending || !canSendChat}
             ref={inputRef}
             type="text"
-            placeholder="Enter a message..."
+            placeholder={canSendChat ? 'Enter a message...' : 'Chat disabled by host'}
             onInput={(ev) => ev.stopPropagation()}
             onKeyDown={(ev) => ev.stopPropagation()}
             onKeyUp={(ev) => ev.stopPropagation()}
             style={{ width: '100%' }}
           />
         </div>
-        <button type="submit" className="lk-button lk-chat-form-button" disabled={isSending}>
+        <button
+          type="submit"
+          className="lk-button lk-chat-form-button"
+          disabled={isSending || !canSendChat}
+        >
           Send
         </button>
       </form>

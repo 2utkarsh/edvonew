@@ -54,6 +54,7 @@ export interface ControlBarProps extends React.HTMLAttributes<HTMLDivElement> {
   onHandStateChange?: (action: 'raise' | 'lower', identity: string) => void;
   onWhiteboardToggle?: () => void;
   whiteboardOpen?: boolean;
+  canCloseWhiteboard?: boolean;
 }
 
 /**
@@ -80,6 +81,7 @@ export function ControlBar({
   onHandStateChange,
   onWhiteboardToggle,
   whiteboardOpen = false,
+  canCloseWhiteboard = true,
   ...props
 }: ControlBarProps) {
   const [isChatOpen, setIsChatOpen] = React.useState(false);
@@ -292,7 +294,14 @@ export function ControlBar({
         </TrackToggle>
       )}
       {visibleControls.chat && (
-        <ChatToggle>
+        <ChatToggle
+          disabled={localPermissions?.canPublishData === false && !isHost}
+          title={
+            localPermissions?.canPublishData === false && !isHost
+              ? 'Chat is disabled by the host'
+              : 'Chat'
+          }
+        >
           {showIcon && <ChatIcon />}
           {'Chat'}
         </ChatToggle>
@@ -327,9 +336,18 @@ export function ControlBar({
           className="lk-button"
           onClick={onWhiteboardToggle}
           aria-pressed={whiteboardOpen}
-          title={whiteboardOpen ? 'Hide whiteboard' : 'Show whiteboard'}
+          disabled={whiteboardOpen && !canCloseWhiteboard}
+          title={
+            whiteboardOpen && !canCloseWhiteboard
+              ? 'Only the host or the member who opened the whiteboard can close it'
+              : whiteboardOpen
+                ? 'Hide whiteboard'
+                : 'Show whiteboard'
+          }
           style={{
             border: whiteboardOpen ? '2px solid rgba(255, 255, 255, 0.9)' : undefined,
+            opacity: whiteboardOpen && !canCloseWhiteboard ? 0.65 : 1,
+            cursor: whiteboardOpen && !canCloseWhiteboard ? 'not-allowed' : 'pointer',
           }}
         >
           {showIcon && <FaPen />}

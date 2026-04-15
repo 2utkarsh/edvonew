@@ -2,10 +2,22 @@ import { useParticipants, useRoomContext, useLocalParticipant } from '../../cust
 import { useState, useEffect, useContext, createContext, SetStateAction, Dispatch } from 'react';
 import { Track, RemoteParticipant, ParticipantEvent, DataPacket_Kind, Participant, RoomEvent, LocalParticipant, Room } from 'livekit-client';
 import { CiCircleRemove } from "react-icons/ci"; 
-import { MdOutlineDriveFileRenameOutline } from "react-icons/md";
-import { FaDoorOpen } from "react-icons/fa";
-import { MdOutlinePerson4 } from "react-icons/md";
-import { FaHandPaper } from "react-icons/fa";
+import {
+  MdChat,
+  MdChatBubbleOutline,
+  MdOutlineDriveFileRenameOutline,
+  MdOutlinePerson4,
+  MdScreenShare,
+  MdStopScreenShare,
+} from "react-icons/md";
+import {
+  FaDoorOpen,
+  FaHandPaper,
+  FaMicrophone,
+  FaMicrophoneSlash,
+  FaVideo,
+  FaVideoSlash,
+} from "react-icons/fa";
 import { MyGlobalContext } from '@/state_mangement/MyGlobalContext';
 import { MultiTypePublishingToggle } from './components/MultiTypePublishingToggle';
 import React from 'react';
@@ -77,28 +89,82 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
     setIsProcessing
   }
 
-  useEffect(() => {
-    if(room.state === "connected") {
-      const checkHostStatus = () => {
-        if(localParticipant) {
-          try {
-            const metadata = localParticipant.metadata ? JSON.parse(localParticipant.metadata) : {};
-            if(metadata.role === 'host') {
-              setIsHost(true)
-            } else if(metadata.role === 'co-host') {
-              setIsHost(true)
-            }
-          } catch (error) {
-            console.error('Error parsing participant metadata:', error);
-          }
-        } else {
-          console.log('No local participant found');
-        }
-      };
-
-      checkHostStatus();
+  const updateModeratorRole = React.useCallback(() => {
+    if (!localParticipant) {
+      setIsHost(false);
+      setIsCoHost(false);
+      return;
     }
-  }, [room.state]);
+
+    try {
+      const metadata = localParticipant.metadata ? JSON.parse(localParticipant.metadata) : {};
+      setIsHost(metadata.role === 'host');
+      setIsCoHost(metadata.role === 'co-host');
+    } catch (error) {
+      console.error('Error parsing participant metadata:', error);
+      setIsHost(false);
+      setIsCoHost(false);
+    }
+  }, [localParticipant]);
+
+  useEffect(() => {
+    updateModeratorRole();
+
+    room.on(RoomEvent.Connected, updateModeratorRole);
+    room.on(RoomEvent.ParticipantMetadataChanged, updateModeratorRole);
+
+    return () => {
+      room.off(RoomEvent.Connected, updateModeratorRole);
+      room.off(RoomEvent.ParticipantMetadataChanged, updateModeratorRole);
+    };
+  }, [room, updateModeratorRole]);
+
+  const postParticipantAction = React.useCallback(
+    async (participantIdentity: string, action: string) => {
+      const url = new URL(CONN_DETAILS_ENDPOINT, window.location.origin);
+
+      const response = await fetch(url.toString(), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          roomName: room.name,
+          participantIdentity,
+          action,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to ${action} for ${participantIdentity}`);
+      }
+    },
+    [room],
+  );
+
+  const publishParticipantControl = React.useCallback(
+    async (
+      participantIdentity: string,
+      action: string,
+      extra: Record<string, unknown> = {},
+    ) => {
+      await room.localParticipant.publishData(
+        new TextEncoder().encode(
+          JSON.stringify({
+            type: 'control',
+            action,
+            target: participantIdentity,
+            ...extra,
+          }),
+        ),
+        {
+          reliable: true,
+          destinationIdentities: [participantIdentity],
+        },
+      );
+    },
+    [room],
+  );
 
   // Handle incoming data messages
   useEffect(() => {
@@ -116,8 +182,11 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
             room.localParticipant.setCameraEnabled(false);
           } else if (data.action === 'unmute-video') {
             room.localParticipant.setCameraEnabled(true);
+          } else if (data.action === 'stop-screen-share') {
+            room.localParticipant.setScreenShareEnabled(false);
           } else if(data.action === 'toggle-cohost') {
-            setIsHost(bool => !bool)
+            setIsHost(data.role === 'host');
+            setIsCoHost(data.role === 'co-host');
           }
         }
       } catch (error) {
@@ -129,7 +198,7 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
     return () => {
       room.off('dataReceived', handleData);
     };
-  }, [room.state]);
+  }, [room]);
 
 
 
@@ -143,26 +212,9 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
       setIsProcessing(true);
       const isMuted = participant.isMicrophoneEnabled === false;
       const action = isMuted ? 'unmute-audio' : 'mute-audio';
-      
-      console.log('Sending control message:', { 
-        participant: participant.identity, 
-        action,
-        roomName: room.name,
-        isHost,
-        isCoHost
-      });
 
-      // Send control message via data channel
-      const data = {
-        type: 'control',
-        action,
-        target: participant.identity
-      };
-      
-      await room.localParticipant.publishData(
-        new TextEncoder().encode(JSON.stringify(data)),
-        { reliable: true }
-      );
+      await postParticipantAction(participant.identity, action);
+      await publishParticipantControl(participant.identity, action);
 
     } catch (error) {
       console.error('Error toggling audio:', error);
@@ -181,26 +233,9 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
       setIsProcessing(true);
       const isVideoDisabled = participant.isCameraEnabled === false;
       const action = isVideoDisabled ? 'unmute-video' : 'mute-video';
-      
-      console.log('Sending control message:', { 
-        participant: participant.identity, 
-        action,
-        roomName: room.name,
-        isHost,
-        isCoHost
-      });
 
-      // Send control message via data channel
-      const data = {
-        type: 'control',
-        action,
-        target: participant.identity
-      };
-      
-      await room.localParticipant.publishData(
-        new TextEncoder().encode(JSON.stringify(data)),
-        { reliable: true }
-      );
+      await postParticipantAction(participant.identity, action);
+      await publishParticipantControl(participant.identity, action);
 
     } catch (error) {
       console.error('Error toggling video:', error);
@@ -215,6 +250,54 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
 
   const isParticipantVideoDisabled = (participant: RemoteParticipant) => {
     return !participant.isCameraEnabled;
+  };
+
+  const stopParticipantScreenShare = async (participant: RemoteParticipant) => {
+    if (isProcessing) {
+      console.log('Cannot stop screen share:', { isHost, isCoHost, isProcessing });
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+      await postParticipantAction(participant.identity, 'stop-screen-share');
+      await publishParticipantControl(participant.identity, 'stop-screen-share');
+    } catch (error) {
+      console.error('Error stopping screen share:', error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const toggleParticipantChat = async (participant: RemoteParticipant) => {
+    if (isProcessing) {
+      console.log('Cannot toggle chat:', { isHost, isCoHost, isProcessing });
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+      const chatEnabled = participant.permissions?.canPublishData !== false;
+
+      await postParticipantAction(participant.identity, 'toggle-chat');
+      await publishParticipantControl(
+        participant.identity,
+        chatEnabled ? 'disable-chat' : 'enable-chat',
+      );
+    } catch (error) {
+      console.error('Error toggling chat:', error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const isParticipantScreenSharing = (participant: RemoteParticipant) => {
+    const publication = participant.getTrackPublication(Track.Source.ScreenShare);
+    return Boolean(publication && publication.isMuted !== true);
+  };
+
+  const isParticipantChatDisabled = (participant: RemoteParticipant) => {
+    return participant.permissions?.canPublishData === false;
   };
 
   const kickParticipant = async (participant: RemoteParticipant) => {
@@ -300,12 +383,15 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
       setIsProcessing(true);
 
       const url = new URL(CONN_DETAILS_ENDPOINT, window.location.origin);
+      const participantMetadata = participant.metadata ? JSON.parse(participant.metadata) : {};
+      const currentRole = participantMetadata.role;
 
       const payload = {
         roomName: room.name,
         participantIdentity: participant.identity,
-        action: (JSON.parse(participant.metadata + "").role === "co-host") ? 'remove-cohost' : "make-cohost",
+        action: currentRole === "co-host" ? 'remove-cohost' : "make-cohost",
       };
+      const nextRole = currentRole === "co-host" ? 'participant' : 'co-host';
 
       await fetch(url.toString(), {
         method: 'POST',
@@ -318,12 +404,13 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
       const data = {
         type: 'control',
         action: 'toggle-cohost',
-        target: participant.identity
+        target: participant.identity,
+        role: nextRole,
       };
       
       await room.localParticipant.publishData(
         new TextEncoder().encode(JSON.stringify(data)),
-        { reliable: true }
+        { reliable: true, destinationIdentities: [participant.identity] }
       );
     } catch (error) {
       console.error('Error toggling video:', error);
@@ -346,11 +433,12 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
       setIsProcessing(true);
 
       const url = new URL(CONN_DETAILS_ENDPOINT, window.location.origin);
+      const participantMetadata = participant.metadata ? JSON.parse(participant.metadata) : {};
 
       const payload = {
         roomName: room.name,
         participantIdentity: participant.identity,
-        action: !(JSON.parse(participant.metadata + "").inWaitingRoom) ? 'put-in-waiting-room' : "remove-from-waiting-room",
+        action: !participantMetadata.inWaitingRoom ? 'put-in-waiting-room' : "remove-from-waiting-room",
       };
 
       await fetch(url.toString(), {
@@ -673,6 +761,11 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
               // Get the display name - use renamed name if available, otherwise use original
               const originalName = participant.identity.split('__')[0];
               const displayName = renamedParticipants[participant.identity] || originalName;
+              const actionsDisabled = role === "host" || isLocal || isProcessing;
+              const participantMuted = isParticipantMuted(participant as RemoteParticipant);
+              const participantVideoDisabled = isParticipantVideoDisabled(participant as RemoteParticipant);
+              const participantScreenSharing = isParticipantScreenSharing(participant as RemoteParticipant);
+              const participantChatDisabled = isParticipantChatDisabled(participant as RemoteParticipant);
 
               return (
                 <div 
@@ -731,14 +824,14 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
 
                   {
                     (isHost || isCoHost) ?
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                        <MultiTypePublishingToggle participant={participant} disabled={((role === "host") || isLocal || isProcessing)}/>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                        <MultiTypePublishingToggle participant={participant} disabled={actionsDisabled}/>
                         <button
                           onClick={() => {
                             setKickParticipantData(participant as RemoteParticipant);
                             setIsKickModalOpen(true);
                           }}
-                          disabled={((role === "host") || isLocal || isProcessing)}
+                          disabled={actionsDisabled}
                           title='Remove participant'
                           style={{
                             padding: '8px',
@@ -746,7 +839,7 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
                             color: 'var(--lk-text)',
                             border: '1px solid var(--lk-border)',
                             borderRadius: '4px',
-                            cursor: ((role === "host") || isLocal || isProcessing) ? 'not-allowed' : 'pointer',
+                            cursor: actionsDisabled ? 'not-allowed' : 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -760,7 +853,7 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
                             setdialogueParticipant(participant as RemoteParticipant)
                             setIsOpenDialogue(true)
                           }}
-                          disabled={((role === "host") || isLocal || isProcessing)}
+                          disabled={actionsDisabled}
                           title="Rename"
                           style={{
                             padding: '8px',
@@ -768,8 +861,8 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
                             color: 'var(--lk-text)',
                             border: '1px solid var(--lk-border)',
                             borderRadius: '4px',
-                            cursor: ((role === "host") || isLocal || isProcessing) ? 'not-allowed' : 'pointer',
-                            opacity: ((role === "host") || isLocal || isProcessing) ? 0.7 : 1,
+                            cursor: actionsDisabled ? 'not-allowed' : 'pointer',
+                            opacity: actionsDisabled ? 0.7 : 1,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -782,7 +875,7 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
                           onClick={() => {
                             toggleWaitingRoom(participant as RemoteParticipant)
                           }}
-                          disabled={((role === "host") || isLocal || isProcessing)}
+                          disabled={actionsDisabled}
                           title="Put in waiting room"
                           style={{
                             padding: '8px',
@@ -790,8 +883,8 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
                             color: 'var(--lk-text)',
                             border: '1px solid var(--lk-border)',
                             borderRadius: '4px',
-                            cursor: ((role === "host") || isLocal || isProcessing) ? 'not-allowed' : 'pointer',
-                            opacity: ((role === "host") || isLocal || isProcessing) ? 0.7 : 1,
+                            cursor: actionsDisabled ? 'not-allowed' : 'pointer',
+                            opacity: actionsDisabled ? 0.7 : 1,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -804,7 +897,7 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
                           onClick={() => {
                             toggleCoHost(participant as RemoteParticipant)
                           }}
-                          disabled={((role === "host") || isLocal || isProcessing)}
+                          disabled={actionsDisabled}
                           title="Make host"
                           style={{
                             padding: '8px',
@@ -812,8 +905,8 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
                             color: 'var(--lk-text)',
                             border: '1px solid var(--lk-border)',
                             borderRadius: '4px',
-                            cursor: ((role === "host") || isLocal || isProcessing) ? 'not-allowed' : 'pointer',
-                            opacity: ((role === "host") || isLocal || isProcessing) ? 0.7 : 1,
+                            cursor: actionsDisabled ? 'not-allowed' : 'pointer',
+                            opacity: actionsDisabled ? 0.7 : 1,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -821,6 +914,98 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
                           }}
                         >
                           <MdOutlinePerson4 size="24"/>  
+                        </button>
+                        <button
+                          onClick={() => {
+                            toggleParticipantAudio(participant as RemoteParticipant)
+                          }}
+                          disabled={actionsDisabled}
+                          title={participantMuted ? "Unmute participant audio" : "Mute participant audio"}
+                          style={{
+                            padding: '8px',
+                            background: 'var(--lk-bg2)',
+                            color: 'var(--lk-text)',
+                            border: '1px solid var(--lk-border)',
+                            borderRadius: '4px',
+                            cursor: actionsDisabled ? 'not-allowed' : 'pointer',
+                            opacity: actionsDisabled ? 0.7 : 1,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            minWidth: '36px'
+                          }}
+                        >
+                          {participantMuted ? <FaMicrophoneSlash size="18" /> : <FaMicrophone size="18" />}
+                        </button>
+                        <button
+                          onClick={() => {
+                            toggleParticipantVideo(participant as RemoteParticipant)
+                          }}
+                          disabled={actionsDisabled}
+                          title={participantVideoDisabled ? "Turn participant video on" : "Turn participant video off"}
+                          style={{
+                            padding: '8px',
+                            background: 'var(--lk-bg2)',
+                            color: 'var(--lk-text)',
+                            border: '1px solid var(--lk-border)',
+                            borderRadius: '4px',
+                            cursor: actionsDisabled ? 'not-allowed' : 'pointer',
+                            opacity: actionsDisabled ? 0.7 : 1,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            minWidth: '36px'
+                          }}
+                        >
+                          {participantVideoDisabled ? <FaVideoSlash size="18" /> : <FaVideo size="18" />}
+                        </button>
+                        <button
+                          onClick={() => {
+                            stopParticipantScreenShare(participant as RemoteParticipant)
+                          }}
+                          disabled={actionsDisabled || !participantScreenSharing}
+                          title={
+                            participantScreenSharing
+                              ? "Stop participant screen share"
+                              : "Participant is not sharing screen"
+                          }
+                          style={{
+                            padding: '8px',
+                            background: 'var(--lk-bg2)',
+                            color: 'var(--lk-text)',
+                            border: '1px solid var(--lk-border)',
+                            borderRadius: '4px',
+                            cursor: actionsDisabled || !participantScreenSharing ? 'not-allowed' : 'pointer',
+                            opacity: actionsDisabled || !participantScreenSharing ? 0.7 : 1,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            minWidth: '36px'
+                          }}
+                        >
+                          {participantScreenSharing ? <MdStopScreenShare size="20" /> : <MdScreenShare size="20" />}
+                        </button>
+                        <button
+                          onClick={() => {
+                            toggleParticipantChat(participant as RemoteParticipant)
+                          }}
+                          disabled={actionsDisabled}
+                          title={participantChatDisabled ? "Enable participant chat" : "Disable participant chat"}
+                          style={{
+                            padding: '8px',
+                            background: 'var(--lk-bg2)',
+                            color: 'var(--lk-text)',
+                            border: '1px solid var(--lk-border)',
+                            borderRadius: '4px',
+                            cursor: actionsDisabled ? 'not-allowed' : 'pointer',
+                            opacity: actionsDisabled ? 0.7 : 1,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            minWidth: '36px'
+                          }}
+                        >
+                          {participantChatDisabled ? <MdChatBubbleOutline size="20" /> : <MdChat size="20" />}
                         </button>
                     </div>
                     : <></>

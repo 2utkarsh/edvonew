@@ -195,6 +195,19 @@ export async function POST(req: Request) {
       } else if (action === 'unmute-video') {
         console.log('Unmuting video for participant:', participantIdentity);
         await roomService.mutePublishedTrack(roomName, participantIdentity, Track.Source.Camera, false);
+      } else if (action === 'stop-screen-share') {
+        console.log('Stopping screen share for participant:', participantIdentity);
+        await roomService.mutePublishedTrack(
+          roomName,
+          participantIdentity,
+          Track.Source.ScreenShare,
+          true,
+        );
+        await roomService
+          .mutePublishedTrack(roomName, participantIdentity, Track.Source.ScreenShareAudio, true)
+          .catch((error) => {
+            console.warn('Unable to mute screen share audio track:', error);
+          });
       } else if (action === 'remove') {
         console.log('Removing participant:', participantIdentity);
         await roomService.removeParticipant(roomName, participantIdentity);
@@ -258,6 +271,12 @@ export async function POST(req: Request) {
         const permissions = {
           ...participant.permission,
           canPublish: !participant.permission?.canPublish,
+        };
+        await roomService.updateParticipant(roomName, participantIdentity, undefined, permissions);
+      } else if (action === 'toggle-chat') {
+        const permissions = {
+          ...participant.permission,
+          canPublishData: !(participant.permission?.canPublishData ?? true),
         };
         await roomService.updateParticipant(roomName, participantIdentity, undefined, permissions);
       } else if (action === 'mass-toggle-publishing') {

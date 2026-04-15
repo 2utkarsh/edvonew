@@ -38,6 +38,15 @@ const CONN_DETAILS_ENDPOINT = process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? a
 const SHOW_SETTINGS_MENU = process.env.NEXT_PUBLIC_SHOW_SETTINGS_MENU == 'true';
 const encoder = new TextEncoder();
 
+function parseParticipantRole(metadata?: string) {
+  try {
+    const parsed = JSON.parse(metadata ?? '{}') as { role?: string };
+    return parsed.role;
+  } catch {
+    return undefined;
+  }
+}
+
 export function PageClientImpl(props: {
   roomName: string;
   where?: string;
@@ -444,9 +453,28 @@ function VideoConferenceComponent(props: {
   const [participantIdentityHand, setParticipantIdentityHand] = useState("")
   const [raisedHandIdentities, setRaisedHandIdentities] = useState<string[]>([]);
   const [whiteboardOpen, setWhiteboardOpen] = useState(false);
+  const [whiteboardOwnerIdentity, setWhiteboardOwnerIdentity] = useState<string | null>(null);
+  const [isLocalHost, setIsLocalHost] = useState(false);
+
+  const refreshLocalRole = React.useCallback(() => {
+    const role = parseParticipantRole(room.localParticipant.metadata);
+    setIsLocalHost(role === 'host' || role === 'co-host');
+  }, [room]);
+
+  React.useEffect(() => {
+    refreshLocalRole();
+
+    room.on(RoomEvent.Connected, refreshLocalRole);
+    room.on(RoomEvent.ParticipantMetadataChanged, refreshLocalRole);
+
+    return () => {
+      room.off(RoomEvent.Connected, refreshLocalRole);
+      room.off(RoomEvent.ParticipantMetadataChanged, refreshLocalRole);
+    };
+  }, [refreshLocalRole, room]);
 
   const publishWhiteboardVisibility = React.useCallback(
-    async (nextOpen: boolean, destinationIdentities?: string[]) => {
+    async (nextOpen: boolean, destinationIdentities?: string[], ownerIdentity?: string | null) => {
       try {
         await room.localParticipant.publishData(
           encoder.encode(
@@ -454,6 +482,7 @@ function VideoConferenceComponent(props: {
               type: 'whiteboard-control',
               action: nextOpen ? 'open' : 'close',
               actor: room.localParticipant.identity,
+              ownerIdentity: nextOpen ? ownerIdentity ?? room.localParticipant.identity : null,
             }),
           ),
           {
@@ -470,21 +499,42 @@ function VideoConferenceComponent(props: {
 
   const handleWhiteboardToggle = React.useCallback(() => {
     setWhiteboardOpen((current) => {
+      const canCloseCurrentBoard =
+        isLocalHost || whiteboardOwnerIdentity === room.localParticipant.identity;
+
+      if (current && !canCloseCurrentBoard) {
+        setNotify(true);
+        setNotifyText('Only the host or the member who opened the whiteboard can close it.');
+        return current;
+      }
+
       const nextOpen = !current;
-      void publishWhiteboardVisibility(nextOpen);
+      const nextOwnerIdentity = nextOpen ? room.localParticipant.identity : null;
+      setWhiteboardOwnerIdentity(nextOwnerIdentity);
+      void publishWhiteboardVisibility(nextOpen, undefined, nextOwnerIdentity);
       return nextOpen;
     });
-  }, [publishWhiteboardVisibility]);
+  }, [isLocalHost, publishWhiteboardVisibility, room, whiteboardOwnerIdentity]);
 
   const handleWhiteboardClose = React.useCallback(() => {
     setWhiteboardOpen((current) => {
+      const canCloseCurrentBoard =
+        isLocalHost || whiteboardOwnerIdentity === room.localParticipant.identity;
+
+      if (current && !canCloseCurrentBoard) {
+        setNotify(true);
+        setNotifyText('Only the host or the member who opened the whiteboard can close it.');
+        return current;
+      }
+
       if (current) {
-        void publishWhiteboardVisibility(false);
+        setWhiteboardOwnerIdentity(null);
+        void publishWhiteboardVisibility(false, undefined, null);
       }
 
       return false;
     });
-  }, [publishWhiteboardVisibility]);
+  }, [isLocalHost, publishWhiteboardVisibility, room, whiteboardOwnerIdentity]);
 
   // Callback to handle local participant hand state changes
   const handleLocalHandStateChange = React.useCallback((action: 'raise' | 'lower', identity: string) => {
@@ -519,6 +569,9 @@ function VideoConferenceComponent(props: {
           }
         } else if (data.type === 'whiteboard-control') {
           setWhiteboardOpen(data.action === 'open');
+          setWhiteboardOwnerIdentity(
+            data.action === 'open' ? data.ownerIdentity ?? data.actor ?? null : null,
+          );
         }
       } catch (error) {
         console.error('Error handling data message:', error);
@@ -537,14 +590,19 @@ function VideoConferenceComponent(props: {
         return;
       }
 
-      void publishWhiteboardVisibility(true, [participant.identity]);
+      void publishWhiteboardVisibility(true, [participant.identity], whiteboardOwnerIdentity);
     };
 
     room.on(RoomEvent.ParticipantConnected, handleParticipantConnected);
     return () => {
       room.off(RoomEvent.ParticipantConnected, handleParticipantConnected);
     };
-  }, [publishWhiteboardVisibility, room, whiteboardOpen]);
+  }, [publishWhiteboardVisibility, room, whiteboardOpen, whiteboardOwnerIdentity]);
+
+  const canCloseWhiteboard =
+    !whiteboardOpen ||
+    isLocalHost ||
+    whiteboardOwnerIdentity === room.localParticipant.identity;
 
   return (
     <div className="lk-room-container" style={{ position: 'relative', minHeight: '100vh', height: '100svh' }}>
@@ -556,6 +614,7 @@ function VideoConferenceComponent(props: {
             onHandStateChange={handleLocalHandStateChange}
             onWhiteboardToggle={handleWhiteboardToggle}
             whiteboardOpen={whiteboardOpen}
+            canCloseWhiteboard={canCloseWhiteboard}
           />
         <RoomWhiteboard
           isOpen={whiteboardOpen}
