@@ -25,7 +25,6 @@ import {
   RoomEvent,
   RemoteParticipant,
 } from 'livekit-client';
-import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import Notification from '@/components/Notification';
 import { MassControl } from '@/components/MassControl';
@@ -36,6 +35,7 @@ import { apiUrl } from '@/lib/url';
 
 const CONN_DETAILS_ENDPOINT = process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? apiUrl('/api/connection-details');
 const SHOW_SETTINGS_MENU = process.env.NEXT_PUBLIC_SHOW_SETTINGS_MENU == 'true';
+const EXIT_REDIRECT_URL = 'https://edvo.in';
 const encoder = new TextEncoder();
 
 function parseParticipantRole(metadata?: string) {
@@ -308,8 +308,11 @@ function VideoConferenceComponent(props: {
     });
   }, [room]);
 
-  const router = useRouter();
-  const handleOnLeave = React.useCallback(() => router.push('/'), [router]);
+  const handleOnLeave = React.useCallback(() => {
+    if (typeof window !== 'undefined') {
+      window.location.replace(EXIT_REDIRECT_URL);
+    }
+  }, []);
   const handleError = React.useCallback((error: Error) => {
     console.error(error);
     alert(`Encountered an unexpected error, check the console logs for details: ${error.message}`);
