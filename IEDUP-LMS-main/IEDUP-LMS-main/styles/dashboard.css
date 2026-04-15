@@ -1315,6 +1315,94 @@
   max-width: 100%;
 }
 
+.room-prejoin {
+  display: grid;
+  gap: 0.875rem;
+}
+
+.room-prejoin-legacy {
+  display: none;
+}
+
+.room-prejoin-notice {
+  margin: 0;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid #ffeaa7;
+  border-radius: 0.5rem;
+  background: #fff3cd;
+  color: #856404;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.room-prejoin-controls,
+.room-prejoin-form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.room-prejoin-device {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.room-prejoin-device > .lk-button {
+  min-width: 0;
+}
+
+.room-prejoin-device-toggle {
+  flex: 1 1 auto;
+  width: auto !important;
+  justify-content: flex-start;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.room-prejoin-device-menu {
+  width: 46px !important;
+  min-width: 46px;
+  flex: 0 0 46px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.room-prejoin-field {
+  display: grid;
+  gap: 0.375rem;
+}
+
+.room-prejoin-label {
+  color: var(--lk-fg);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.room-prejoin-input {
+  width: 100%;
+  min-height: 46px;
+}
+
+.room-prejoin-primary,
+.room-prejoin-secondary {
+  width: 100%;
+}
+
+.room-prejoin-secondary {
+  min-height: 40px;
+  font-size: 0.85rem;
+}
+
+.room-prejoin .lk-device-menu {
+  width: min(20rem, calc(100vw - 24px));
+  max-width: calc(100vw - 24px) !important;
+}
+
+.room-prejoin .lk-media-device-select li > .lk-button {
+  width: 100%;
+  white-space: normal;
+}
+
 .lk-prejoin > .lk-video-container + div,
 .lk-prejoin-notice {
   margin: 0 !important;
@@ -1392,6 +1480,10 @@
 }
 
 @media (min-width: 640px) {
+  .room-prejoin-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .lk-prejoin .lk-button-group-container {
     flex-wrap: nowrap;
   }
@@ -1590,9 +1682,31 @@
     gap: 0.875rem;
   }
 
+  .room-prejoin .lk-video-container,
+  .room-prejoin .lk-video-container .lk-camera-off-note,
   .lk-prejoin .lk-video-container,
   .lk-prejoin .lk-video-container .lk-camera-off-note {
     aspect-ratio: 16 / 9;
+  }
+
+  .room-prejoin-notice {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.625rem;
+  }
+
+  .room-prejoin-controls,
+  .room-prejoin-form {
+    gap: 0.625rem;
+  }
+
+  .room-prejoin-input,
+  .room-prejoin-primary {
+    min-height: 42px;
+  }
+
+  .room-prejoin-secondary {
+    min-height: 36px;
+    font-size: 0.8rem;
   }
 
   .lk-prejoin > .lk-video-container + div,
@@ -1640,9 +1754,37 @@
     gap: 0.75rem;
   }
 
+  .room-prejoin .lk-video-container,
+  .room-prejoin .lk-video-container .lk-camera-off-note,
   .lk-prejoin .lk-video-container,
   .lk-prejoin .lk-video-container .lk-camera-off-note {
     aspect-ratio: 2 / 1;
+  }
+
+  .room-prejoin-notice {
+    font-size: 0.7rem;
+    padding: 0.45rem 0.55rem;
+  }
+
+  .room-prejoin-label {
+    font-size: 0.78rem;
+  }
+
+  .room-prejoin-input,
+  .room-prejoin-primary {
+    min-height: 40px;
+    font-size: 0.875rem;
+  }
+
+  .room-prejoin-secondary {
+    min-height: 34px;
+    font-size: 0.76rem;
+  }
+
+  .room-prejoin-device-menu {
+    width: 40px !important;
+    min-width: 40px;
+    flex-basis: 40px;
   }
 
   .lk-prejoin .lk-form-control,

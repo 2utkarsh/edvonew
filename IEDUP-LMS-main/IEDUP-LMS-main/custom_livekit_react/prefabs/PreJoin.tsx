@@ -350,7 +350,7 @@ export function PreJoin({
   useWarnAboutMissingStyles();
 
   return (
-    <div className="lk-prejoin" {...htmlProps}>
+    <div className="lk-prejoin room-prejoin" {...htmlProps}>
       <div className="lk-video-container">
         {videoTrack && (
           <video ref={videoEl} width="1280" height="720" data-lk-facing-mode={facingMode} />
@@ -361,6 +361,84 @@ export function PreJoin({
           </div>
         )}
       </div>
+
+      <p className="room-prejoin-notice">Allow camera and microphone access before joining.</p>
+
+      <div className="room-prejoin-controls">
+        <div className="room-prejoin-device">
+          <TrackToggle
+            className="room-prejoin-device-toggle"
+            initialState={audioEnabled}
+            source={Track.Source.Microphone}
+            onChange={(enabled) => setAudioEnabled(enabled)}
+          >
+            {micLabel}
+          </TrackToggle>
+          <MediaDeviceMenu
+            className="room-prejoin-device-menu"
+            initialSelection={audioDeviceId}
+            kind="audioinput"
+            disabled={!audioTrack}
+            tracks={{ audioinput: audioTrack }}
+            onActiveDeviceChange={(_, id) => setAudioDeviceId(id)}
+            aria-label={`${micLabel} devices`}
+          />
+        </div>
+
+        <div className="room-prejoin-device">
+          <TrackToggle
+            className="room-prejoin-device-toggle"
+            initialState={videoEnabled}
+            source={Track.Source.Camera}
+            onChange={(enabled) => setVideoEnabled(enabled)}
+          >
+            {camLabel}
+          </TrackToggle>
+          <MediaDeviceMenu
+            className="room-prejoin-device-menu"
+            initialSelection={videoDeviceId}
+            kind="videoinput"
+            disabled={!videoTrack}
+            tracks={{ videoinput: videoTrack }}
+            onActiveDeviceChange={(_, id) => setVideoDeviceId(id)}
+            aria-label={`${camLabel} devices`}
+          />
+        </div>
+      </div>
+
+      <form className="room-prejoin-form" onSubmit={handleSubmit}>
+        <label className="room-prejoin-field" htmlFor="room-prejoin-username">
+          <span className="room-prejoin-label">{userLabel}</span>
+          <input
+            className="lk-form-control room-prejoin-input"
+            id="room-prejoin-username"
+            name="username"
+            type="text"
+            value={username}
+            placeholder={userLabel}
+            onChange={(inputEl) => setUsername(inputEl.target.value)}
+            autoComplete="off"
+          />
+        </label>
+        <button
+          className="lk-button lk-join-button room-prejoin-primary"
+          type="submit"
+          disabled={!isValid}
+        >
+          {joinLabel}
+        </button>
+        <button
+          className="lk-button lk-copy-url-button room-prejoin-secondary"
+          type="button"
+          onClick={() => {
+            navigator.clipboard.writeText((window.location.href).split("$")[0]);
+          }}
+        >
+          Copy URL
+        </button>
+      </form>
+
+      <div className="room-prejoin-legacy" aria-hidden="true">
       
       <div style={{
         background: '#fff3cd',
@@ -441,6 +519,8 @@ export function PreJoin({
           Copy URL
         </button>
       </form>
+
+      </div>
 
       {debug && (
         <>
