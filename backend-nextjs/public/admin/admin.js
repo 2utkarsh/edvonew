@@ -1985,23 +1985,6 @@ function decorateAdminNavigation(root = document) {
     }
   }
 
-  const logo = root.querySelector('.sidebar-logo');
-  if (logo && !logo.querySelector('small')) {
-    const subtitle = document.createElement('small');
-    subtitle.textContent = 'Admin Command';
-    logo.appendChild(subtitle);
-  }
-
-  const sidebar = root.querySelector('.sidebar');
-  if (sidebar && !sidebar.querySelector('.sidebar-footer')) {
-    const footer = document.createElement('div');
-    footer.className = 'sidebar-footer';
-    footer.innerHTML = `
-      <div class="sidebar-footer-label">Workspace</div>
-      <div class="sidebar-footer-copy">Professional publishing, catalog, and operations controls for the EDVO platform.</div>
-    `;
-    sidebar.appendChild(footer);
-  }
 }
 
 function enhanceAdminTopBar(root = document) {
