@@ -24,6 +24,7 @@ import { GiSpikyExplosion } from "react-icons/gi";
 import { RecordButton } from '../../components/RecordButton';
 import { RaiseHandButton } from '../components/controls/RaiseHandButton';
 import { FaPen } from 'react-icons/fa';
+import { roomHref } from '@/lib/url';
 
 /** @public */
 export type ControlBarControls = {
@@ -375,7 +376,12 @@ export function ControlBar({
           type='button'
           className='lk-button'
           onClick={() => {
-            navigator.clipboard.writeText((window.location.href).split("$")[0]);
+            navigator.clipboard.writeText(
+              new URL(
+                roomHref(room.name, window.location.search, window.location.hash),
+                window.location.origin,
+              ).toString(),
+            );
           }}
         >
           <CiLink /> Meet Link

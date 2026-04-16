@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { generateRoomId } from '@/lib/client-utils';
 import { createMeeting, fetchMeetings, updateMeeting } from '@/lib/api';
 import { clearStoredFaceReference } from '@/lib/face-verification';
-import { roomPath, withBasePath } from '@/lib/url';
+import { roomHref, roomPath } from '@/lib/url';
 import RecordingsList from './RecordingsList';
 import {
   FaArrowRight,
@@ -289,7 +289,12 @@ export default function EnhancedDashboard({
     }
 
     try {
-      await navigator.clipboard.writeText(`${window.location.origin}${withBasePath(roomPath(slug))}`);
+      await navigator.clipboard.writeText(
+        new URL(
+          roomHref(slug, window.location.search, window.location.hash),
+          window.location.origin,
+        ).toString(),
+      );
       notify('Meeting link copied.');
     } catch (error) {
       notify('Clipboard access is unavailable in this browser.', 'error');

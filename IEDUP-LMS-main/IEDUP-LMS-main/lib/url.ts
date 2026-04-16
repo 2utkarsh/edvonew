@@ -23,6 +23,12 @@ export function roomPath(roomName: string) {
   return `/room/${encodeURIComponent(String(roomName || '').trim())}`;
 }
 
+export function roomHref(roomName: string, search = '', hash = '') {
+  const normalizedSearch = !search ? '' : search.startsWith('?') ? search : `?${search}`;
+  const normalizedHash = !hash ? '' : hash.startsWith('#') ? hash : `#${hash}`;
+  return `${withBasePath(roomPath(roomName))}${normalizedSearch}${normalizedHash}`;
+}
+
 export function apiUrl(path: string) {
   const lowerBase = API_BASE_URL.toLowerCase();
   const isBackendBase = lowerBase.includes('/backend') || lowerBase.includes('backend.');

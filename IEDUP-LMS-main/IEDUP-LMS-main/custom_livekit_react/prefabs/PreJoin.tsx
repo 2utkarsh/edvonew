@@ -23,6 +23,7 @@ import { ParticipantPlaceholder } from '../assets/images';
 import { useMediaDevices, usePersistentUserChoices } from '../hooks';
 import { useWarnAboutMissingStyles } from '../hooks/useWarnAboutMissingStyles';
 import { roomOptionsStringifyReplacer } from '../utils';
+import { roomHref } from '@/lib/url';
 
 /**
  * Props for the PreJoin component.
@@ -52,6 +53,7 @@ export interface PreJoinProps
    */
   persistUserChoices?: boolean;
   videoProcessor?: TrackProcessor<Track.Kind.Video>;
+  roomName?: string;
 }
 
 /** @public */
@@ -228,6 +230,7 @@ export function PreJoin({
   userLabel = 'Username',
   persistUserChoices = true,
   videoProcessor,
+  roomName = '',
   ...htmlProps
 }: PreJoinProps) {
   const {
@@ -431,7 +434,12 @@ export function PreJoin({
           className="lk-button lk-copy-url-button room-prejoin-secondary"
           type="button"
           onClick={() => {
-            navigator.clipboard.writeText((window.location.href).split("$")[0]);
+            navigator.clipboard.writeText(
+              new URL(
+                roomHref(roomName, window.location.search, window.location.hash),
+                window.location.origin,
+              ).toString(),
+            );
           }}
         >
           Copy URL
@@ -513,7 +521,12 @@ export function PreJoin({
           className="lk-button lk-copy-url-button"
           type="button"
           onClick={() => {
-            navigator.clipboard.writeText((window.location.href).split("$")[0]);
+            navigator.clipboard.writeText(
+              new URL(
+                roomHref(roomName, window.location.search, window.location.hash),
+                window.location.origin,
+              ).toString(),
+            );
           }}
         >
           Copy URL

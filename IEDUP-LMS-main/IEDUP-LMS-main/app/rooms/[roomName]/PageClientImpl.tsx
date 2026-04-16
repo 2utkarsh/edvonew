@@ -159,6 +159,7 @@ export function PageClientImpl(props: {
               defaults={preJoinDefaults}
               onSubmit={handlePreJoinSubmit}
               onError={handlePreJoinError}
+              roomName={props.roomName}
             />
           </div>
         </div>
