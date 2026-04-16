@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { generateRoomId } from '@/lib/client-utils';
 import { createMeeting, fetchMeetings, updateMeeting } from '@/lib/api';
 import { clearStoredFaceReference } from '@/lib/face-verification';
-import { roomHref, roomPath } from '@/lib/url';
+import { roomHref, roomPath, withBasePath } from '@/lib/url';
 import RecordingsList from './RecordingsList';
 import {
   FaArrowRight,
