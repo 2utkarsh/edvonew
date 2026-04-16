@@ -18,8 +18,8 @@ export default function Page() {
     }
 
     const lastRoute = sessionStorage.getItem('lastRoute');
-    if (lastRoute && /^\/rooms\/.+/.test(lastRoute)) {
-      setLastRoomRoute(lastRoute);
+    if (lastRoute && /^(\/room|\/rooms)\/.+/.test(lastRoute)) {
+      setLastRoomRoute(lastRoute.replace(/^\/rooms\//, '/room/'));
     }
   }, []);
 

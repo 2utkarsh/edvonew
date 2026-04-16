@@ -10,11 +10,17 @@ function joinBase(base: string, path: string) {
   return `${base}${safePath}`;
 }
 
-export const APP_BASE_PATH = normalizeBase(process.env.NEXT_PUBLIC_BASE_PATH || '');
+const DEFAULT_BASE_PATH = '/live';
+
+export const APP_BASE_PATH = normalizeBase(process.env.NEXT_PUBLIC_BASE_PATH || DEFAULT_BASE_PATH);
 export const API_BASE_URL = normalizeBase(process.env.NEXT_PUBLIC_API_BASE_URL || APP_BASE_PATH);
 
 export function withBasePath(path: string) {
   return joinBase(APP_BASE_PATH, path);
+}
+
+export function roomPath(roomName: string) {
+  return `/room/${encodeURIComponent(String(roomName || '').trim())}`;
 }
 
 export function apiUrl(path: string) {

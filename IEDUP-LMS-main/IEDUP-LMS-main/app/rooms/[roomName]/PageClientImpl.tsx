@@ -31,7 +31,7 @@ import { MassControl } from '@/components/MassControl';
 import FaceVerificationMonitor from '@/components/FaceVerificationMonitor';
 import RoomWhiteboard from '@/components/RoomWhiteboard';
 
-import { apiUrl } from '@/lib/url';
+import { apiUrl, roomPath } from '@/lib/url';
 
 const CONN_DETAILS_ENDPOINT = process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? apiUrl('/api/connection-details');
 const SHOW_SETTINGS_MENU = process.env.NEXT_PUBLIC_SHOW_SETTINGS_MENU == 'true';
@@ -130,7 +130,7 @@ export function PageClientImpl(props: {
   React.useEffect(() => {
     // Store the current room route in sessionStorage as 'lastRoute'
     if (typeof window !== 'undefined') {
-      const pathname = `/rooms/${props.roomName}`;
+      const pathname = roomPath(props.roomName);
       sessionStorage.setItem('lastRoute', pathname);
     }
   }, [props.roomName]);

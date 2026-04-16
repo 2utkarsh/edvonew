@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { generateRoomId } from '@/lib/client-utils';
 import { createMeeting, fetchMeetings, updateMeeting } from '@/lib/api';
 import { clearStoredFaceReference } from '@/lib/face-verification';
-import { withBasePath } from '@/lib/url';
+import { roomPath, withBasePath } from '@/lib/url';
 import RecordingsList from './RecordingsList';
 import {
   FaArrowRight,
@@ -278,7 +278,7 @@ export default function EnhancedDashboard({
       return;
     }
 
-    router.push(`/rooms/${roomSlug}`);
+    router.push(roomPath(roomSlug));
   };
 
   const copyMeetingLink = async (meeting) => {
@@ -289,7 +289,7 @@ export default function EnhancedDashboard({
     }
 
     try {
-      await navigator.clipboard.writeText(`${window.location.origin}${withBasePath(`/rooms/${slug}`)}`);
+      await navigator.clipboard.writeText(`${window.location.origin}${withBasePath(roomPath(slug))}`);
       notify('Meeting link copied.');
     } catch (error) {
       notify('Clipboard access is unavailable in this browser.', 'error');
