@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
-import { cn, systemCurrency } from '@/lib/utils';
+import { cn, stripHtml, systemCurrency } from '@/lib/utils';
 import { SharedData } from '@/types/global';
 import { Link, router, usePage } from '@inertiajs/react';
 import { BadgeCheck, Clock, VideoIcon } from 'lucide-react';
@@ -60,7 +60,7 @@ const CourseCard3 = ({ course, className }: Props) => {
          </CardHeader>
 
          <CardContent className="space-y-4 p-5">
-            <p>{course.short_description}</p>
+            <p>{stripHtml(course.short_description || '')}</p>
 
             <div className="flex flex-col items-center gap-3 sm:flex-row">
                {course.pricing_type === 'free' ? (

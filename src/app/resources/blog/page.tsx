@@ -7,7 +7,7 @@ import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import { FadeIn } from '@/components/animations';
 import BlogCard from '@/components/blog/BlogCard';
-import { cn } from '@/lib/utils';
+import { cn, stripHtml } from '@/lib/utils';
 import { BlogCategoryOption, BlogPost, fetchBlogCategories, fetchBlogs } from './data';
 
 const CATEGORY_ICONS = {
@@ -60,7 +60,7 @@ export default function BlogPage() {
     return blogs.filter((blog) => {
       const matchesSearch =
         blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        blog.description.toLowerCase().includes(searchTerm.toLowerCase());
+        stripHtml(blog.description).toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === 'all' || blog.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });

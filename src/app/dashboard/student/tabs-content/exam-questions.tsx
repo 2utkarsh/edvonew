@@ -3,6 +3,8 @@ import { Badge } from '@/components/ui/Badge';
 import { StudentExamProps } from '@/types/page';
 import { usePage } from '@inertiajs/react';
 import { FileQuestion, CheckCircle2, XCircle } from 'lucide-react';
+import { Renderer } from 'richtor';
+import 'richtor/styles';
 
 const ExamQuestions = () => {
    const { props } = usePage<StudentExamProps>();
@@ -41,7 +43,9 @@ const ExamQuestions = () => {
                         </div>
                         <p className="text-base font-medium">{question.title}</p>
                         {question.description && (
-                           <p className="text-muted-foreground mt-2 text-sm">{question.description}</p>
+                           <div className="text-muted-foreground mt-2 text-sm [&_p]:mb-3 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ol]:my-3 [&_li]:mb-1">
+                              <Renderer value={question.description} />
+                           </div>
                         )}
                         {question.question_options && question.question_options.length > 0 && (
                            <div className="mt-3 space-y-1">
@@ -72,4 +76,3 @@ const ExamQuestions = () => {
 };
 
 export default ExamQuestions;
-

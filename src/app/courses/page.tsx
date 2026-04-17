@@ -9,6 +9,7 @@ import { CardSkeleton } from '@/components/ui/Skeleton';
 import { FadeIn } from '@/components/animations';
 import CourseShowcaseCard from '@/components/marketing/CourseShowcaseCard';
 import { publicFetchJson } from '@/lib/backend-api';
+import { stripHtml } from '@/lib/utils';
 
 type CategoryItem = {
   id: string;
@@ -266,7 +267,7 @@ function CourseCard({ course }: { course: DisplayCourse }) {
     <CourseShowcaseCard
       href={course.href || `/courses/${course.slug}`}
       title={course.title}
-      subtitle={course.description || course.short_description || 'Career-focused course experience with projects, sessions, and certificate support.'}
+      subtitle={stripHtml(course.description || course.short_description || 'Career-focused course experience with projects, sessions, and certificate support.')}
       category={course.category || 'General'}
       levelLabel={levelLabel}
       rating={Number(course.rating || 0).toFixed(1)}

@@ -31,8 +31,11 @@ import {
   Video,
   Zap,
 } from 'lucide-react';
+import { Renderer } from 'richtor';
+import 'richtor/styles';
 import FadeIn from '@/components/animations/FadeIn';
 import { authFetchJson, loadScript, publicFetchJson } from '@/lib/backend-api';
+import { stripHtml } from '@/lib/utils';
 
 type LectureItem = { id: string; title: string; duration?: string; isFree?: boolean; contentType?: string };
 type ModuleItem = { id: string; label?: string; title: string; lectures: LectureItem[] };
@@ -264,7 +267,9 @@ export default function CourseDetailPage() {
             <div className="lg:col-span-3">
               <FadeIn>
                 <h1 className="mb-4 text-3xl font-black leading-tight text-slate-900 dark:text-white md:text-4xl">{course.title}</h1>
-                <p className="mb-6 text-lg leading-relaxed text-slate-600 dark:text-slate-300">{course.description || course.shortDescription}</p>
+                <div className="mb-6 text-lg leading-relaxed text-slate-600 dark:text-slate-300 [&_p]:mb-5 [&_p:last-child]:mb-0 [&_ul]:my-5 [&_ol]:my-5 [&_li]:mb-2">
+                  <Renderer value={course.description || course.shortDescription || ''} />
+                </div>
 
                 <div className="mb-6 flex items-center gap-3">
                   <div className="flex items-center gap-1">
@@ -305,7 +310,7 @@ export default function CourseDetailPage() {
                       <span className="text-sm font-semibold uppercase tracking-wide text-indigo-200">{course.bannerTag || course.category || 'EDVO SKILLS'}</span>
                     </div>
                     <h3 className="mb-2 text-xl font-bold text-white">{course.bannerSubtag || course.title}</h3>
-                    <p className="mb-4 text-sm text-indigo-200">{course.bannerExtra || course.shortDescription || 'Industry-ready course path'}</p>
+                    <p className="mb-4 text-sm text-indigo-200">{stripHtml(course.bannerExtra || course.shortDescription || 'Industry-ready course path')}</p>
                     <div className="mb-4 flex flex-wrap items-center gap-2">
                       {course.plans.slice(0, 3).map((plan) => (
                         <span key={plan.id} className={`rounded px-2 py-1 text-xs ${plan.isRecommended ? 'bg-orange-500 font-semibold text-white' : 'bg-white/20 text-white'}`}>
@@ -682,7 +687,7 @@ function normalizeCourseDetail(data: any): CourseDetail {
               }))
             : [],
         }))
-      : [{ id: 'core-access', name: 'Core Access', price: Number(data?.price || 0), isRecommended: true, features: [{ label: 'Course access', value: String(data?.shortDescription || data?.description || 'Full course access') }, { label: 'Format', value: formatDeliveryMode(data?.deliveryMode || data?.delivery || 'recorded') }, { label: 'Duration', value: String(data?.duration || 'Flexible duration') }] }],
+      : [{ id: 'core-access', name: 'Core Access', price: Number(data?.price || 0), isRecommended: true, features: [{ label: 'Course access', value: stripHtml(String(data?.shortDescription || data?.description || 'Full course access')) }, { label: 'Format', value: formatDeliveryMode(data?.deliveryMode || data?.delivery || 'recorded') }, { label: 'Duration', value: String(data?.duration || 'Flexible duration') }] }],
     certifications: Array.isArray(data?.certifications) ? data.certifications.map((certificate: any, index: number) => ({ name: String(certificate?.name || `Certification ${index + 1}`), provider: String(certificate?.provider || '') })) : [],
     testimonials: Array.isArray(data?.testimonials) ? data.testimonials.map((testimonial: any, index: number) => ({ name: String(testimonial?.name || `Learner ${index + 1}`), role: String(testimonial?.role || ''), company: String(testimonial?.company || ''), quote: String(testimonial?.quote || ''), rating: Number(testimonial?.rating || 5) })) : [],
     faqs: Array.isArray(data?.faqs) ? data.faqs.map((faq: any, index: number) => ({ question: String(faq?.question || `Question ${index + 1}`), answer: String(faq?.answer || '') })) : [],

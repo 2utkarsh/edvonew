@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { stripHtml } from '@/lib/utils';
 import Head from 'next/head';
 import { ExternalLink, Github, User, Briefcase } from 'lucide-react';
 import Link from 'next/link';
@@ -80,7 +81,7 @@ const PortfoliosPage = () => {
                 <p className="text-xs text-gray-500 mb-4">{portfolio.bootcamp.title}</p>
               )}
 
-              <p className="text-gray-600 mb-4 line-clamp-3">{portfolio.bio}</p>
+              <p className="text-gray-600 mb-4 line-clamp-3">{stripHtml(portfolio.bio)}</p>
 
               <div className="flex flex-wrap gap-1 mb-4">
                 {portfolio.skills.slice(0, 5).map((skill, index) => (

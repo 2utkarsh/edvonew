@@ -148,9 +148,15 @@ export const systemCurrency = (currency: string) => {
    return currencies.find((item) => item.value == currency);
 };
 
+export function stripHtml(value: string): string {
+   return String(value || '')
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+}
+
 export function getReadingTime(description: string): string {
-   // Remove HTML tags
-   const plainText = description.replace(/<[^>]*>/g, '');
+   const plainText = stripHtml(description);
    // Count words
    const wordCount = plainText.trim().split(/\s+/).length;
    const wordsPerMinute = 200;

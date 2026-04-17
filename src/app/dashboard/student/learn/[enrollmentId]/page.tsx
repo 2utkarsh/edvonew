@@ -16,6 +16,8 @@ import {
   RadioTower,
   Video,
 } from 'lucide-react';
+import { Renderer } from 'richtor';
+import 'richtor/styles';
 import { authFetchJson } from '@/lib/backend-api';
 import {
   type LearningDeliveryMode,
@@ -597,7 +599,9 @@ export default function StudentLearningPage() {
                     <div className="max-w-3xl">
                       <div className="text-xs font-black uppercase tracking-[0.18em] text-amber-700 dark:text-amber-200">Course access</div>
                       <div className="mt-2 text-sm font-semibold text-slate-900 dark:text-white">Recorded lessons and live sessions stay connected in one bootcamp roadmap.</div>
-                      <div className="mt-1 text-sm text-slate-600 dark:text-slate-300">{payload.course.description || 'Open any circle below to enter the lesson workspace.'}</div>
+                      <div className="mt-1 text-sm text-slate-600 dark:text-slate-300 [&_p]:mb-3 [&_p:last-child]:mb-0 [&_ul]:my-3 [&_ol]:my-3 [&_li]:mb-1">
+                        <Renderer value={payload.course.description || 'Open any circle below to enter the lesson workspace.'} />
+                      </div>
                     </div>
 
                     <div className="flex flex-wrap gap-3">
@@ -727,7 +731,11 @@ export default function StudentLearningPage() {
                       {activeModule ? <span>/ {activeModule.title}</span> : null}
                     </div>
                     <h2 className="mt-3 text-2xl font-black text-slate-900 dark:text-white sm:text-3xl">{activeLecture?.title || 'Select a lesson'}</h2>
-                    <p className="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">{activeLecture?.description || payload.course.description}</p>
+                    {activeLecture?.description || payload.course.description ? (
+                      <div className="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400 [&_p]:mb-4 [&_p:last-child]:mb-0 [&_ul]:my-4 [&_ol]:my-4 [&_li]:mb-1">
+                        <Renderer value={activeLecture?.description || payload.course.description || ''} />
+                      </div>
+                    ) : null}
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2">
@@ -1013,5 +1021,3 @@ function resolveEmbeddableMedia(url: string): StageAsset | null {
 
   return null;
 }
-
-

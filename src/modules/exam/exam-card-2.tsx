@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
-import { cn } from '@/lib/utils';
+import { cn, stripHtml } from '@/lib/utils';
 import { Link } from '@inertiajs/react';
 
 interface Props {
@@ -33,7 +33,7 @@ const ExamCard2 = ({ enrollment, className }: Props) => {
                   <h3 className="group-hover:text-primary mb-2 line-clamp-2 text-lg font-semibold transition-colors">{exam.title}</h3>
                </Link>
 
-               {exam.short_description && <p className="text-muted-foreground mb-3 line-clamp-2 text-sm">{exam.short_description}</p>}
+               {exam.short_description && <p className="text-muted-foreground mb-3 line-clamp-2 text-sm">{stripHtml(exam.short_description)}</p>}
 
                <div className="text-muted-foreground mb-3 flex items-center gap-1 text-sm">
                   <span>by</span>

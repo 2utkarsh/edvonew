@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { getPageSection, getPropertyArray } from '@/lib/page';
-import { cn } from '@/lib/utils';
+import { cn, stripHtml } from '@/lib/utils';
 import { IntroPageProps } from '@/types/page';
 import { Link, usePage } from '@inertiajs/react';
 import { Pencil } from 'lucide-react';
@@ -59,7 +59,7 @@ const Instructor = () => {
                      <div className="space-y-2">
                         <h3 className="font-semibold">{instructor.user.name}</h3>
                         <p className="text-muted-foreground text-sm">{instructor.designation}</p>
-                        <p className="text-muted-foreground text-sm">{instructor.biography}</p>
+                        <p className="text-muted-foreground text-sm">{stripHtml(instructor.biography || '')}</p>
                      </div>
 
                      <InstructorSocials instructor={instructor} className="py-0" buttonClass="w-8 h-8" />

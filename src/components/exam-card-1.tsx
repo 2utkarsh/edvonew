@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardFooter } from '@/components/ui/Card';
-import { cn, systemCurrency } from '@/lib/utils';
+import { cn, stripHtml, systemCurrency } from '@/lib/utils';
 import { SharedData } from '@/types/global';
 import { Link, usePage } from '@inertiajs/react';
 import { Clock, Heart, ShoppingCart, Users } from 'lucide-react';
@@ -46,7 +46,7 @@ const ExamCard1 = ({ exam, variant = 'default', viewType = 'grid', onAddToCart, 
                   <h3 className="group-hover:text-primary mb-2 line-clamp-2 text-lg font-semibold transition-colors">{exam.title}</h3>
                </Link>
 
-               {!isCompact && exam.short_description && <p className="text-muted-foreground mb-3 line-clamp-2 text-sm">{exam.short_description}</p>}
+               {!isCompact && exam.short_description && <p className="text-muted-foreground mb-3 line-clamp-2 text-sm">{stripHtml(exam.short_description)}</p>}
 
                <div className="text-muted-foreground mb-3 flex items-center gap-1 text-sm">
                   <span>by</span>

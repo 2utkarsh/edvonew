@@ -4,7 +4,10 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { ArrowLeft, ArrowRight, Calendar, Clock, User } from 'lucide-react';
+import { Renderer } from 'richtor';
+import 'richtor/styles';
 import Badge from '@/components/ui/Badge';
+import { stripHtml } from '@/lib/utils';
 import { BlogPost, fetchBlogs } from '../data';
 
 export default function BlogDetailPage() {
@@ -108,7 +111,9 @@ export default function BlogDetailPage() {
 
           <div className="grid gap-10 px-6 py-8 sm:px-10 sm:py-10 lg:grid-cols-[minmax(0,1fr)_280px]">
             <div>
-              <p className="mb-8 text-lg leading-8 text-slate-600 dark:text-slate-300">{blog.description}</p>
+              <div className="mb-8 text-lg leading-8 text-slate-600 dark:text-slate-300 [&_p]:mb-6 [&_p:last-child]:mb-0 [&_ul]:my-6 [&_ol]:my-6 [&_li]:mb-2">
+                <Renderer value={blog.description} />
+              </div>
 
               <div className="space-y-6 text-base leading-8 text-slate-700 dark:text-slate-300">
                 {blog.content.map((paragraph) => (
@@ -165,7 +170,7 @@ export default function BlogDetailPage() {
                   <div className="p-6">
                     <p className="mb-2 text-xs font-black uppercase tracking-widest text-primary-600 dark:text-primary-400">{related.category}</p>
                     <h3 className="mb-3 text-xl font-black text-slate-900 dark:text-white">{related.title}</h3>
-                    <p className="line-clamp-3 text-sm leading-6 text-slate-500 dark:text-slate-400">{related.description}</p>
+                    <p className="line-clamp-3 text-sm leading-6 text-slate-500 dark:text-slate-400">{stripHtml(related.description)}</p>
                   </div>
                 </Link>
               ))}

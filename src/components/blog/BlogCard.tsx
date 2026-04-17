@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Calendar, Clock, ArrowRight, User } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, stripHtml } from '@/lib/utils';
 import Badge from '@/components/ui/Badge';
 
 interface BlogCardProps {
@@ -71,7 +71,7 @@ export default function BlogCard({
           </h3>
           
           <p className="text-[15px] leading-relaxed text-slate-600 dark:text-slate-400 line-clamp-3 mb-8 flex-1">
-            {description}
+            {stripHtml(description)}
           </p>
 
           <div className="mt-auto pt-6 border-t border-slate-50 dark:border-slate-800/50 flex items-center justify-between">

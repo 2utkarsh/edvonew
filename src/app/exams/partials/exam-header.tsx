@@ -1,5 +1,6 @@
 import RatingStars from '@/components/rating-stars';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { stripHtml } from '@/lib/utils';
 import { ExamPreviewProps } from '@/types/page';
 import { Link, usePage } from '@inertiajs/react';
 import { Clock, GraduationCap, Users } from 'lucide-react';
@@ -13,7 +14,7 @@ const ExamHeader = () => {
       <div className="space-y-7">
          <h1 className="text-3xl font-semibold md:text-4xl">{title}</h1>
 
-         <p>{short_description}</p>
+         <p>{stripHtml(short_description || '')}</p>
 
          <div className="grid grid-cols-2 gap-y-4 lg:grid-cols-3">
             {/* Instructor Info */}
