@@ -6,6 +6,10 @@ function asArray<T>(input: unknown): T[] {
   return Array.isArray(input) ? (input as T[]) : [];
 }
 
+function hasOwn(input: AnyObject, key: string) {
+  return Object.prototype.hasOwnProperty.call(input, key);
+}
+
 function asString(input: unknown, fallback = '') {
   return typeof input === 'string' ? input.trim() : fallback;
 }
@@ -231,8 +235,10 @@ export function normalizeCoursePayload(input: AnyObject) {
   const plans = normalizePlans(input.plans);
   const liveSessions = normalizeLiveSessions(input.liveSessions);
   const curriculum =
-    Array.isArray(input.curriculum) && input.curriculum.length > 0
-      ? input.curriculum
+    hasOwn(input, 'curriculumRows')
+      ? buildCurriculumFromRows(input.curriculumRows)
+      : hasOwn(input, 'curriculum')
+        ? asArray<AnyObject>(input.curriculum)
       : buildCurriculumFromRows(input.curriculumRows);
 
   return {
