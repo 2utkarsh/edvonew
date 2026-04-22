@@ -1,3 +1,13 @@
+import {
+  BUSINESS_EMAIL,
+  DEFAULT_COMPANY_DESCRIPTION,
+  LEGAL_ENTITY_NAME,
+  REGISTERED_ADDRESS,
+  SUPPORT_AVAILABILITY,
+  SUPPORT_EMAIL,
+  SUPPORT_RESPONSE_WINDOW,
+} from "./company";
+
 export interface MarketingStat {
   label: string;
   value: string;
@@ -43,8 +53,7 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
     slug: "about",
     eyebrow: "About EDVO",
     title: "EDVO helps learners build practical skills for modern careers.",
-    description:
-      "EDVO is an online education and professional upskilling platform operated by G&A Itech Innovation Foundation, offering live bootcamps, self-paced courses, workshops, digital resources, and career support services.",
+    description: DEFAULT_COMPANY_DESCRIPTION,
     heroPoints: [
       "Structured learning paths for practical skill-building",
       "Project work, guidance, and career-focused support",
@@ -118,13 +127,12 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
         cards: [
           {
             title: "Legal entity",
-            description: "G&A Itech Innovation Foundation",
+            description: LEGAL_ENTITY_NAME,
             meta: "Merchant legal name",
           },
           {
             title: "Address",
-            description:
-              "684, Ram Dental College Road, Kanpur, Nikhil Technochem Pvt Ltd, Kanpur Nagar",
+            description: REGISTERED_ADDRESS,
             meta: "Official correspondence address",
           },
         ],
@@ -1169,13 +1177,13 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
       "Fast routing to the right team",
       "Useful for learners and companies alike",
     ],
-    primaryCta: { label: "Email Support", href: "mailto:support@edvo.in" },
+    primaryCta: { label: "Email Support", href: `mailto:${SUPPORT_EMAIL}` },
     secondaryCta: { label: "View Help Center", href: "/help" },
     stats: [
-      { label: "Support Email", value: "support@edvo.in" },
-      { label: "Business Email", value: "partners@edvo.in" },
-      { label: "Response Window", value: "24 hrs" },
-      { label: "Availability", value: "Mon-Sat" },
+      { label: "Support Email", value: SUPPORT_EMAIL },
+      { label: "Business Email", value: BUSINESS_EMAIL },
+      { label: "Response Window", value: SUPPORT_RESPONSE_WINDOW },
+      { label: "Availability", value: SUPPORT_AVAILABILITY },
     ],
     spotlight: {
       title: "How to reach us faster",

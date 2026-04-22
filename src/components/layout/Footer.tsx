@@ -4,25 +4,20 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Github, Twitter, Linkedin, Youtube, Instagram } from 'lucide-react';
-import { useThemeStore } from '@/store/useThemeStore';
-import { useHeaderStore } from '@/store/useHeaderStore';
 import { useFooterStore } from '@/store/useFooterStore';
+import {
+  DEFAULT_COMPANY_DESCRIPTION,
+  LEGACY_COMPANY_DESCRIPTION,
+  LEGAL_ENTITY_NAME,
+  REGISTERED_ADDRESS,
+} from '@/lib/company';
 
 export default function Footer() {
-  const { config: themeConfig } = useThemeStore();
-  const { config: headerConfig } = useHeaderStore();
   const { config: footerConfig } = useFooterStore();
-  const legacyCompanyDescription =
-    'Transform your career with world-class courses and job opportunities. Learn from industry experts and land your dream job.';
-  const defaultCompanyDescription =
-    'EDVO is an online education and professional upskilling platform operated by G&A Itech Innovation Foundation. We provide live bootcamps, self-paced courses, workshops, digital resources, and career support services.';
-  const legalName = 'G&A Itech Innovation Foundation';
-  const registeredAddress =
-    '684, Ram Dental College Road, Kanpur, Nikhil Technochem Pvt Ltd, Kanpur Nagar';
   const companyDescription =
     !footerConfig.companyDescription ||
-    footerConfig.companyDescription === legacyCompanyDescription
-      ? defaultCompanyDescription
+    footerConfig.companyDescription === LEGACY_COMPANY_DESCRIPTION
+      ? DEFAULT_COMPANY_DESCRIPTION
       : footerConfig.companyDescription;
 
   const socialLinks = [
@@ -98,7 +93,7 @@ export default function Footer() {
                   Legal Name
                 </p>
                 <p className="mt-1 text-sm leading-6 text-slate-200">
-                  {legalName}
+                  {LEGAL_ENTITY_NAME}
                 </p>
               </div>
               <div>
@@ -106,7 +101,7 @@ export default function Footer() {
                   Registered Address
                 </p>
                 <address className="mt-1 not-italic text-sm leading-6 text-slate-200">
-                  {registeredAddress}
+                  {REGISTERED_ADDRESS}
                 </address>
               </div>
             </div>

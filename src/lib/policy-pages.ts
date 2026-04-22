@@ -1,3 +1,5 @@
+import { LEGAL_ENTITY_NAME } from "./company";
+
 export interface PolicyMetaItem {
   label: string;
   value: string;
@@ -25,9 +27,9 @@ export const policyPageContent: Record<string, PolicyPageContent> = {
     eyebrow: "Privacy Policy",
     title: "Privacy Policy",
     intro:
-      "This Privacy Policy explains how EDVO, operated by G&A Itech Innovation Foundation, collects, uses, stores, and protects information when people visit the website, create accounts, enroll in programs, attend live sessions, purchase digital learning services, or contact support. Because EDVO delivers digital education services such as bootcamps, self-paced courses, workshops, events, and related learner support, some personal and billing information is required to provide access, process payments, and maintain the platform responsibly.",
+      `This Privacy Policy explains how EDVO, operated by ${LEGAL_ENTITY_NAME}, collects, uses, stores, and protects information when people visit the website, create accounts, enroll in programs, attend live sessions, purchase digital learning services, or contact support. Because EDVO delivers digital education services such as bootcamps, self-paced courses, workshops, events, and related learner support, some personal and billing information is required to provide access, process payments, and maintain the platform responsibly.`,
     meta: [
-      { label: "Legal Entity", value: "G&A Itech Innovation Foundation" },
+      { label: "Legal Entity", value: LEGAL_ENTITY_NAME },
       { label: "Last Updated", value: "22 April 2026" },
       {
         label: "Applies To",
@@ -100,9 +102,9 @@ export const policyPageContent: Record<string, PolicyPageContent> = {
     eyebrow: "Terms and Conditions",
     title: "Terms and Conditions",
     intro:
-      "These Terms and Conditions govern the use of EDVO and the digital education services made available through the website. EDVO, operated by G&A Itech Innovation Foundation, offers services such as live bootcamps, self-paced courses, workshops, events, learner resources, and related support. By accessing the website, creating an account, enrolling in a program, or making a payment, the user agrees to follow these terms and any program-specific rules communicated on the relevant page.",
+      `These Terms and Conditions govern the use of EDVO and the digital education services made available through the website. EDVO, operated by ${LEGAL_ENTITY_NAME}, offers services such as live bootcamps, self-paced courses, workshops, events, learner resources, and related support. By accessing the website, creating an account, enrolling in a program, or making a payment, the user agrees to follow these terms and any program-specific rules communicated on the relevant page.`,
     meta: [
-      { label: "Legal Entity", value: "G&A Itech Innovation Foundation" },
+      { label: "Legal Entity", value: LEGAL_ENTITY_NAME },
       { label: "Last Updated", value: "22 April 2026" },
       {
         label: "Service Scope",
@@ -185,7 +187,7 @@ export const policyPageContent: Record<string, PolicyPageContent> = {
     intro:
       "EDVO mainly provides digital services, including live bootcamps, recorded courses, workshops, event access, learner resources, and related support. These services may involve immediate digital access, reserved batch capacity, or release of protected learning material soon after payment. For that reason, refund and cancellation requests are reviewed carefully and are not treated in the same way as returns for physical products.",
     meta: [
-      { label: "Legal Entity", value: "G&A Itech Innovation Foundation" },
+      { label: "Legal Entity", value: LEGAL_ENTITY_NAME },
       { label: "Last Updated", value: "22 April 2026" },
       {
         label: "Applies To",

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { DEFAULT_COMPANY_DESCRIPTION } from '@/lib/company';
 
 export interface FooterLinkItem {
   label: string;
@@ -41,7 +42,7 @@ interface FooterStore {
 const defaultConfig: FooterConfig = {
   newsletterTitle: 'Stay Updated with EDVO',
   newsletterDescription: 'Subscribe to our newsletter for the latest courses, job openings, and learning resources.',
-  companyDescription: 'EDVO is an online education and professional upskilling platform operated by G&A Itech Innovation Foundation. We provide live bootcamps, self-paced courses, workshops, digital resources, and career support services.',
+  companyDescription: DEFAULT_COMPANY_DESCRIPTION,
   sections: {
     platform: {
       title: 'Platform',

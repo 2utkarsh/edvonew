@@ -9,6 +9,11 @@ import {
   Users,
 } from "lucide-react";
 import Button from "@/components/ui/Button";
+import {
+  BUSINESS_LINE,
+  LEGAL_ENTITY_NAME,
+  REGISTERED_ADDRESS,
+} from "@/lib/company";
 
 const offerings = [
   {
@@ -34,17 +39,15 @@ const offerings = [
 const complianceDetails = [
   {
     label: "Legal Name",
-    value: "G&A Itech Innovation Foundation",
+    value: LEGAL_ENTITY_NAME,
   },
   {
     label: "Registered Address",
-    value:
-      "684, Ram Dental College Road, Kanpur, Nikhil Technochem Pvt Ltd, Kanpur Nagar",
+    value: REGISTERED_ADDRESS,
   },
   {
     label: "Line of Business",
-    value:
-      "Online education, live bootcamps, self-paced courses, workshops, digital resources, and career support services.",
+    value: BUSINESS_LINE,
   },
 ];
 
@@ -62,8 +65,8 @@ export default function AboutPageContent() {
             </h1>
             <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-600 dark:text-slate-300">
               EDVO is an online education and professional upskilling platform
-              operated by G&A Itech Innovation Foundation. We provide digital
-              learning services through live bootcamps, self-paced courses,
+              operated by {LEGAL_ENTITY_NAME}. We provide digital learning
+              services through live bootcamps, self-paced courses,
               workshops, digital resources, and career support programs that
               help learners move from theory to practical work.
             </p>
@@ -181,7 +184,7 @@ export default function AboutPageContent() {
                     Legal Name
                   </p>
                   <p className="mt-2 text-base leading-7 text-slate-900 dark:text-slate-100">
-                    G&A Itech Innovation Foundation
+                    {LEGAL_ENTITY_NAME}
                   </p>
                 </div>
               </div>
@@ -197,8 +200,7 @@ export default function AboutPageContent() {
                     Address
                   </p>
                   <p className="mt-2 text-base leading-7 text-slate-900 dark:text-slate-100">
-                    684, Ram Dental College Road, Kanpur, Nikhil Technochem Pvt
-                    Ltd, Kanpur Nagar
+                    {REGISTERED_ADDRESS}
                   </p>
                 </div>
               </div>
