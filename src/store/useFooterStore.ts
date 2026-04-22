@@ -38,55 +38,10 @@ interface FooterStore {
   updateSocialLinks: (socialLinks: FooterSocialLink[]) => void;
 }
 
-function mergeSectionLinks(defaultLinks: FooterLinkItem[], persistedLinks?: FooterLinkItem[]) {
-  if (!persistedLinks?.length) {
-    return defaultLinks;
-  }
-
-  return [
-    ...defaultLinks.map((link, index) => ({
-      ...link,
-      ...(persistedLinks[index] || {}),
-    })),
-    ...persistedLinks.slice(defaultLinks.length),
-  ];
-}
-
-function mergeFooterConfig(config?: Partial<FooterConfig>): FooterConfig {
-  return {
-    ...defaultConfig,
-    ...config,
-    sections: {
-      platform: {
-        ...defaultConfig.sections.platform,
-        ...(config?.sections?.platform || {}),
-        links: mergeSectionLinks(defaultConfig.sections.platform.links, config?.sections?.platform?.links),
-      },
-      company: {
-        ...defaultConfig.sections.company,
-        ...(config?.sections?.company || {}),
-        links: mergeSectionLinks(defaultConfig.sections.company.links, config?.sections?.company?.links),
-      },
-      support: {
-        ...defaultConfig.sections.support,
-        ...(config?.sections?.support || {}),
-        links: mergeSectionLinks(defaultConfig.sections.support.links, config?.sections?.support?.links),
-      },
-      community: {
-        ...defaultConfig.sections.community,
-        ...(config?.sections?.community || {}),
-        links: mergeSectionLinks(defaultConfig.sections.community.links, config?.sections?.community?.links),
-      },
-    },
-    socialLinks: config?.socialLinks?.length ? config.socialLinks : defaultConfig.socialLinks,
-  };
-}
-
 const defaultConfig: FooterConfig = {
   newsletterTitle: 'Stay Updated with EDVO',
   newsletterDescription: 'Subscribe to our newsletter for the latest courses, job openings, and learning resources.',
-  companyDescription:
-    'EDVO is an online education and professional upskilling platform offering live bootcamps, self-paced courses, workshops, digital resources, and career support. Online payments on this website are used for course, cohort, workshop, and event enrollments delivered digitally.',
+  companyDescription: 'Transform your career with world-class courses and job opportunities. Learn from industry experts and land your dream job.',
   sections: {
     platform: {
       title: 'Platform',
@@ -113,11 +68,8 @@ const defaultConfig: FooterConfig = {
       links: [
         { label: 'Help Center', href: '/help' },
         { label: 'Contact Us', href: '/contact' },
-        { label: 'Merchant Information', href: '/merchant-information' },
         { label: 'Privacy Policy', href: '/privacy' },
         { label: 'Terms of Service', href: '/terms' },
-        { label: 'Refund & Cancellation Policy', href: '/refund-cancellation-policy' },
-        { label: 'Shipping & Delivery Policy', href: '/shipping-delivery-policy' },
         { label: 'FAQ', href: '/faq' },
       ],
     },
@@ -145,7 +97,7 @@ export const useFooterStore = create<FooterStore>()(
   persist(
     (set) => ({
       config: defaultConfig,
-      setConfig: (config) => set({ config: mergeFooterConfig(config) }),
+      setConfig: (config) => set({ config }),
       updateSection: (key, section) =>
         set((state) => ({
           config: {
@@ -179,17 +131,6 @@ export const useFooterStore = create<FooterStore>()(
           },
         })),
     }),
-    {
-      name: 'footer-storage',
-      merge: (persistedState, currentState) => {
-        const persisted = (persistedState || {}) as Partial<FooterStore>;
-
-        return {
-          ...currentState,
-          ...persisted,
-          config: mergeFooterConfig(persisted.config),
-        } as FooterStore;
-      },
-    }
+    { name: 'footer-storage' }
   )
 );
