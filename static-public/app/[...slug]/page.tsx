@@ -25,8 +25,6 @@ const included = new Set([
   'partners',
   'help',
   'contact',
-  'privacy',
-  'terms',
   'faq',
   'challenges',
   'hire-talent',

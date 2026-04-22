@@ -44,7 +44,7 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
     eyebrow: "About EDVO",
     title: "CodeBasics-inspired learning, built for outcomes.",
     description:
-      "EDVO combines structured roadmaps, industry projects, mock interviews, and mentor support so learners can move from confusion to confidence.",
+      "EDVO is an online education and professional upskilling platform operated by G&A Itech Innovation Foundation, combining structured roadmaps, industry projects, mock interviews, and mentor support so learners can move from confusion to confidence.",
     heroPoints: [
       "Project-first learning tracks",
       "Mentor-led doubt solving and career guidance",
@@ -108,6 +108,24 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
             title: "Companies",
             description: "Access evaluated talent across data, development, and business workflows.",
             meta: "Hiring teams",
+          },
+        ],
+      },
+      {
+        title: "Registered office details",
+        description:
+          "For merchant, compliance, and formal correspondence references, please use the registered details below.",
+        cards: [
+          {
+            title: "Legal entity",
+            description: "G&A Itech Innovation Foundation",
+            meta: "Merchant legal name",
+          },
+          {
+            title: "Address",
+            description:
+              "684, Ram Dental College Road, Kanpur, Nikhil Technochem Pvt Ltd, Kanpur Nagar",
+            meta: "Official correspondence address",
           },
         ],
       },

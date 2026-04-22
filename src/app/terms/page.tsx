@@ -1,6 +1,6 @@
-import MarketingPage from "@/components/marketing/MarketingPageHomePalette";
-import { getPublicPageConfig } from "@/lib/public-pages";
+import PolicyEssayPage from "@/components/marketing/PolicyEssayPage";
+import { policyPageContent } from "@/lib/policy-pages";
 
 export default function TermsPage() {
-  return <MarketingPage config={getPublicPageConfig("terms")} />;
+  return <PolicyEssayPage content={policyPageContent.terms} />;
 }
