@@ -42,16 +42,16 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
   about: {
     slug: "about",
     eyebrow: "About EDVO",
-    title: "CodeBasics-inspired learning, built for outcomes.",
+    title: "EDVO helps learners build practical skills for modern careers.",
     description:
-      "EDVO is an online education and professional upskilling platform operated by G&A Itech Innovation Foundation, combining structured roadmaps, industry projects, mock interviews, and mentor support so learners can move from confusion to confidence.",
+      "EDVO is an online education and professional upskilling platform operated by G&A Itech Innovation Foundation, offering live bootcamps, self-paced courses, workshops, digital resources, and career support services.",
     heroPoints: [
-      "Project-first learning tracks",
-      "Mentor-led doubt solving and career guidance",
-      "Courses, jobs, challenges, and events in one platform",
+      "Structured learning paths for practical skill-building",
+      "Project work, guidance, and career-focused support",
+      "Courses, workshops, events, and digital resources in one platform",
     ],
     primaryCta: { label: "Explore Courses", href: "/courses" },
-    secondaryCta: { label: "See Challenges", href: "/challenges" },
+    secondaryCta: { label: "Contact Us", href: "/contact" },
     stats: [
       { label: "Learners", value: "500K+" },
       { label: "Hiring Partners", value: "350+" },
@@ -59,13 +59,13 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
       { label: "Live Cohorts", value: "40+" },
     ],
     spotlight: {
-      title: "What makes EDVO different",
+      title: "What EDVO focuses on",
       description:
-        "We focus on the same things serious learners care about: practical skills, accountability, and visible career momentum.",
+        "Our goal is to make online learning clearer, more practical, and more useful for students and professionals.",
       items: [
-        "Guided roadmaps instead of random playlists",
-        "Hands-on capstone work with portfolio outcomes",
-        "Placement-oriented prep built into the curriculum",
+        "Structured learning instead of scattered content",
+        "Hands-on work that supports real skill development",
+        "Career-oriented support that stays connected to learning",
       ],
     },
     sections: [

@@ -7,7 +7,6 @@ type Params = {
 };
 
 const included = new Set([
-  'about',
   'resources',
   'resources/blog',
   'resources/guides',

@@ -1,5 +1,5 @@
 import AboutPageContent from "@/components/marketing/AboutPageContent";
 
-export default function AboutPage() {
+export default function StaticPublicAboutPage() {
   return <AboutPageContent />;
 }

@@ -12,6 +12,18 @@ export default function Footer() {
   const { config: themeConfig } = useThemeStore();
   const { config: headerConfig } = useHeaderStore();
   const { config: footerConfig } = useFooterStore();
+  const legacyCompanyDescription =
+    'Transform your career with world-class courses and job opportunities. Learn from industry experts and land your dream job.';
+  const defaultCompanyDescription =
+    'EDVO is an online education and professional upskilling platform operated by G&A Itech Innovation Foundation. We provide live bootcamps, self-paced courses, workshops, digital resources, and career support services.';
+  const legalName = 'G&A Itech Innovation Foundation';
+  const registeredAddress =
+    '684, Ram Dental College Road, Kanpur, Nikhil Technochem Pvt Ltd, Kanpur Nagar';
+  const companyDescription =
+    !footerConfig.companyDescription ||
+    footerConfig.companyDescription === legacyCompanyDescription
+      ? defaultCompanyDescription
+      : footerConfig.companyDescription;
 
   const socialLinks = [
     { icon: Twitter, label: 'Twitter' },
@@ -77,8 +89,27 @@ export default function Footer() {
               />
             </Link>
             <p className="mb-6 leading-relaxed text-slate-300">
-              {footerConfig.companyDescription}
+              {companyDescription}
             </p>
+
+            <div className="mb-6 space-y-3 rounded-2xl border border-white/10 bg-white/5 p-4">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  Legal Name
+                </p>
+                <p className="mt-1 text-sm leading-6 text-slate-200">
+                  {legalName}
+                </p>
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  Registered Address
+                </p>
+                <address className="mt-1 not-italic text-sm leading-6 text-slate-200">
+                  {registeredAddress}
+                </address>
+              </div>
+            </div>
 
             <div className="flex gap-4">
               {socialLinks.map((social, index) => {

@@ -41,7 +41,7 @@ interface FooterStore {
 const defaultConfig: FooterConfig = {
   newsletterTitle: 'Stay Updated with EDVO',
   newsletterDescription: 'Subscribe to our newsletter for the latest courses, job openings, and learning resources.',
-  companyDescription: 'Transform your career with world-class courses and job opportunities. Learn from industry experts and land your dream job.',
+  companyDescription: 'EDVO is an online education and professional upskilling platform operated by G&A Itech Innovation Foundation. We provide live bootcamps, self-paced courses, workshops, digital resources, and career support services.',
   sections: {
     platform: {
       title: 'Platform',
