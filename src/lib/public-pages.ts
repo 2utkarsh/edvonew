@@ -38,13 +38,22 @@ export interface MarketingPageConfig {
   faqs?: MarketingFaq[];
 }
 
+const edvoPlatformDescription =
+  "EDVO is an online education and professional upskilling platform offering live bootcamps, self-paced courses, workshops, digital learning resources, career support, and hiring-partner programs.";
+
+const paymentGatewayUsageDescription =
+  "Payment gateway services are used to collect online enrollment and registration fees for EDVO's digital learning services, including live bootcamps, self-paced courses, workshops, events, and related education programs.";
+
+const digitalDeliveryDescription =
+  "All purchases on EDVO are fulfilled digitally through learner dashboards, email confirmations, live-session access links, downloadable resources, and other online delivery channels. Physical shipping does not apply.";
+
 export const publicPageConfigs: Record<string, MarketingPageConfig> = {
   about: {
     slug: "about",
     eyebrow: "About EDVO",
     title: "CodeBasics-inspired learning, built for outcomes.",
     description:
-      "EDVO combines structured roadmaps, industry projects, mock interviews, and mentor support so learners can move from confusion to confidence.",
+      `${edvoPlatformDescription} Learners use EDVO to move from confusion to confidence with structured roadmaps, industry projects, mock interviews, and mentor support.`,
     heroPoints: [
       "Project-first learning tracks",
       "Mentor-led doubt solving and career guidance",
@@ -108,6 +117,27 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
             title: "Companies",
             description: "Access evaluated talent across data, development, and business workflows.",
             meta: "Hiring teams",
+          },
+        ],
+      },
+      {
+        title: "What EDVO offers",
+        description: "The platform combines digital learning programs with practical career-facing support.",
+        cards: [
+          {
+            title: "Self-paced and live programs",
+            description: "Learners enroll in digital courses, cohort bootcamps, and other guided learning experiences delivered online.",
+            meta: "Digital education",
+          },
+          {
+            title: "Workshops and events",
+            description: "EDVO runs online workshops, master classes, and event registrations focused on practical skill-building.",
+            meta: "Program access",
+          },
+          {
+            title: "Career support services",
+            description: "Resume reviews, mock interviews, and hiring-partner initiatives extend the core learning journey.",
+            meta: "Outcome support",
           },
         ],
       },
@@ -781,7 +811,7 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
     eyebrow: "For Business",
     title: "Upskill teams with focused programs, hands-on workshops, and measurable progress.",
     description:
-      "EDVO Business helps companies train internal teams across analytics, reporting, AI workflows, and modern product delivery.",
+      "EDVO Business helps companies train internal teams across analytics, reporting, AI workflows, and modern product delivery. Online payments are used for digital training cohorts, workshops, and related learning services delivered through the platform.",
     heroPoints: [
       "Custom cohorts for teams",
       "Workshops tied to business use cases",
@@ -823,6 +853,27 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
             title: "Manager upskilling",
             description: "Give team leads enough technical fluency to guide cross-functional work better.",
             meta: "Leadership enablement",
+          },
+        ],
+      },
+      {
+        title: "How payment services are used",
+        description: "The merchant account on EDVO is used for digital education and training services only.",
+        cards: [
+          {
+            title: "Team training enrollments",
+            description: "Companies can pay for structured digital learning tracks, private cohorts, and internal upskilling programs.",
+            meta: "Corporate learning",
+          },
+          {
+            title: "Workshop registrations",
+            description: "Online payments also cover hands-on workshops, master classes, and team enablement sessions.",
+            meta: "Live sessions",
+          },
+          {
+            title: "Digital fulfillment",
+            description: "After payment confirmation, access is delivered online through dashboards, email confirmations, and live-session logistics.",
+            meta: "No physical shipping",
           },
         ],
       },
@@ -1145,19 +1196,19 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
     eyebrow: "Contact",
     title: "Reach the EDVO team for support, partnerships, or enrollment help.",
     description:
-      "Whether you are a learner, hiring partner, or business team, this is the fastest way to get routed to the right conversation.",
+      "Whether you are a learner, hiring partner, or business team, this is the fastest way to get routed to the right conversation, including billing, access, and payment-support questions for EDVO's digital services.",
     heroPoints: [
-      "Support, sales, and partnership queries",
+      "Support, sales, partnership, and billing queries",
       "Fast routing to the right team",
-      "Useful for learners and companies alike",
+      "Useful for learners, teams, and payment support alike",
     ],
     primaryCta: { label: "Email Support", href: "mailto:support@edvo.in" },
     secondaryCta: { label: "View Help Center", href: "/help" },
     stats: [
       { label: "Support Email", value: "support@edvo.in" },
       { label: "Business Email", value: "partners@edvo.in" },
-      { label: "Response Window", value: "24 hrs" },
-      { label: "Availability", value: "Mon-Sat" },
+      { label: "Payment Use", value: "Enrollments + registrations" },
+      { label: "Delivery", value: "Digital only" },
     ],
     spotlight: {
       title: "How to reach us faster",
@@ -1190,6 +1241,27 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
           },
         ],
       },
+      {
+        title: "Merchant and payment information",
+        description: "Useful for banking, compliance, billing, and customer-support review.",
+        cards: [
+          {
+            title: "Line of business",
+            description: "EDVO accepts online payments for digital bootcamps, self-paced courses, workshops, events, and related education services.",
+            meta: "Online education",
+          },
+          {
+            title: "Delivery model",
+            description: "Services are fulfilled online through learner accounts, email confirmations, live-class links, and digital resources.",
+            meta: "Digital only",
+          },
+          {
+            title: "Policy support",
+            description: "Privacy, terms, refund and cancellation, shipping and delivery, and merchant information pages are available for review.",
+            meta: "Compliance ready",
+          },
+        ],
+      },
     ],
     faqs: [
       {
@@ -1200,6 +1272,14 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
         question: "How fast does support reply?",
         answer: "Typical first response is within 24 hours during the standard support window.",
       },
+      {
+        question: "What payments are processed on EDVO?",
+        answer: "EDVO collects online payments for digital learning services such as courses, live bootcamps, workshops, events, and related program access.",
+      },
+      {
+        question: "Does EDVO ship physical goods?",
+        answer: "No. EDVO sells and delivers digital learning services only, so physical shipping is not applicable.",
+      },
     ],
   },
   privacy: {
@@ -1207,7 +1287,7 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
     eyebrow: "Privacy Policy",
     title: "A simple privacy overview for learners, visitors, and hiring partners.",
     description:
-      "EDVO collects the minimum information needed to operate accounts, learning workflows, support, and partner-facing experiences responsibly.",
+      "EDVO collects the minimum information needed to operate accounts, process digital enrollments, deliver learning workflows, handle support, and run partner-facing experiences responsibly.",
     heroPoints: [
       "Account and activity data handling",
       "Operational and support usage",
@@ -1217,7 +1297,7 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
     secondaryCta: { label: "Read Terms", href: "/terms" },
     stats: [
       { label: "Policy Scope", value: "Users + visitors" },
-      { label: "Use Cases", value: "Learning + support" },
+      { label: "Use Cases", value: "Learning + billing" },
       { label: "Consent Areas", value: "Account and communication" },
       { label: "Control", value: "Request-based" },
     ],
@@ -1246,9 +1326,9 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
             meta: "Platform operations",
           },
           {
-            title: "Communications",
-            description: "Important course, payment, and support updates may be sent through registered channels.",
-            meta: "Notifications",
+            title: "Payment and billing information",
+            description: "Order references, billing details, and payment-support information may be used to confirm purchases, provide invoices, and resolve issues.",
+            meta: "Orders and invoices",
           },
         ],
       },
@@ -1259,11 +1339,11 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
     eyebrow: "Terms of Service",
     title: "Clear platform rules so learners and partners know what to expect.",
     description:
-      "These terms summarize acceptable platform usage, access expectations, account responsibilities, and general service boundaries.",
+      "These terms summarize acceptable platform usage, digital access expectations, payment responsibilities, and general service boundaries.",
     heroPoints: [
       "Account responsibility basics",
       "Learning access and acceptable use",
-      "General limits and expectations",
+      "Payment, delivery, and support expectations",
     ],
     primaryCta: { label: "Need Help?", href: "/help" },
     secondaryCta: { label: "Contact EDVO", href: "/contact" },
@@ -1301,6 +1381,312 @@ export const publicPageConfigs: Record<string, MarketingPageConfig> = {
             title: "Respectful participation",
             description: "Community, workshop, and challenge participation should remain professional and constructive.",
             meta: "Community conduct",
+          },
+        ],
+      },
+      {
+        title: "Payments and delivery basics",
+        description: "Commerce expectations for EDVO's digital learning services.",
+        cards: [
+          {
+            title: "Online enrollments",
+            description: "Payments cover access to digital courses, bootcamps, workshops, events, and related services listed on EDVO.",
+            meta: "Digital services",
+          },
+          {
+            title: "No physical shipping",
+            description: "EDVO fulfills purchases through online access and email communication rather than courier or parcel delivery.",
+            meta: "Delivery policy",
+          },
+          {
+            title: "Refund route",
+            description: "Refund and cancellation requests must be raised through the published support and policy channels for review.",
+            meta: "Support process",
+          },
+        ],
+      },
+    ],
+  },
+  "merchant-information": {
+    slug: "merchant-information",
+    eyebrow: "Merchant Information",
+    title: "What EDVO accepts payments for, and how digital delivery works.",
+    description:
+      `${edvoPlatformDescription} ${paymentGatewayUsageDescription} ${digitalDeliveryDescription}`,
+    heroPoints: [
+      "Online payments for bootcamps, courses, workshops, and event registrations",
+      "Digital delivery through dashboards, email confirmations, and live-session access",
+      "Support available for billing, invoices, access issues, and approved refund requests",
+    ],
+    primaryCta: { label: "Contact Support", href: "/contact" },
+    secondaryCta: { label: "Refund & Cancellation Policy", href: "/refund-cancellation-policy" },
+    stats: [
+      { label: "Brand Name", value: "EDVO" },
+      { label: "Business Type", value: "Online education" },
+      { label: "Payment Use", value: "Enrollments + registrations" },
+      { label: "Delivery", value: "Digital only" },
+    ],
+    spotlight: {
+      title: "Commerce summary",
+      description: "A short operational view of how EDVO sells and fulfills its services online.",
+      items: [
+        "Payments are collected for digital learning services and related program access",
+        "Physical shipping is not applicable because services are delivered online",
+        "Billing, support, and policy queries are handled through official EDVO channels",
+      ],
+    },
+    sections: [
+      {
+        title: "Services covered by online payments",
+        description: "The main categories for which EDVO accepts payments on the website.",
+        cards: [
+          {
+            title: "Live bootcamps and cohorts",
+            description: "Learners can enroll in mentor-led digital programs, live classes, and cohort-based upskilling tracks.",
+            meta: "Guided learning",
+          },
+          {
+            title: "Self-paced courses and resources",
+            description: "Payments may also cover recorded courses, digital materials, and structured online learning content.",
+            meta: "On-demand access",
+          },
+          {
+            title: "Workshops and event registrations",
+            description: "EDVO runs paid workshops, master classes, and event-based registrations connected to learning outcomes.",
+            meta: "Program access",
+          },
+        ],
+      },
+      {
+        title: "Delivery and support",
+        description: "How learners receive access and where billing issues are handled.",
+        cards: [
+          {
+            title: "Digital access delivery",
+            description: "Fulfillment happens through the learner dashboard, email confirmations, live-session links, and other online delivery channels.",
+            meta: "No physical shipping",
+          },
+          {
+            title: "Billing and invoice assistance",
+            description: "Support can help with order confirmation, payment status, invoice requests, and access-related questions.",
+            meta: "Operations support",
+          },
+          {
+            title: "Policy coverage",
+            description: "Privacy, terms, refund and cancellation, and shipping and delivery policies are published for customer and banking review.",
+            meta: "Published policies",
+          },
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Does EDVO ship physical products?",
+        answer: "No. EDVO provides digital learning services only, so physical shipping is not applicable.",
+      },
+      {
+        question: "What are payments collected for on EDVO?",
+        answer: "Payments are collected for digital courses, live bootcamps, workshops, events, and related online education services offered through the platform.",
+      },
+      {
+        question: "What should the merchant name and billing details match?",
+        answer: "The merchant name, billing address, GST details, and website disclosures should match the official onboarding documents and invoices used for the payment gateway account.",
+      },
+    ],
+  },
+  "refund-cancellation-policy": {
+    slug: "refund-cancellation-policy",
+    eyebrow: "Refund & Cancellation Policy",
+    title: "How EDVO reviews cancellation and refund requests for digital programs.",
+    description:
+      "This policy explains how EDVO reviews cancellation and refund requests for digital courses, live bootcamps, workshops, event registrations, and related online learning services.",
+    heroPoints: [
+      "Requests should be raised from the registered email with order details",
+      "Review depends on the program format, access delivered, and seat usage",
+      "Any approved refund is returned through the original payment source or an agreed compliant route",
+    ],
+    primaryCta: { label: "Contact Support", href: "/contact" },
+    secondaryCta: { label: "Shipping & Delivery Policy", href: "/shipping-delivery-policy" },
+    stats: [
+      { label: "Request Channel", value: "support@edvo.in" },
+      { label: "Applies To", value: "Digital services" },
+      { label: "Review Basis", value: "Order + usage" },
+      { label: "Refund Mode", value: "Original payment source" },
+    ],
+    spotlight: {
+      title: "How requests are reviewed",
+      description: "Refund decisions depend on the specific program terms and how much of the service has already been delivered.",
+      items: [
+        "Specific program pages may publish additional offer terms or seat commitments",
+        "Consumed digital access, attended live sessions, or fulfilled services may affect eligibility",
+        "Approved refunds are processed after identity, order, and delivery checks",
+      ],
+    },
+    sections: [
+      {
+        title: "Common situations we review",
+        description: "Examples of cases typically reviewed by the support team.",
+        cards: [
+          {
+            title: "Duplicate or technical payment issue",
+            description: "If a payment is charged twice, or payment is captured but access is not delivered after support checks, the case is reviewed on priority.",
+            meta: "Transaction issue",
+          },
+          {
+            title: "Early cancellation request",
+            description: "Requests raised before substantial digital delivery or live-seat usage are reviewed against the program's published terms.",
+            meta: "Program terms",
+          },
+          {
+            title: "Program cancellation or material change",
+            description: "If EDVO cancels a program or materially changes delivery and no suitable alternative is accepted, a refund review may be initiated.",
+            meta: "Schedule impact",
+          },
+        ],
+      },
+      {
+        title: "What can affect eligibility",
+        description: "Digital services are often partially fulfilled as soon as access is granted.",
+        cards: [
+          {
+            title: "Used digital access",
+            description: "Watching recordings, entering course content, or receiving substantial online access may reduce or remove refund eligibility.",
+            meta: "Access consumed",
+          },
+          {
+            title: "Reserved live seats and mentor time",
+            description: "Blocked live seats, mentor sessions, and scheduled workshop capacity are operational commitments considered during review.",
+            meta: "Capacity costs",
+          },
+          {
+            title: "Downloaded or completed deliverables",
+            description: "Downloaded resources, completed projects, issued certificates, or other fulfilled services may affect the outcome of a refund request.",
+            meta: "Service fulfilled",
+          },
+        ],
+      },
+      {
+        title: "How requests are handled",
+        description: "Share enough context so the operations team can review the case quickly.",
+        cards: [
+          {
+            title: "Send the request in writing",
+            description: "Use the registered email address and include order reference, course or program name, and the reason for the request.",
+            meta: "Identity check",
+          },
+          {
+            title: "Attach relevant evidence",
+            description: "Payment screenshots, transaction references, and access issue screenshots help support verify the request faster.",
+            meta: "Proof of issue",
+          },
+          {
+            title: "Wait for banking timelines",
+            description: "After approval, the actual credit timeline depends on the original payment source, bank, or payment partner workflow.",
+            meta: "Settlement timing",
+          },
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Are all purchases automatically refundable?",
+        answer: "No. Refund and cancellation requests are reviewed against the relevant program terms, delivery status, and usage or seat consumption.",
+      },
+      {
+        question: "How should a refund request be raised?",
+        answer: "Send it from the registered email with the order reference, program name, reason, and any useful screenshots or transaction details.",
+      },
+    ],
+  },
+  "shipping-delivery-policy": {
+    slug: "shipping-delivery-policy",
+    eyebrow: "Shipping & Delivery Policy",
+    title: "Shipping and delivery terms for EDVO's digital learning services.",
+    description:
+      `${edvoPlatformDescription} ${digitalDeliveryDescription}`,
+    heroPoints: [
+      "No physical products or courier shipping are involved",
+      "Access is delivered online after payment confirmation and order verification",
+      "Live-session links, dashboard access, and confirmation emails act as fulfillment channels",
+    ],
+    primaryCta: { label: "Merchant Information", href: "/merchant-information" },
+    secondaryCta: { label: "Contact Support", href: "/contact" },
+    stats: [
+      { label: "Product Type", value: "Digital services" },
+      { label: "Shipping", value: "Not applicable" },
+      { label: "Delivery Channels", value: "Dashboard + email" },
+      { label: "Access Timing", value: "After payment confirmation" },
+    ],
+    spotlight: {
+      title: "Digital fulfillment only",
+      description: "EDVO fulfills purchases online rather than through parcel, courier, or warehouse shipping flows.",
+      items: [
+        "Self-paced access is delivered through the learner account and related digital resources",
+        "Live programs are fulfilled through schedules, dashboards, and session access links",
+        "Support helps resolve access delays, wrong-email issues, or missing confirmation details",
+      ],
+    },
+    sections: [
+      {
+        title: "How delivery works",
+        description: "Fulfillment depends on the kind of digital program purchased.",
+        cards: [
+          {
+            title: "Self-paced courses",
+            description: "Access is typically activated in the learner account after successful payment confirmation and order validation.",
+            meta: "On-demand delivery",
+          },
+          {
+            title: "Live bootcamps and cohorts",
+            description: "Learners receive digital access, scheduling details, and live-session logistics through the platform and registered communication channels.",
+            meta: "Scheduled delivery",
+          },
+          {
+            title: "Workshops and events",
+            description: "Registrations are fulfilled through confirmation emails, dashboard visibility, event details, and participation access instructions.",
+            meta: "Registration delivery",
+          },
+        ],
+      },
+      {
+        title: "What customers receive",
+        description: "Digital fulfillment can include access and supporting transaction records.",
+        cards: [
+          {
+            title: "Course and program access",
+            description: "Customers receive digital access to content, sessions, resources, or participation workflows connected to the purchase.",
+            meta: "Service access",
+          },
+          {
+            title: "Transaction confirmation",
+            description: "Payment confirmation, order acknowledgement, and invoice-related information may be shared through email or support channels.",
+            meta: "Order records",
+          },
+          {
+            title: "Support for delivery issues",
+            description: "If payment succeeds but digital access is delayed or missing, the support team reviews the account and order status.",
+            meta: "Issue handling",
+          },
+        ],
+      },
+      {
+        title: "If delivery feels incomplete",
+        description: "Most issues can be resolved quickly when support has the right order context.",
+        cards: [
+          {
+            title: "No access after payment",
+            description: "Share the order reference and registered email so support can confirm payment status and activate or correct access if needed.",
+            meta: "Access support",
+          },
+          {
+            title: "Wrong email or account issue",
+            description: "If the purchase was made with the wrong email or the account needs correction, contact support before sharing access details widely.",
+            meta: "Account correction",
+          },
+          {
+            title: "Live link or schedule concern",
+            description: "For scheduled sessions, workshops, or cohorts, support can help confirm timing, venue details, or participation instructions.",
+            meta: "Session logistics",
           },
         ],
       },
