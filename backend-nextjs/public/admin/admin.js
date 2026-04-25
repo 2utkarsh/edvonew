@@ -95,7 +95,7 @@ function showToast(message, type = 'info') {
 function initResponsiveAdminShell() {
   const sidebar = document.querySelector('.sidebar');
   const topBar = document.querySelector('.top-bar');
-  if (!sidebar || !topBar || document.querySelector('.sidebar-toggle')) {
+  if (!sidebar || !topBar) {
     return;
   }
 
@@ -113,30 +113,58 @@ function initResponsiveAdminShell() {
     }
   }
 
-  const toggleButton = document.createElement('button');
-  toggleButton.type = 'button';
-  toggleButton.className = 'sidebar-toggle';
-  toggleButton.setAttribute('aria-label', 'Toggle navigation menu');
-  toggleButton.setAttribute('aria-expanded', 'false');
-  toggleButton.innerHTML = '<span></span><span></span><span></span>';
-  topBarLeft.insertBefore(toggleButton, topBarLeft.firstChild);
+  let toggleButton = topBarLeft.querySelector('.sidebar-toggle');
+  if (!toggleButton) {
+    toggleButton = document.createElement('button');
+    toggleButton.type = 'button';
+    toggleButton.className = 'sidebar-toggle';
+    toggleButton.setAttribute('aria-label', 'Toggle navigation menu');
+    toggleButton.innerHTML = '<span></span><span></span><span></span>';
+    topBarLeft.insertBefore(toggleButton, topBarLeft.firstChild);
+  }
 
-  const overlay = document.createElement('div');
-  overlay.className = 'sidebar-overlay';
-  document.body.appendChild(overlay);
+  let overlay = document.querySelector('.sidebar-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.className = 'sidebar-overlay';
+    document.body.appendChild(overlay);
+  }
+
+  if (toggleButton.dataset.bound === 'true') {
+    return;
+  }
+  toggleButton.dataset.bound = 'true';
+
+  const applyMobileSidebarState = () => {
+    const isMobile = window.innerWidth <= 992;
+    const isOpen = sidebar.classList.contains('is-open');
+
+    if (!isMobile) {
+      sidebar.style.removeProperty('transform');
+      sidebar.style.removeProperty('visibility');
+      sidebar.style.removeProperty('pointer-events');
+      overlay.classList.remove('active');
+      document.body.classList.remove('sidebar-open');
+      toggleButton.setAttribute('aria-expanded', 'false');
+      return;
+    }
+
+    sidebar.style.transform = isOpen ? 'translateX(0)' : 'translateX(-100%)';
+    sidebar.style.visibility = isOpen ? 'visible' : 'hidden';
+    sidebar.style.pointerEvents = isOpen ? 'auto' : 'none';
+    overlay.classList.toggle('active', isOpen);
+    document.body.classList.toggle('sidebar-open', isOpen);
+    toggleButton.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  };
 
   const closeSidebar = () => {
     sidebar.classList.remove('is-open');
-    overlay.classList.remove('active');
-    document.body.classList.remove('sidebar-open');
-    toggleButton.setAttribute('aria-expanded', 'false');
+    applyMobileSidebarState();
   };
 
   const openSidebar = () => {
     sidebar.classList.add('is-open');
-    overlay.classList.add('active');
-    document.body.classList.add('sidebar-open');
-    toggleButton.setAttribute('aria-expanded', 'true');
+    applyMobileSidebarState();
   };
 
   toggleButton.addEventListener('click', (event) => {
@@ -180,8 +208,12 @@ function initResponsiveAdminShell() {
   window.addEventListener('resize', () => {
     if (window.innerWidth > 992) {
       closeSidebar();
+      return;
     }
+    applyMobileSidebarState();
   });
+
+  applyMobileSidebarState();
 }
 
 const style = document.createElement('style');
