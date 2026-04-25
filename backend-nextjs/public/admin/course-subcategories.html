@@ -136,8 +136,13 @@
     }
 
     async function loadItems() {
-      const payload = await adminFetch('/backend/api/admin/course-category-children');
-      items = Array.isArray(payload.data) ? payload.data : [];
+      try {
+        const payload = await adminFetch('/backend/api/admin/course-category-children');
+        items = Array.isArray(payload.data) ? payload.data : [];
+      } catch (error) {
+        items = [];
+        showToast(error.message || 'Unable to load sub categories right now', 'error');
+      }
       renderRows();
     }
 

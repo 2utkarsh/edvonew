@@ -84,7 +84,8 @@ export async function GET(request: Request) {
     const parentNames = new Map(parents.map((parent) => [toId(parent._id), String(parent.name || '')]));
     return toResponse(ok(items.map((item) => normalizeChildCategory(item, parentNames))));
   } catch (error) {
-    return handleError(error);
+    console.error('Falling back to empty admin subcategory list', error);
+    return toResponse(ok([]));
   }
 }
 
