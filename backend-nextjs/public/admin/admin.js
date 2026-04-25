@@ -2267,7 +2267,15 @@ function decorateAdminNavigation(root = document) {
     {
       title: 'Community',
       items: [
-        { href: '/backend/admin/events', label: 'Events', icon: '📅' },
+        {
+          href: '/backend/admin/events',
+          label: 'Events',
+          icon: '📅',
+          children: [
+            { href: '/backend/admin/events/categories', label: 'Categories' },
+            { href: '/backend/admin/events', label: 'Events' },
+          ],
+        },
         {
           href: '/backend/admin/challenges',
           label: 'Challenges',
@@ -2775,7 +2783,7 @@ function getAdminSectionViewConfig() {
     },
     events: {
       default: { formIds: ['eventForm'], listIds: ['eventRows'] },
-      categories: { formIds: ['categoryForm'], listIds: ['categoryList'] },
+      categories: { formIds: ['categoryForm'], listIds: ['categoryRows'] },
     },
     guides: {
       default: { formIds: ['guideForm', 'itemForm'], listIds: ['rows'] },
