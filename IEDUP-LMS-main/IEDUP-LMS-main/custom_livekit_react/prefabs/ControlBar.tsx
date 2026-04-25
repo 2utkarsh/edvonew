@@ -231,17 +231,7 @@ export function ControlBar({
   );
 
   return (
-    <div 
-      style={{
-        position: "relative",
-        zIndex: 90,
-        justifyContent: "start",
-        overflowX: "auto",
-        overflowY: "visible"
-      }}
-
-      {...htmlProps}
-    >
+    <div {...htmlProps}>
       {visibleControls.microphone && (
         <div className="lk-button-group">
           <TrackToggle
