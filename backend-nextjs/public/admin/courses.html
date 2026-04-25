@@ -8,6 +8,14 @@
   <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin>
   <link href='https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap' rel='stylesheet'>
   <link rel='stylesheet' href='/backend/admin/styles.css' />
+  <script>
+    (function() {
+      var path = window.location.pathname.replace(/\/+$/, '');
+      if (path && path !== '/backend/admin/courses') {
+        document.documentElement.classList.add('course-admin-subpage');
+      }
+    })();
+  </script>
     <style>
     .stack,
     .cards,
@@ -30,6 +38,7 @@
     .head > .acts { flex: 0 1 auto; max-width: 100%; justify-content: flex-end; }
     .head h2, .head h3 { margin: 0; }
     .head p { margin: 4px 0 0; color: var(--gray); max-width: 78ch; }
+    .course-admin-subpage #sum { display: none !important; }
     .grid2, .grid3, .grid4 { display: grid; gap: 14px; min-width: 0; }
     .grid2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .grid3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -83,7 +92,8 @@
       .minit table { min-width: 980px; }
     }
     @media (max-width: 1100px) {
-      .head { flex-direction: column; align-items: stretch; }
+      .head { flex-direction: column; align-items: stretch; justify-content: flex-start; }
+      .head > :first-child { flex: 0 0 auto; }
       .head > .acts { width: 100%; justify-content: flex-start; }
     }
     @media (max-width: 960px) {
@@ -316,7 +326,7 @@
     </div>
   </main>
 
-  <script src='/backend/admin/admin.js?v=20260425b'></script>
+  <script src='/backend/admin/admin.js?v=20260425c'></script>
   <script src='/backend/admin/courses-admin.js?v=20260416c'></script>
 
 <script>
