@@ -12,7 +12,6 @@
     .stack,
     .cards,
     .split,
-    .split > [data-payment-panel='true'] { display: none; }
     .editor,
     .students,
     .panel,
@@ -169,54 +168,32 @@
     <div class='dashboard-content stack'>
       <section class='cards' id='sum'></section>
 
-      <section class='split'>
-        <div class='panel' data-payment-panel='true'>
-          <div class='head'>
-            <div>
-              <h2>Payment Settings</h2>
-              <p>Razorpay and fallback payment settings used across frontend registrations and checkout.</p>
-            </div>
+      <section class='panel'>
+        <div class='head'>
+          <div>
+            <h2>Categories</h2>
+            <p>Create, edit, reorder, and delete course categories that drive dropdowns and filters.</p>
           </div>
-          <form id='payForm' class='grid2'>
-            <div class='field'><label>Gateway Active</label><select id='payActive'><option value='true'>Active</option><option value='false'>Disabled</option></select></div>
-            <div class='field'><label>Mode</label><select id='payMode'><option value='true'>Test</option><option value='false'>Live</option></select></div>
-            <div class='field'><label>Key ID</label><input id='payKeyId' placeholder='rzp_test_xxx'></div>
-            <div class='field'><label>Key Secret</label><input id='payKeySecret' placeholder='Enter secret'></div>
-            <div class='field'><label>Currency</label><input id='payCurrency' placeholder='INR'></div>
-            <div class='field'><label>Theme Color</label><input id='payTheme' placeholder='#c17017'></div>
-            <div class='field'><label>Company</label><input id='payCompany' placeholder='EDVO'></div>
-            <div class='field'><label>Support Email</label><input id='paySupport' placeholder='support@edvo.com'></div>
-            <div class='field full'><button class='btn btn-primary' type='submit'>Save Payment Settings</button></div>
-          </form>
+          <div class='acts'>
+            <a class='btn' href='/backend/admin/courses/payment-settings'>Payment Settings</a>
+            <button class='btn' type='button' onclick='shuffleCategories()'>Randomize Order</button>
+            <button class='btn' type='button' onclick='catReset()'>New Category</button>
+          </div>
         </div>
-
-        <div class='panel' style='grid-column: 1 / -1;'>
-          <div class='head'>
-            <div>
-              <h2>Categories</h2>
-              <p>Create, edit, reorder, and delete course categories that drive dropdowns and filters.</p>
-            </div>
-            <div class='acts'>
-              <a class='btn' href='/backend/admin/courses/payment-settings'>Payment Settings</a>
-              <button class='btn' type='button' onclick='shuffleCategories()'>Randomize Order</button>
-              <button class='btn' type='button' onclick='catReset()'>New Category</button>
-            </div>
-          </div>
-          <form id='catForm' class='grid2'>
-            <input type='hidden' id='catId'>
-            <div class='field'><label>Name</label><input id='catName' placeholder='Data Analytics'></div>
-            <div class='field'><label>Slug</label><input id='catSlug' placeholder='data-analytics'></div>
-            <div class='field'><label>Color</label><input id='catColor' placeholder='#c17017'></div>
-            <div class='field'><label>Order</label><input id='catOrder' type='number' placeholder='1'></div>
-            <div class='field full'><label>Description</label><textarea id='catDesc' placeholder='Short description'></textarea></div>
-            <div class='field full'><button class='btn btn-primary' type='submit'>Save Category</button></div>
-          </form>
-          <div class='minit' style='margin-top: 16px;'>
-            <table>
-              <thead><tr><th>Order</th><th>Name</th><th>Slug</th><th>Actions</th></tr></thead>
-              <tbody id='catBody'></tbody>
-            </table>
-          </div>
+        <form id='catForm' class='grid2'>
+          <input type='hidden' id='catId'>
+          <div class='field'><label>Name</label><input id='catName' placeholder='Data Analytics'></div>
+          <div class='field'><label>Slug</label><input id='catSlug' placeholder='data-analytics'></div>
+          <div class='field'><label>Color</label><input id='catColor' placeholder='#c17017'></div>
+          <div class='field'><label>Order</label><input id='catOrder' type='number' placeholder='1'></div>
+          <div class='field full'><label>Description</label><textarea id='catDesc' placeholder='Short description'></textarea></div>
+          <div class='field full'><button class='btn btn-primary' type='submit'>Save Category</button></div>
+        </form>
+        <div class='minit' style='margin-top: 16px;'>
+          <table>
+            <thead><tr><th>Order</th><th>Name</th><th>Slug</th><th>Actions</th></tr></thead>
+            <tbody id='catBody'></tbody>
+          </table>
         </div>
       </section>
 
@@ -266,8 +243,9 @@
               <div class='field'><label>Order</label><input id='cOrder' type='number' value='1'></div>
               <div class='field'><label>Title</label><input id='cTitle' required></div>
               <div class='field'><label>Slug</label><input id='cSlug'></div>
-              <div class='field'><label>Status</label><select id='cStatus'><option value='draft'>Draft</option><option value='published'>Published</option><option value='archived'>Archived</option></select></div>
               <div class='field'><label>Category</label><select id='cCategory'></select></div>
+              <div class='field'><label>Sub Category</label><select id='cSubcategory'><option value=''>Select sub category</option></select></div>
+              <div class='field'><label>Status</label><select id='cStatus'><option value='draft'>Draft</option><option value='published'>Published</option><option value='archived'>Archived</option></select></div>
               <div class='field'><label>Level</label><select id='cLevel'><option value='beginner'>Beginner</option><option value='intermediate'>Intermediate</option><option value='advanced'>Advanced</option></select></div>
               <div class='field'><label>Instructor</label><input id='cInstructor'></div>
               <div class='field'><label>Delivery</label><select id='cMode'><option value='recorded'>Recorded</option><option value='live'>Live</option><option value='hybrid'>Hybrid</option></select></div>
@@ -338,7 +316,7 @@
     </div>
   </main>
 
-  <script src='/backend/admin/admin.js?v=20260416c'></script>
+  <script src='/backend/admin/admin.js?v=20260425b'></script>
   <script src='/backend/admin/courses-admin.js?v=20260416c'></script>
 
 <script>

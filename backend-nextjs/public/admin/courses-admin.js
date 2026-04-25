@@ -1,4 +1,4 @@
-const S = { courses: [], cats: [], pay: null, selected: '' };
+const S = { courses: [], cats: [], subs: [], selected: '' };
 
 const byId = (id) => document.getElementById(id);
 const lines = (value) => String(value || '').split('\n').map((item) => item.trim()).filter(Boolean);
@@ -254,33 +254,32 @@ function rowControls() {
 byId('q').addEventListener('input', renderCourses);
 byId('fStatus').addEventListener('change', renderCourses);
 byId('fMode').addEventListener('change', renderCourses);
-byId('payForm').addEventListener('submit', savePay);
 byId('catForm').addEventListener('submit', saveCat);
 byId('courseForm').addEventListener('submit', saveCourse);
 byId('catName').addEventListener('blur', () => { if (!byId('catSlug').value.trim()) byId('catSlug').value = slugify(byId('catName').value); });
 byId('cTitle').addEventListener('blur', () => { if (!byId('cSlug').value.trim()) byId('cSlug').value = slugify(byId('cTitle').value); });
+byId('cCategory').addEventListener('change', () => renderSubcategoryOptions());
 
 async function fetchCatalogData() {
-  const [coursesPayload, categoriesPayload] = await Promise.all([
+  const [coursesPayload, categoriesPayload, subcategoriesPayload] = await Promise.all([
     adminFetch('/backend/api/admin/courses'),
     adminFetch('/backend/api/admin/course-categories'),
+    adminFetch('/backend/api/admin/course-category-children').catch(() => ({ data: [] })),
   ]);
-  return { coursesPayload, categoriesPayload };
+  return { coursesPayload, categoriesPayload, subcategoriesPayload };
 }
 
-function applyCatalogData(coursesPayload, categoriesPayload) {
+function applyCatalogData(coursesPayload, categoriesPayload, subcategoriesPayload) {
   S.courses = (coursesPayload.data.courses || []).sort((a, b) => (a.order || 0) - (b.order || 0));
   S.cats = (categoriesPayload.data || []).sort((a, b) => (a.order || 0) - (b.order || 0));
+  S.subs = (subcategoriesPayload.data || []).sort((a, b) => (a.sort || a.order || 0) - (b.sort || b.order || 0));
 }
 
 async function boot() {
   try {
-    const [{ coursesPayload, categoriesPayload }, paymentPayload] = await Promise.all([
-      fetchCatalogData(),
-      adminFetch('/backend/api/admin/payment-settings').catch(() => ({ data: {} })),
-    ]);
+    const { coursesPayload, categoriesPayload, subcategoriesPayload } = await fetchCatalogData();
 
-    applyCatalogData(coursesPayload, categoriesPayload);
+    applyCatalogData(coursesPayload, categoriesPayload, subcategoriesPayload);
 
     if (!S.courses.length || !S.cats.length) {
       try {
@@ -290,18 +289,16 @@ async function boot() {
           showToast('Earlier courses and categories added to admin', 'success');
         }
         const refreshed = await fetchCatalogData();
-        applyCatalogData(refreshed.coursesPayload, refreshed.categoriesPayload);
+        applyCatalogData(refreshed.coursesPayload, refreshed.categoriesPayload, refreshed.subcategoriesPayload);
       } catch (importError) {
         console.error(importError);
       }
     }
 
-    S.pay = paymentPayload.data || {};
     renderSummary();
     renderCatOptions();
     renderCats();
     renderCourses();
-    fillPay();
     S.courses.length ? editCourse(S.courses[0].id) : courseNew();
   } catch (error) {
     showToast(error.message || 'Unable to load course control center', 'error');
@@ -323,43 +320,24 @@ function renderSummary() {
   ].map((item) => `<article class='cardx'><small>${item[0]}</small><strong>${item[1]}</strong><span>${item[2]}</span></article>`).join('');
 }
 
-function fillPay() {
-  const payment = S.pay || {};
-  byId('payActive').value = String(Boolean(payment.active));
-  byId('payMode').value = String(payment.testMode !== false);
-  byId('payKeyId').value = payment.keyId || '';
-  byId('payKeySecret').value = payment.keySecret || '';
-  byId('payCurrency').value = payment.currency || 'INR';
-  byId('payTheme').value = payment.themeColor || '#c17017';
-  byId('payCompany').value = payment.companyName || 'EDVO';
-  byId('paySupport').value = payment.supportEmail || 'support@edvo.com';
-}
-
-async function savePay(event) {
-  event.preventDefault();
-  try {
-    const response = await adminFetch('/backend/api/admin/payment-settings', {
-      method: 'PATCH',
-      body: JSON.stringify({
-        active: byId('payActive').value === 'true',
-        testMode: byId('payMode').value === 'true',
-        keyId: byId('payKeyId').value.trim(),
-        keySecret: byId('payKeySecret').value.trim(),
-        currency: byId('payCurrency').value.trim() || 'INR',
-        themeColor: byId('payTheme').value.trim() || '#c17017',
-        companyName: byId('payCompany').value.trim() || 'EDVO',
-        supportEmail: byId('paySupport').value.trim() || 'support@edvo.com',
-      }),
-    });
-    S.pay = response.data;
-    showToast('Payment settings saved', 'success');
-  } catch (error) {
-    showToast(error.message || 'Unable to save payment settings', 'error');
-  }
-}
-
 function renderCatOptions() {
   byId('cCategory').innerHTML = "<option value=''>Select category</option>" + S.cats.map((category) => `<option value='${esc(category.name)}'>${esc(category.name)}</option>`).join('');
+  renderSubcategoryOptions();
+}
+
+function getSubcategoriesForCategory(categoryName) {
+  const parent = String(categoryName || '').trim().toLowerCase();
+  return S.subs.filter((item) => String(item.parent || '').trim().toLowerCase() === parent);
+}
+
+function renderSubcategoryOptions(selectedValue = '') {
+  const categoryName = byId('cCategory').value;
+  const options = getSubcategoriesForCategory(categoryName);
+  byId('cSubcategory').innerHTML =
+    "<option value=''>Select sub category</option>" +
+    options.map((subcategory) => `<option value='${esc(subcategory.title)}'>${esc(subcategory.title)}</option>`).join('');
+  byId('cSubcategory').value = selectedValue && options.some((item) => item.title === selectedValue) ? selectedValue : '';
+  byId('cSubcategory').disabled = !categoryName || !options.length;
 }
 
 function renderCats() {
@@ -549,6 +527,8 @@ function courseReset() {
   byId('courseId').value = '';
   S.selected = '';
   byId('cOrder').value = String(S.courses.length + 1 || 1);
+  byId('cSubcategory').innerHTML = "<option value=''>Select sub category</option>";
+  byId('cSubcategory').disabled = true;
   byId('cLanguage').value = 'English';
   byId('cMode').value = 'recorded';
   byId('cAccess').value = 12;
@@ -662,6 +642,7 @@ function editCourse(id) {
   byId('cSlug').value = course.slug || '';
   byId('cStatus').value = course.status || 'draft';
   byId('cCategory').value = course.category || '';
+  renderSubcategoryOptions(course.subcategory || '');
   byId('cLevel').value = course.level || 'beginner';
   byId('cInstructor').value = course.instructorName || '';
   byId('cMode').value = course.deliveryMode || 'recorded';
@@ -730,6 +711,7 @@ function payload() {
     slug: byId('cSlug').value.trim(),
     status: byId('cStatus').value,
     category: byId('cCategory').value,
+    subcategory: byId('cSubcategory').value,
     level: byId('cLevel').value,
     instructorName: byId('cInstructor').value.trim(),
     deliveryMode: byId('cMode').value,

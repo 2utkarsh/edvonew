@@ -2716,7 +2716,7 @@ function getAdminSectionViewConfig() {
       default: { formIds: ['courseForm'], listIds: ['courseBody'] },
       categories: { formIds: ['catForm'], listIds: ['catBody'] },
       subcategories: { formIds: ['subcategoryForm'], listIds: ['subcategoryRows'] },
-      'payment-settings': { formIds: ['payForm'], listIds: [] },
+      'payment-settings': { formIds: [], listIds: ['payForm'] },
     },
     'course-reviews': {
       default: { formIds: ['reviewForm'], listIds: ['reviewRows'] },
@@ -2809,6 +2809,11 @@ function applyAdminViewRouting(root = document) {
   const formPanels = [...new Set(formElements.map((element) => getPanelFromTarget(element)).filter(Boolean))];
   const listPanels = [...new Set(listElements.map((element) => getPanelFromTarget(element)).filter(Boolean))];
   const siblingPanels = [...new Set(siblingElements.map((element) => getPanelFromTarget(element)).filter(Boolean))];
+  const summaryPanel = route.section === 'courses' ? document.getElementById('sum')?.closest('section') : null;
+
+  if (summaryPanel) {
+    setPanelVisible(summaryPanel, !route.subsection);
+  }
 
   siblingElements.forEach((element) => setElementVisible(element, false));
   siblingPanels.forEach((panel) => {
