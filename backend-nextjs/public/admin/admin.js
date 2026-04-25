@@ -139,7 +139,9 @@ function initResponsiveAdminShell() {
     toggleButton.setAttribute('aria-expanded', 'true');
   };
 
-  toggleButton.addEventListener('click', () => {
+  toggleButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
     if (sidebar.classList.contains('is-open')) {
       closeSidebar();
     } else {
@@ -147,7 +149,14 @@ function initResponsiveAdminShell() {
     }
   });
 
-  overlay.addEventListener('click', closeSidebar);
+  overlay.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    closeSidebar();
+  });
+  sidebar.addEventListener('click', (event) => {
+    event.stopPropagation();
+  });
   document.addEventListener('click', (event) => {
     if (window.innerWidth > 992 || !sidebar.classList.contains('is-open')) {
       return;

@@ -1516,10 +1516,12 @@ tbody tr:hover td { background: var(--gray-50); }
    ============================================================ */
 @media (max-width: 1023px) {
   .sidebar {
+    visibility: hidden;
     transform: translateX(-100%);
   }
 
   .sidebar.is-open {
+    visibility: visible;
     transform: translateX(0);
   }
 
@@ -1568,7 +1570,8 @@ tbody tr:hover td { background: var(--gray-50); }
   .top-bar {
     flex-wrap: wrap;
     align-items: flex-start;
-    padding: 0 16px;
+    gap: 12px;
+    padding: 12px 16px;
     min-height: auto;
   }
 
@@ -1577,9 +1580,14 @@ tbody tr:hover td { background: var(--gray-50); }
     width: 100%;
   }
 
+  .top-bar-left {
+    align-items: flex-start;
+  }
+
   .top-bar-right {
     justify-content: space-between;
     flex-wrap: wrap;
+    gap: 12px;
   }
 
   .page-heading {
