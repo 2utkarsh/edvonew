@@ -2203,15 +2203,26 @@ function decorateAdminNavigation(root = document) {
         <p class="nav-section-title">${group.title}</p>
         ${group.items.map((item) => {
           const hasChildren = Array.isArray(item.children) && item.children.length > 0;
-          const active = isActiveHref(item.href);
+          const childActive = hasChildren && item.children.some((child) => isActiveHref(child.href));
+          const active = hasChildren ? childActive : isActiveHref(item.href);
           const expanded = hasChildren && item.children.some((child) => isActiveHref(child.href));
-          return `
-            <div class="nav-group${expanded ? ' is-open' : ''}">
+          const triggerMarkup = hasChildren
+            ? `
+              <button type="button" class="nav-item${active ? ' active' : ''}" aria-expanded="${expanded ? 'true' : 'false'}">
+                <span class="nav-icon">${item.icon}</span>
+                <span class="nav-label">${item.label}</span>
+                <span class="nav-caret">⌄</span>
+              </button>
+            `
+            : `
               <a href="${item.logout ? '#' : item.href}" class="nav-item${active ? ' active' : ''}"${item.logout ? ' data-admin-logout="true"' : ''}>
                 <span class="nav-icon">${item.icon}</span>
                 <span class="nav-label">${item.label}</span>
-                ${hasChildren ? '<span class="nav-caret">⌄</span>' : ''}
               </a>
+            `;
+          return `
+            <div class="nav-group${expanded ? ' is-open' : ''}">
+              ${triggerMarkup}
               ${hasChildren ? `
                 <div class="nav-children">
                   ${item.children.map((child) => `
@@ -2242,11 +2253,9 @@ function decorateAdminNavigation(root = document) {
       return;
     }
 
-    trigger.addEventListener('click', (event) => {
-      if (window.location.pathname.replace(/\/+$/, '') === trigger.getAttribute('href')?.replace(/\/+$/, '')) {
-        event.preventDefault();
-      }
+    trigger.addEventListener('click', () => {
       group.classList.toggle('is-open');
+      trigger.setAttribute('aria-expanded', group.classList.contains('is-open') ? 'true' : 'false');
     });
   });
 }
