@@ -7,7 +7,7 @@ import { FaArrowRight, FaLock, FaShieldAlt } from 'react-icons/fa';
 import EnhancedDashboard from '../../components/EnhancedDashboard';
 import { apiUrl, withBasePath } from '@/lib/url';
 
-const hostNotes = ['Live rooms', 'Meeting schedule', 'Recording archive'];
+const hostNotes = ['Live room control', 'Meeting scheduling', 'Recording library'];
 
 export default function Page() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -78,7 +78,7 @@ export default function Page() {
       <main className="auth-shell">
         <section className="auth-card">
           <span className="auth-badge">Preparing</span>
-          <h1 className="auth-title">Host Sign In</h1>
+          <h1 className="auth-title">IEDUP Host Sign In</h1>
         </section>
       </main>
     );
@@ -102,8 +102,8 @@ export default function Page() {
             Host Access
           </span>
           <div>
-            <h1 className="auth-title">Host Sign In</h1>
-            <p className="auth-subtitle">Enter the dashboard password.</p>
+            <h1 className="auth-title">IEDUP LMS Dashboard</h1>
+            <p className="auth-subtitle">Enter the host password to open your meetings workspace.</p>
           </div>
 
           <form className="auth-form" onSubmit={handleSubmit}>
@@ -134,7 +134,7 @@ export default function Page() {
 
           <div className="auth-link-row">
             <Link href="/" className="auth-secondary-link">
-              Home
+              Back to home
             </Link>
           </div>
         </motion.section>
@@ -147,13 +147,14 @@ export default function Page() {
         >
           <div className="preview-media">
             <img
-              src={withBasePath('/images/itech-innovation-foundation.jpeg')}
-              alt="Itech Innovation Foundation"
+              src={withBasePath('/logo/logo.png')}
+              alt="IEDUP LMS"
             />
           </div>
 
           <div className="preview-shell">
-            <h2 className="preview-title">Dashboard</h2>
+            <p className="preview-kicker">Desktop Workspace</p>
+            <h2 className="preview-title">Meetings, rooms, and recordings</h2>
           </div>
 
           <div className="preview-list preview-list--plain">
