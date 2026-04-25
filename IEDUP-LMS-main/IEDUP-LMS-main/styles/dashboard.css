@@ -2297,36 +2297,19 @@
   bottom: auto;
   transform: none;
   z-index: 5;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  margin: 0;
-  padding: 12px !important;
-  border-radius: 24px !important;
+  width: min(100%, 760px);
+  margin: 0 auto;
+  padding: 10px 14px !important;
+  border-radius: 999px !important;
   background: rgba(15, 23, 42, 0.88) !important;
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(16px);
-  overflow: visible;
-}
-
-.lk-control-bar > * {
-  flex: 0 1 auto;
-}
-
-.lk-control-bar .lk-button-group {
-  display: inline-flex;
-  min-width: 0;
 }
 
 .lk-control-bar .lk-button,
 .lk-control-bar button {
-  min-height: 48px;
   border-radius: 999px !important;
-  white-space: nowrap;
 }
 
 .lk-chat {
@@ -2380,55 +2363,6 @@
 
   .lk-control-bar {
     width: 100%;
-    justify-content: stretch;
-    gap: 8px;
-    padding: 10px !important;
-    border-radius: 20px !important;
-  }
-
-  .lk-control-bar > *,
-  .lk-control-bar .lk-button-group {
-    flex: 1 1 calc(50% - 8px);
-    min-width: 0;
-  }
-
-  .lk-control-bar .lk-button,
-  .lk-control-bar button {
-    width: 100%;
-    justify-content: center;
-  }
-}
-
-@media (max-width: 520px) {
-  .lk-room-container {
-    padding: 10px;
-  }
-
-  .lk-video-conference {
-    min-height: calc(100vh - 20px);
-    min-height: calc(100svh - 20px);
-  }
-
-  .lk-video-conference-inner {
-    min-height: calc(100vh - 20px);
-    min-height: calc(100svh - 20px);
-    gap: 10px;
-  }
-
-  .lk-grid-layout-wrapper,
-  .lk-focus-layout-wrapper {
-    border-radius: 18px;
-    padding: 6px;
-  }
-
-  .lk-control-bar > *,
-  .lk-control-bar .lk-button-group {
-    flex-basis: 100%;
-  }
-
-  .lk-control-bar .lk-button,
-  .lk-control-bar button {
-    min-height: 44px;
-    font-size: 0.92rem;
+    padding: 8px 10px !important;
   }
 }
