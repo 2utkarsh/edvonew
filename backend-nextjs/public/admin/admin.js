@@ -2273,6 +2273,7 @@ function decorateAdminNavigation(root = document) {
           label: 'Challenges',
           icon: '🏆',
           children: [
+            { href: '/backend/admin/challenges/categories', label: 'Categories' },
             { href: '/backend/admin/challenges/submissions', label: 'Submissions' },
             { href: '/backend/admin/challenges', label: 'Challenges' },
           ],
@@ -2751,8 +2752,8 @@ function getAdminSectionViewConfig() {
       categories: { formIds: ['categoryForm'], listIds: ['categoryList'] },
     },
     challenges: {
-      default: { formIds: ['challengeForm'], listIds: ['rows'] },
-      categories: { formIds: ['categoryForm'], listIds: ['categoryList'] },
+      default: { formIds: ['challengeForm'], listIds: ['challengeRows'] },
+      categories: { formIds: ['categoryForm'], listIds: ['categoryRows'] },
     },
     courses: {
       default: { formIds: ['courseForm'], listIds: ['courseBody'] },
