@@ -2287,7 +2287,15 @@ function decorateAdminNavigation(root = document) {
             { href: '/backend/admin/course-reviews', label: 'Reviews' },
           ],
         },
-        { href: '/backend/admin/job-success-stories', label: 'Success Stories', icon: '💼' },
+        {
+          href: '/backend/admin/job-success-stories',
+          label: 'Success Stories',
+          icon: '💼',
+          children: [
+            { href: '/backend/admin/job-success-stories/categories', label: 'Categories' },
+            { href: '/backend/admin/job-success-stories', label: 'Success Stories' },
+          ],
+        },
         { href: '/backend/admin/team', label: 'Team', icon: '👥' },
       ],
     },
@@ -2803,7 +2811,7 @@ function getAdminSectionViewConfig() {
     },
     'job-success-stories': {
       default: { formIds: ['storyForm'], listIds: ['storyRows'] },
-      categories: { formIds: ['categoryForm'], listIds: ['categoryList'] },
+      categories: { formIds: ['categoryForm'], listIds: ['categoryRows'] },
     },
     team: {
       default: { formIds: ['teamForm'], listIds: ['membersGrid'] },
