@@ -148,6 +148,18 @@ function initResponsiveAdminShell() {
   });
 
   overlay.addEventListener('click', closeSidebar);
+  document.addEventListener('click', (event) => {
+    if (window.innerWidth > 992 || !sidebar.classList.contains('is-open')) {
+      return;
+    }
+
+    const clickTarget = event.target;
+    if (sidebar.contains(clickTarget) || toggleButton.contains(clickTarget)) {
+      return;
+    }
+
+    closeSidebar();
+  });
   sidebar.querySelectorAll('.nav-item').forEach((item) => {
     item.addEventListener('click', () => {
       if (window.innerWidth <= 992) {

@@ -1519,11 +1519,21 @@ tbody tr:hover td { background: var(--gray-50); }
     transform: translateX(-100%);
   }
 
-  .sidebar.open {
+  .sidebar.is-open {
     transform: translateX(0);
   }
 
-  .sidebar-overlay { display: block; }
+  .sidebar-overlay {
+    display: block;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration) var(--ease);
+  }
+
+  .sidebar-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
 
   .main-content {
     margin-left: 0;
@@ -1556,7 +1566,29 @@ tbody tr:hover td { background: var(--gray-50); }
   }
 
   .top-bar {
+    flex-wrap: wrap;
+    align-items: flex-start;
     padding: 0 16px;
+    min-height: auto;
+  }
+
+  .top-bar-left,
+  .top-bar-right {
+    width: 100%;
+  }
+
+  .top-bar-right {
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .page-heading {
+    flex: 1;
+  }
+
+  .page-title,
+  .page-subtitle {
+    white-space: normal;
   }
 
   .dashboard-content .stats,
