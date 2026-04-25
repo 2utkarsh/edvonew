@@ -28,7 +28,7 @@ export default function Page() {
       <section className={styles.shell}>
         <div className={styles.heroPanel}>
           <div className={styles.brandRow}>
-            <span className={styles.brandPill}>Itech Innovation Foundation</span>
+            <span className={styles.brandPill}>IEDUP LMS</span>
             {lastRoomRoute ? (
               <button
                 type="button"
@@ -42,10 +42,10 @@ export default function Page() {
           </div>
 
           <div className={styles.heroBlock}>
-            <p className={styles.eyebrow}>Meeting Platform</p>
-            <h1 className={styles.title}>Learning Rooms</h1>
+            <p className={styles.eyebrow}>Video Collaboration</p>
+            <h1 className={styles.title}>IEDUP LMS Meetings</h1>
             <p className={styles.description}>
-              Host sessions, manage schedules, and join rooms from one platform.
+              Launch classes, host reviews, and join scheduled rooms in a Zoom-style workspace built for IEDUP LMS.
             </p>
           </div>
 
@@ -74,10 +74,10 @@ export default function Page() {
         <aside className={styles.visualPanel}>
           <div className={styles.imageFrame}>
             <Image
-              src={withBasePath('/images/itech-innovation-foundation.jpeg')}
-              alt="Itech Innovation Foundation"
-              width={900}
-              height={900}
+              src={withBasePath('/logo/logo.png')}
+              alt="IEDUP LMS"
+              width={1200}
+              height={1200}
               priority
               className={styles.image}
             />
@@ -86,15 +86,15 @@ export default function Page() {
           <div className={styles.sidePanel}>
             <div className={styles.sideRow}>
               <span className={styles.sideLabel}>Host</span>
-              <strong className={styles.sideValue}>Secure dashboard access</strong>
+              <strong className={styles.sideValue}>Secure host controls and class setup</strong>
             </div>
             <div className={styles.sideRow}>
               <span className={styles.sideLabel}>Participant</span>
-              <strong className={styles.sideValue}>Direct dashboard and room access</strong>
+              <strong className={styles.sideValue}>Direct join links and guided entry</strong>
             </div>
             <div className={styles.sideRow}>
               <span className={styles.sideLabel}>Rooms</span>
-              <strong className={styles.sideValue}>Live sessions, schedule, and archive</strong>
+              <strong className={styles.sideValue}>Live sessions, scheduling, and recordings</strong>
             </div>
           </div>
         </aside>

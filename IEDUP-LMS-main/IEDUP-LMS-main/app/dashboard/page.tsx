@@ -7,7 +7,7 @@ import { FaArrowRight, FaLock, FaShieldAlt } from 'react-icons/fa';
 import EnhancedDashboard from '../../components/EnhancedDashboard';
 import { apiUrl, withBasePath } from '@/lib/url';
 
-const hostNotes = ['Live rooms', 'Meeting schedule', 'Recording archive'];
+const hostNotes = ['Zoom-style meeting controls', 'Schedule and room management', 'Recording review'];
 
 export default function Page() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -102,8 +102,8 @@ export default function Page() {
             Host Access
           </span>
           <div>
-            <h1 className="auth-title">Host Sign In</h1>
-            <p className="auth-subtitle">Enter the dashboard password.</p>
+            <h1 className="auth-title">IEDUP LMS Host Sign In</h1>
+            <p className="auth-subtitle">Enter the admin password to open the meetings hub.</p>
           </div>
 
           <form className="auth-form" onSubmit={handleSubmit}>
@@ -147,13 +147,14 @@ export default function Page() {
         >
           <div className="preview-media">
             <img
-              src={withBasePath('/images/itech-innovation-foundation.jpeg')}
-              alt="Itech Innovation Foundation"
+              src={withBasePath('/logo/logo.png')}
+              alt="IEDUP LMS"
             />
           </div>
 
           <div className="preview-shell">
-            <h2 className="preview-title">Dashboard</h2>
+            <p className="preview-kicker">Meetings Hub</p>
+            <h2 className="preview-title">Zoom-style control center</h2>
           </div>
 
           <div className="preview-list preview-list--plain">

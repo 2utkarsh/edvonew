@@ -136,7 +136,7 @@ export function PageClientImpl(props: {
   }, [props.roomName]);
 
   return (
-    <main data-lk-theme="default">
+    <main data-lk-theme="default" className="zoom-room-shell">
       {(!connectionDetails || preJoinChoices === undefined) ? (
         <div className="lk-prejoin-page">
           <div className="lk-prejoin-stage">

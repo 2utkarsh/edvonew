@@ -6,11 +6,11 @@ import type { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
   title: {
-    default: "Itech Learning Rooms",
-    template: "%s | Itech Learning Rooms",
+    default: "IEDUP LMS Meetings",
+    template: "%s | IEDUP LMS Meetings",
   },
   description:
-    "A polished meeting workspace for hosts, participants, and recording review.",
+    "A Zoom-inspired meeting workspace for IEDUP LMS hosts, participants, and recordings.",
   icons: {
     icon: {
       rel: "icon",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#081f1c",
+  themeColor: "#0e62fd",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

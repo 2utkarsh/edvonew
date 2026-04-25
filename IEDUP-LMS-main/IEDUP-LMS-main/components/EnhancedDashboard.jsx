@@ -577,16 +577,16 @@ export default function EnhancedDashboard({
             <div className="workspace-brand-row">
               <div className="brand-mark">
                 <img
-                  src={withBasePath("/images/itech-innovation-foundation.jpeg")}
-                  alt="Itech Innovation Foundation"
+                  src={withBasePath("/logo/lms.png")}
+                  alt="IEDUP LMS"
                 />
               </div>
               <div className="brand-copy">
-                <span className="brand-overline">Itech Studio</span>
-                <strong className="brand-name">Learning Rooms</strong>
+                <span className="brand-overline">IEDUP LMS</span>
+                <strong className="brand-name">Meetings Hub</strong>
               </div>
             </div>
-            <p className="brand-caption">{isAdmin ? 'Dashboard' : 'Participant access'}</p>
+            <p className="brand-caption">{isAdmin ? 'Host workspace' : 'Participant access'}</p>
           </div>
 
           <nav className="side-nav">
@@ -634,11 +634,11 @@ export default function EnhancedDashboard({
             <div className="hero-grid">
               <div>
                 <p className="hero-kicker">{isAdmin ? 'Host' : 'Participant'}</p>
-                <h1 className="hero-title">{isAdmin ? 'Dashboard' : 'Participant Access'}</h1>
+                <h1 className="hero-title">{isAdmin ? 'Meetings Dashboard' : 'Participant Access'}</h1>
                 <p className="hero-copy">
                   {isAdmin
-                    ? 'Manage rooms, schedule sessions, and review recordings.'
-                    : 'Open rooms, join by link, and review shared recordings without a separate sign-in.'}
+                    ? 'Run classes, manage rooms, schedule sessions, and review recordings in one Zoom-style workspace.'
+                    : 'Open rooms, join by link, and review shared recordings in a cleaner meeting-first workspace.'}
                 </p>
               </div>
 
