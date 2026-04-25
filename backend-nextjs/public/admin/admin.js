@@ -2076,6 +2076,12 @@ function getAdminPagePresentation() {
       subtitle: 'Operate the catalog, pricing, mentors, and learner experience in a single structured workflow.',
       chip: 'Catalog ops',
     },
+    '/backend/admin/courses/payment-settings': {
+      kicker: 'Commerce',
+      title: 'Course Payment Settings',
+      subtitle: 'Manage Razorpay and checkout defaults used by course registrations and purchase flow.',
+      chip: 'Checkout config',
+    },
     '/backend/admin/instructors': {
       kicker: 'Faculty',
       title: 'Instructor Management',
@@ -2148,6 +2154,8 @@ function getAdminPagePresentation() {
       ? 'Categories'
       : route.subsection === 'subcategories'
         ? 'Sub Categories'
+        : route.subsection === 'payment-settings'
+          ? 'Payment Settings'
         : route.subsection
           ? humanizeAdminFieldName(route.subsection)
           : basePresentation.title;
@@ -2196,6 +2204,7 @@ function decorateAdminNavigation(root = document) {
           children: [
             { href: '/backend/admin/courses/categories', label: 'Categories' },
             { href: '/backend/admin/courses/subcategories', label: 'Sub Categories' },
+            { href: '/backend/admin/courses/payment-settings', label: 'Payment Settings' },
             { href: '/backend/admin/courses', label: 'Courses' },
           ],
         },
@@ -2707,6 +2716,7 @@ function getAdminSectionViewConfig() {
       default: { formIds: ['courseForm'], listIds: ['courseBody'] },
       categories: { formIds: ['catForm'], listIds: ['catBody'] },
       subcategories: { formIds: ['subcategoryForm'], listIds: ['subcategoryRows'] },
+      'payment-settings': { formIds: ['payForm'], listIds: [] },
     },
     'course-reviews': {
       default: { formIds: ['reviewForm'], listIds: ['reviewRows'] },
@@ -2866,6 +2876,11 @@ function injectAdminModeActions(root = document) {
 
   const route = getAdminRouteMeta();
   if (route.section === 'dashboard') {
+    return;
+  }
+
+  if (route.section === 'courses' && route.subsection === 'payment-settings') {
+    topBarRight.querySelector('.admin-mode-link')?.remove();
     return;
   }
 

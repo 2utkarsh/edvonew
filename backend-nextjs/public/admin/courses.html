@@ -12,6 +12,7 @@
     .stack,
     .cards,
     .split,
+    .split > [data-payment-panel='true'] { display: none; }
     .editor,
     .students,
     .panel,
@@ -169,7 +170,7 @@
       <section class='cards' id='sum'></section>
 
       <section class='split'>
-        <div class='panel'>
+        <div class='panel' data-payment-panel='true'>
           <div class='head'>
             <div>
               <h2>Payment Settings</h2>
@@ -189,13 +190,14 @@
           </form>
         </div>
 
-        <div class='panel'>
+        <div class='panel' style='grid-column: 1 / -1;'>
           <div class='head'>
             <div>
               <h2>Categories</h2>
               <p>Create, edit, reorder, and delete course categories that drive dropdowns and filters.</p>
             </div>
             <div class='acts'>
+              <a class='btn' href='/backend/admin/courses/payment-settings'>Payment Settings</a>
               <button class='btn' type='button' onclick='shuffleCategories()'>Randomize Order</button>
               <button class='btn' type='button' onclick='catReset()'>New Category</button>
             </div>
