@@ -2070,9 +2070,8 @@ function decorateAdminNavigation(root = document) {
 
   sidebar.innerHTML = `
     <a href="/backend/admin/dashboard" class="sidebar-logo">
-      <span>ED</span>
+      <img class="sidebar-logo-image" src="/images/edvo-official-logo-v10.png" alt="EDVO">
       <div class="logo-text">
-        <span class="logo-name">EDVO</span>
         <span class="logo-sub">Admin Panel</span>
       </div>
     </a>

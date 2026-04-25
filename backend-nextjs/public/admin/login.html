@@ -117,18 +117,11 @@
       margin-bottom: 64px;
     }
 
-    .logo-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 1.1rem;
-      font-weight: 900;
-      box-shadow: 0 4px 20px rgba(99,102,241,0.5);
+    .brand-logo-image {
+      width: auto;
+      height: 46px;
+      max-width: 160px;
+      object-fit: contain;
     }
 
     .logo-text {
@@ -315,10 +308,11 @@
       margin-bottom: 32px;
     }
 
-    .form-logo .logo-icon {
-      width: 36px;
-      height: 36px;
-      font-size: 0.9rem;
+    .form-logo-image {
+      width: auto;
+      height: 42px;
+      max-width: 150px;
+      object-fit: contain;
     }
 
     .form-logo .logo-text { font-size: 1rem; color: var(--dark); }
@@ -523,7 +517,7 @@
 
     <div class="brand-content">
       <div class="brand-logo">
-        <div class="logo-icon">ED</div>
+        <img class="brand-logo-image" src="/images/edvo-official-logo-v10.png" alt="EDVO">
         <span class="logo-text">EDVO<span class="logo-badge">Admin</span></span>
       </div>
 
@@ -581,7 +575,7 @@
 
       <!-- Mobile only logo -->
       <div class="form-logo">
-        <div class="logo-icon">ED</div>
+        <img class="form-logo-image" src="/images/edvo-official-logo-v10.png" alt="EDVO">
         <span class="logo-text" style="color:#0f172a;font-weight:800;">EDVO Admin</span>
       </div>
 
