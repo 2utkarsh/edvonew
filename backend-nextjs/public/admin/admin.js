@@ -383,6 +383,10 @@ const adminFieldMeta = {
     label: 'Company logo',
     help: 'Upload the logo shown with the learner story.',
   },
+  photoFile: {
+    label: 'Profile photo',
+    help: 'Upload the photo shown for this instructor profile.',
+  },
   content: {
     label: 'Full content',
     help: 'Add the full article body shown on the blog detail page.',
@@ -435,6 +439,10 @@ const adminFieldMeta = {
     label: 'Phase',
     help: 'Select the current challenge phase shown to users.',
   },
+  partnerLogoFile: {
+    label: 'Partner logo',
+    help: 'Upload the logo shown in the hiring partner section.',
+  },
   readTime: {
     label: 'Read time (minutes)',
     help: 'This number is shown on the blog card and article header.',
@@ -462,6 +470,10 @@ const adminFieldMeta = {
   tags: {
     label: 'Tags',
     help: 'Separate each tag with a comma.',
+  },
+  testimonialImageFile: {
+    label: 'Testimonial photo',
+    help: 'Upload the photo shown with this testimonial.',
   },
   thumbnailFile: {
     label: 'Thumbnail image',
@@ -508,7 +520,117 @@ function getAdminFieldLabel(control) {
 
 function getAdminFieldHelp(control) {
   const meta = adminFieldMeta[control.id || ''];
-  return meta?.help || '';
+  const base = meta?.help || '';
+  const ratio = String(control?.dataset?.adminAspectRatio || '').trim();
+  const note = String(control?.dataset?.adminAspectNote || '').trim();
+  const aspect = ratio ? `Aspect ratio: ${ratio}${note ? ` (${note})` : ''}.` : '';
+  return [base, aspect].filter(Boolean).join(' ');
+}
+
+function parseAdminAspectRatio(value) {
+  const source = String(value || '').trim();
+  if (!source) {
+    return null;
+  }
+
+  const parts = source.split(':').map((part) => Number(part.trim()));
+  if (parts.length !== 2 || !parts.every((part) => Number.isFinite(part) && part > 0)) {
+    return null;
+  }
+
+  return {
+    width: parts[0],
+    height: parts[1],
+    ratio: parts[0] / parts[1],
+    label: source,
+  };
+}
+
+function getAdminImageAspectConfig(control) {
+  const aspect = parseAdminAspectRatio(control?.dataset?.adminAspectRatio || '');
+  if (!aspect) {
+    return null;
+  }
+
+  const tolerance = Number(control?.dataset?.adminAspectTolerance || 0.04);
+  return {
+    ...aspect,
+    tolerance: Number.isFinite(tolerance) && tolerance > 0 ? tolerance : 0.04,
+  };
+}
+
+function readAdminFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(new Error('Failed to read image'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function readAdminImageSize(file) {
+  return new Promise((resolve, reject) => {
+    const objectUrl = URL.createObjectURL(file);
+    const image = new Image();
+
+    image.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      resolve({ width: image.naturalWidth, height: image.naturalHeight });
+    };
+
+    image.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error('Failed to inspect image size'));
+    };
+
+    image.src = objectUrl;
+  });
+}
+
+async function readAdminImageFile(file, control) {
+  if (!file || !String(file.type || '').startsWith('image/')) {
+    throw new Error('Please choose an image file');
+  }
+
+  const config = getAdminImageAspectConfig(control);
+  if (config) {
+    const size = await readAdminImageSize(file);
+    const ratio = size.width / size.height;
+    if (Math.abs(ratio - config.ratio) > config.tolerance) {
+      const label = getAdminFieldLabel(control);
+      throw new Error(`${label} must use ${config.label} aspect ratio.`);
+    }
+  }
+
+  return readAdminFileAsDataUrl(file);
+}
+
+function injectAdminImageAspectHints(root = document) {
+  root.querySelectorAll('input[type="file"][data-admin-aspect-ratio]').forEach((control) => {
+    if (control.dataset.adminAspectHintInjected === 'true') {
+      return;
+    }
+
+    control.dataset.adminAspectHintInjected = 'true';
+    if (control.closest('.field-shell')) {
+      return;
+    }
+
+    const helpText = getAdminFieldHelp(control);
+    if (!helpText) {
+      return;
+    }
+
+    const help = document.createElement('div');
+    help.className = 'field-help';
+    help.textContent = helpText;
+
+    if (control.nextSibling) {
+      control.parentElement?.insertBefore(help, control.nextSibling);
+    } else {
+      control.parentElement?.appendChild(help);
+    }
+  });
 }
 
 function shouldEnhanceAdminControl(control) {
@@ -618,7 +740,11 @@ function enhanceAdminForms(root = document) {
       wrapAdminField(control);
     }
   });
+
+  injectAdminImageAspectHints(root);
 }
+
+window.readAdminImageFile = readAdminImageFile;
 
 const adminTextareaValueDescriptor = typeof HTMLTextAreaElement !== 'undefined'
   ? Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value')

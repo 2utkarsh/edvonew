@@ -91,7 +91,7 @@
           <input id="partnerName" class="input" placeholder="Partner name" required />
           <div class="stack" style="gap:10px">
             <label class="help" for="partnerLogoFile">Partner logo upload</label>
-            <input id="partnerLogoFile" class="file" type="file" accept="image/*" />
+            <input id="partnerLogoFile" class="file" type="file" accept="image/*" data-admin-aspect-ratio="1:1" data-admin-aspect-note="square logo tile" />
           </div>
         </div>
         <img id="partnerLogoPreview" class="thumb-preview" src="/images/edvo-official-logo-v10.png" alt="Partner logo preview" />
@@ -108,7 +108,7 @@
           <input id="testimonialRole" class="input" placeholder="Role / company" />
           <div class="stack" style="gap:10px">
             <label class="help" for="testimonialImageFile">Testimonial photo upload</label>
-            <input id="testimonialImageFile" class="file" type="file" accept="image/*" />
+            <input id="testimonialImageFile" class="file" type="file" accept="image/*" data-admin-aspect-ratio="1:1" data-admin-aspect-note="square testimonial photo" />
           </div>
         </div>
         <img id="testimonialImagePreview" class="thumb-preview" src="/images/edvo-official-logo-v10.png" alt="Testimonial preview" />
@@ -139,7 +139,7 @@
     function updateStats(){refs.totalPartners.textContent=partners().length;refs.totalTestimonials.textContent=testimonials().length;refs.totalApplications.textContent=applications.length}
     function selectedHomePartnersCount(skipIndex=null){return partners().filter((item,index)=>index!==skipIndex&&item&&item.showOnHome).length}
     function assetLabel(value, emptyLabel){if(!value)return emptyLabel;return String(value).startsWith('data:')?'Uploaded image':String(value)}
-    function bindImageUpload(inputKey, previewKey, setter){refs[inputKey].addEventListener('change',()=>{const file=refs[inputKey].files?.[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{if(typeof reader.result==='string'){setter(reader.result);refs[previewKey].src=reader.result;}};reader.readAsDataURL(file)})}
+    function bindImageUpload(inputKey, previewKey, setter){refs[inputKey].addEventListener('change',async()=>{const file=refs[inputKey].files?.[0];if(!file)return;try{const dataUrl=await readAdminImageFile(file,refs[inputKey]);setter(dataUrl);refs[previewKey].src=dataUrl;}catch(error){refs[inputKey].value='';showToast(error.message||'Failed to read image','error')}})}
     function resetPartnerForm(){editingPartnerIndex=null;partnerLogoValue='';refs.partnerForm.reset();refs.partnerLogoFile.value='';refs.partnerLogoPreview.src=defaultImage;refs.partnerShowOnHome.checked=false;refs.partnerFormTitle.textContent='Add Hiring Partner';refs.cancelPartnerEdit.style.display='none'}
     function resetTestimonialForm(){editingTestimonialIndex=null;testimonialImageValue='';refs.testimonialForm.reset();refs.testimonialImageFile.value='';refs.testimonialImagePreview.src=defaultImage;refs.testimonialFormTitle.textContent='Add Hiring Partner Testimonial';refs.cancelTestimonialEdit.style.display='none'}
     function fillCopyFields(){const hero=homeContent.hireTalentHero||{};const cta=homeContent.hireTalentCta||{};refs.heroBadge.value=hero.badge||'';refs.heroTitle.value=hero.title||'';refs.heroAccent.value=hero.accent||'';refs.heroDescription.value=hero.description||'';refs.heroPrimaryLabel.value=hero.primaryLabel||'';refs.heroPrimaryHref.value=hero.primaryHref||'';refs.heroTrustNote.value=hero.trustNote||'';refs.ctaTitle.value=cta.title||'';refs.ctaDescription.value=cta.description||'';refs.ctaPrimaryLabel.value=cta.primaryLabel||'';refs.ctaPrimaryHref.value=cta.primaryHref||'';refs.ctaSecondaryLabel.value=cta.secondaryLabel||'';refs.ctaSecondaryHref.value=cta.secondaryHref||''}

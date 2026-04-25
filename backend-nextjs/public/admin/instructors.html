@@ -98,7 +98,7 @@
             <div class="photo-upload">
               <img id="photoPreview" class="photo-preview" src="/images/edvo-official-logo-v10.png" alt="Instructor preview" />
               <div class="photo-upload-meta">
-                <input id="photoFile" class="file-input" type="file" accept="image/*" />
+                <input id="photoFile" class="file-input" type="file" accept="image/*" data-admin-aspect-ratio="1:1" data-admin-aspect-note="square headshot" />
                 <div class="help">Upload instructor photo. Recommended square image.</div>
                 <button id="removePhotoButton" class="btn btn-secondary" type="button">Remove Photo</button>
               </div>
@@ -158,8 +158,6 @@
     function createDemoEmail(){return `demo.instructor.${Date.now()}@edvo.com`}
     function setPhotoPreview(value){refs.photoPreview.src = value || '/images/edvo-official-logo-v10.png'}
     function clearPhoto(){uploadedPhotoData=''; refs.photoFile.value=''; setPhotoPreview('')}
-    function readFileAsDataUrl(file){return new Promise((resolve,reject)=>{const reader=new FileReader(); reader.onload=()=>resolve(String(reader.result||'')); reader.onerror=()=>reject(new Error('Failed to read image')); reader.readAsDataURL(file);})}
-
     function resetForm() {
       editingInstructorId = null;
       editingUserId = null;
@@ -398,10 +396,11 @@
         return;
       }
       try {
-        uploadedPhotoData = await readFileAsDataUrl(file);
+        uploadedPhotoData = await readAdminImageFile(file, refs.photoFile);
         setPhotoPreview(uploadedPhotoData);
         showToast('Photo ready to save', 'success');
       } catch (error) {
+        refs.photoFile.value = '';
         showToast(error.message || 'Failed to read image', 'error');
       }
     });
