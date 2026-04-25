@@ -1844,8 +1844,28 @@ function enhanceReorderButtons(root = document) {
   });
 }
 
+function getAdminRouteMeta() {
+  const path = window.location.pathname.replace(/\/+$/, '');
+  const segments = path.replace(/^\/backend\/admin/, '').split('/').filter(Boolean);
+  const section = segments[0] || 'dashboard';
+  let subsection = null;
+  let mode = 'list';
+
+  if (segments[1] === 'new' || segments[1] === 'edit') {
+    mode = segments[1] === 'new' ? 'create' : 'edit';
+  } else if (segments[1]) {
+    subsection = segments[1];
+    if (segments[2] === 'new' || segments[2] === 'edit') {
+      mode = segments[2] === 'new' ? 'create' : 'edit';
+    }
+  }
+
+  return { path: path || '/backend/admin/dashboard', section, subsection, mode };
+}
+
 function getAdminPagePresentation() {
-  const path = window.location.pathname;
+  const route = getAdminRouteMeta();
+  const path = route.path;
   const pageMap = {
     '/backend/admin/dashboard': {
       kicker: 'Operations',
@@ -1927,64 +1947,170 @@ function getAdminPagePresentation() {
     },
   };
 
-  return pageMap[path] || {
+  if (pageMap[path]) {
+    return pageMap[path];
+  }
+
+  const basePath = `/backend/admin/${route.section}`;
+  const basePresentation = pageMap[basePath] || {
     kicker: 'Admin',
     title: document.querySelector('.page-title')?.textContent?.trim() || 'EDVO Admin',
     subtitle: 'Operate the EDVO platform with a cleaner, more structured workspace.',
     chip: 'Secure admin',
   };
+  const subsectionLabel =
+    route.subsection === 'categories'
+      ? 'Categories'
+      : route.subsection === 'subcategories'
+        ? 'Sub Categories'
+        : route.subsection
+          ? humanizeAdminFieldName(route.subsection)
+          : basePresentation.title;
+  const actionLabel =
+    route.mode === 'create' ? 'Create' : route.mode === 'edit' ? 'Edit' : 'Manage';
+
+  return {
+    kicker: basePresentation.kicker,
+    title: route.mode === 'list' ? subsectionLabel : `${actionLabel} ${subsectionLabel.replace(/^Manage\s+/i, '')}`,
+    subtitle:
+      route.mode === 'list'
+        ? basePresentation.subtitle
+        : `${actionLabel} ${subsectionLabel.replace(/^Manage\s+/i, '').toLowerCase()} without mixing the table and form on the same screen.`,
+    chip:
+      route.mode === 'list'
+        ? basePresentation.chip
+        : route.mode === 'create'
+          ? 'Create flow'
+          : 'Edit flow',
+  };
 }
 
 function decorateAdminNavigation(root = document) {
-  const iconMap = {
-    Dashboard: '📊',
-    'Home Content': '🏠',
-    'Hiring Partners': '🤝',
-    Courses: '📚',
-    Instructors: '🎓',
-    Blogs: '✍️',
-    'Free Courses': '🎬',
-    Guides: '📖',
-    Team: '👥',
-    'Course Reviews': '⭐',
-    'Job Success Stories': '💼',
-    'Success Stories': '💼',
-    Events: '📅',
-    Challenges: '🏆',
-    'Sign Out': '🚪',
-    Logout: '🚪',
+  const sidebar = root.querySelector('.sidebar');
+  if (!sidebar || sidebar.dataset.navEnhanced === 'true') {
+    return;
+  }
+
+  const route = getAdminRouteMeta();
+  const navGroups = [
+    {
+      title: 'Main Menu',
+      items: [
+        { href: '/backend/admin/dashboard', label: 'Dashboard', icon: '📊' },
+        { href: '/backend/admin/home-content', label: 'Home Content', icon: '🏠' },
+        { href: '/backend/admin/hiring-partners', label: 'Hiring Partners', icon: '🤝' },
+      ],
+    },
+    {
+      title: 'Learning',
+      items: [
+        {
+          href: '/backend/admin/courses',
+          label: 'Courses',
+          icon: '📚',
+          children: [
+            { href: '/backend/admin/courses', label: 'Courses' },
+            { href: '/backend/admin/courses/categories', label: 'Categories' },
+            { href: '/backend/admin/courses/subcategories', label: 'Sub Categories' },
+          ],
+        },
+        { href: '/backend/admin/instructors', label: 'Instructors', icon: '🎓' },
+        {
+          href: '/backend/admin/blogs',
+          label: 'Blogs',
+          icon: '✍️',
+          children: [
+            { href: '/backend/admin/blogs', label: 'Blogs' },
+            { href: '/backend/admin/blogs/categories', label: 'Categories' },
+          ],
+        },
+        { href: '/backend/admin/tutorials', label: 'Free Courses', icon: '🎬' },
+        { href: '/backend/admin/guides', label: 'Guides', icon: '📖' },
+      ],
+    },
+    {
+      title: 'Community',
+      items: [
+        { href: '/backend/admin/events', label: 'Events', icon: '📅' },
+        { href: '/backend/admin/challenges', label: 'Challenges', icon: '🏆' },
+        { href: '/backend/admin/course-reviews', label: 'Course Reviews', icon: '⭐' },
+        { href: '/backend/admin/job-success-stories', label: 'Success Stories', icon: '💼' },
+        { href: '/backend/admin/team', label: 'Team', icon: '👥' },
+      ],
+    },
+    {
+      title: 'Account',
+      items: [
+        { href: '#logout', label: 'Sign Out', icon: '🚪', logout: true },
+      ],
+    },
+  ];
+
+  const isActiveHref = (href) => {
+    const current = route.path;
+    const normalized = href.replace(/\/+$/, '');
+    return current === normalized || current.startsWith(`${normalized}/`);
   };
 
-  root.querySelectorAll('.nav-item').forEach((item) => {
-    const label = item.querySelector('.nav-label');
-    if (!label) {
+  sidebar.innerHTML = `
+    <a href="/backend/admin/dashboard" class="sidebar-logo">
+      <span>ED</span>
+      <div class="logo-text">
+        <span class="logo-name">EDVO</span>
+        <span class="logo-sub">Admin Panel</span>
+      </div>
+    </a>
+    ${navGroups.map((group) => `
+      <nav class="nav-section">
+        <p class="nav-section-title">${group.title}</p>
+        ${group.items.map((item) => {
+          const hasChildren = Array.isArray(item.children) && item.children.length > 0;
+          const active = isActiveHref(item.href);
+          const expanded = hasChildren && item.children.some((child) => isActiveHref(child.href));
+          return `
+            <div class="nav-group${expanded ? ' is-open' : ''}">
+              <a href="${item.logout ? '#' : item.href}" class="nav-item${active ? ' active' : ''}"${item.logout ? ' data-admin-logout="true"' : ''}>
+                <span class="nav-icon">${item.icon}</span>
+                <span class="nav-label">${item.label}</span>
+                ${hasChildren ? '<span class="nav-caret">⌄</span>' : ''}
+              </a>
+              ${hasChildren ? `
+                <div class="nav-children">
+                  ${item.children.map((child) => `
+                    <a href="${child.href}" class="nav-subitem${isActiveHref(child.href) ? ' active' : ''}">${child.label}</a>
+                  `).join('')}
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }).join('')}
+      </nav>
+    `).join('')}
+  `;
+
+  sidebar.dataset.navEnhanced = 'true';
+
+  sidebar.querySelectorAll('[data-admin-logout="true"]').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      event.preventDefault();
+      logout();
+    });
+  });
+
+  sidebar.querySelectorAll('.nav-group').forEach((group) => {
+    const trigger = group.querySelector('.nav-item');
+    const children = group.querySelector('.nav-children');
+    if (!trigger || !children) {
       return;
     }
 
-    let icon = item.querySelector('.nav-icon');
-    if (!icon) {
-      icon = document.createElement('span');
-      icon.className = 'nav-icon';
-      item.insertBefore(icon, label);
-    }
-
-    icon.textContent = iconMap[label.textContent.trim()] || '•';
+    trigger.addEventListener('click', (event) => {
+      if (window.location.pathname.replace(/\/+$/, '') === trigger.getAttribute('href')?.replace(/\/+$/, '')) {
+        event.preventDefault();
+      }
+      group.classList.toggle('is-open');
+    });
   });
-
-  const navSection = root.querySelector('.nav-section');
-  if (navSection && !navSection.querySelector('a[href="/backend/admin/instructors"]')) {
-    const referenceNode = navSection.querySelector('a[href="/backend/admin/blogs"]');
-    const link = document.createElement('a');
-    link.href = '/backend/admin/instructors';
-    link.className = `nav-item${window.location.pathname === '/backend/admin/instructors' ? ' active' : ''}`;
-    link.innerHTML = '<span class="nav-label">Instructors</span>';
-    if (referenceNode) {
-      navSection.insertBefore(link, referenceNode);
-    } else {
-      navSection.appendChild(link);
-    }
-  }
-
 }
 
 function enhanceAdminTopBar(root = document) {
@@ -2361,18 +2487,469 @@ function injectDashboardModules(root = document) {
   }
 }
 
+function getAdminSectionViewConfig() {
+  return {
+    blogs: {
+      default: { formIds: ['blogForm'], listIds: ['blogRows'] },
+      categories: { formIds: ['categoryForm'], listIds: ['categoryList'] },
+    },
+    challenges: {
+      default: { formIds: ['challengeForm'], listIds: ['rows'] },
+      categories: { formIds: ['categoryForm'], listIds: ['categoryList'] },
+    },
+    courses: {
+      default: { formIds: ['courseForm'], listIds: ['courseBody'] },
+      categories: { formIds: ['catForm'], listIds: ['catBody'] },
+      subcategories: { formIds: ['subcategoryForm'], listIds: ['subcategoryRows'] },
+    },
+    'course-reviews': {
+      default: { formIds: ['reviewForm'], listIds: ['reviewRows'] },
+      categories: { formIds: ['categoryForm'], listIds: ['categoryList'] },
+    },
+    events: {
+      default: { formIds: ['eventForm'], listIds: ['eventRows'] },
+      categories: { formIds: ['categoryForm'], listIds: ['categoryList'] },
+    },
+    guides: {
+      default: { formIds: ['guideForm', 'itemForm'], listIds: ['rows'] },
+    },
+    'hiring-partners': {
+      default: { formIds: ['partnerForm'], listIds: ['partnerRows'] },
+    },
+    'home-content': {
+      default: { formIds: ['heroForm', 'statsForm', 'faqForm', 'testimonialForm'], listIds: ['faqRows', 'testimonialRows'] },
+    },
+    instructors: {
+      default: { formIds: ['instructorForm'], listIds: ['instructorRows'] },
+    },
+    'job-success-stories': {
+      default: { formIds: ['storyForm'], listIds: ['storyRows'] },
+      categories: { formIds: ['categoryForm'], listIds: ['categoryList'] },
+    },
+    team: {
+      default: { formIds: ['teamForm'], listIds: ['membersGrid'] },
+    },
+    tutorials: {
+      default: { formIds: ['itemForm'], listIds: ['rows'] },
+    },
+  };
+}
+
+function getPanelFromTarget(target) {
+  if (!(target instanceof HTMLElement)) {
+    return null;
+  }
+  return target.closest('section.panel, .panel, .cardx, .card, .table-container, .stack > section, .split > div');
+}
+
+function setPanelVisible(panel, visible) {
+  if (!panel) {
+    return;
+  }
+  panel.hidden = !visible;
+  panel.style.display = visible ? '' : 'none';
+}
+
+function setElementVisible(element, visible) {
+  if (!(element instanceof HTMLElement)) {
+    return;
+  }
+  element.hidden = !visible;
+  element.style.display = visible ? '' : 'none';
+}
+
+function applyAdminViewRouting(root = document) {
+  const route = getAdminRouteMeta();
+  const sectionConfig = getAdminSectionViewConfig()[route.section];
+  if (!sectionConfig) {
+    return;
+  }
+
+  const viewConfig = route.subsection && sectionConfig[route.subsection]
+    ? sectionConfig[route.subsection]
+    : sectionConfig.default;
+
+  if (!viewConfig) {
+    return;
+  }
+
+  const formElements = (viewConfig.formIds || [])
+    .map((id) => document.getElementById(id))
+    .filter(Boolean);
+  const listElements = (viewConfig.listIds || [])
+    .map((id) => document.getElementById(id))
+    .filter(Boolean);
+  const siblingElements = Object.entries(sectionConfig)
+    .filter(([key]) => {
+      if (key === 'default' && !route.subsection) return false;
+      if (key === route.subsection) return false;
+      if (key === 'default' && route.subsection) return true;
+      return key !== 'default';
+    })
+    .flatMap(([, config]) => [...(config.formIds || []), ...(config.listIds || [])])
+    .map((id) => document.getElementById(id))
+    .filter(Boolean);
+  const formPanels = [...new Set(formElements.map((element) => getPanelFromTarget(element)).filter(Boolean))];
+  const listPanels = [...new Set(listElements.map((element) => getPanelFromTarget(element)).filter(Boolean))];
+  const siblingPanels = [...new Set(siblingElements.map((element) => getPanelFromTarget(element)).filter(Boolean))];
+
+  siblingElements.forEach((element) => setElementVisible(element, false));
+  siblingPanels.forEach((panel) => {
+    if (!formPanels.includes(panel) && !listPanels.includes(panel)) {
+      setPanelVisible(panel, false);
+    }
+  });
+
+  if (route.mode === 'list') {
+    formElements.forEach((element) => setElementVisible(element, false));
+    listElements.forEach((element) => setElementVisible(element, true));
+    formPanels.forEach((panel) => {
+      if (!listPanels.includes(panel)) {
+        setPanelVisible(panel, false);
+      }
+    });
+    listPanels.forEach((panel) => setPanelVisible(panel, true));
+    return;
+  }
+
+  formElements.forEach((element) => setElementVisible(element, true));
+  listElements.forEach((element) => setElementVisible(element, false));
+  formPanels.forEach((panel) => setPanelVisible(panel, true));
+  listPanels.forEach((panel) => {
+    if (!formPanels.includes(panel)) {
+      setPanelVisible(panel, false);
+    }
+  });
+
+  if (route.mode === 'edit') {
+    const id = new URLSearchParams(window.location.search).get('id');
+    if (!id) {
+      return;
+    }
+
+    window.requestAnimationFrame(() => {
+      try {
+        if (route.section === 'courses' && route.subsection === 'categories' && typeof window.catEdit === 'function') {
+          window.catEdit(id);
+          return;
+        }
+
+        if (route.subsection === 'categories' && typeof window.editCategory === 'function') {
+          window.editCategory(id);
+          return;
+        }
+
+        if (typeof window.startEdit === 'function') {
+          window.startEdit(id);
+        } else if (route.section === 'courses' && typeof window.editCourse === 'function') {
+          window.editCourse(id);
+        }
+      } catch (error) {
+        console.error('Failed to open edit view:', error);
+      }
+    });
+  }
+}
+
+function injectAdminModeActions(root = document) {
+  const topBarRight = root.querySelector('.top-bar-right');
+  if (!topBarRight) {
+    return;
+  }
+
+  const route = getAdminRouteMeta();
+  if (route.section === 'dashboard') {
+    return;
+  }
+
+  let actionLink = topBarRight.querySelector('.admin-mode-link');
+  if (!actionLink) {
+    actionLink = document.createElement('a');
+    actionLink.className = 'admin-mode-link btn btn-primary';
+    topBarRight.insertBefore(actionLink, topBarRight.firstChild);
+  }
+
+  const basePath = `/backend/admin/${route.section}${route.subsection ? `/${route.subsection}` : ''}`;
+  if (route.mode === 'list') {
+    actionLink.href = `${basePath}/new`;
+    actionLink.textContent = route.subsection === 'categories'
+      ? 'Add Category'
+      : route.subsection === 'subcategories'
+        ? 'Add Sub Category'
+        : 'Add New';
+  } else {
+    actionLink.href = basePath;
+    actionLink.textContent = 'Back to List';
+  }
+}
+
+function interceptAdminCrudButtons(root = document) {
+  const body = root.body;
+  if (!body || body.dataset.crudInterceptBound === 'true') {
+    return;
+  }
+
+  body.dataset.crudInterceptBound = 'true';
+
+  root.addEventListener('click', (event) => {
+    const target = event.target instanceof HTMLElement ? event.target.closest('button, a') : null;
+    if (!target) {
+      return;
+    }
+
+    const route = getAdminRouteMeta();
+    if (!route.section || route.section === 'dashboard') {
+      return;
+    }
+
+    const text = (target.textContent || '').trim().toLowerCase();
+    const onclickText = target.getAttribute('onclick') || '';
+    const basePath = `/backend/admin/${route.section}${route.subsection ? `/${route.subsection}` : ''}`;
+
+    if (route.mode === 'list' && (/^(add|create)\b/.test(text) || /showAddModal|courseNew\(|catReset\(/.test(onclickText))) {
+      event.preventDefault();
+      window.location.href = `${basePath}/new`;
+      return;
+    }
+
+    if (route.mode === 'list' && /^edit\b/.test(text)) {
+      const match = onclickText.match(/(?:startEdit|editCourse|catEdit|editCategory)\('([^']+)'\)/);
+      if (match && match[1]) {
+        event.preventDefault();
+        window.location.href = `${basePath}/edit?id=${encodeURIComponent(match[1])}`;
+      }
+    }
+  });
+}
+
+function enhanceAdminDataTables(root = document) {
+  const tableListTargets = new Set(
+    Object.values(getAdminSectionViewConfig())
+      .flatMap((sectionConfig) => Object.values(sectionConfig))
+      .flatMap((config) => config.listIds || [])
+  );
+
+  root.querySelectorAll('table').forEach((table) => {
+    if (table.dataset.adminDatatable === 'true') {
+      return;
+    }
+
+    const tbody = table.tBodies && table.tBodies[0];
+    const headers = Array.from(table.querySelectorAll('thead th'));
+    const tbodyId = tbody?.id || '';
+    const containsInlineControls = Boolean(
+      table.querySelector('input, select, textarea')
+    );
+
+    if (
+      !tbody ||
+      headers.length < 2 ||
+      !tableListTargets.has(tbodyId) ||
+      containsInlineControls
+    ) {
+      return;
+    }
+
+    table.dataset.adminDatatable = 'true';
+
+    const container = document.createElement('div');
+    container.className = 'admin-datatable';
+
+    const controls = document.createElement('div');
+    controls.className = 'admin-datatable-controls';
+    controls.innerHTML = `
+      <input class="admin-datatable-search" type="search" placeholder="Search table" />
+      <div class="admin-datatable-actions">
+        <select class="admin-datatable-size">
+          <option value="10">10 rows</option>
+          <option value="25">25 rows</option>
+          <option value="50">50 rows</option>
+          <option value="100">100 rows</option>
+        </select>
+        <button type="button" class="btn">Export CSV</button>
+        <button type="button" class="btn">Export JSON</button>
+      </div>
+    `;
+
+    const filters = document.createElement('div');
+    filters.className = 'admin-datatable-filters';
+
+    const pager = document.createElement('div');
+    pager.className = 'admin-datatable-pager';
+
+    const wrapper = table.parentElement;
+    if (!wrapper || !wrapper.parentElement) {
+      return;
+    }
+
+    wrapper.parentElement.insertBefore(container, wrapper);
+    container.appendChild(controls);
+    container.appendChild(filters);
+    container.appendChild(wrapper);
+    container.appendChild(pager);
+
+    const searchInput = controls.querySelector('.admin-datatable-search');
+    const sizeSelect = controls.querySelector('.admin-datatable-size');
+    const exportButtons = controls.querySelectorAll('.admin-datatable-actions .btn');
+    const state = { query: '', page: 1, pageSize: 10, filters: {} };
+
+    function getRows() {
+      return Array.from(tbody.querySelectorAll('tr')).filter((row) => !row.dataset.adminDatatableEmpty);
+    }
+
+    function getCells(row) {
+      return Array.from(row.children).map((cell) => (cell.textContent || '').trim());
+    }
+
+    function getMatchedRows() {
+      const query = state.query.toLowerCase();
+      return getRows().filter((row) => {
+        const cells = getCells(row);
+        const haystack = cells.join(' ').toLowerCase();
+        const queryOk = !query || haystack.includes(query);
+        const filtersOk = Object.entries(state.filters).every(([index, value]) => {
+          if (!value) return true;
+          return (cells[Number(index)] || '') === value;
+        });
+        return queryOk && filtersOk;
+      });
+    }
+
+    function renderFilters() {
+      filters.innerHTML = '';
+      headers.forEach((header, index) => {
+        const values = [...new Set(getRows().map((row) => getCells(row)[index] || '').filter(Boolean))];
+        if (values.length < 2 || values.length > 12) {
+          return;
+        }
+
+        const select = document.createElement('select');
+        select.className = 'admin-datatable-filter';
+        select.innerHTML = `<option value="">All ${header.textContent.trim()}</option>${values.map((value) => `<option value="${value.replace(/"/g, '&quot;')}">${value}</option>`).join('')}`;
+        select.value = state.filters[index] || '';
+        select.addEventListener('change', () => {
+          state.filters[index] = select.value;
+          state.page = 1;
+          render();
+        });
+        filters.appendChild(select);
+      });
+    }
+
+    function renderPager(total) {
+      const totalPages = Math.max(1, Math.ceil(total / state.pageSize));
+      state.page = Math.min(state.page, totalPages);
+      pager.innerHTML = `
+        <div class="admin-datatable-summary">Showing ${total ? ((state.page - 1) * state.pageSize) + 1 : 0} to ${Math.min(state.page * state.pageSize, total)} of ${total}</div>
+        <div class="admin-datatable-page-actions">
+          <button type="button" class="btn" ${state.page <= 1 ? 'disabled' : ''}>Previous</button>
+          <span class="admin-datatable-page-chip">Page ${state.page} of ${totalPages}</span>
+          <button type="button" class="btn" ${state.page >= totalPages ? 'disabled' : ''}>Next</button>
+        </div>
+      `;
+      const buttons = pager.querySelectorAll('.btn');
+      if (buttons[0]) buttons[0].addEventListener('click', () => { state.page -= 1; render(); });
+      if (buttons[1]) buttons[1].addEventListener('click', () => { state.page += 1; render(); });
+    }
+
+    function ensureEmptyRow() {
+      let emptyRow = tbody.querySelector('tr[data-admin-datatable-empty="true"]');
+      if (!emptyRow) {
+        emptyRow = document.createElement('tr');
+        emptyRow.dataset.adminDatatableEmpty = 'true';
+        emptyRow.innerHTML = `<td colspan="${headers.length}" class="hint">No matching rows found.</td>`;
+        tbody.appendChild(emptyRow);
+      }
+      return emptyRow;
+    }
+
+    function render() {
+      const rows = getRows();
+      const matched = getMatchedRows();
+      const start = (state.page - 1) * state.pageSize;
+      const end = start + state.pageSize;
+
+      rows.forEach((row) => { row.style.display = 'none'; });
+      matched.slice(start, end).forEach((row) => { row.style.display = ''; });
+
+      const emptyRow = ensureEmptyRow();
+      emptyRow.style.display = matched.length ? 'none' : '';
+
+      renderPager(matched.length);
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        state.query = searchInput.value.trim();
+        state.page = 1;
+        render();
+      });
+    }
+
+    if (sizeSelect) {
+      sizeSelect.addEventListener('change', () => {
+        state.pageSize = Number(sizeSelect.value || 10);
+        state.page = 1;
+        render();
+      });
+    }
+
+    if (exportButtons[0]) {
+      exportButtons[0].addEventListener('click', () => {
+        const csv = [headers.map((header) => `"${header.textContent.trim().replace(/"/g, '""')}"`).join(',')]
+          .concat(getMatchedRows().map((row) => getCells(row).map((cell) => `"${cell.replace(/"/g, '""')}"`).join(',')))
+          .join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'admin-table.csv';
+        link.click();
+        URL.revokeObjectURL(link.href);
+      });
+    }
+
+    if (exportButtons[1]) {
+      exportButtons[1].addEventListener('click', () => {
+        const json = getMatchedRows().map((row) => {
+          const cells = getCells(row);
+          return Object.fromEntries(headers.map((header, index) => [header.textContent.trim(), cells[index] || '']));
+        });
+        const blob = new Blob([JSON.stringify(json, null, 2)], { type: 'application/json;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'admin-table.json';
+        link.click();
+        URL.revokeObjectURL(link.href);
+      });
+    }
+
+    const observer = new MutationObserver(() => {
+      renderFilters();
+      render();
+    });
+    observer.observe(tbody, { childList: true, subtree: true });
+
+    renderFilters();
+    render();
+  });
+}
+
 let adminUiEnhancementsQueued = false;
 
 function runAdminUiEnhancements() {
   adminUiEnhancementsQueued = false;
   decorateAdminNavigation(document);
+  applyAdminViewRouting(document);
+  interceptAdminCrudButtons(document);
   enhanceAdminTopBar(document);
+  injectAdminModeActions(document);
   enhanceAdminPanels(document);
   enhanceEditorSections(document);
   enhanceAdminForms(document);
   initAdminRichTextEditors(document);
   normalizeAdminCopy(document);
   enhanceReorderButtons(document);
+  enhanceAdminDataTables(document);
 }
 
 function queueAdminUiEnhancements() {

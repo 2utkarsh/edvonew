@@ -4,6 +4,8 @@ import { NextResponse } from 'next/server';
 import { kickUser } from '@/lib/blackList';
 import { cookies } from 'next/headers';
 import { getConfiguredLiveKitUrls } from '@/lib/livekit-url';
+import { jwtVerify } from 'jose';
+import { getJwtSecretBytes, hasJwtSecret } from '@/lib/jwtSecret';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -14,6 +16,71 @@ function safeParseMetadata(metadata?: string) {
   } catch {
     return {};
   }
+}
+
+type RequesterIdentity = {
+  identity?: string;
+  role?: string;
+};
+
+const MODERATOR_ACTIONS = new Set([
+  'mute-audio',
+  'unmute-audio',
+  'mute-video',
+  'unmute-video',
+  'stop-screen-share',
+  'remove',
+  'rename',
+  'put-in-waiting-room',
+  'remove-from-waiting-room',
+  'make-cohost',
+  'remove-cohost',
+  'toggle-publishing',
+  'toggle-chat',
+  'mass-toggle-publishing',
+  'mass-mute-audio',
+  'mass-unmute-audio',
+  'mass-mute-video',
+  'mass-unmute-video',
+  'destroy-room',
+  'allow-screen-share',
+]);
+
+async function getRequesterIdentity() {
+  if (!hasJwtSecret) {
+    return null;
+  }
+
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get('accessToken')?.value;
+  if (!accessToken) {
+    return null;
+  }
+
+  try {
+    const { payload } = await jwtVerify(accessToken, getJwtSecretBytes());
+    const metadata =
+      payload.metadata && typeof payload.metadata === 'object'
+        ? (payload.metadata as Record<string, unknown>)
+        : {};
+
+    return {
+      identity:
+        typeof metadata.identity === 'string'
+          ? metadata.identity
+          : typeof payload.identity === 'string'
+            ? payload.identity
+            : undefined,
+      role: typeof metadata.role === 'string' ? metadata.role : undefined,
+    } satisfies RequesterIdentity;
+  } catch (error) {
+    console.warn('Failed to verify requester identity for participant control:', error);
+    return null;
+  }
+}
+
+function isModeratorRole(role?: string) {
+  return role === 'host' || role === 'co-host';
 }
 
 export async function POST(req: Request) {
@@ -30,6 +97,16 @@ export async function POST(req: Request) {
         { error: 'Missing required fields', details: { roomName, participantIdentity, action } },
         { status: 400 }
       );
+    }
+
+    if (MODERATOR_ACTIONS.has(action)) {
+      const requester = await getRequesterIdentity();
+      if (!requester || !isModeratorRole(requester.role)) {
+        return NextResponse.json(
+          { error: 'Only the host or co-host can perform this action.' },
+          { status: 403 }
+        );
+      }
     }
 
     const livekitUrls = getConfiguredLiveKitUrls();
@@ -277,6 +354,13 @@ export async function POST(req: Request) {
         const permissions = {
           ...participant.permission,
           canPublishData: !(participant.permission?.canPublishData ?? true),
+        };
+        await roomService.updateParticipant(roomName, participantIdentity, undefined, permissions);
+      } else if (action === 'allow-screen-share') {
+        const permissions = {
+          ...participant.permission,
+          canPublish: true,
+          canSubscribe: true,
         };
         await roomService.updateParticipant(roomName, participantIdentity, undefined, permissions);
       } else if (action === 'mass-toggle-publishing') {

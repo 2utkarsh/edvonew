@@ -269,6 +269,35 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
     }
   };
 
+  const requestParticipantScreenShare = async (participant: RemoteParticipant) => {
+    if (isProcessing) {
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+      await postParticipantAction(participant.identity, 'allow-screen-share');
+      await room.localParticipant.publishData(
+        new TextEncoder().encode(
+          JSON.stringify({
+            type: 'notify',
+            action: 'request-screen-share',
+            target: participant.identity,
+            name: localParticipant.name || localParticipant.identity,
+          }),
+        ),
+        {
+          reliable: true,
+          destinationIdentities: [participant.identity],
+        },
+      );
+    } catch (error) {
+      console.error('Error requesting screen share:', error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   const toggleParticipantChat = async (participant: RemoteParticipant) => {
     if (isProcessing) {
       console.log('Cannot toggle chat:', { isHost, isCoHost, isProcessing });
@@ -958,6 +987,28 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
                           }}
                         >
                           {participantVideoDisabled ? <FaVideoSlash size="18" /> : <FaVideo size="18" />}
+                        </button>
+                        <button
+                          onClick={() => {
+                            requestParticipantScreenShare(participant as RemoteParticipant)
+                          }}
+                          disabled={actionsDisabled}
+                          title="Ask participant to share screen"
+                          style={{
+                            padding: '8px',
+                            background: 'var(--lk-bg2)',
+                            color: 'var(--lk-text)',
+                            border: '1px solid var(--lk-border)',
+                            borderRadius: '4px',
+                            cursor: actionsDisabled ? 'not-allowed' : 'pointer',
+                            opacity: actionsDisabled ? 0.7 : 1,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            minWidth: '36px'
+                          }}
+                        >
+                          <MdScreenShare size="20" />
                         </button>
                         <button
                           onClick={() => {

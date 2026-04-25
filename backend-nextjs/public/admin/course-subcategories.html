@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Course Sub Categories - EDVO Admin</title>
+  <link rel="stylesheet" href="/backend/admin/styles.css" />
+  <style>
+    .stack { display: grid; gap: 24px; }
+    .panel { background: #fff; border: 1px solid #e2e8f0; border-radius: 20px; box-shadow: 0 8px 30px rgba(15,23,42,.06); padding: 24px; }
+    .toolbar { display: flex; justify-content: space-between; gap: 16px; align-items: center; flex-wrap: wrap; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+    .input, .select { width: 100%; min-height: 46px; padding: 12px 16px; border: 1px solid #cbd5e0; border-radius: 12px; background: #fff; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .btn { border: none; border-radius: 10px; padding: 10px 14px; font-weight: 700; cursor: pointer; }
+    .btn-primary { background: #667eea; color: #fff; }
+    .btn-secondary { background: #edf2f7; color: #1a202c; }
+    .help { color: #718096; font-size: .88rem; }
+    .badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 6px 12px; font-size: .78rem; font-weight: 700; background: rgba(102,126,234,.12); color: #5a67d8; }
+  </style>
+</head>
+<body>
+  <aside class="sidebar"></aside>
+
+  <main class="main-content">
+    <header class="top-bar">
+      <div class="page-title">Course Sub Categories</div>
+      <div class="user-avatar">A</div>
+    </header>
+
+    <div class="dashboard-content">
+      <div class="stack">
+        <section class="panel">
+          <div class="toolbar">
+            <div>
+              <div class="table-title" id="formTitle">Create Sub Category</div>
+              <div class="help">Use this for course dropdown structure under the main course category menu.</div>
+            </div>
+          </div>
+
+          <form id="subcategoryForm" class="stack">
+            <input type="hidden" id="subcategoryId" />
+            <div class="grid">
+              <input id="title" class="input" placeholder="Sub category title" required />
+              <input id="slug" class="input" placeholder="sub-category-slug" />
+              <input id="parent" class="input" placeholder="Parent category name" />
+              <input id="sort" class="input" type="number" min="0" value="0" placeholder="Display order" />
+              <select id="isActive" class="select">
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+              </select>
+            </div>
+            <div class="actions">
+              <button id="submitButton" class="btn btn-primary" type="submit">Create Sub Category</button>
+              <button id="cancelEdit" class="btn btn-secondary" type="button" style="display:none">Cancel Edit</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel">
+          <div class="toolbar">
+            <div>
+              <div class="table-title">Manage Sub Categories</div>
+              <div class="help">Search, filter, export, paginate, and keep the dropdown hierarchy clean.</div>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Slug</th>
+                  <th>Parent</th>
+                  <th>Order</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="subcategoryRows">
+                <tr><td colspan="6" class="help">Loading sub categories...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script src="/backend/admin/admin.js"></script>
+  <script>
+    let items = [];
+    let editingId = null;
+
+    function e(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function resetForm() {
+      editingId = null;
+      document.getElementById('subcategoryForm').reset();
+      document.getElementById('sort').value = '0';
+      document.getElementById('isActive').value = 'true';
+      document.getElementById('subcategoryId').value = '';
+      document.getElementById('formTitle').textContent = 'Create Sub Category';
+      document.getElementById('submitButton').textContent = 'Create Sub Category';
+      document.getElementById('cancelEdit').style.display = 'none';
+    }
+
+    function renderRows() {
+      const tbody = document.getElementById('subcategoryRows');
+      if (!items.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="help">No sub categories found yet.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = items.map((item) => `
+        <tr>
+          <td>${e(item.title)}</td>
+          <td>${e(item.slug || '')}</td>
+          <td>${item.parent ? `<span class="badge">${e(item.parent)}</span>` : '<span class="help">Unassigned</span>'}</td>
+          <td>${Number(item.sort || 0)}</td>
+          <td>${String(item.isActive) === 'false' ? 'Inactive' : 'Active'}</td>
+          <td>
+            <div class="actions">
+              <button class="btn btn-secondary" type="button" onclick="startEdit('${item._id || item.id}')">Edit</button>
+              <button class="btn btn-secondary" type="button" onclick="deleteItem('${item._id || item.id}')">Delete</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function loadItems() {
+      const payload = await adminFetch('/backend/api/admin/course-category-children');
+      items = Array.isArray(payload.data) ? payload.data : [];
+      renderRows();
+    }
+
+    async function startEdit(id) {
+      const payload = await adminFetch(`/backend/api/admin/course-category-children/${id}`);
+      const item = payload && payload.data ? payload.data : items.find((entry) => (entry._id || entry.id) === id);
+      if (!item) return;
+      editingId = id;
+      document.getElementById('subcategoryId').value = id;
+      document.getElementById('title').value = item.title || '';
+      document.getElementById('slug').value = item.slug || '';
+      document.getElementById('parent').value = item.parent || '';
+      document.getElementById('sort').value = item.sort || 0;
+      document.getElementById('isActive').value = String(item.isActive) === 'false' ? 'false' : 'true';
+      document.getElementById('formTitle').textContent = 'Edit Sub Category';
+      document.getElementById('submitButton').textContent = 'Update Sub Category';
+      document.getElementById('cancelEdit').style.display = 'inline-flex';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function deleteItem(id) {
+      if (!confirm('Delete this sub category?')) return;
+      await adminFetch(`/backend/api/admin/course-category-children/${id}`, { method: 'DELETE' });
+      if (editingId === id) resetForm();
+      await loadItems();
+      showToast('Sub category deleted', 'success');
+    }
+
+    document.getElementById('subcategoryForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const payload = {
+        title: document.getElementById('title').value,
+        slug: document.getElementById('slug').value,
+        parent: document.getElementById('parent').value,
+        sort: Number(document.getElementById('sort').value || 0),
+        isActive: document.getElementById('isActive').value === 'true',
+      };
+
+      if (editingId) {
+        await adminFetch(`/backend/api/admin/course-category-children/${editingId}`, {
+          method: 'PATCH',
+          body: JSON.stringify(payload),
+        });
+        showToast('Sub category updated', 'success');
+      } else {
+        await adminFetch('/backend/api/admin/course-category-children', {
+          method: 'POST',
+          body: JSON.stringify(payload),
+        });
+        showToast('Sub category created', 'success');
+      }
+
+      resetForm();
+      await loadItems();
+    });
+
+    document.getElementById('cancelEdit').addEventListener('click', resetForm);
+
+    loadItems().then(resetForm);
+  </script>
+</body>
+</html>

@@ -301,6 +301,49 @@ a { color: inherit; text-decoration: none; }
 
 .nav-item.active .nav-icon { opacity: 1; }
 
+.nav-group {
+  display: grid;
+  gap: 4px;
+}
+
+.nav-caret {
+  margin-left: auto;
+  font-size: 0.9rem;
+  opacity: 0.72;
+  transition: transform var(--duration) var(--ease);
+}
+
+.nav-group.is-open .nav-caret {
+  transform: rotate(180deg);
+}
+
+.nav-children {
+  display: none;
+  margin: -2px 0 6px 34px;
+  padding-left: 10px;
+  border-left: 1px solid rgba(255,255,255,0.08);
+}
+
+.nav-group.is-open .nav-children {
+  display: grid;
+  gap: 4px;
+}
+
+.nav-subitem {
+  display: block;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  color: var(--sidebar-fg);
+  font-size: 0.82rem;
+  transition: background var(--duration) var(--ease), color var(--duration) var(--ease);
+}
+
+.nav-subitem:hover,
+.nav-subitem.active {
+  background: rgba(255,255,255,0.06);
+  color: var(--sidebar-fg-high);
+}
+
 .sidebar::-webkit-scrollbar { width: 4px; }
 .sidebar::-webkit-scrollbar-thumb {
   background: rgba(255,255,255,0.1);
@@ -776,6 +819,50 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ── Tables ── */
+.admin-datatable {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.admin-datatable-controls,
+.admin-datatable-filters,
+.admin-datatable-pager,
+.admin-datatable-actions,
+.admin-datatable-page-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.admin-datatable-controls,
+.admin-datatable-pager {
+  justify-content: space-between;
+}
+
+.admin-datatable-search,
+.admin-datatable-filter,
+.admin-datatable-size {
+  min-height: 42px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--white);
+}
+
+.admin-datatable-search {
+  min-width: min(100%, 320px);
+  flex: 1 1 260px;
+}
+
+.admin-datatable-summary,
+.admin-datatable-page-chip {
+  color: var(--gray-500);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
 .table-container { overflow-x: auto; }
 
 .table-header {
@@ -1457,6 +1544,22 @@ tbody tr:hover td { background: var(--gray-50); }
 }
 
 @media (max-width: 768px) {
+  .admin-datatable-controls,
+  .admin-datatable-pager {
+    align-items: stretch;
+  }
+
+  .admin-datatable-actions,
+  .admin-datatable-page-actions {
+    width: 100%;
+  }
+
+  .admin-datatable-search,
+  .admin-datatable-filter,
+  .admin-datatable-size {
+    width: 100%;
+  }
+
   .dashboard-content {
     padding: 16px;
   }

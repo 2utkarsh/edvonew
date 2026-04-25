@@ -66,6 +66,14 @@
   font-weight: 600;
 }
 
+.toolButton:disabled,
+.actionButton:disabled,
+.colorSwatch:disabled,
+.colorPicker:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .toolButtonActive {
   background: rgba(37, 99, 235, 0.22);
   border-color: rgba(96, 165, 250, 0.72);
@@ -131,12 +139,26 @@
   background-size: 32px 32px;
 }
 
+.lockNotice {
+  padding: 10px 12px;
+  border: 1px solid rgba(250, 204, 21, 0.25);
+  border-radius: 8px;
+  background: rgba(113, 63, 18, 0.28);
+  color: #fde68a;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
 .canvas {
   width: 100%;
   height: 100%;
   display: block;
   touch-action: none;
   cursor: crosshair;
+}
+
+.canvasReadOnly {
+  cursor: not-allowed;
 }
 
 @media (max-width: 900px) {

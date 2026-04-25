@@ -570,6 +570,9 @@ function VideoConferenceComponent(props: {
           } else if(data.action === "can-publish") {
             setNotify(true)
             setNotifyText("You can enable camera, microphone and share screen")
+          } else if (data.action === 'request-screen-share') {
+            setNotify(true)
+            setNotifyText(`${data.name || 'The host'} asked you to share your screen.`)
           }
         } else if (data.type === 'whiteboard-control') {
           setWhiteboardOpen(data.action === 'open');
@@ -607,6 +610,10 @@ function VideoConferenceComponent(props: {
     !whiteboardOpen ||
     isLocalHost ||
     whiteboardOwnerIdentity === room.localParticipant.identity;
+  const canDrawWhiteboard =
+    !whiteboardOpen ||
+    isLocalHost ||
+    whiteboardOwnerIdentity === room.localParticipant.identity;
 
   return (
     <div className="lk-room-container" style={{ position: 'relative', minHeight: '100vh', height: '100svh' }}>
@@ -621,6 +628,7 @@ function VideoConferenceComponent(props: {
             canCloseWhiteboard={canCloseWhiteboard}
           />
         <RoomWhiteboard
+          canDraw={canDrawWhiteboard}
           isOpen={whiteboardOpen}
           onClose={handleWhiteboardClose}
           room={room}

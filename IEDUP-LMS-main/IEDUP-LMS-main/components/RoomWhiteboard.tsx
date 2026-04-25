@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Room, RoomEvent } from 'livekit-client';
 import {
+  FaEraser,
   FaHighlighter,
   FaPencilAlt,
   FaPen,
@@ -11,7 +12,7 @@ import {
 } from 'react-icons/fa';
 import styles from './RoomWhiteboard.module.css';
 
-type WhiteboardTool = 'pencil' | 'pen' | 'marker';
+type WhiteboardTool = 'pencil' | 'pen' | 'marker' | 'eraser';
 
 type WhiteboardPoint = {
   x: number;
@@ -52,6 +53,7 @@ type WhiteboardMessage =
     };
 
 type RoomWhiteboardProps = {
+  canDraw: boolean;
   isOpen: boolean;
   onClose: () => void;
   room: Room;
@@ -71,6 +73,7 @@ const TOOL_CONFIG: Record<
   WhiteboardTool,
   { alpha: number; sizeMultiplier: number }
 > = {
+  eraser: { alpha: 1, sizeMultiplier: 2.2 },
   pencil: { alpha: 0.62, sizeMultiplier: 0.85 },
   pen: { alpha: 1, sizeMultiplier: 1 },
   marker: { alpha: 0.3, sizeMultiplier: 1.9 },
@@ -205,15 +208,17 @@ function drawStroke(
   const settings = TOOL_CONFIG[stroke.tool];
   const lineWidth = Math.max(1, stroke.size * settings.sizeMultiplier);
   const points = stroke.points;
+  const isEraser = stroke.tool === 'eraser';
 
   if (points.length === 0) {
     return;
   }
 
   ctx.save();
-  ctx.strokeStyle = stroke.color;
-  ctx.fillStyle = stroke.color;
-  ctx.globalAlpha = settings.alpha;
+  ctx.strokeStyle = isEraser ? 'rgba(255, 255, 255, 1)' : stroke.color;
+  ctx.fillStyle = isEraser ? 'rgba(255, 255, 255, 1)' : stroke.color;
+  ctx.globalAlpha = isEraser ? 1 : settings.alpha;
+  ctx.globalCompositeOperation = isEraser ? 'destination-out' : 'source-over';
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
   ctx.lineWidth = lineWidth;
@@ -239,6 +244,7 @@ function drawStroke(
 }
 
 export default function RoomWhiteboard({
+  canDraw,
   isOpen,
   onClose,
   room,
@@ -472,6 +478,10 @@ export default function RoomWhiteboard({
 
   const handlePointerDown = React.useCallback(
     (event: React.PointerEvent<HTMLCanvasElement>) => {
+      if (!canDraw) {
+        return;
+      }
+
       if (event.button !== 0) {
         return;
       }
@@ -499,11 +509,15 @@ export default function RoomWhiteboard({
       draftStrokeRef.current = stroke;
       setDraftStroke(stroke);
     },
-    [color, getNormalizedPoint, room.localParticipant.identity, size, tool],
+    [canDraw, color, getNormalizedPoint, room.localParticipant.identity, size, tool],
   );
 
   const handlePointerMove = React.useCallback(
     (event: React.PointerEvent<HTMLCanvasElement>) => {
+      if (!canDraw) {
+        return;
+      }
+
       if (pointerIdRef.current !== event.pointerId) {
         return;
       }
@@ -532,7 +546,7 @@ export default function RoomWhiteboard({
         return nextStroke;
       });
     },
-    [getNormalizedPoint],
+    [canDraw, getNormalizedPoint],
   );
 
   const finishStroke = React.useCallback(async () => {
@@ -591,6 +605,10 @@ export default function RoomWhiteboard({
   );
 
   const clearBoard = React.useCallback(async () => {
+    if (!canDraw) {
+      return;
+    }
+
     setDraftStroke(null);
     draftStrokeRef.current = null;
     setStrokes([]);
@@ -600,7 +618,7 @@ export default function RoomWhiteboard({
       action: 'clear',
       actor: room.localParticipant.identity,
     });
-  }, [publishMessage, room.localParticipant.identity]);
+  }, [canDraw, publishMessage, room.localParticipant.identity]);
 
   return (
     <div
@@ -613,9 +631,21 @@ export default function RoomWhiteboard({
             <button
               type="button"
               className={`${styles.toolButton} ${
+                tool === 'eraser' ? styles.toolButtonActive : ''
+              }`}
+              onClick={() => setTool('eraser')}
+              disabled={!canDraw}
+            >
+              <FaEraser />
+              Eraser
+            </button>
+            <button
+              type="button"
+              className={`${styles.toolButton} ${
                 tool === 'pencil' ? styles.toolButtonActive : ''
               }`}
               onClick={() => setTool('pencil')}
+              disabled={!canDraw}
             >
               <FaPencilAlt />
               Pencil
@@ -626,6 +656,7 @@ export default function RoomWhiteboard({
                 tool === 'pen' ? styles.toolButtonActive : ''
               }`}
               onClick={() => setTool('pen')}
+              disabled={!canDraw}
             >
               <FaPen />
               Pen
@@ -636,6 +667,7 @@ export default function RoomWhiteboard({
                 tool === 'marker' ? styles.toolButtonActive : ''
               }`}
               onClick={() => setTool('marker')}
+              disabled={!canDraw}
             >
               <FaHighlighter />
               Marker
@@ -652,6 +684,7 @@ export default function RoomWhiteboard({
                 step="1"
                 value={size}
                 onChange={(event) => setSize(Number(event.target.value))}
+                disabled={!canDraw}
               />
               <strong>{size}</strong>
             </label>
@@ -667,6 +700,7 @@ export default function RoomWhiteboard({
                   style={{ backgroundColor: swatch }}
                   onClick={() => setColor(swatch)}
                   aria-label={`Set color ${swatch}`}
+                  disabled={!canDraw}
                 />
               ))}
               <input
@@ -675,10 +709,16 @@ export default function RoomWhiteboard({
                 onChange={(event) => setColor(event.target.value)}
                 className={styles.colorPicker}
                 aria-label="Choose custom color"
+                disabled={!canDraw}
               />
             </div>
 
-            <button type="button" className={styles.actionButton} onClick={clearBoard}>
+            <button
+              type="button"
+              className={styles.actionButton}
+              onClick={clearBoard}
+              disabled={!canDraw}
+            >
               <FaTrashAlt />
               Clear
             </button>
@@ -689,10 +729,16 @@ export default function RoomWhiteboard({
           </div>
         </div>
 
+        {!canDraw ? (
+          <div className={styles.lockNotice}>
+            View only. Only the admin/co-host or the participant who opened this whiteboard can draw.
+          </div>
+        ) : null}
+
         <div ref={surfaceRef} className={styles.surface}>
           <canvas
             ref={canvasRef}
-            className={styles.canvas}
+            className={`${styles.canvas} ${!canDraw ? styles.canvasReadOnly : ''}`}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
