@@ -2009,9 +2009,9 @@ function decorateAdminNavigation(root = document) {
           label: 'Courses',
           icon: '📚',
           children: [
-            { href: '/backend/admin/courses', label: 'Courses' },
             { href: '/backend/admin/courses/categories', label: 'Categories' },
             { href: '/backend/admin/courses/subcategories', label: 'Sub Categories' },
+            { href: '/backend/admin/courses', label: 'Courses' },
           ],
         },
         { href: '/backend/admin/instructors', label: 'Instructors', icon: '🎓' },
@@ -2020,8 +2020,8 @@ function decorateAdminNavigation(root = document) {
           label: 'Blogs',
           icon: '✍️',
           children: [
-            { href: '/backend/admin/blogs', label: 'Blogs' },
             { href: '/backend/admin/blogs/categories', label: 'Categories' },
+            { href: '/backend/admin/blogs', label: 'Blogs' },
           ],
         },
         {
@@ -2029,8 +2029,8 @@ function decorateAdminNavigation(root = document) {
           label: 'Free Courses',
           icon: '🎬',
           children: [
-            { href: '/backend/admin/tutorials', label: 'Free Courses' },
             { href: '/backend/admin/tutorials/categories', label: 'Categories' },
+            { href: '/backend/admin/tutorials', label: 'Free Courses' },
           ],
         },
         { href: '/backend/admin/guides', label: 'Guides', icon: '📖' },
@@ -2046,8 +2046,8 @@ function decorateAdminNavigation(root = document) {
           label: 'Course Reviews',
           icon: '⭐',
           children: [
-            { href: '/backend/admin/course-reviews', label: 'Reviews' },
             { href: '/backend/admin/course-reviews/categories', label: 'Categories' },
+            { href: '/backend/admin/course-reviews', label: 'Reviews' },
           ],
         },
         { href: '/backend/admin/job-success-stories', label: 'Success Stories', icon: '💼' },
