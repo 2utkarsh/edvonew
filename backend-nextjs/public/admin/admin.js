@@ -2033,7 +2033,15 @@ function decorateAdminNavigation(root = document) {
       items: [
         { href: '/backend/admin/events', label: 'Events', icon: '📅' },
         { href: '/backend/admin/challenges', label: 'Challenges', icon: '🏆' },
-        { href: '/backend/admin/course-reviews', label: 'Course Reviews', icon: '⭐' },
+        {
+          href: '/backend/admin/course-reviews',
+          label: 'Course Reviews',
+          icon: '⭐',
+          children: [
+            { href: '/backend/admin/course-reviews', label: 'Reviews' },
+            { href: '/backend/admin/course-reviews/categories', label: 'Categories' },
+          ],
+        },
         { href: '/backend/admin/job-success-stories', label: 'Success Stories', icon: '💼' },
         { href: '/backend/admin/team', label: 'Team', icon: '👥' },
       ],
@@ -2672,11 +2680,14 @@ function injectAdminModeActions(root = document) {
   const basePath = `/backend/admin/${route.section}${route.subsection ? `/${route.subsection}` : ''}`;
   if (route.mode === 'list') {
     actionLink.href = `${basePath}/new`;
-    actionLink.textContent = route.subsection === 'categories'
-      ? 'Add Category'
-      : route.subsection === 'subcategories'
-        ? 'Add Sub Category'
-        : 'Add New';
+    actionLink.textContent =
+      route.section === 'course-reviews' && !route.subsection
+        ? 'Add Review'
+        : route.subsection === 'categories'
+          ? 'Add Category'
+          : route.subsection === 'subcategories'
+            ? 'Add Sub Category'
+            : 'Add New';
   } else {
     actionLink.href = basePath;
     actionLink.textContent = 'Back to List';
