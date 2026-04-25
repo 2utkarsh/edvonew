@@ -2268,7 +2268,15 @@ function decorateAdminNavigation(root = document) {
       title: 'Community',
       items: [
         { href: '/backend/admin/events', label: 'Events', icon: '📅' },
-        { href: '/backend/admin/challenges', label: 'Challenges', icon: '🏆' },
+        {
+          href: '/backend/admin/challenges',
+          label: 'Challenges',
+          icon: '🏆',
+          children: [
+            { href: '/backend/admin/challenges/submissions', label: 'Submissions' },
+            { href: '/backend/admin/challenges', label: 'Challenges' },
+          ],
+        },
         {
           href: '/backend/admin/course-reviews',
           label: 'Course Reviews',
@@ -2954,6 +2962,20 @@ function injectAdminModeActions(root = document) {
 
   if (route.section === 'courses' && route.subsection === 'payment-settings') {
     topBarRight.querySelector('.admin-mode-link')?.remove();
+    return;
+  }
+
+  if (route.section === 'challenges' && route.subsection === 'submissions') {
+    let actionLink = topBarRight.querySelector('.admin-mode-link');
+    if (!actionLink) {
+      actionLink = document.createElement('a');
+      actionLink.className = 'admin-mode-link btn btn-primary';
+      topBarRight.insertBefore(actionLink, topBarRight.firstChild);
+    }
+    actionLink.href = route.mode === 'edit'
+      ? '/backend/admin/challenges/submissions'
+      : '/backend/admin/challenges';
+    actionLink.textContent = route.mode === 'edit' ? 'Back to Submissions' : 'Back to Challenges';
     return;
   }
 
