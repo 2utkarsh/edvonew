@@ -2213,7 +2213,19 @@ function decorateAdminNavigation(root = document) {
             { href: '/backend/admin/home-content', label: 'Overview' },
           ],
         },
-        { href: '/backend/admin/hiring-partners', label: 'Hiring Partners', icon: '🤝' },
+        {
+          href: '/backend/admin/hiring-partners',
+          label: 'Hiring Partners',
+          icon: '🤝',
+          children: [
+            { href: '/backend/admin/hiring-partners/hero-section', label: 'Hero Section' },
+            { href: '/backend/admin/hiring-partners/partner-logos', label: 'Partner Logos' },
+            { href: '/backend/admin/hiring-partners/partner-testimonials', label: 'Partner Testimonials' },
+            { href: '/backend/admin/hiring-partners/partner-cta', label: 'Partner CTA' },
+            { href: '/backend/admin/hiring-partners/company-applications', label: 'Applications' },
+            { href: '/backend/admin/hiring-partners', label: 'Overview' },
+          ],
+        },
       ],
     },
     {
@@ -2752,7 +2764,12 @@ function getAdminSectionViewConfig() {
       default: { formIds: ['guideForm', 'itemForm'], listIds: ['rows'] },
     },
     'hiring-partners': {
-      default: { formIds: ['partnerForm'], listIds: ['partnerRows'] },
+      default: { formIds: [], listIds: ['hiringPartnersOverviewRows'] },
+      'hero-section': { formIds: ['hiringPartnersSectionForm'], listIds: ['hiringPartnersSectionRows'] },
+      'partner-logos': { formIds: ['hiringPartnersSectionForm'], listIds: ['hiringPartnersSectionRows'] },
+      'partner-testimonials': { formIds: ['hiringPartnersSectionForm'], listIds: ['hiringPartnersSectionRows'] },
+      'partner-cta': { formIds: ['hiringPartnersSectionForm'], listIds: ['hiringPartnersSectionRows'] },
+      'company-applications': { formIds: ['hiringPartnersSectionForm'], listIds: ['hiringPartnersSectionRows'] },
     },
     'home-content': {
       default: { formIds: [], listIds: ['homeContentOverviewRows'] },
@@ -2930,6 +2947,10 @@ function injectAdminModeActions(root = document) {
     'hire-talent-cta',
     'cta-section',
   ]);
+  const hiringPartnerSingletonSections = new Set([
+    'hero-section',
+    'partner-cta',
+  ]);
 
   if (route.section === 'courses' && route.subsection === 'payment-settings') {
     topBarRight.querySelector('.admin-mode-link')?.remove();
@@ -2937,6 +2958,11 @@ function injectAdminModeActions(root = document) {
   }
 
   if (route.section === 'home-content' && !route.subsection) {
+    topBarRight.querySelector('.admin-mode-link')?.remove();
+    return;
+  }
+
+  if (route.section === 'hiring-partners' && !route.subsection) {
     topBarRight.querySelector('.admin-mode-link')?.remove();
     return;
   }
@@ -2953,12 +2979,20 @@ function injectAdminModeActions(root = document) {
     actionLink.href =
       route.section === 'home-content' && homeContentSingletonSections.has(route.subsection)
         ? `${basePath}/edit?id=${encodeURIComponent(route.subsection)}`
+        : route.section === 'hiring-partners' && hiringPartnerSingletonSections.has(route.subsection)
+          ? `${basePath}/edit?id=${encodeURIComponent(route.subsection)}`
         : `${basePath}/new`;
     actionLink.textContent =
       route.section === 'home-content' && homeContentSingletonSections.has(route.subsection)
         ? 'Edit Section'
+        : route.section === 'hiring-partners' && hiringPartnerSingletonSections.has(route.subsection)
+          ? 'Edit Section'
         : route.section === 'home-content' && route.subsection
           ? 'Add Item'
+          : route.section === 'hiring-partners' && route.subsection
+            ? route.subsection === 'company-applications'
+              ? 'Add Application'
+              : 'Add Item'
           :
       route.section === 'course-reviews' && !route.subsection
         ? 'Add Review'

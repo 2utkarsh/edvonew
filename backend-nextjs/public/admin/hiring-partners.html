@@ -1,17 +1,16 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hiring Partners - EDVO</title>
-  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    .stack{display:flex;flex-direction:column;gap:24px}.panel,.stat{background:#fff;border:1px solid #e2e8f0;border-radius:20px;box-shadow:0 8px 30px rgba(15,23,42,.06);padding:24px}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}.label{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:#718096;margin-bottom:8px;font-weight:700}.value{font-size:2rem;font-weight:800}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.input,.textarea,.select,.file{width:100%;padding:12px 16px;border:1px solid #cbd5e0;border-radius:12px;font-size:.95rem;background:#fff}.textarea{min-height:120px;resize:vertical}.actions,.table-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.toolbar{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}.btn{border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}.btn-primary{background:#667eea;color:#fff}.btn-secondary{background:#edf2f7;color:#1a202c}.btn-danger{background:#f56565;color:#fff}.help{color:#718096;font-size:.88rem}.thumb-preview{width:72px;height:72px;border-radius:16px;object-fit:cover;border:1px solid #e2e8f0;background:#f8fafc}.table-wrap{overflow:auto}.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+    .stack{display:flex;flex-direction:column;gap:24px}.panel,.stat{background:#fff;border:1px solid #e2e8f0;border-radius:20px;box-shadow:0 8px 30px rgba(15,23,42,.06);padding:24px}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}.label{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:#718096;margin-bottom:8px;font-weight:700}.value{font-size:2rem;font-weight:800}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.input,.textarea,.select,.file{width:100%;padding:12px 16px;border:1px solid #cbd5e0;border-radius:12px;font-size:.95rem;background:#fff}.textarea{min-height:120px;resize:vertical}.actions,.table-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.btn{border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;text-decoration:none}.btn-primary{background:#667eea;color:#fff}.btn-secondary{background:#edf2f7;color:#1a202c}.btn-danger{background:#f56565;color:#fff}.toolbar{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}.table-wrap{overflow:auto}.help{color:#718096;font-size:.88rem}.section-title{font-size:1.05rem;font-weight:800;color:#1a202c;margin-bottom:6px}.field{display:flex;flex-direction:column;gap:8px}.field label{font-size:.84rem;font-weight:700;color:#4a5568}.wide{grid-column:1 / -1}.empty{padding:24px;text-align:center;color:#718096;border:1px dashed #cbd5e0;border-radius:16px;background:#f8fafc}.tag-list{display:flex;gap:8px;flex-wrap:wrap}.tag{display:inline-flex;align-items:center;border-radius:999px;background:#edf2f7;color:#2d3748;padding:6px 10px;font-size:.8rem;font-weight:700}.mono{font-family:Consolas,monospace;font-size:.86rem}.thumb-preview{width:72px;height:72px;border-radius:16px;object-fit:cover;border:1px solid #e2e8f0;background:#f8fafc}.checkbox{display:flex;align-items:center;gap:10px}
   </style>
-<link rel="stylesheet" href="/backend/admin/styles.css" />
+  <link rel="stylesheet" href="/backend/admin/styles.css" />
 </head>
 <body>
   <aside class="sidebar" id="sidebar">
@@ -24,29 +23,30 @@
     </a>
     <nav class="nav-section">
       <p class="nav-section-title">Main Menu</p>
-      <a href="/backend/admin/dashboard"       class="nav-item"><span class="nav-icon">📊</span><span class="nav-label">Dashboard</span></a>
-      <a href="/backend/admin/home-content"    class="nav-item"><span class="nav-icon">🏠</span><span class="nav-label">Home Content</span></a>
+      <a href="/backend/admin/dashboard" class="nav-item"><span class="nav-icon">📊</span><span class="nav-label">Dashboard</span></a>
+      <a href="/backend/admin/home-content" class="nav-item"><span class="nav-icon">🏠</span><span class="nav-label">Home Content</span></a>
       <a href="/backend/admin/hiring-partners" class="nav-item active"><span class="nav-icon">🤝</span><span class="nav-label">Hiring Partners</span></a>
-      <a href="/backend/admin/courses"         class="nav-item"><span class="nav-icon">📚</span><span class="nav-label">Courses</span></a>
-      <a href="/backend/admin/blogs"           class="nav-item"><span class="nav-icon">✍️</span><span class="nav-label">Blogs</span></a>
-      <a href="/backend/admin/tutorials"       class="nav-item"><span class="nav-icon">🎬</span><span class="nav-label">Free Courses</span></a>
-      <a href="/backend/admin/guides"          class="nav-item"><span class="nav-icon">📖</span><span class="nav-label">Guides</span></a>
-      <a href="/backend/admin/events"          class="nav-item"><span class="nav-icon">📅</span><span class="nav-label">Events</span></a>
-      <a href="/backend/admin/challenges"      class="nav-item"><span class="nav-icon">🏆</span><span class="nav-label">Challenges</span></a>
     </nav>
     <nav class="nav-section">
-      <p class="nav-section-title">People</p>
-      <a href="/backend/admin/team"                class="nav-item"><span class="nav-icon">👥</span><span class="nav-label">Team</span></a>
-      <a href="/backend/admin/instructors"         class="nav-item"><span class="nav-icon">🎓</span><span class="nav-label">Instructors</span></a>
-      <a href="/backend/admin/course-reviews"      class="nav-item"><span class="nav-icon">⭐</span><span class="nav-label">Course Reviews</span></a>
-      <a href="/backend/admin/job-success-stories" class="nav-item"><span class="nav-icon">💼</span><span class="nav-label">Success Stories</span></a>
+      <p class="nav-section-title">Learning</p>
+      <a href="/backend/admin/courses" class="nav-item"><span class="nav-icon">📚</span><span class="nav-label">Courses</span></a>
+      <a href="/backend/admin/instructors" class="nav-item"><span class="nav-icon">🎓</span><span class="nav-label">Instructors</span></a>
+      <a href="/backend/admin/blogs" class="nav-item"><span class="nav-icon">✍️</span><span class="nav-label">Blogs</span></a>
+      <a href="/backend/admin/tutorials" class="nav-item"><span class="nav-icon">🎬</span><span class="nav-label">Free Courses</span></a>
+      <a href="/backend/admin/guides" class="nav-item"><span class="nav-icon">📖</span><span class="nav-label">Guides</span></a>
+    </nav>
+    <nav class="nav-section">
+      <p class="nav-section-title">Community</p>
+      <a href="/backend/admin/events" class="nav-item"><span class="nav-icon">📅</span><span class="nav-label">Events</span></a>
+      <a href="/backend/admin/challenges" class="nav-item"><span class="nav-icon">🏆</span><span class="nav-label">Challenges</span></a>
     </nav>
     <nav class="nav-section">
       <p class="nav-section-title">Account</p>
       <a href="#" class="nav-item" onclick="logout(); return false;"><span class="nav-icon">🚪</span><span class="nav-label">Sign Out</span></a>
     </nav>
   </aside>
-  <main class="main-content"><header class="top-bar">
+  <main class="main-content">
+    <header class="top-bar">
       <div class="top-bar-left">
         <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
           <span></span><span></span><span></span>
@@ -59,142 +59,473 @@
           <div class="user-avatar">A</div>
         </div>
       </div>
-    </header><div class="dashboard-content"><div class="stack">
-    <div class="stats"><div class="stat"><div class="label">Partner Logos</div><div class="value" id="totalPartners">0</div></div><div class="stat"><div class="label">Testimonials</div><div class="value" id="totalTestimonials">0</div></div><div class="stat"><div class="label">Applications</div><div class="value" id="totalApplications">0</div></div></div>
-
-    <section class="panel"><div class="toolbar"><div><div class="table-title">Frontend Copy</div><div class="help">Controls the Become a Partner buttons, hiring partner hero, and Ready to skip the hiring hustle CTA.</div></div></div>
-      <form id="copyForm" class="stack">
-        <div class="grid">
-          <input id="heroBadge" class="input" placeholder="Hero badge" />
-          <input id="heroTitle" class="input" placeholder="Hero title" />
-          <input id="heroAccent" class="input" placeholder="Hero accent text" />
-          <input id="heroPrimaryLabel" class="input" placeholder="Hero button label" />
-          <input id="heroPrimaryHref" class="input" placeholder="Hero button href" />
-          <input id="heroTrustNote" class="input" placeholder="Trust note" />
-        </div>
-        <textarea id="heroDescription" class="textarea" placeholder="Hero description" data-admin-rich="true"></textarea>
-        <div class="grid">
-          <input id="ctaTitle" class="input" placeholder="CTA title" />
-          <input id="ctaPrimaryLabel" class="input" placeholder="CTA primary label" />
-          <input id="ctaPrimaryHref" class="input" placeholder="CTA primary href" />
-          <input id="ctaSecondaryLabel" class="input" placeholder="CTA secondary label" />
-          <input id="ctaSecondaryHref" class="input" placeholder="CTA secondary href" />
-        </div>
-        <textarea id="ctaDescription" class="textarea" placeholder="CTA description" data-admin-rich="true"></textarea>
-        <div class="actions"><button class="btn btn-primary" type="submit">Save Frontend Copy</button></div>
-      </form>
-    </section>
-
-    <section class="panel"><div class="toolbar"><div><div class="table-title" id="partnerFormTitle">Add Hiring Partner</div><div class="help">Create, edit, delete, and reorder partner logos shown on the frontend. Only four marked partners appear on the home page.</div></div></div>
-      <form id="partnerForm" class="stack">
-        <div class="grid">
-          <input id="partnerName" class="input" placeholder="Partner name" required />
-          <div class="stack" style="gap:10px">
-            <label class="help" for="partnerLogoFile">Partner logo upload</label>
-            <input id="partnerLogoFile" class="file" type="file" accept="image/*" data-admin-aspect-ratio="1:1" data-admin-aspect-note="square logo tile" />
+    </header>
+    <div class="dashboard-content">
+      <div class="stack">
+        <div id="stats" class="stats"></div>
+        <section id="overviewPanel" class="panel" style="display:none">
+          <div class="toolbar">
+            <div>
+              <div class="section-title">Hiring Partner Sections</div>
+              <div class="help">Each employer-facing block now has its own list, add, and edit workflow.</div>
+            </div>
           </div>
-        </div>
-        <img id="partnerLogoPreview" class="thumb-preview" src="/images/edvo-official-logo-v10.png" alt="Partner logo preview" />
-        <label class="help" style="display:flex;align-items:center;gap:10px"><input id="partnerShowOnHome" type="checkbox" /> Show this partner on home page</label>
-        <div class="actions"><button class="btn btn-primary" type="submit">Save Partner</button><button id="cancelPartnerEdit" class="btn btn-secondary" type="button" style="display:none">Cancel Edit</button></div>
-      </form>
-      <div class="table-wrap"><table><thead><tr><th>Logo</th><th>Name</th><th>Home</th><th>Actions</th></tr></thead><tbody id="partnerRows"><tr><td colspan="4" class="help">Loading partners...</td></tr></tbody></table></div>
-    </section>
-
-    <section class="panel"><div class="toolbar"><div><div class="table-title" id="testimonialFormTitle">Add Hiring Partner Testimonial</div><div class="help">This controls the Hear from our Hiring Partners section on the frontend.</div></div></div>
-      <form id="testimonialForm" class="stack">
-        <div class="grid">
-          <input id="testimonialAuthor" class="input" placeholder="Author name" required />
-          <input id="testimonialRole" class="input" placeholder="Role / company" />
-          <div class="stack" style="gap:10px">
-            <label class="help" for="testimonialImageFile">Testimonial photo upload</label>
-            <input id="testimonialImageFile" class="file" type="file" accept="image/*" data-admin-aspect-ratio="1:1" data-admin-aspect-note="square testimonial photo" />
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Section</th><th>Type</th><th>Records</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="hiringPartnersOverviewRows">
+                <tr><td colspan="4" class="help">Loading sections...</td></tr>
+              </tbody>
+            </table>
           </div>
-        </div>
-        <img id="testimonialImagePreview" class="thumb-preview" src="/images/edvo-official-logo-v10.png" alt="Testimonial preview" />
-        <textarea id="testimonialQuote" class="textarea" placeholder="Testimonial quote" data-admin-rich="true" required></textarea>
-        <div class="actions"><button class="btn btn-primary" type="submit">Save Testimonial</button><button id="cancelTestimonialEdit" class="btn btn-secondary" type="button" style="display:none">Cancel Edit</button></div>
-      </form>
-      <div class="table-wrap"><table><thead><tr><th>Author</th><th>Role</th><th>Quote</th><th>Actions</th></tr></thead><tbody id="testimonialRows"><tr><td colspan="4" class="help">Loading testimonials...</td></tr></tbody></table></div>
-    </section>
-
-    <section class="panel"><div class="toolbar"><div><div class="table-title">Company Applications</div><div class="help">Every Become a Partner form submission appears here for admin review.</div></div></div>
-      <div class="table-wrap"><table><thead><tr><th>Company</th><th>Contact</th><th>Hiring Needs</th><th>Status</th><th>Actions</th></tr></thead><tbody id="applicationRows"><tr><td colspan="5" class="help">Loading applications...</td></tr></tbody></table></div>
-    </section>
-  </div></div></main>
+        </section>
+        <section id="listPanel" class="panel" style="display:none">
+          <div class="toolbar">
+            <div>
+              <div class="section-title" id="listTitle">Section Items</div>
+              <div class="help" id="listHelp">Manage items for this hiring partners block.</div>
+            </div>
+            <div class="actions" id="listActions"></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr id="hiringPartnersSectionHead"></tr></thead>
+              <tbody id="hiringPartnersSectionRows"><tr><td colspan="2" class="help">Loading items...</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+        <section id="formPanel" class="panel" style="display:none">
+          <div class="toolbar">
+            <div>
+              <div class="section-title" id="formTitle">Edit Section</div>
+              <div class="help" id="formHelp">Update this hiring partners block with structured fields.</div>
+            </div>
+          </div>
+          <form id="hiringPartnersSectionForm" class="stack">
+            <div id="hiringPartnersSectionFields" class="grid"></div>
+            <div class="actions">
+              <button type="submit" class="btn btn-primary" id="formSubmitButton">Save</button>
+              <a class="btn btn-secondary" id="cancelFormLink" href="/backend/admin/hiring-partners">Cancel</a>
+            </div>
+          </form>
+        </section>
+      </div>
+    </div>
+  </main>
   <script src="/backend/admin/admin.js?v=20260416c"></script>
   <script>
-    let homeContent = {};
-    let applications = [];
-    let editingPartnerIndex = null;
-    let editingTestimonialIndex = null;
-    const defaultImage = '/images/edvo-official-logo-v10.png';
-    let partnerLogoValue = '';
-    let testimonialImageValue = '';
-    const refs = new Proxy({}, { get: (_, key) => document.getElementById(String(key)) });
+    const sectionConfigs = {
+      'hero-section': {
+        title: 'Hero Section',
+        source: 'home-content',
+        storageKey: 'hireTalentHero',
+        kind: 'object',
+        create: () => ({ badge: '', title: '', accent: '', description: '', primaryLabel: '', primaryHref: '', trustNote: '', backgroundImage: '' }),
+        fields: [
+          { path: 'badge', label: 'Badge' },
+          { path: 'title', label: 'Title' },
+          { path: 'accent', label: 'Accent Text' },
+          { path: 'primaryLabel', label: 'Primary Button Label' },
+          { path: 'primaryHref', label: 'Primary Button Link' },
+          { path: 'trustNote', label: 'Trust Note' },
+          { path: 'backgroundImage', label: 'Background Image URL', wide: true },
+          { path: 'description', label: 'Description', type: 'textarea', wide: true },
+        ],
+        columns: [
+          { label: 'Title', render: (item) => `<strong>${escapeHtml(item.title || 'Untitled')}</strong><div class="help">${escapeHtml(item.badge || '')}</div>` },
+          { label: 'Primary CTA', render: (item) => `<span class="help">${escapeHtml(item.primaryLabel || '-')}<br>${escapeHtml(item.primaryHref || '')}</span>` },
+          { label: 'Trust Note', render: (item) => `<span class="help">${escapeHtml(item.trustNote || '-')}</span>` },
+        ],
+      },
+      'partner-logos': {
+        title: 'Partner Logos',
+        source: 'home-content',
+        storageKey: 'hiringPartners',
+        kind: 'array',
+        itemLabel: 'Partner',
+        reorderable: true,
+        create: () => ({ name: '', logo: '', showOnHome: false }),
+        fields: [
+          { path: 'name', label: 'Partner Name' },
+          { path: 'logo', label: 'Partner Logo', type: 'image' },
+          { path: 'showOnHome', label: 'Show On Home Page', type: 'checkbox' },
+        ],
+        columns: [
+          { label: 'Logo', render: (item) => item.logo ? `<img src="${escapeHtml(item.logo)}" alt="${escapeHtml(item.name || 'Partner')}" class="thumb-preview" />` : '<span class="help">No logo</span>' },
+          { label: 'Partner', render: (item) => `<strong>${escapeHtml(item.name || 'Untitled')}</strong><div class="help mono">${escapeHtml(assetLabel(item.logo, 'No logo'))}</div>` },
+          { label: 'Home Page', render: (item) => item.showOnHome ? 'Yes' : 'No' },
+        ],
+      },
+      'partner-testimonials': {
+        title: 'Partner Testimonials',
+        source: 'home-content',
+        storageKey: 'hireTalentTestimonials',
+        kind: 'array',
+        itemLabel: 'Testimonial',
+        reorderable: true,
+        create: () => ({ author: '', role: '', image: '', quote: '' }),
+        fields: [
+          { path: 'author', label: 'Author' },
+          { path: 'role', label: 'Role / Company' },
+          { path: 'image', label: 'Photo', type: 'image' },
+          { path: 'quote', label: 'Quote', type: 'textarea', wide: true },
+        ],
+        columns: [
+          { label: 'Author', render: (item) => `<strong>${escapeHtml(item.author || 'Unnamed')}</strong><div class="help">${escapeHtml(item.role || '')}</div>` },
+          { label: 'Photo', render: (item) => item.image ? `<img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.author || 'Author')}" class="thumb-preview" />` : '<span class="help">No photo</span>' },
+          { label: 'Quote', render: (item) => `<span class="help">${escapeHtml(item.quote || '')}</span>` },
+        ],
+      },
+      'partner-cta': {
+        title: 'Partner CTA',
+        source: 'home-content',
+        storageKey: 'hireTalentCta',
+        kind: 'object',
+        create: () => ({ title: '', description: '', primaryLabel: '', primaryHref: '', secondaryLabel: '', secondaryHref: '' }),
+        fields: [
+          { path: 'title', label: 'Title' },
+          { path: 'primaryLabel', label: 'Primary Label' },
+          { path: 'primaryHref', label: 'Primary Link' },
+          { path: 'secondaryLabel', label: 'Secondary Label' },
+          { path: 'secondaryHref', label: 'Secondary Link' },
+          { path: 'description', label: 'Description', type: 'textarea', wide: true },
+        ],
+        columns: [
+          { label: 'Title', render: (item) => `<strong>${escapeHtml(item.title || 'Untitled')}</strong>` },
+          { label: 'Primary CTA', render: (item) => `<span class="help">${escapeHtml(item.primaryLabel || '-')}<br>${escapeHtml(item.primaryHref || '')}</span>` },
+          { label: 'Secondary CTA', render: (item) => `<span class="help">${escapeHtml(item.secondaryLabel || '-')}<br>${escapeHtml(item.secondaryHref || '')}</span>` },
+        ],
+      },
+      'company-applications': {
+        title: 'Company Applications',
+        source: 'applications',
+        kind: 'api-array',
+        itemLabel: 'Application',
+        create: () => ({ companyName: '', contactName: '', workEmail: '', website: '', roles: '', hiringNeeds: '', message: '', status: 'new' }),
+        fields: [
+          { path: 'companyName', label: 'Company Name' },
+          { path: 'contactName', label: 'Contact Name' },
+          { path: 'workEmail', label: 'Work Email' },
+          { path: 'website', label: 'Website' },
+          { path: 'roles', label: 'Roles', wide: true },
+          { path: 'hiringNeeds', label: 'Hiring Needs', wide: true },
+          { path: 'status', label: 'Status', type: 'select', options: ['new', 'reviewed', 'contacted', 'archived'] },
+          { path: 'message', label: 'Message', type: 'textarea', wide: true },
+        ],
+        columns: [
+          { label: 'Company', render: (item) => `<strong>${escapeHtml(item.companyName || 'Untitled')}</strong><div class="help">${escapeHtml(item.website || '')}</div>` },
+          { label: 'Contact', render: (item) => `<strong>${escapeHtml(item.contactName || '-')}</strong><div class="help">${escapeHtml(item.workEmail || '')}</div>` },
+          { label: 'Hiring Needs', render: (item) => `<span class="help">${escapeHtml(item.hiringNeeds || item.roles || item.message || '-')}</span>` },
+          { label: 'Status', render: (item) => `<span class="tag">${escapeHtml(item.status || 'new')}</span>` },
+        ],
+      },
+    };
 
-    function e(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
-    function partners(){return Array.isArray(homeContent.hiringPartners)?homeContent.hiringPartners:[]}
-    function testimonials(){return Array.isArray(homeContent.hireTalentTestimonials)?homeContent.hireTalentTestimonials:[]}
-    function updateStats(){refs.totalPartners.textContent=partners().length;refs.totalTestimonials.textContent=testimonials().length;refs.totalApplications.textContent=applications.length}
-    function selectedHomePartnersCount(skipIndex=null){return partners().filter((item,index)=>index!==skipIndex&&item&&item.showOnHome).length}
+    const singletonSections = new Set(['hero-section', 'partner-cta']);
+    const state = { homeContent: {}, applications: [] };
+
+    function escapeHtml(value){return String(value ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+    function clone(value){return JSON.parse(JSON.stringify(value ?? null))}
+    function getByPath(source, path){return String(path||'').split('.').reduce((acc,key)=>acc && acc[key]!==undefined ? acc[key] : undefined, source)}
+    function setByPath(target, path, value){const keys=String(path||'').split('.');let current=target;keys.forEach((key,index)=>{if(index===keys.length-1){current[key]=value;return}if(!current[key]||typeof current[key]!=='object')current[key]={};current=current[key]})}
+    function fieldId(path){return 'hiringPartnersField__' + String(path).replace(/\./g,'__')}
     function assetLabel(value, emptyLabel){if(!value)return emptyLabel;return String(value).startsWith('data:')?'Uploaded image':String(value)}
-    function bindImageUpload(inputKey, previewKey, setter){refs[inputKey].addEventListener('change',async()=>{const file=refs[inputKey].files?.[0];if(!file)return;try{const dataUrl=await readAdminImageFile(file,refs[inputKey]);setter(dataUrl);refs[previewKey].src=dataUrl;}catch(error){refs[inputKey].value='';showToast(error.message||'Failed to read image','error')}})}
-    function resetPartnerForm(){editingPartnerIndex=null;partnerLogoValue='';refs.partnerForm.reset();refs.partnerLogoFile.value='';refs.partnerLogoPreview.src=defaultImage;refs.partnerShowOnHome.checked=false;refs.partnerFormTitle.textContent='Add Hiring Partner';refs.cancelPartnerEdit.style.display='none'}
-    function resetTestimonialForm(){editingTestimonialIndex=null;testimonialImageValue='';refs.testimonialForm.reset();refs.testimonialImageFile.value='';refs.testimonialImagePreview.src=defaultImage;refs.testimonialFormTitle.textContent='Add Hiring Partner Testimonial';refs.cancelTestimonialEdit.style.display='none'}
-    function fillCopyFields(){const hero=homeContent.hireTalentHero||{};const cta=homeContent.hireTalentCta||{};refs.heroBadge.value=hero.badge||'';refs.heroTitle.value=hero.title||'';refs.heroAccent.value=hero.accent||'';refs.heroDescription.value=hero.description||'';refs.heroPrimaryLabel.value=hero.primaryLabel||'';refs.heroPrimaryHref.value=hero.primaryHref||'';refs.heroTrustNote.value=hero.trustNote||'';refs.ctaTitle.value=cta.title||'';refs.ctaDescription.value=cta.description||'';refs.ctaPrimaryLabel.value=cta.primaryLabel||'';refs.ctaPrimaryHref.value=cta.primaryHref||'';refs.ctaSecondaryLabel.value=cta.secondaryLabel||'';refs.ctaSecondaryHref.value=cta.secondaryHref||''}
-    async function saveHomeContent(){await adminFetch('/backend/api/admin/home-content',{method:'PATCH',body:JSON.stringify(homeContent)});showToast('Hiring partner content updated','success');await loadHomeContent()}
-    async function loadHomeContent(){const payload=await adminFetch('/backend/api/admin/home-content');homeContent=payload.data||{};renderPartners();renderTestimonials();fillCopyFields();updateStats()}
-    async function loadApplications(){const payload=await adminFetch('/backend/api/admin/hiring-partner-applications');applications=Array.isArray(payload.data)?payload.data:[];renderApplications();updateStats()}
-    function renderPartners(){const rows=partners();refs.partnerRows.innerHTML=rows.length?rows.map((item,index)=>`<tr><td>${item.logo?`<img src="${e(item.logo)}" alt="${e(item.name)}" class="thumb-preview" />`:'<div class="help">No logo</div>'}</td><td><strong>${e(item.name)}</strong><div class="help mono">${e(assetLabel(item.logo,'No logo'))}</div></td><td>${item.showOnHome?'<strong>Yes</strong>':'No'}</td><td><div class="table-actions"><button class="btn btn-secondary" type="button" onclick="movePartner(${index},-1)" ${index===0?'disabled':''}>Move Up</button><button class="btn btn-secondary" type="button" onclick="movePartner(${index},1)" ${index===rows.length-1?'disabled':''}>Move Down</button><button class="btn btn-secondary" type="button" onclick="editPartner(${index})">Edit</button><button class="btn btn-danger" type="button" onclick="deletePartner(${index})">Delete</button></div></td></tr>`).join(''):'<tr><td colspan="4" class="help">No hiring partners yet.</td></tr>'}
-    function renderTestimonials(){const rows=testimonials();refs.testimonialRows.innerHTML=rows.length?rows.map((item,index)=>`<tr><td><strong>${e(item.author)}</strong></td><td>${e(item.role||'')}</td><td>${e(item.quote||'')}</td><td><div class="table-actions"><button class="btn btn-secondary" type="button" onclick="moveTestimonial(${index},-1)" ${index===0?'disabled':''}>Move Up</button><button class="btn btn-secondary" type="button" onclick="moveTestimonial(${index},1)" ${index===rows.length-1?'disabled':''}>Move Down</button><button class="btn btn-secondary" type="button" onclick="editTestimonial(${index})">Edit</button><button class="btn btn-danger" type="button" onclick="deleteTestimonial(${index})">Delete</button></div></td></tr>`).join(''):'<tr><td colspan="4" class="help">No testimonials yet.</td></tr>'}
-    function renderApplications(){refs.applicationRows.innerHTML=applications.length?applications.map((item)=>`<tr><td><strong>${e(item.companyName)}</strong><div class="help">${e(item.website||'')}</div></td><td>${e(item.contactName)}<div class="help">${e(item.workEmail)}</div></td><td>${e(item.hiringNeeds||item.roles||item.message||'')}</td><td><select class="select" onchange="updateApplication('${item._id||item.id}',{status:this.value})"><option value="new" ${item.status==='new'?'selected':''}>New</option><option value="reviewed" ${item.status==='reviewed'?'selected':''}>Reviewed</option><option value="contacted" ${item.status==='contacted'?'selected':''}>Contacted</option><option value="archived" ${item.status==='archived'?'selected':''}>Archived</option></select></td><td><div class="table-actions"><button class="btn btn-danger" type="button" onclick="deleteApplication('${item._id||item.id}')">Delete</button></div></td></tr>`).join(''):'<tr><td colspan="5" class="help">No company applications yet.</td></tr>'}
-    function scrollEditor(formElement){const panel=formElement?.closest('.panel');if(panel){panel.scrollIntoView({behavior:'smooth',block:'start'});return}formElement?.scrollIntoView({behavior:'smooth',block:'start'})}
-    function editPartner(index){const item=partners()[index];if(!item)return;editingPartnerIndex=index;partnerLogoValue=item.logo||'';refs.partnerName.value=item.name||'';refs.partnerLogoFile.value='';refs.partnerLogoPreview.src=partnerLogoValue||defaultImage;refs.partnerShowOnHome.checked=!!item.showOnHome;refs.partnerFormTitle.textContent='Edit Hiring Partner';refs.cancelPartnerEdit.style.display='inline-flex';scrollEditor(refs.partnerForm)}
-    function editTestimonial(index){const item=testimonials()[index];if(!item)return;editingTestimonialIndex=index;testimonialImageValue=item.image||'';refs.testimonialAuthor.value=item.author||'';refs.testimonialRole.value=item.role||'';refs.testimonialImageFile.value='';refs.testimonialImagePreview.src=testimonialImageValue||defaultImage;refs.testimonialQuote.value=item.quote||'';refs.testimonialFormTitle.textContent='Edit Hiring Partner Testimonial';refs.cancelTestimonialEdit.style.display='inline-flex';scrollEditor(refs.testimonialForm)}
-    async function movePartner(index,dir){const rows=[...partners()];const swap=index+dir;if(swap<0||swap>=rows.length)return;[rows[index],rows[swap]]=[rows[swap],rows[index]];homeContent.hiringPartners=rows;await saveHomeContent()}
-    async function moveTestimonial(index,dir){const rows=[...testimonials()];const swap=index+dir;if(swap<0||swap>=rows.length)return;[rows[index],rows[swap]]=[rows[swap],rows[index]];homeContent.hireTalentTestimonials=rows;await saveHomeContent()}
-    async function deletePartner(index){if(!confirm('Delete this hiring partner?'))return;const rows=[...partners()];rows.splice(index,1);homeContent.hiringPartners=rows;await saveHomeContent();resetPartnerForm()}
-    async function deleteTestimonial(index){if(!confirm('Delete this testimonial?'))return;const rows=[...testimonials()];rows.splice(index,1);homeContent.hireTalentTestimonials=rows;await saveHomeContent();resetTestimonialForm()}
-    async function updateApplication(id,patch){await adminFetch(`/backend/api/admin/hiring-partner-applications/${id}`,{method:'PATCH',body:JSON.stringify(patch)});await loadApplications();showToast('Application updated','success')}
-    async function deleteApplication(id){if(!confirm('Delete this application?'))return;await adminFetch(`/backend/api/admin/hiring-partner-applications/${id}`,{method:'DELETE'});await loadApplications();showToast('Application deleted','success')}
+    function getRoute(){const parts=window.location.pathname.replace(/^\/+|\/+$/g,'').split('/');const sectionIndex=parts.indexOf('hiring-partners');const subsection=parts[sectionIndex+1]||'';const suffix=parts[sectionIndex+2]||'';return {subsection,mode:suffix==='new'?'create':suffix==='edit'?'edit':'list',id:new URLSearchParams(window.location.search).get('id')||''}}
 
-    bindImageUpload('partnerLogoFile','partnerLogoPreview',(value)=>{partnerLogoValue=value})
-    bindImageUpload('testimonialImageFile','testimonialImagePreview',(value)=>{testimonialImageValue=value})
-
-    refs.copyForm.addEventListener('submit',async(e)=>{e.preventDefault();homeContent.hireTalentHero={...(homeContent.hireTalentHero||{}),badge:refs.heroBadge.value,title:refs.heroTitle.value,accent:refs.heroAccent.value,description:refs.heroDescription.value,primaryLabel:refs.heroPrimaryLabel.value,primaryHref:refs.heroPrimaryHref.value,trustNote:refs.heroTrustNote.value};homeContent.hireTalentCta={...(homeContent.hireTalentCta||{}),title:refs.ctaTitle.value,description:refs.ctaDescription.value,primaryLabel:refs.ctaPrimaryLabel.value,primaryHref:refs.ctaPrimaryHref.value,secondaryLabel:refs.ctaSecondaryLabel.value,secondaryHref:refs.ctaSecondaryHref.value};await saveHomeContent()})
-    refs.partnerForm.addEventListener('submit',async(e)=>{e.preventDefault();const rows=[...partners()];const wantsHome=refs.partnerShowOnHome.checked;if(wantsHome&&selectedHomePartnersCount(editingPartnerIndex) >= 4){showToast('Only four hiring partners can be shown on the home page','error');return}const item={name:refs.partnerName.value.trim(),logo:partnerLogoValue,showOnHome:wantsHome};if(editingPartnerIndex===null){rows.push(item)}else{rows[editingPartnerIndex]=item}homeContent.hiringPartners=rows;await saveHomeContent();resetPartnerForm()})
-    refs.testimonialForm.addEventListener('submit',async(e)=>{e.preventDefault();const rows=[...testimonials()];const item={author:refs.testimonialAuthor.value.trim(),role:refs.testimonialRole.value.trim(),image:testimonialImageValue,quote:refs.testimonialQuote.value.trim()};if(editingTestimonialIndex===null){rows.push(item)}else{rows[editingTestimonialIndex]=item}homeContent.hireTalentTestimonials=rows;await saveHomeContent();resetTestimonialForm()})
-    refs.cancelPartnerEdit.addEventListener('click',resetPartnerForm)
-    refs.cancelTestimonialEdit.addEventListener('click',resetTestimonialForm)
-    Promise.all([loadHomeContent(),loadApplications()]).catch((error)=>showToast(error.message||'Failed to load hiring partners admin','error'))
-  </script>
-
-<script>
-(function() {
-  const sidebar = document.getElementById('sidebar');
-  const toggle  = document.getElementById('sidebarToggle');
-  if (toggle && sidebar) {
-    toggle.addEventListener('click', function() { sidebar.classList.toggle('open'); });
-    document.addEventListener('click', function(e) {
-      if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && !toggle.contains(e.target)) {
-        sidebar.classList.remove('open');
+    function getSectionData(config){
+      if (config.source === 'applications') {
+        return clone(state.applications);
       }
+      const raw = state.homeContent[config.storageKey];
+      if (config.kind === 'array') return Array.isArray(raw) ? clone(raw) : [];
+      return raw && typeof raw === 'object' ? clone(raw) : config.create();
+    }
+
+    function getSectionCount(config){
+      const data = getSectionData(config);
+      return Array.isArray(data) ? data.length : (Object.keys(data || {}).length ? 1 : 0);
+    }
+
+    async function loadHomeContent(){
+      const payload = await adminFetch('/backend/api/admin/home-content');
+      state.homeContent = payload.data || {};
+    }
+
+    async function loadApplications(){
+      const payload = await adminFetch('/backend/api/admin/hiring-partner-applications');
+      state.applications = Array.isArray(payload.data) ? payload.data : [];
+    }
+
+    async function loadData(){
+      await Promise.all([loadHomeContent(), loadApplications()]);
+    }
+
+    async function saveHomeContent(nextState){
+      state.homeContent = nextState;
+      await adminFetch('/backend/api/admin/home-content', {
+        method: 'PATCH',
+        body: JSON.stringify(state.homeContent),
+      });
+    }
+
+    async function createApplication(payload){
+      await adminFetch('/backend/api/admin/hiring-partner-applications', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+    }
+
+    async function updateApplication(id, payload){
+      await adminFetch(`/backend/api/admin/hiring-partner-applications/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload),
+      });
+    }
+
+    async function deleteApplication(id){
+      await adminFetch(`/backend/api/admin/hiring-partner-applications/${id}`, {
+        method: 'DELETE',
+      });
+    }
+
+    function renderStats(){
+      const cards = Object.values(sectionConfigs).map((config)=>`<div class="stat"><div class="label">${escapeHtml(config.title)}</div><div class="value">${escapeHtml(getSectionCount(config))}</div></div>`);
+      document.getElementById('stats').innerHTML = cards.join('');
+    }
+
+    function renderOverview(){
+      document.getElementById('overviewPanel').style.display = '';
+      const tbody = document.getElementById('hiringPartnersOverviewRows');
+      tbody.innerHTML = Object.entries(sectionConfigs).map(([slug, config])=>`<tr><td><strong>${escapeHtml(config.title)}</strong><div class="help">${escapeHtml(config.source === 'applications' ? 'Admin API collection' : config.storageKey)}</div></td><td>${escapeHtml(config.kind === 'object' ? 'Single block' : 'Collection')}</td><td>${escapeHtml(getSectionCount(config))}</td><td><div class="table-actions"><a class="btn btn-secondary" href="/backend/admin/hiring-partners/${slug}">Manage</a>${singletonSections.has(slug) ? `<a class="btn btn-primary" href="/backend/admin/hiring-partners/${slug}/edit?id=${encodeURIComponent(slug)}">Edit</a>` : `<a class="btn btn-primary" href="/backend/admin/hiring-partners/${slug}/new">Add ${escapeHtml(config.itemLabel || 'Item')}</a>`}</div></td></tr>`).join('');
+    }
+
+    function renderList(sectionKey){
+      const config = sectionConfigs[sectionKey];
+      if (!config) return;
+      document.getElementById('listPanel').style.display = '';
+      document.getElementById('listTitle').textContent = config.title;
+      document.getElementById('listHelp').textContent = singletonSections.has(sectionKey) ? `Review and edit the ${config.title.toLowerCase()} block from its own page.` : `Use filters, pagination, and export tools to manage ${config.title.toLowerCase()}.`;
+      document.getElementById('listActions').innerHTML = singletonSections.has(sectionKey) ? `<a class="btn btn-primary" href="/backend/admin/hiring-partners/${sectionKey}/edit?id=${encodeURIComponent(sectionKey)}">Edit Section</a>` : `<a class="btn btn-primary" href="/backend/admin/hiring-partners/${sectionKey}/new">Add ${escapeHtml(config.itemLabel || 'Item')}</a>`;
+
+      const head = document.getElementById('hiringPartnersSectionHead');
+      head.innerHTML = config.columns.map((column)=>`<th>${escapeHtml(column.label)}</th>`).join('') + '<th>Actions</th>';
+
+      const tbody = document.getElementById('hiringPartnersSectionRows');
+      const data = getSectionData(config);
+      if (Array.isArray(data) && !data.length) {
+        tbody.innerHTML = `<tr><td colspan="${config.columns.length + 1}" class="empty">No ${escapeHtml(config.title.toLowerCase())} found.</td></tr>`;
+        return;
+      }
+
+      if (Array.isArray(data)) {
+        tbody.innerHTML = data.map((item,index)=>{
+          const itemId = item._id || item.id || String(index);
+          const moveControls = config.reorderable ? `<button class="btn btn-secondary" type="button" onclick="moveHiringPartnersRow('${sectionKey}',${index},-1)" ${index===0?'disabled':''}>Move Up</button><button class="btn btn-secondary" type="button" onclick="moveHiringPartnersRow('${sectionKey}',${index},1)" ${index===data.length-1?'disabled':''}>Move Down</button>` : '';
+          return `<tr>${config.columns.map((column)=>`<td>${column.render(item,index)}</td>`).join('')}<td><div class="table-actions">${moveControls}<a class="btn btn-secondary" href="/backend/admin/hiring-partners/${sectionKey}/edit?id=${encodeURIComponent(itemId)}">Edit</a><button class="btn btn-danger" type="button" onclick="deleteHiringPartnersRow('${sectionKey}','${escapeHtml(String(itemId))}')">Delete</button></div></td></tr>`;
+        }).join('');
+        return;
+      }
+
+      tbody.innerHTML = `<tr>${config.columns.map((column)=>`<td>${column.render(data,0)}</td>`).join('')}<td><div class="table-actions"><a class="btn btn-secondary" href="/backend/admin/hiring-partners/${sectionKey}/edit?id=${encodeURIComponent(sectionKey)}">Edit</a></div></td></tr>`;
+    }
+
+    function renderField(field, source){
+      const id = fieldId(field.path);
+      const value = getByPath(source, field.path);
+      const wide = field.wide ? 'wide' : '';
+      if (field.type === 'checkbox') return `<div class="field ${wide}"><label class="checkbox" for="${id}"><input id="${id}" type="checkbox" ${value===true?'checked':''}/> ${escapeHtml(field.label)}</label></div>`;
+      if (field.type === 'select') return `<div class="field ${wide}"><label for="${id}">${escapeHtml(field.label)}</label><select id="${id}" class="select">${(field.options||[]).map((option)=>`<option value="${escapeHtml(option)}" ${String(value||'')===String(option)?'selected':''}>${escapeHtml(option)}</option>`).join('')}</select></div>`;
+      if (field.type === 'image') {
+        const preview = value || '/images/edvo-official-logo-v10.png';
+        return `<div class="field ${wide}"><label for="${id}">${escapeHtml(field.label)}</label><input id="${id}" class="file" type="file" accept="image/*" data-admin-aspect-ratio="1:1" data-admin-aspect-note="square media"/><input id="${id}__value" type="hidden" value="${escapeHtml(value || '')}"/><img id="${id}__preview" class="thumb-preview" src="${escapeHtml(preview)}" alt="${escapeHtml(field.label)} preview"/><div class="help mono">${escapeHtml(assetLabel(value, 'No image selected'))}</div></div>`;
+      }
+      if (field.type === 'textarea') return `<div class="field ${wide}"><label for="${id}">${escapeHtml(field.label)}</label><textarea id="${id}" class="textarea" data-admin-rich="true">${escapeHtml(value == null ? '' : String(value))}</textarea></div>`;
+      return `<div class="field ${wide}"><label for="${id}">${escapeHtml(field.label)}</label><input id="${id}" class="input" value="${escapeHtml(value == null ? '' : String(value))}" /></div>`;
+    }
+
+    function bindImageFields(formRoot){
+      formRoot.querySelectorAll('input[type="file"][id$="__value"]').forEach(() => {});
+      formRoot.querySelectorAll('input[type="file"]').forEach((input) => {
+        if (input.dataset.hiringPartnersImageBound === 'true') return;
+        input.dataset.hiringPartnersImageBound = 'true';
+        input.addEventListener('change', async () => {
+          const file = input.files?.[0];
+          if (!file) return;
+          const hidden = document.getElementById(`${input.id}__value`);
+          const preview = document.getElementById(`${input.id}__preview`);
+          try {
+            const dataUrl = await readAdminImageFile(file, input);
+            if (hidden) hidden.value = dataUrl;
+            if (preview) preview.src = dataUrl;
+            const help = preview?.nextElementSibling;
+            if (help) help.textContent = 'Uploaded image';
+          } catch (error) {
+            input.value = '';
+            showToast(error.message || 'Failed to read image', 'error');
+          }
+        });
+      });
+    }
+
+    function getFormValue(field){
+      const id = fieldId(field.path);
+      if (field.type === 'checkbox') return document.getElementById(id)?.checked === true;
+      if (field.type === 'image') return document.getElementById(`${id}__value`)?.value || '';
+      return document.getElementById(id)?.value ?? '';
+    }
+
+    function collectFormPayload(config, seed){
+      const next = clone(seed);
+      config.fields.forEach((field) => {
+        setByPath(next, field.path, getFormValue(field));
+      });
+      return next;
+    }
+
+    function findRecordById(config, id){
+      const data = getSectionData(config);
+      if (!Array.isArray(data)) return config.create();
+      if (config.source === 'applications') {
+        return clone(data.find((item) => String(item._id || item.id) === String(id)) || config.create());
+      }
+      const index = Number(id);
+      return clone(Number.isInteger(index) && index >= 0 && index < data.length ? data[index] : config.create());
+    }
+
+    function renderForm(sectionKey, mode, id){
+      const config = sectionConfigs[sectionKey];
+      if (!config) return;
+      document.getElementById('formPanel').style.display = '';
+      document.getElementById('formTitle').textContent = `${mode === 'edit' ? 'Edit' : 'Add'} ${config.itemLabel || config.title}`;
+      document.getElementById('formHelp').textContent = config.source === 'applications' ? 'Capture or update employer applications from a dedicated page.' : 'Keep hiring partner content organized with dedicated section forms.';
+      document.getElementById('formSubmitButton').textContent = mode === 'edit' ? 'Save Changes' : `Create ${config.itemLabel || 'Item'}`;
+      document.getElementById('cancelFormLink').href = `/backend/admin/hiring-partners/${sectionKey}`;
+
+      const seed = mode === 'edit'
+        ? (singletonSections.has(sectionKey) ? getSectionData(config) : findRecordById(config, id))
+        : config.create();
+      const fieldRoot = document.getElementById('hiringPartnersSectionFields');
+      fieldRoot.innerHTML = config.fields.map((field) => renderField(field, seed)).join('');
+      bindImageFields(fieldRoot);
+      if (typeof queueAdminUiEnhancements === 'function') {
+        queueAdminUiEnhancements();
+      }
+    }
+
+    async function saveSectionRecord(sectionKey, mode, id){
+      const config = sectionConfigs[sectionKey];
+      const payload = collectFormPayload(config, mode === 'edit' ? (singletonSections.has(sectionKey) ? getSectionData(config) : findRecordById(config, id)) : config.create());
+
+      if (config.source === 'applications') {
+        if (mode === 'edit') {
+          await updateApplication(id, payload);
+        } else {
+          await createApplication(payload);
+        }
+        showToast('Application saved', 'success');
+        window.location.href = `/backend/admin/hiring-partners/${sectionKey}`;
+        return;
+      }
+
+      const nextState = clone(state.homeContent);
+      if (config.kind === 'object') {
+        nextState[config.storageKey] = payload;
+      } else {
+        const rows = Array.isArray(nextState[config.storageKey]) ? [...nextState[config.storageKey]] : [];
+        if (sectionKey === 'partner-logos' && payload.showOnHome) {
+          const activeCount = rows.filter((item, index) => index !== Number(id) && item && item.showOnHome).length;
+          if (activeCount >= 4) {
+            showToast('Only four hiring partners can be shown on the home page', 'error');
+            return;
+          }
+        }
+        if (mode === 'edit') {
+          rows[Number(id)] = payload;
+        } else {
+          rows.push(payload);
+        }
+        nextState[config.storageKey] = rows;
+      }
+
+      await saveHomeContent(nextState);
+      showToast('Hiring partners content updated', 'success');
+      window.location.href = `/backend/admin/hiring-partners/${sectionKey}`;
+    }
+
+    async function moveHiringPartnersRow(sectionKey, index, direction){
+      const config = sectionConfigs[sectionKey];
+      if (!config || !config.reorderable) return;
+      const swap = index + direction;
+      const rows = getSectionData(config);
+      if (!Array.isArray(rows) || swap < 0 || swap >= rows.length) return;
+      [rows[index], rows[swap]] = [rows[swap], rows[index]];
+      const nextState = clone(state.homeContent);
+      nextState[config.storageKey] = rows;
+      await saveHomeContent(nextState);
+      await loadData();
+      renderStats();
+      renderList(sectionKey);
+      if (typeof queueAdminUiEnhancements === 'function') {
+        queueAdminUiEnhancements();
+      }
+      showToast('Order updated', 'success');
+    }
+
+    async function deleteHiringPartnersRow(sectionKey, rawId){
+      const config = sectionConfigs[sectionKey];
+      if (!config || !confirm('Delete this item?')) return;
+      if (config.source === 'applications') {
+        await deleteApplication(rawId);
+        await loadApplications();
+      } else {
+        const rows = getSectionData(config);
+        rows.splice(Number(rawId), 1);
+        const nextState = clone(state.homeContent);
+        nextState[config.storageKey] = rows;
+        await saveHomeContent(nextState);
+        await loadHomeContent();
+      }
+      renderStats();
+      renderList(sectionKey);
+      if (typeof queueAdminUiEnhancements === 'function') {
+        queueAdminUiEnhancements();
+      }
+      showToast('Item deleted', 'success');
+    }
+
+    window.moveHiringPartnersRow = moveHiringPartnersRow;
+    window.deleteHiringPartnersRow = deleteHiringPartnersRow;
+
+    async function initPage(){
+      await loadData();
+      renderStats();
+      const route = getRoute();
+      if (!route.subsection) {
+        renderOverview();
+      } else if (route.mode === 'list') {
+        renderList(route.subsection);
+      } else {
+        renderForm(route.subsection, route.mode, route.id);
+      }
+
+      document.getElementById('hiringPartnersSectionForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const currentRoute = getRoute();
+        if (!currentRoute.subsection || currentRoute.mode === 'list') return;
+        await saveSectionRecord(currentRoute.subsection, currentRoute.mode, currentRoute.id);
+      });
+
+      if (typeof queueAdminUiEnhancements === 'function') {
+        queueAdminUiEnhancements();
+      }
+    }
+
+    initPage().catch((error) => {
+      console.error(error);
+      showToast(error.message || 'Failed to load hiring partners admin', 'error');
     });
-  }
-  // Populate user info
-  try {
-    var raw  = localStorage.getItem('adminUser');
-    var user = raw ? JSON.parse(raw) : {};
-    var email = localStorage.getItem('adminEmail') || '';
-    var name  = user.name || user.firstName || (email.split('@')[0] || 'Admin');
-    var el = document.getElementById('userName');
-    var av = document.getElementById('userAvatar');
-    if (el) el.textContent = name;
-    if (av) av.textContent = name.charAt(0).toUpperCase();
-  } catch(e) {}
-})();
-</script>
+  </script>
 </body>
 </html>
-
