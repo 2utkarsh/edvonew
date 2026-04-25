@@ -28,6 +28,16 @@ export interface ResourceItemDocument {
   updatedAt: Date;
 }
 
+export interface TutorialCategoryDocument {
+  name: string;
+  slug: string;
+  description?: string;
+  isActive: boolean;
+  order: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 const resourceItemSchema = new Schema<ResourceItemDocument>(
   {
     type: { type: String, enum: ['tutorial', 'guide'], required: true, index: true },
@@ -54,5 +64,19 @@ const resourceItemSchema = new Schema<ResourceItemDocument>(
   { timestamps: true }
 );
 
+const tutorialCategorySchema = new Schema<TutorialCategoryDocument>(
+  {
+    name: { type: String, required: true, trim: true },
+    slug: { type: String, required: true, unique: true, trim: true },
+    description: { type: String, default: '', trim: true },
+    isActive: { type: Boolean, default: true },
+    order: { type: Number, default: 0 },
+  },
+  { timestamps: true }
+);
+
 export const ResourceItemModel = (models.ResourceItem as Model<ResourceItemDocument>) ||
   model<ResourceItemDocument>('ResourceItem', resourceItemSchema);
+
+export const TutorialCategoryModel = (models.TutorialCategory as Model<TutorialCategoryDocument>) ||
+  model<TutorialCategoryDocument>('TutorialCategory', tutorialCategorySchema);

@@ -2024,7 +2024,15 @@ function decorateAdminNavigation(root = document) {
             { href: '/backend/admin/blogs/categories', label: 'Categories' },
           ],
         },
-        { href: '/backend/admin/tutorials', label: 'Free Courses', icon: '🎬' },
+        {
+          href: '/backend/admin/tutorials',
+          label: 'Free Courses',
+          icon: '🎬',
+          children: [
+            { href: '/backend/admin/tutorials', label: 'Free Courses' },
+            { href: '/backend/admin/tutorials/categories', label: 'Categories' },
+          ],
+        },
         { href: '/backend/admin/guides', label: 'Guides', icon: '📖' },
       ],
     },
@@ -2539,6 +2547,7 @@ function getAdminSectionViewConfig() {
     },
     tutorials: {
       default: { formIds: ['itemForm'], listIds: ['rows'] },
+      categories: { formIds: ['categoryForm'], listIds: ['categoryList'] },
     },
   };
 }
@@ -2683,6 +2692,8 @@ function injectAdminModeActions(root = document) {
     actionLink.textContent =
       route.section === 'course-reviews' && !route.subsection
         ? 'Add Review'
+        : route.section === 'tutorials' && !route.subsection
+          ? 'Add Free Course'
         : route.subsection === 'categories'
           ? 'Add Category'
           : route.subsection === 'subcategories'

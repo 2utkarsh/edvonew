@@ -45,6 +45,17 @@ export function getFallbackTutorials() {
   return sortByOrder(MOCK_TUTORIALS);
 }
 
+export function getFallbackTutorialCategories() {
+  return Array.from(new Set(MOCK_TUTORIALS.map((item) => item.category))).map((name, index) => ({
+    id: `tutorial-category-${slugify(name)}`,
+    name,
+    slug: slugify(name),
+    description: `${name} free courses`,
+    isActive: true,
+    order: index + 1,
+  }));
+}
+
 export function getFallbackGuides() {
   return sortByOrder(MOCK_GUIDES);
 }

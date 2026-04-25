@@ -12,7 +12,7 @@ import { BlogCategoryModel, BlogModel } from '@/models/Blog';
 import { ChallengeCategoryModel, ChallengeItemModel } from '@/models/ChallengeItem';
 import { CourseReviewCategoryModel, CourseReviewItemModel } from '@/models/CourseReviewItem';
 import { EventCategoryModel, EventItemModel } from '@/models/EventItem';
-import { ResourceItemModel } from '@/models/ResourceItem';
+import { ResourceItemModel, TutorialCategoryModel } from '@/models/ResourceItem';
 import { SuccessStoryCategoryModel, SuccessStoryModel } from '@/models/SuccessStory';
 import { TeamMemberModel } from '@/models/TeamMember';
 import { UserModel } from '@/models/User';
@@ -111,6 +111,15 @@ async function runSeedContent() {
           order: tutorial.order,
         },
       },
+      { upsert: true, new: true }
+    );
+  }
+
+  const tutorialCategories = Array.from(new Set(MOCK_TUTORIALS.map((tutorial) => tutorial.category)));
+  for (const [index, category] of tutorialCategories.entries()) {
+    await TutorialCategoryModel.findOneAndUpdate(
+      { slug: slugify(category) },
+      { $set: { name: category, slug: slugify(category), description: `${category} free courses`, isActive: true, order: index + 1 } },
       { upsert: true, new: true }
     );
   }
