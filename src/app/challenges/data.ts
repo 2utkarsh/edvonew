@@ -60,6 +60,10 @@ export interface ChallengeItem {
   rules: string[];
   quizDurationMinutes: number;
   prizeDistribution: string[];
+  projectBriefName: string;
+  projectBriefUrl: string;
+  projectSubmissionInstructions: string;
+  projectMaxMarks: number;
   questions: ChallengeQuestion[];
   codingChallenge?: CodingChallenge;
 }
@@ -110,6 +114,10 @@ function mapChallenge(item: Record<string, unknown>): ChallengeItem {
     rules: Array.isArray(item.rules) ? item.rules.map((entry) => String(entry || '')).filter(Boolean) : [],
     quizDurationMinutes: Math.max(1, Number(item.quizDurationMinutes || 45) || 45),
     prizeDistribution: Array.isArray(item.prizeDistribution) ? item.prizeDistribution.map((entry) => String(entry || '')).filter(Boolean) : [],
+    projectBriefName: String(item.projectBriefName || ''),
+    projectBriefUrl: String(item.projectBriefUrl || ''),
+    projectSubmissionInstructions: String(item.projectSubmissionInstructions || ''),
+    projectMaxMarks: Math.max(1, Number(item.projectMaxMarks || 100) || 100),
     questions: Array.isArray(item.questions)
       ? item.questions
           .map((entry) => {

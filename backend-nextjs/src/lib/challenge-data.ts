@@ -60,6 +60,10 @@ export interface PublicChallengeRecord {
   rules: string[];
   quizDurationMinutes: number;
   prizeDistribution: string[];
+  projectBriefName: string;
+  projectBriefUrl: string;
+  projectSubmissionInstructions: string;
+  projectMaxMarks: number;
   questions: ChallengeQuestionRecord[];
   codingChallenge?: CodingChallengeRecord;
 }
@@ -200,6 +204,10 @@ export function mapChallengeDocumentToPublicChallenge(item: any): PublicChalleng
     rules: Array.isArray(item.rules) ? item.rules.map((entry: unknown) => String(entry || '')).filter(Boolean) : [],
     quizDurationMinutes: Math.max(1, Number(item.quizDurationMinutes || 45) || 45),
     prizeDistribution: ensurePrizeDistribution(item),
+    projectBriefName: String(item.projectBriefName || ''),
+    projectBriefUrl: String(item.projectBriefUrl || ''),
+    projectSubmissionInstructions: String(item.projectSubmissionInstructions || ''),
+    projectMaxMarks: Math.max(1, Number(item.projectMaxMarks || 100) || 100),
     questions: ensureChallengeQuestions(item),
     codingChallenge: toCodingChallengeRecord(item.codingChallenge),
   };

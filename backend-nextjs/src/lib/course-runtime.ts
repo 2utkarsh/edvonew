@@ -247,6 +247,7 @@ export function normalizeCoursePayload(input: AnyObject) {
     shortDescription: asString(input.shortDescription),
     description: asString(input.description),
     category: asString(input.category),
+    subcategory: asString(input.subcategory),
     level: asString(input.level || 'beginner') || 'beginner',
     status: asString(input.status || 'draft') || 'draft',
     order: asNumber(input.order, 0),

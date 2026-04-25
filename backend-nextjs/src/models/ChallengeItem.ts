@@ -62,6 +62,10 @@ export interface ChallengeItemDocument {
   rules: string[];
   quizDurationMinutes: number;
   prizeDistribution: string[];
+  projectBriefName: string;
+  projectBriefUrl: string;
+  projectSubmissionInstructions: string;
+  projectMaxMarks: number;
   questions: ChallengeQuestionDocument[];
   codingChallenge?: CodingChallengeDocument;
   createdAt: Date;
@@ -147,6 +151,10 @@ const challengeItemSchema = new Schema<ChallengeItemDocument>(
     rules: { type: [String], default: [] },
     quizDurationMinutes: { type: Number, default: 45 },
     prizeDistribution: { type: [String], default: [] },
+    projectBriefName: { type: String, default: '', trim: true },
+    projectBriefUrl: { type: String, default: '', trim: true },
+    projectSubmissionInstructions: { type: String, default: '', trim: true },
+    projectMaxMarks: { type: Number, default: 100 },
     questions: { type: [challengeQuestionSchema], default: [] },
     codingChallenge: { type: codingChallengeSchema, default: () => ({ enabled: false, language: 'javascript', functionName: 'solve', problemStatement: '', starterCode: '', visibleTestCases: [], hiddenTestCases: [], durationMinutes: 90 }) },
   },

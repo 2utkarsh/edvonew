@@ -165,6 +165,7 @@ export interface CourseDocument {
   shortDescription?: string;
   description: string;
   category: string;
+  subcategory?: string;
   level: 'beginner' | 'intermediate' | 'advanced';
   status: 'draft' | 'published' | 'archived';
   order: number;
@@ -238,6 +239,7 @@ const courseSchema = new Schema<CourseDocument>(
     shortDescription: String,
     description: { type: String, required: true },
     category: { type: String, required: true },
+    subcategory: String,
     level: { type: String, enum: ['beginner', 'intermediate', 'advanced'], default: 'beginner' },
     status: { type: String, enum: ['draft', 'published', 'archived'], default: 'draft' },
     order: { type: Number, default: 0 },

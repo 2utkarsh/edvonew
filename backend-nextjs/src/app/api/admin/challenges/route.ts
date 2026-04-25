@@ -137,6 +137,10 @@ export async function POST(request: Request) {
     prizeDistribution: parsedPrizeDistribution.length
       ? parsedPrizeDistribution
       : ensurePrizeDistribution({ prize: String(body.prize || '') }),
+    projectBriefName: String(body.projectBriefName || ''),
+    projectBriefUrl: String(body.projectBriefUrl || ''),
+    projectSubmissionInstructions: String(body.projectSubmissionInstructions || ''),
+    projectMaxMarks: Math.max(1, parseInt(String(body.projectMaxMarks || 100), 10) || 100),
     questions: parsedQuestions.length
       ? parsedQuestions
       : buildDefaultChallengeQuestions({

@@ -4,9 +4,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { ArrowRight, CalendarDays, CheckCircle2, Clock3, FileText, Layers3, Moon, ShieldCheck, Sun, Target, Trophy, Users2 } from 'lucide-react';
+import { ArrowRight, CalendarDays, CheckCircle2, Clock3, Download, FileText, Layers3, Moon, ShieldCheck, Sun, Target, Trophy, Upload, Users2 } from 'lucide-react';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
+import { publicFetchJson } from '@/lib/backend-api';
 import { fetchChallengeBySlug, type ChallengeItem } from '../data';
 import NotFoundExperience from '@/components/errors/NotFoundExperience';
 import { useThemeStore } from '@/store/useThemeStore';
@@ -26,6 +27,12 @@ export default function ChallengeDetailPage() {
   const [loadError, setLoadError] = useState('');
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [studentName, setStudentName] = useState('');
+  const [studentEmail, setStudentEmail] = useState('');
+  const [submissionNote, setSubmissionNote] = useState('');
+  const [submissionFile, setSubmissionFile] = useState<File | null>(null);
+  const [submissionState, setSubmissionState] = useState<'idle' | 'submitting' | 'submitted'>('idle');
+  const [submissionMessage, setSubmissionMessage] = useState('');
   const { config: themeConfig, toggleMode } = useThemeStore();
 
   useEffect(() => {
@@ -107,6 +114,68 @@ export default function ChallengeDetailPage() {
   function handleQuestionnaireSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setHasSubmitted(true);
+  }
+
+  async function readFileAsDataUrl(file: File) {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ''));
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function handleProjectSubmission(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!challenge) return;
+
+    if (!studentName.trim()) {
+      setSubmissionMessage('Enter your name before submitting.');
+      return;
+    }
+
+    if (!studentEmail.trim()) {
+      setSubmissionMessage('Enter your email before submitting.');
+      return;
+    }
+
+    if (!submissionFile && !submissionNote.trim()) {
+      setSubmissionMessage('Upload your answer document/PDF or add a short note.');
+      return;
+    }
+
+    try {
+      setSubmissionState('submitting');
+      setSubmissionMessage('');
+
+      const attachment = submissionFile
+        ? {
+            name: submissionFile.name,
+            url: await readFileAsDataUrl(submissionFile),
+            mimeType: submissionFile.type,
+            size: submissionFile.size,
+          }
+        : undefined;
+
+      await publicFetchJson(`/api/challenges/${challenge.slug}/submissions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentName,
+          studentEmail,
+          answerText: submissionNote,
+          attachment,
+        }),
+      });
+
+      setSubmissionState('submitted');
+      setSubmissionMessage('Submission uploaded. Your teacher can now review and mark it.');
+      setSubmissionNote('');
+      setSubmissionFile(null);
+    } catch (error: any) {
+      setSubmissionState('idle');
+      setSubmissionMessage(error?.message || 'Submission failed');
+    }
   }
 
   return (
@@ -257,6 +326,41 @@ export default function ChallengeDetailPage() {
             <div className="rounded-[2rem] border border-slate-200 bg-white p-8 dark:border-slate-800 dark:bg-slate-900">
               <div className="mb-5 flex items-center gap-3"><FileText className="h-5 w-5 text-primary-600 dark:text-primary-400" /><h2 className="text-2xl font-black text-slate-900 dark:text-white">Deliverables</h2></div>
               <div className="space-y-3">{challenge.deliverables.length ? challenge.deliverables.map((entry, index) => <div key={entry} className="flex items-start gap-3"><div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-black text-slate-700 dark:bg-slate-800 dark:text-slate-200">{index + 1}</div><p className="text-slate-600 dark:text-slate-300">{entry}</p></div>) : <p className="text-slate-500 dark:text-slate-400">Deliverables will appear here once they are added from admin.</p>}</div>
+            </div>
+            <div className="rounded-[2rem] border border-slate-200 bg-white p-8 dark:border-slate-800 dark:bg-slate-900">
+              <div className="mb-5 flex items-center gap-3"><Upload className="h-5 w-5 text-primary-600 dark:text-primary-400" /><h2 className="text-2xl font-black text-slate-900 dark:text-white">Project Brief and Submission</h2></div>
+              <div className="rounded-[1.5rem] bg-slate-50 p-5 dark:bg-slate-800/70">
+                <div className="text-xs font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Teacher Review</div>
+                <div className="mt-2 text-lg font-black text-slate-900 dark:text-white">Marks Available: {challenge.projectMaxMarks}</div>
+                <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{challenge.projectSubmissionInstructions || 'Download the project brief, complete the task, then upload your answer document or PDF for teacher checking and marks.'}</p>
+              </div>
+              <div className="mt-5">
+                {challenge.projectBriefUrl ? (
+                  <a href={challenge.projectBriefUrl} download={challenge.projectBriefName || `${challenge.slug}-project-brief`} className="inline-flex items-center gap-2 rounded-full bg-primary-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-primary-700">
+                    <Download className="h-4 w-4" />
+                    Download {challenge.projectBriefName || 'Project Brief'}
+                  </a>
+                ) : (
+                  <div className="rounded-2xl border border-dashed border-slate-300 px-4 py-3 text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">Project brief has not been uploaded from admin yet.</div>
+                )}
+              </div>
+              <form className="mt-6 space-y-4" onSubmit={handleProjectSubmission}>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <input value={studentName} onChange={(event) => setStudentName(event.target.value)} className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-primary-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white" placeholder="Your full name" />
+                  <input value={studentEmail} onChange={(event) => setStudentEmail(event.target.value)} className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-primary-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white" placeholder="Your email" type="email" />
+                </div>
+                <textarea value={submissionNote} onChange={(event) => setSubmissionNote(event.target.value)} className="min-h-[120px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-primary-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white" placeholder="Optional note for the teacher" />
+                <div className="rounded-2xl border border-dashed border-slate-300 p-4 dark:border-slate-700">
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-200">Upload Answer Document or PDF</label>
+                  <input type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" className="mt-3 block w-full text-sm text-slate-600 dark:text-slate-300" onChange={(event) => setSubmissionFile(event.target.files?.[0] || null)} />
+                  <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">{submissionFile ? `${submissionFile.name} selected` : 'Accepted formats: PDF, DOC, DOCX'}</div>
+                </div>
+                <div className="flex flex-wrap items-center gap-4">
+                  <Button type="submit" variant="primary" size="lg" className="h-14 !rounded-full px-8" disabled={submissionState === 'submitting'}>{submissionState === 'submitting' ? 'Submitting...' : 'Submit Project Answer'}</Button>
+                  <div className="text-sm text-slate-500 dark:text-slate-400">Allowed attempts: {challenge.maxSubmissions}</div>
+                </div>
+                {submissionMessage ? <div className={`rounded-2xl px-4 py-3 text-sm font-medium ${submissionState === 'submitted' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300' : 'bg-amber-50 text-amber-800 dark:bg-amber-500/10 dark:text-amber-200'}`}>{submissionMessage}</div> : null}
+              </form>
             </div>
             <div className="rounded-[2rem] border border-slate-200 bg-white p-8 dark:border-slate-800 dark:bg-slate-900">
               <div className="mb-5 flex items-center gap-3"><ArrowRight className="h-5 w-5 text-primary-600 dark:text-primary-400" /><h2 className="text-2xl font-black text-slate-900 dark:text-white">How To {challenge.phase === 'ongoing' ? 'Compete' : 'Practice'}</h2></div>

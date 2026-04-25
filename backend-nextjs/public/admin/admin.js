@@ -2190,7 +2190,29 @@ function decorateAdminNavigation(root = document) {
       title: 'Main Menu',
       items: [
         { href: '/backend/admin/dashboard', label: 'Dashboard', icon: '📊' },
-        { href: '/backend/admin/home-content', label: 'Home Content', icon: '🏠' },
+        {
+          href: '/backend/admin/home-content',
+          label: 'Home Content',
+          icon: '🏠',
+          children: [
+            { href: '/backend/admin/home-content/hero-slides', label: 'Hero Slides' },
+            { href: '/backend/admin/home-content/social-stats', label: 'Social Stats' },
+            { href: '/backend/admin/home-content/features', label: 'Feature Cards' },
+            { href: '/backend/admin/home-content/career-transformations', label: 'Career Transformations' },
+            { href: '/backend/admin/home-content/cinematic-section', label: 'Cinematic Section' },
+            { href: '/backend/admin/home-content/portfolios-intro', label: 'Portfolios Intro' },
+            { href: '/backend/admin/home-content/portfolios', label: 'Portfolio Cards' },
+            { href: '/backend/admin/home-content/youtube-section', label: 'YouTube Intro' },
+            { href: '/backend/admin/home-content/youtube-videos', label: 'YouTube Videos' },
+            { href: '/backend/admin/home-content/testimonials-intro', label: 'Testimonials Intro' },
+            { href: '/backend/admin/home-content/home-testimonials', label: 'Homepage Testimonials' },
+            { href: '/backend/admin/home-content/hire-talent-hero', label: 'Hire Talent Hero' },
+            { href: '/backend/admin/home-content/hire-talent-testimonials', label: 'Hire Talent Testimonials' },
+            { href: '/backend/admin/home-content/hire-talent-cta', label: 'Hire Talent CTA' },
+            { href: '/backend/admin/home-content/cta-section', label: 'Bottom CTA' },
+            { href: '/backend/admin/home-content', label: 'Overview' },
+          ],
+        },
         { href: '/backend/admin/hiring-partners', label: 'Hiring Partners', icon: '🤝' },
       ],
     },
@@ -2733,7 +2755,22 @@ function getAdminSectionViewConfig() {
       default: { formIds: ['partnerForm'], listIds: ['partnerRows'] },
     },
     'home-content': {
-      default: { formIds: ['heroForm', 'statsForm', 'faqForm', 'testimonialForm'], listIds: ['faqRows', 'testimonialRows'] },
+      default: { formIds: [], listIds: ['homeContentOverviewRows'] },
+      'hero-slides': { formIds: ['homeContentSectionForm'], listIds: ['homeContentSectionRows'] },
+      'social-stats': { formIds: ['homeContentSectionForm'], listIds: ['homeContentSectionRows'] },
+      'features': { formIds: ['homeContentSectionForm'], listIds: ['homeContentSectionRows'] },
+      'career-transformations': { formIds: ['homeContentSectionForm'], listIds: ['homeContentSectionRows'] },
+      'cinematic-section': { formIds: ['homeContentSectionForm'], listIds: ['homeContentSectionRows'] },
+      'portfolios-intro': { formIds: ['homeContentSectionForm'], listIds: ['homeContentSectionRows'] },
+      'portfolios': { formIds: ['homeContentSectionForm'], listIds: ['homeContentSectionRows'] },
+      'youtube-section': { formIds: ['homeContentSectionForm'], listIds: ['homeContentSectionRows'] },
+      'youtube-videos': { formIds: ['homeContentSectionForm'], listIds: ['homeContentSectionRows'] },
+      'testimonials-intro': { formIds: ['homeContentSectionForm'], listIds: ['homeContentSectionRows'] },
+      'home-testimonials': { formIds: ['homeContentSectionForm'], listIds: ['homeContentSectionRows'] },
+      'hire-talent-hero': { formIds: ['homeContentSectionForm'], listIds: ['homeContentSectionRows'] },
+      'hire-talent-testimonials': { formIds: ['homeContentSectionForm'], listIds: ['homeContentSectionRows'] },
+      'hire-talent-cta': { formIds: ['homeContentSectionForm'], listIds: ['homeContentSectionRows'] },
+      'cta-section': { formIds: ['homeContentSectionForm'], listIds: ['homeContentSectionRows'] },
     },
     instructors: {
       default: { formIds: ['instructorForm'], listIds: ['instructorRows'] },
@@ -2884,7 +2921,22 @@ function injectAdminModeActions(root = document) {
     return;
   }
 
+  const homeContentSingletonSections = new Set([
+    'cinematic-section',
+    'portfolios-intro',
+    'youtube-section',
+    'testimonials-intro',
+    'hire-talent-hero',
+    'hire-talent-cta',
+    'cta-section',
+  ]);
+
   if (route.section === 'courses' && route.subsection === 'payment-settings') {
+    topBarRight.querySelector('.admin-mode-link')?.remove();
+    return;
+  }
+
+  if (route.section === 'home-content' && !route.subsection) {
     topBarRight.querySelector('.admin-mode-link')?.remove();
     return;
   }
@@ -2898,8 +2950,16 @@ function injectAdminModeActions(root = document) {
 
   const basePath = `/backend/admin/${route.section}${route.subsection ? `/${route.subsection}` : ''}`;
   if (route.mode === 'list') {
-    actionLink.href = `${basePath}/new`;
+    actionLink.href =
+      route.section === 'home-content' && homeContentSingletonSections.has(route.subsection)
+        ? `${basePath}/edit?id=${encodeURIComponent(route.subsection)}`
+        : `${basePath}/new`;
     actionLink.textContent =
+      route.section === 'home-content' && homeContentSingletonSections.has(route.subsection)
+        ? 'Edit Section'
+        : route.section === 'home-content' && route.subsection
+          ? 'Add Item'
+          :
       route.section === 'course-reviews' && !route.subsection
         ? 'Add Review'
         : route.section === 'tutorials' && !route.subsection
@@ -2945,7 +3005,7 @@ function interceptAdminCrudButtons(root = document) {
     }
 
     if (route.mode === 'list' && /^edit\b/.test(text)) {
-      const match = onclickText.match(/(?:startEdit|editCourse|catEdit|editCategory)\('([^']+)'\)/);
+      const match = onclickText.match(/(?:startEdit|editCourse|catEdit|editCategory|editHomeContentRow)\('([^']+)'\)/);
       if (match && match[1]) {
         event.preventDefault();
         window.location.href = `${basePath}/edit?id=${encodeURIComponent(match[1])}`;
@@ -2999,7 +3059,9 @@ function enhanceAdminDataTables(root = document) {
           <option value="100">100 rows</option>
         </select>
         <button type="button" class="btn">Export CSV</button>
+        <button type="button" class="btn">Export Excel</button>
         <button type="button" class="btn">Export JSON</button>
+        <button type="button" class="btn">Print</button>
       </div>
     `;
 
@@ -3142,6 +3204,19 @@ function enhanceAdminDataTables(root = document) {
 
     if (exportButtons[1]) {
       exportButtons[1].addEventListener('click', () => {
+        const headerLine = headers.map((header) => header.textContent.trim()).join('\t');
+        const bodyLines = getMatchedRows().map((row) => getCells(row).join('\t'));
+        const blob = new Blob([[headerLine].concat(bodyLines).join('\n')], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'admin-table.xls';
+        link.click();
+        URL.revokeObjectURL(link.href);
+      });
+    }
+
+    if (exportButtons[2]) {
+      exportButtons[2].addEventListener('click', () => {
         const json = getMatchedRows().map((row) => {
           const cells = getCells(row);
           return Object.fromEntries(headers.map((header, index) => [header.textContent.trim(), cells[index] || '']));
@@ -3152,6 +3227,12 @@ function enhanceAdminDataTables(root = document) {
         link.download = 'admin-table.json';
         link.click();
         URL.revokeObjectURL(link.href);
+      });
+    }
+
+    if (exportButtons[3]) {
+      exportButtons[3].addEventListener('click', () => {
+        window.print();
       });
     }
 

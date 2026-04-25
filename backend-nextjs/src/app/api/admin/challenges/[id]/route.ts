@@ -113,6 +113,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (body.rules !== undefined) update.rules = parseList(body.rules);
   if (body.quizDurationMinutes !== undefined) update.quizDurationMinutes = Math.max(1, parseInt(String(body.quizDurationMinutes), 10) || 45);
   if (parsedPrizeDistribution !== undefined) update.prizeDistribution = parsedPrizeDistribution.length ? parsedPrizeDistribution : ensurePrizeDistribution({ prize: String(body.prize || '') });
+  if (body.projectBriefName !== undefined) update.projectBriefName = String(body.projectBriefName || '');
+  if (body.projectBriefUrl !== undefined) update.projectBriefUrl = String(body.projectBriefUrl || '');
+  if (body.projectSubmissionInstructions !== undefined) update.projectSubmissionInstructions = String(body.projectSubmissionInstructions || '');
+  if (body.projectMaxMarks !== undefined) update.projectMaxMarks = Math.max(1, parseInt(String(body.projectMaxMarks), 10) || 100);
   if (body.questions !== undefined) {
     const parsedQuestions = parseQuestions(body.questions);
     update.questions = parsedQuestions.length
