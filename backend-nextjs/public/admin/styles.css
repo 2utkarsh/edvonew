@@ -809,6 +809,53 @@ a { color: inherit; text-decoration: none; }
   align-items: flex-start;
 }
 
+.admin-panel-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.admin-panel-summary {
+  color: var(--gray-500);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.admin-panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.admin-panel-toggle {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--primary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-panel-toggle:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
+}
+
+.dashboard-content .panel > .head,
+.dashboard-content .panel > .toolbar {
+  margin-bottom: 12px;
+}
+
+.dashboard-content .panel > .head:last-child,
+.dashboard-content .panel > .toolbar:last-child {
+  margin-bottom: 0;
+}
+
 /* ── Tables ── */
 .admin-datatable {
   display: grid;
@@ -1564,7 +1611,30 @@ tbody tr:hover td { background: var(--gray-50); }
   }
 
   .dashboard-content {
+    padding: 12px;
+  }
+
+  .dashboard-content .stack {
+    gap: 14px;
+  }
+
+  .dashboard-content .panel,
+  .dashboard-content .stat,
+  .dashboard-content .card,
+  .dashboard-content .stat-card,
+  .info-card {
     padding: 16px;
+  }
+
+  .dashboard-content .toolbar,
+  .dashboard-content .table-header,
+  .admin-panel-toolbar {
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .dashboard-content .content {
+    padding-top: 10px;
   }
 
   .top-bar {
@@ -1608,6 +1678,27 @@ tbody tr:hover td { background: var(--gray-50); }
 }
 
 @media (max-width: 480px) {
+  .dashboard-content {
+    padding: 10px;
+  }
+
+  .dashboard-content .stack {
+    gap: 12px;
+  }
+
+  .dashboard-content .panel,
+  .dashboard-content .stat,
+  .dashboard-content .card,
+  .dashboard-content .stat-card,
+  .info-card {
+    padding: 14px;
+  }
+
+  .admin-panel-toolbar,
+  .admin-panel-actions {
+    gap: 6px;
+  }
+
   .dashboard-content .stats,
   .dashboard-content .stats-grid {
     grid-template-columns: 1fr;
