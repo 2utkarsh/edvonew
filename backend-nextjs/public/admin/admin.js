@@ -1438,6 +1438,12 @@ function getAdminCkEditorConfig(textarea) {
     };
   }
 
+  if (typeof window.CKEDITOR?.ImageToolbar === 'function') {
+    config.image = {
+      toolbar: ['toggleImageCaption', 'imageTextAlternative'],
+    };
+  }
+
   return config;
 }
 
@@ -3148,6 +3154,7 @@ function runAdminUiEnhancements() {
   applyAdminViewRouting(document);
   interceptAdminCrudButtons(document);
   enhanceAdminTopBar(document);
+  initResponsiveAdminShell();
   injectAdminModeActions(document);
   enhanceAdminPanels(document);
   enhanceEditorSections(document);
