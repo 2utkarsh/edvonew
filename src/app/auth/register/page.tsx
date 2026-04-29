@@ -1,24 +1,12 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Eye, EyeOff, QrCode, UserCheck } from 'lucide-react';
-import { buildApiUrl, loadScript } from '@/lib/backend-api';
-
-declare global {
-  interface Window {
-    QRCode?: {
-      toDataURL: (
-        text: string,
-        options?: Record<string, unknown>,
-        callback?: (error: Error | null | undefined, url: string) => void
-      ) => void;
-    };
-  }
-}
+import { Eye, EyeOff } from 'lucide-react';
+import { buildApiUrl } from '@/lib/backend-api';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -28,7 +16,6 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [submitSuccess, setSubmitSuccess] = useState('');
-  const [qrCodeUrl, setQrCodeUrl] = useState('');
   const [formData, setFormData] = useState({
     fullName: '',
     mobile: '',
@@ -39,45 +26,6 @@ export default function RegisterPage() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const role = searchParams.get('role') === 'instructor' ? 'instructor' : 'student';
-
-  const instructorRegisterUrl = useMemo(() => {
-    if (typeof window === 'undefined') return '/auth/register?role=instructor';
-    return `${window.location.origin}/auth/register?role=instructor`;
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function generateQrCode() {
-      if (typeof window === 'undefined') return;
-
-      const loaded = await loadScript('https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js');
-      if (!loaded || typeof window.QRCode?.toDataURL !== 'function') return;
-
-      window.QRCode.toDataURL(
-        instructorRegisterUrl,
-        {
-          width: 220,
-          margin: 1,
-          color: {
-            dark: '#0f172a',
-            light: '#ffffff',
-          },
-        },
-        (error, url) => {
-          if (!cancelled && !error && url) {
-            setQrCodeUrl(url);
-          }
-        }
-      );
-    }
-
-    void generateQrCode();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [instructorRegisterUrl]);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -205,37 +153,9 @@ export default function RegisterPage() {
             </h1>
             <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
               {role === 'instructor'
-                ? 'Scan the QR code or share the link below to open this instructor registration form directly.'
-                : 'Need an instructor account instead? Use the QR code below to jump straight into instructor registration.'}
+                ? 'Complete this form to create your instructor account and access the EDVO teaching workspace.'
+                : 'Choose instructor mode if you are registering as a mentor or course creator.'}
             </p>
-          </div>
-
-          <div className="mb-6 rounded-3xl border border-slate-200/80 bg-white/90 p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
-            <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary-50 text-primary-700 dark:bg-primary-950/50 dark:text-primary-300">
-                {role === 'instructor' ? <UserCheck className="h-6 w-6" /> : <QrCode className="h-6 w-6" />}
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                  {role === 'instructor' ? 'Instructor QR registration' : 'Instructor registration QR'}
-                </p>
-                <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">
-                  {role === 'instructor'
-                    ? 'This QR points to the instructor version of the EDVO register form.'
-                    : 'Scan to open the instructor register form on any phone, tablet, or another screen.'}
-                </p>
-              </div>
-            </div>
-            <div className="mt-4 flex flex-col items-center gap-3 rounded-2xl bg-slate-50 px-4 py-5 text-center dark:bg-slate-950">
-              {qrCodeUrl ? (
-                <Image src={qrCodeUrl} alt="Instructor registration QR code" width={220} height={220} className="h-[220px] w-[220px] rounded-2xl border border-slate-200 bg-white p-3 dark:border-slate-800" unoptimized />
-              ) : (
-                <div className="flex h-[220px] w-[220px] items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white text-sm text-slate-400 dark:border-slate-700 dark:bg-slate-900">
-                  Generating QR code...
-                </div>
-              )}
-              <p className="break-all text-xs text-slate-500 dark:text-slate-400">{instructorRegisterUrl}</p>
-            </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">

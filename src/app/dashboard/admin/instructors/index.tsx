@@ -12,6 +12,7 @@ import { Link } from '@inertiajs/react';
 import { SortingState, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
 import * as React from 'react';
 import { ReactNode } from 'react';
+import InstructorRegisterShare from './Partials/instructor-register-share';
 import TableColumn from './Partials/instructors-table-columns';
 
 interface Props extends SharedData {
@@ -36,11 +37,17 @@ const Index = (props: Props) => {
 
    return (
       <div>
-         <Link href={route('instructors.create')}>
-            <Button>{button.add_new_instructor}</Button>
-         </Link>
+         <div className="flex flex-wrap items-center gap-3">
+            <Link href={route('instructors.create')}>
+               <Button>{button.add_new_instructor}</Button>
+            </Link>
+         </div>
 
          <Separator className="my-6" />
+
+         <div className="mb-6">
+            <InstructorRegisterShare />
+         </div>
 
          <Card>
             <TableFilter
