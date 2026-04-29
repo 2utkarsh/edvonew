@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { hashPassword, signAccessToken } from '@/lib/auth';
 import { created, fail, toResponse, validationError } from '@/lib/http';
+import { InstructorModel } from '@/models/Instructor';
 import { UserModel } from '@/models/User';
 import { registerSchema } from '@/lib/validators';
 import { validateRequest } from '@/middleware/auth';
@@ -13,7 +14,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     if (validation.error) return validation.error;
     if (!validation.data) return toResponse(validationError([{ field: 'body', message: 'Request body is required' }]));
 
-    const { name, email, password, mobile } = validation.data;
+    const { name, email, password, mobile, role = 'student' } = validation.data;
 
     await connectToDatabase();
 
@@ -31,14 +32,33 @@ export async function POST(request: NextRequest): Promise<Response> {
       name,
       email: email.toLowerCase(),
       passwordHash,
-      role: 'student',
+      role,
       mobile,
       isActive: true,
       status: 1,
       skills: [],
+      socialLinks: [],
       enrolledCourses: [],
+      enrolledExams: [],
       createdCourses: [],
+      createdExams: [],
     });
+
+    if (role === 'instructor') {
+      const instructor = await InstructorModel.create({
+        userId: user._id,
+        bio: `${user.name} joined EDVO as an instructor.`,
+        headline: 'EDVO Instructor',
+        expertise: [],
+        experience: '',
+        education: '',
+        certifications: [],
+        socialLinks: {},
+      });
+
+      user.instructorId = instructor._id;
+      await user.save();
+    }
 
     // Generate JWT token
     const token = signAccessToken({

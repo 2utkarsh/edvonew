@@ -2,6 +2,7 @@ import { connectToDatabase } from '@/lib/db';
 import { created, fail, handleError, parseJson, toResponse } from '@/lib/http';
 import { hashPassword, signAccessToken } from '@/lib/auth';
 import { registerSchema, RegisterInput } from '@/lib/validators';
+import { InstructorModel } from '@/models/Instructor';
 import { UserModel } from '@/models/User';
 
 export async function POST(request: Request): Promise<Response> {
@@ -18,13 +19,38 @@ export async function POST(request: Request): Promise<Response> {
     if (existingUser) return toResponse(fail('Email is already registered', 409));
 
     const passwordHash = await hashPassword(validationResult.data.password);
+    const role = validationResult.data.role ?? 'student';
     const user = await UserModel.create({
       name: validationResult.data.name.trim(),
       email: validationResult.data.email.toLowerCase(),
       mobile: validationResult.data.mobile,
       passwordHash,
-      role: 'student',
+      role,
+      isActive: true,
+      status: 1,
+      skills: [],
+      socialLinks: [],
+      enrolledCourses: [],
+      enrolledExams: [],
+      createdCourses: [],
+      createdExams: [],
     });
+
+    if (role === 'instructor') {
+      const instructor = await InstructorModel.create({
+        userId: user._id,
+        bio: `${user.name} joined EDVO as an instructor.`,
+        headline: 'EDVO Instructor',
+        expertise: [],
+        experience: '',
+        education: '',
+        certifications: [],
+        socialLinks: {},
+      });
+
+      user.instructorId = instructor._id;
+      await user.save();
+    }
 
     const token = signAccessToken({
       sub: user.id,

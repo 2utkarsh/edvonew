@@ -1,20 +1,34 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { Eye, EyeOff } from 'lucide-react';
-import { buildApiUrl } from '@/lib/backend-api';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Eye, EyeOff, QrCode, UserCheck } from 'lucide-react';
+import { buildApiUrl, loadScript } from '@/lib/backend-api';
+
+declare global {
+  interface Window {
+    QRCode?: {
+      toDataURL: (
+        text: string,
+        options?: Record<string, unknown>,
+        callback?: (error: Error | null | undefined, url: string) => void
+      ) => void;
+    };
+  }
+}
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [submitSuccess, setSubmitSuccess] = useState('');
+  const [qrCodeUrl, setQrCodeUrl] = useState('');
   const [formData, setFormData] = useState({
     fullName: '',
     mobile: '',
@@ -24,6 +38,46 @@ export default function RegisterPage() {
     agreeToTerms: false,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const role = searchParams.get('role') === 'instructor' ? 'instructor' : 'student';
+
+  const instructorRegisterUrl = useMemo(() => {
+    if (typeof window === 'undefined') return '/auth/register?role=instructor';
+    return `${window.location.origin}/auth/register?role=instructor`;
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function generateQrCode() {
+      if (typeof window === 'undefined') return;
+
+      const loaded = await loadScript('https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js');
+      if (!loaded || typeof window.QRCode?.toDataURL !== 'function') return;
+
+      window.QRCode.toDataURL(
+        instructorRegisterUrl,
+        {
+          width: 220,
+          margin: 1,
+          color: {
+            dark: '#0f172a',
+            light: '#ffffff',
+          },
+        },
+        (error, url) => {
+          if (!cancelled && !error && url) {
+            setQrCodeUrl(url);
+          }
+        }
+      );
+    }
+
+    void generateQrCode();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [instructorRegisterUrl]);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -64,6 +118,7 @@ export default function RegisterPage() {
           email: formData.email,
           password: formData.password,
           password_confirmation: formData.confirmPassword,
+          role,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -83,7 +138,13 @@ export default function RegisterPage() {
         window.dispatchEvent(new Event('auth-changed'));
       }
 
-      setSubmitSuccess(payload?.message || (data as any)?.message || 'Account created successfully. Redirecting to login...');
+      setSubmitSuccess(
+        payload?.message ||
+          (data as any)?.message ||
+          (role === 'instructor'
+            ? 'Instructor account created successfully. Redirecting to login...'
+            : 'Account created successfully. Redirecting to login...')
+      );
       setFormData({ fullName: '', mobile: '', email: '', password: '', confirmPassword: '', agreeToTerms: false });
       setTimeout(() => router.push('/auth/login'), 500);
     } catch (error: any) {
@@ -103,12 +164,16 @@ export default function RegisterPage() {
           <div className="flex items-center justify-center mb-6">
             <Image src="/images/edvo-official-logo-v10.png" alt="EDVO" width={180} height={58} className="h-12 w-auto" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">Enabling Careers</h2>
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
+            {role === 'instructor' ? 'Teach With EDVO' : 'Enabling Careers'}
+          </h2>
           <div className="my-8">
             <Image src="/images/student-illustration.png" alt="Student learning illustration" width={280} height={280} className="mx-auto drop-shadow-lg" priority />
           </div>
           <p className="text-gray-500 dark:text-gray-400 text-sm max-w-xs mx-auto leading-relaxed">
-            Your search for the ultimate learning community ends here. Register with us to become a career-ready professional.
+            {role === 'instructor'
+              ? 'Create your instructor account and start building courses, hosting live sessions, and mentoring learners through EDVO.'
+              : 'Your search for the ultimate learning community ends here. Register with us to become a career-ready professional.'}
           </p>
         </motion.div>
       </div>
@@ -120,7 +185,58 @@ export default function RegisterPage() {
             <p className="text-sm text-gray-500 dark:text-gray-400">Have an Account? <Link href="/auth/login" className="text-primary-600 dark:text-primary-400 font-semibold hover:underline">Log in</Link></p>
           </div>
 
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Register</h1>
+          <div className="mb-6">
+            <div className="inline-flex rounded-full border border-slate-200 bg-white p-1 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <Link
+                href="/auth/register"
+                className={`rounded-full px-4 py-2 text-sm font-semibold transition ${role === 'student' ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}
+              >
+                Student
+              </Link>
+              <Link
+                href="/auth/register?role=instructor"
+                className={`rounded-full px-4 py-2 text-sm font-semibold transition ${role === 'instructor' ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}
+              >
+                Instructor
+              </Link>
+            </div>
+            <h1 className="mt-4 text-3xl font-bold text-gray-900 dark:text-white">
+              {role === 'instructor' ? 'Instructor Register' : 'Register'}
+            </h1>
+            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+              {role === 'instructor'
+                ? 'Scan the QR code or share the link below to open this instructor registration form directly.'
+                : 'Need an instructor account instead? Use the QR code below to jump straight into instructor registration.'}
+            </p>
+          </div>
+
+          <div className="mb-6 rounded-3xl border border-slate-200/80 bg-white/90 p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary-50 text-primary-700 dark:bg-primary-950/50 dark:text-primary-300">
+                {role === 'instructor' ? <UserCheck className="h-6 w-6" /> : <QrCode className="h-6 w-6" />}
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                  {role === 'instructor' ? 'Instructor QR registration' : 'Instructor registration QR'}
+                </p>
+                <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">
+                  {role === 'instructor'
+                    ? 'This QR points to the instructor version of the EDVO register form.'
+                    : 'Scan to open the instructor register form on any phone, tablet, or another screen.'}
+                </p>
+              </div>
+            </div>
+            <div className="mt-4 flex flex-col items-center gap-3 rounded-2xl bg-slate-50 px-4 py-5 text-center dark:bg-slate-950">
+              {qrCodeUrl ? (
+                <Image src={qrCodeUrl} alt="Instructor registration QR code" width={220} height={220} className="h-[220px] w-[220px] rounded-2xl border border-slate-200 bg-white p-3 dark:border-slate-800" unoptimized />
+              ) : (
+                <div className="flex h-[220px] w-[220px] items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white text-sm text-slate-400 dark:border-slate-700 dark:bg-slate-900">
+                  Generating QR code...
+                </div>
+              )}
+              <p className="break-all text-xs text-slate-500 dark:text-slate-400">{instructorRegisterUrl}</p>
+            </div>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -169,7 +285,7 @@ export default function RegisterPage() {
             {errors.agreeToTerms ? <p className="text-xs text-red-500 -mt-2">{errors.agreeToTerms}</p> : null}
 
             <button type="submit" disabled={isLoading} className="w-full py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold rounded-lg hover:from-primary-700 hover:to-primary-800 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed shadow-md hover:shadow-lg">
-              {isLoading ? <span className="flex items-center justify-center gap-2"><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Creating Account...</span> : 'Submit'}
+              {isLoading ? <span className="flex items-center justify-center gap-2"><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Creating Account...</span> : role === 'instructor' ? 'Create Instructor Account' : 'Submit'}
             </button>
 
             {submitError ? <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300">{submitError}</div> : null}
