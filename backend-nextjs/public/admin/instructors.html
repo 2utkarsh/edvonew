@@ -172,7 +172,6 @@
   </main>
 
   <script src="/backend/admin/admin.js?v=20260416c"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
   <script>
     let instructors = [];
     let editingInstructorId = null;
@@ -180,6 +179,7 @@
     let uploadedPhotoData = '';
     const refs = new Proxy({}, { get: (_, key) => document.getElementById(String(key)) });
     const instructorRegisterUrl = `${window.location.origin}/auth/register?role=instructor`;
+    const instructorQrUrl = `https://quickchart.io/qr?text=${encodeURIComponent(instructorRegisterUrl)}&size=220`;
 
     function e(value){return String(value ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
     function splitComma(value){return String(value || '').split(',').map((item)=>item.trim()).filter(Boolean)}
@@ -189,22 +189,7 @@
     function setShareStatus(message){refs.shareStatus.textContent = message || ''}
     function renderInstructorShareCard() {
       refs.instructorRegisterLink.textContent = instructorRegisterUrl;
-      if (window.QRCode && typeof window.QRCode.toCanvas === 'function') {
-        const canvas = document.createElement('canvas');
-        refs.instructorQrBox.innerHTML = '';
-        refs.instructorQrBox.appendChild(canvas);
-        window.QRCode.toCanvas(canvas, instructorRegisterUrl, {
-          width: 220,
-          margin: 1,
-          color: { dark: '#0f172a', light: '#ffffff' }
-        }, function(error) {
-          if (error) {
-            refs.instructorQrBox.innerHTML = '<span class="help">Unable to generate QR code.</span>';
-          }
-        });
-      } else {
-        refs.instructorQrBox.innerHTML = '<span class="help">QR library unavailable.</span>';
-      }
+      refs.instructorQrBox.innerHTML = `<img src="${instructorQrUrl}" alt="Instructor registration QR code" />`;
     }
     async function copyInstructorRegisterLink() {
       try {
