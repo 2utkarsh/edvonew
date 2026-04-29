@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    .stack{display:flex;flex-direction:column;gap:24px}.panel,.stat{background:#fff;border:1px solid #e2e8f0;border-radius:20px;box-shadow:0 8px 30px rgba(15,23,42,.06);padding:24px}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}.label{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:#718096;margin-bottom:8px;font-weight:700}.value{font-size:2rem;font-weight:800}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.input,.textarea,.select,.file-input{width:100%;padding:12px 16px;border:1px solid #cbd5e0;border-radius:12px;font-size:.95rem;background:#fff}.textarea{min-height:120px;resize:vertical}.actions,.table-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.toolbar{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}.table-wrap{overflow:auto}.badge{display:inline-flex;align-items:center;border-radius:999px;padding:6px 12px;font-size:.78rem;font-weight:700}.badge-role{background:rgba(102,126,234,.12);color:#5a67d8}.badge-verified{background:rgba(34,197,94,.12);color:#15803d}.badge-featured{background:rgba(245,158,11,.16);color:#b45309}.btn{border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}.btn-primary{background:#667eea;color:#fff}.btn-secondary{background:#edf2f7;color:#1a202c}.btn-danger{background:#f56565;color:#fff}.help{color:#718096;font-size:.88rem}.inline-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.photo-upload{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}.photo-preview{width:96px;height:96px;border-radius:18px;object-fit:cover;border:1px solid #cbd5e0;background:#f8fafc}.photo-upload-meta{display:flex;flex-direction:column;gap:10px;min-width:220px}@media (max-width: 900px){.inline-grid{grid-template-columns:1fr}}
+    .stack{display:flex;flex-direction:column;gap:24px}.panel,.stat{background:#fff;border:1px solid #e2e8f0;border-radius:20px;box-shadow:0 8px 30px rgba(15,23,42,.06);padding:24px}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}.label{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:#718096;margin-bottom:8px;font-weight:700}.value{font-size:2rem;font-weight:800}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.input,.textarea,.select,.file-input{width:100%;padding:12px 16px;border:1px solid #cbd5e0;border-radius:12px;font-size:.95rem;background:#fff}.textarea{min-height:120px;resize:vertical}.actions,.table-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.toolbar{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}.table-wrap{overflow:auto}.badge{display:inline-flex;align-items:center;border-radius:999px;padding:6px 12px;font-size:.78rem;font-weight:700}.badge-role{background:rgba(102,126,234,.12);color:#5a67d8}.badge-verified{background:rgba(34,197,94,.12);color:#15803d}.badge-featured{background:rgba(245,158,11,.16);color:#b45309}.btn{border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}.btn-primary{background:#667eea;color:#fff}.btn-secondary{background:#edf2f7;color:#1a202c}.btn-danger{background:#f56565;color:#fff}.help{color:#718096;font-size:.88rem}.inline-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.photo-upload{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}.photo-preview{width:96px;height:96px;border-radius:18px;object-fit:cover;border:1px solid #cbd5e0;background:#f8fafc}.photo-upload-meta{display:flex;flex-direction:column;gap:10px;min-width:220px}.share-card{display:grid;grid-template-columns:240px minmax(0,1fr);gap:20px;align-items:center}.qr-box{display:flex;align-items:center;justify-content:center;min-height:220px;border:1px dashed #cbd5e0;border-radius:20px;background:#f8fafc;padding:16px}.qr-box img,.qr-box canvas{max-width:220px;width:100%;height:auto;border-radius:18px;background:#fff;padding:12px;border:1px solid #e2e8f0}.share-link-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:16px}.share-link{word-break:break-all;color:#334155;font-size:.92rem}.share-note{font-size:.9rem;color:#64748b}.share-status{font-size:.9rem;font-weight:700;color:#5a67d8;min-height:20px}@media (max-width: 900px){.inline-grid,.share-card{grid-template-columns:1fr}}
   </style>
 <link rel="stylesheet" href="/backend/admin/styles.css" />
 </head>
@@ -70,6 +70,32 @@
           <div class="stat"><div class="label">Verified</div><div class="value" id="verifiedInstructors">0</div></div>
           <div class="stat"><div class="label">Featured</div><div class="value" id="featuredInstructors">0</div></div>
         </div>
+
+        <section class="panel">
+          <div class="toolbar">
+            <div>
+              <div class="table-title">Share Instructor Registration</div>
+              <div class="help">Send this QR code or direct link to instructors so they can open the instructor registration form themselves.</div>
+            </div>
+          </div>
+          <div class="share-card">
+            <div class="qr-box" id="instructorQrBox">
+              <span class="help">Generating QR code...</span>
+            </div>
+            <div class="stack" style="gap:16px">
+              <div class="share-link-box">
+                <div class="label" style="margin-bottom:10px">Shareable Instructor Link</div>
+                <div id="instructorRegisterLink" class="share-link"></div>
+              </div>
+              <div class="actions">
+                <button id="copyRegisterLinkButton" class="btn btn-primary" type="button">Copy Link</button>
+                <button id="shareRegisterLinkButton" class="btn btn-secondary" type="button">Share</button>
+              </div>
+              <div class="share-note">Use this from admin, then send the QR image or copied link through WhatsApp, email, or any chat app.</div>
+              <div id="shareStatus" class="share-status"></div>
+            </div>
+          </div>
+        </section>
 
         <section class="panel">
           <div class="toolbar">
@@ -146,18 +172,64 @@
   </main>
 
   <script src="/backend/admin/admin.js?v=20260416c"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
   <script>
     let instructors = [];
     let editingInstructorId = null;
     let editingUserId = null;
     let uploadedPhotoData = '';
     const refs = new Proxy({}, { get: (_, key) => document.getElementById(String(key)) });
+    const instructorRegisterUrl = `${window.location.origin}/auth/register?role=instructor`;
 
     function e(value){return String(value ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
     function splitComma(value){return String(value || '').split(',').map((item)=>item.trim()).filter(Boolean)}
     function createDemoEmail(){return `demo.instructor.${Date.now()}@edvo.com`}
     function setPhotoPreview(value){refs.photoPreview.src = value || '/images/edvo-official-logo-v10.png'}
     function clearPhoto(){uploadedPhotoData=''; refs.photoFile.value=''; setPhotoPreview('')}
+    function setShareStatus(message){refs.shareStatus.textContent = message || ''}
+    function renderInstructorShareCard() {
+      refs.instructorRegisterLink.textContent = instructorRegisterUrl;
+      if (window.QRCode && typeof window.QRCode.toCanvas === 'function') {
+        const canvas = document.createElement('canvas');
+        refs.instructorQrBox.innerHTML = '';
+        refs.instructorQrBox.appendChild(canvas);
+        window.QRCode.toCanvas(canvas, instructorRegisterUrl, {
+          width: 220,
+          margin: 1,
+          color: { dark: '#0f172a', light: '#ffffff' }
+        }, function(error) {
+          if (error) {
+            refs.instructorQrBox.innerHTML = '<span class="help">Unable to generate QR code.</span>';
+          }
+        });
+      } else {
+        refs.instructorQrBox.innerHTML = '<span class="help">QR library unavailable.</span>';
+      }
+    }
+    async function copyInstructorRegisterLink() {
+      try {
+        await navigator.clipboard.writeText(instructorRegisterUrl);
+        setShareStatus('Instructor registration link copied.');
+      } catch (error) {
+        setShareStatus('Unable to copy the instructor link on this browser.');
+      }
+    }
+    async function shareInstructorRegisterLink() {
+      try {
+        if (navigator.share) {
+          await navigator.share({
+            title: 'EDVO Instructor Registration',
+            text: 'Use this link to register as an instructor on EDVO.',
+            url: instructorRegisterUrl,
+          });
+          setShareStatus('Share sheet opened.');
+          return;
+        }
+        await copyInstructorRegisterLink();
+      } catch (error) {
+        setShareStatus('Sharing was cancelled or is not supported here.');
+      }
+    }
     function resetForm() {
       editingInstructorId = null;
       editingUserId = null;
@@ -387,6 +459,8 @@
     refs.cancelEdit.addEventListener('click', resetForm);
     refs.loadDemoButton.addEventListener('click', loadDemoInstructor);
     refs.removePhotoButton.addEventListener('click', clearPhoto);
+    refs.copyRegisterLinkButton.addEventListener('click', copyInstructorRegisterLink);
+    refs.shareRegisterLinkButton.addEventListener('click', shareInstructorRegisterLink);
     refs.photoFile.addEventListener('change', async (event) => {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
@@ -406,6 +480,7 @@
     });
     refs.searchInput.addEventListener('input', renderRows);
 
+    renderInstructorShareCard();
     loadInstructors().catch((error) => showToast(error.message || 'Failed to load instructors', 'error'));
   </script>
 
