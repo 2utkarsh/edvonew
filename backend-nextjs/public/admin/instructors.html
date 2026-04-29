@@ -89,7 +89,8 @@
               </div>
               <div class="actions">
                 <button id="copyRegisterLinkButton" class="btn btn-primary" type="button">Copy Link</button>
-                <button id="shareRegisterLinkButton" class="btn btn-secondary" type="button">Share</button>
+                <button id="shareRegisterQrButton" class="btn btn-secondary" type="button">Share QR</button>
+                <button id="downloadRegisterQrButton" class="btn btn-secondary" type="button">Download QR</button>
               </div>
               <div class="share-note">Use this from admin, then send the QR image or copied link through WhatsApp, email, or any chat app.</div>
               <div id="shareStatus" class="share-status"></div>
@@ -199,18 +200,57 @@
         setShareStatus('Unable to copy the instructor link on this browser.');
       }
     }
-    async function shareInstructorRegisterLink() {
+    async function fetchInstructorQrFile() {
+      const response = await fetch(instructorQrUrl, { mode: 'cors' });
+      if (!response.ok) {
+        throw new Error('Unable to fetch the QR image.');
+      }
+      const blob = await response.blob();
+      return new File([blob], 'edvo-instructor-registration-qr.png', { type: blob.type || 'image/png' });
+    }
+    function openInstructorQrImage() {
+      window.open(instructorQrUrl, '_blank', 'noopener,noreferrer');
+    }
+    async function downloadInstructorQr() {
       try {
+        const link = document.createElement('a');
+        link.href = instructorQrUrl;
+        link.download = 'edvo-instructor-registration-qr.png';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setShareStatus('QR download started.');
+      } catch (error) {
+        openInstructorQrImage();
+        setShareStatus('Opened the QR image in a new tab.');
+      }
+    }
+    async function shareInstructorRegisterQr() {
+      try {
+        if (navigator.share && navigator.canShare) {
+          const qrFile = await fetchInstructorQrFile();
+          const shareData = {
+            title: 'EDVO Instructor Registration QR',
+            text: 'Scan this QR code to register as an instructor on EDVO.',
+            files: [qrFile],
+          };
+          if (navigator.canShare(shareData)) {
+            await navigator.share(shareData);
+            setShareStatus('QR shared successfully.');
+            return;
+          }
+        }
         if (navigator.share) {
           await navigator.share({
             title: 'EDVO Instructor Registration',
-            text: 'Use this link to register as an instructor on EDVO.',
+            text: 'Use this link to register as an instructor on EDVO. If the QR image is needed, use Download QR.',
             url: instructorRegisterUrl,
           });
-          setShareStatus('Share sheet opened.');
+          setShareStatus('Link shared. Use Download QR if you want to send the QR image too.');
           return;
         }
-        await copyInstructorRegisterLink();
+        openInstructorQrImage();
+        setShareStatus('Opened the QR image in a new tab for sharing.');
       } catch (error) {
         setShareStatus('Sharing was cancelled or is not supported here.');
       }
@@ -445,7 +485,8 @@
     refs.loadDemoButton.addEventListener('click', loadDemoInstructor);
     refs.removePhotoButton.addEventListener('click', clearPhoto);
     refs.copyRegisterLinkButton.addEventListener('click', copyInstructorRegisterLink);
-    refs.shareRegisterLinkButton.addEventListener('click', shareInstructorRegisterLink);
+    refs.shareRegisterQrButton.addEventListener('click', shareInstructorRegisterQr);
+    refs.downloadRegisterQrButton.addEventListener('click', downloadInstructorQr);
     refs.photoFile.addEventListener('change', async (event) => {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
