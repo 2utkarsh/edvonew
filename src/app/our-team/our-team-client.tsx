@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Badge from '@/components/ui/Badge';
+import { publicFetchJson } from '@/lib/backend-api';
+import { stripHtml } from '@/lib/utils';
 
 type DirectoryItem = {
   id: string;
@@ -15,20 +17,6 @@ type PublicListResponse<T> = {
   success: boolean;
   data: T[];
 };
-
-async function fetchLocalJson<T>(path: string): Promise<T> {
-  const response = await fetch(path, {
-    headers: { Accept: 'application/json' },
-    cache: 'no-store',
-  });
-
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(payload?.error?.message || payload?.message || 'Request failed');
-  }
-
-  return payload as T;
-}
 
 type DirectoryMode = 'team' | 'instructors';
 
@@ -97,8 +85,8 @@ export default function OurTeamClient() {
         setLoadError({ team: '', instructors: '' });
 
         const [teamResult, instructorResult] = await Promise.allSettled([
-          fetchLocalJson<PublicListResponse<Record<string, unknown>>>('/api/team'),
-          fetchLocalJson<PublicListResponse<Record<string, unknown>>>('/api/public-instructors'),
+          publicFetchJson<PublicListResponse<Record<string, unknown>>>('/api/team'),
+          publicFetchJson<PublicListResponse<Record<string, unknown>>>('/api/public-instructors'),
         ]);
 
         if (!cancelled) {
@@ -193,10 +181,7 @@ export default function OurTeamClient() {
                 <img src={member.image} alt={member.name} className="mb-5 h-40 w-40 rounded-2xl object-cover object-center shadow-lg shadow-primary-500/20" />
                 <h2 className="mb-2 text-2xl font-bold text-white">{member.name}</h2>
                 <p className="mb-4 text-sm font-medium leading-6 text-sky-300">{member.title}</p>
-                <div
-                  className="text-sm leading-7 text-slate-300"
-                  dangerouslySetInnerHTML={{ __html: member.bio }}
-                />
+                <p className="text-sm leading-7 text-slate-300">{stripHtml(member.bio)}</p>
               </article>
             ))}
           </div>
