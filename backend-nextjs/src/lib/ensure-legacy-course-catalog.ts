@@ -5,6 +5,7 @@ import { CourseCategoryModel } from '@/models/CourseCategory';
 import { CourseModel } from '@/models/Course';
 
 export const LEGACY_COURSE_CATALOG_IMPORTED_KEY = 'courses.legacyCatalogImported';
+export const DIGITAL_MARKETING_PDF_SYNCED_KEY = 'courses.digitalMarketingPdfSynced';
 
 function getLegacyCatalogTotals() {
   return {
@@ -109,6 +110,31 @@ export async function bootstrapLegacyCourseCatalog() {
   }
 
   const result = await importLegacyCourseCatalog();
+  const digitalMarketingCourse = legacyCourses.find((course) => course.slug === 'digital-marketing-masterclass');
+  const pdfSyncSetting = await SystemSettingModel.findOne({ key: DIGITAL_MARKETING_PDF_SYNCED_KEY }).lean();
+
+  if (digitalMarketingCourse && pdfSyncSetting?.value !== true) {
+    await CourseModel.updateOne(
+      { slug: digitalMarketingCourse.slug },
+      { $set: digitalMarketingCourse },
+      { upsert: true }
+    );
+
+    await SystemSettingModel.findOneAndUpdate(
+      { key: DIGITAL_MARKETING_PDF_SYNCED_KEY },
+      {
+        key: DIGITAL_MARKETING_PDF_SYNCED_KEY,
+        value: true,
+        category: 'courses',
+        description: 'Whether the Digital Marketing course structure PDF has been synced into the shared course record.',
+        type: 'boolean',
+        isPublic: false,
+        isActive: true,
+      },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+  }
+
   await markLegacyCourseCatalogImported();
   return result;
 }

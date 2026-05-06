@@ -37,7 +37,7 @@ import FadeIn from '@/components/animations/FadeIn';
 import { authFetchJson, loadScript, publicFetchJson } from '@/lib/backend-api';
 import { stripHtml } from '@/lib/utils';
 
-type LectureItem = { id: string; title: string; duration?: string; isFree?: boolean; contentType?: string };
+type LectureItem = { id: string; title: string; duration?: string; isFree?: boolean; contentType?: string; resourceUrl?: string; assetLabel?: string };
 type ModuleItem = { id: string; label?: string; title: string; lectures: LectureItem[] };
 type SubjectItem = { id: string; name: string; modules: ModuleItem[] };
 type Mentor = { id: string; name: string; designation: string; company: string; experience: string; image?: string };
@@ -416,7 +416,17 @@ export default function CourseDetailPage() {
                             {lecture.contentType ? <span>{lecture.contentType}</span> : null}
                           </div>
                         </div>
-                        {lecture.isFree ? (
+                        {lecture.resourceUrl ? (
+                          <a
+                            href={lecture.resourceUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-2 rounded-full bg-orange-100 px-3 py-2 text-xs font-semibold text-orange-700 transition-colors hover:bg-orange-200 dark:bg-orange-500/20 dark:text-orange-200 dark:hover:bg-orange-500/30"
+                          >
+                            <Download className="h-4 w-4" />
+                            <span>{lecture.assetLabel || 'Download'}</span>
+                          </a>
+                        ) : lecture.isFree ? (
                           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-500/20"><Play className="h-4 w-4 text-orange-500" /></div>
                         ) : (
                           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 dark:bg-slate-800"><Lock className="h-4 w-4 text-gray-400 dark:text-slate-500" /></div>
@@ -661,6 +671,8 @@ function normalizeCourseDetail(data: any): CourseDetail {
                   duration: lecture?.duration ? String(lecture.duration) : '',
                   isFree: Boolean(lecture?.isFree),
                   contentType: lecture?.contentType ? String(lecture.contentType) : '',
+                  resourceUrl: lecture?.resourceUrl ? String(lecture.resourceUrl) : '',
+                  assetLabel: lecture?.assetLabel ? String(lecture.assetLabel) : '',
                 }))
               : [],
           }))

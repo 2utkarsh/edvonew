@@ -245,7 +245,56 @@ export const legacyCourses = [
   createLegacyCourse({ order: 16, title: 'Complete Python Bootcamp: From Zero to Hero', category: 'Programming', level: 'beginner', price: 4999, originalPrice: 9999, duration: '40 hours', shortDescription: 'Learn Python programming from scratch with hands-on projects and practical foundations.', description: 'A broad Python course that covers syntax, data structures, OOP, automation patterns, and project building for new learners.' }),
   createLegacyCourse({ order: 17, title: 'React JS - The Complete Guide including Hooks', category: 'Web Development', level: 'intermediate', price: 5999, originalPrice: 11999, duration: '50 hours', shortDescription: 'Modern React development with components, hooks, routing, and production-ready workflows.', description: 'A complete React curriculum that helps learners build interactive applications, reusable UI systems, and frontend portfolio projects.' }),
   createLegacyCourse({ order: 18, title: 'Machine Learning A-Z: AI, Python & R', category: 'Data Science', level: 'advanced', price: 7999, originalPrice: 14999, duration: '60 hours', shortDescription: 'Comprehensive machine learning coverage with applied case studies, modeling, and AI fundamentals.', description: 'A rich machine learning program for learners who want hands-on experimentation, implementation, and AI portfolio depth.' }),
-  createLegacyCourse({ order: 19, title: 'Digital Marketing Masterclass', category: 'Marketing', level: 'beginner', price: 3999, originalPrice: 7999, duration: '30 hours', shortDescription: 'SEO, social media, ads, content, email, and analytics in one practical marketing track.', description: 'A beginner-friendly marketing course for professionals who want usable frameworks for campaigns, growth, and measurement.' }),
+  (() => {
+    const course = createLegacyCourse({
+      order: 19,
+      title: 'Digital Marketing Masterclass',
+      category: 'Marketing',
+      level: 'beginner',
+      price: 3999,
+      originalPrice: 7999,
+      duration: '30 hours',
+      shortDescription: 'SEO, social media, ads, content, email, and analytics in one practical marketing track.',
+      description: 'A beginner-friendly marketing course for professionals who want usable frameworks for campaigns, growth, and measurement.',
+    });
+
+    course.bannerTag = 'Digital Marketing';
+    course.bannerSubtag = 'Includes downloadable course structure PDF';
+    course.bannerExtra = 'The latest DM course structure is available directly inside the course curriculum as a downloadable resource.';
+    course.offerings = [
+      ...course.offerings,
+      { icon: 'resource', title: 'Downloadable course structure PDF' },
+    ];
+    course.curriculum = [
+      {
+        name: 'Course Structure',
+        description: 'Official digital marketing course outline and roadmap.',
+        modules: [
+          {
+            label: 'Module 0',
+            title: 'Structure PDF',
+            description: 'Download the official course structure document used by admin and the public website.',
+            estimatedMinutes: 5,
+            lectures: [
+              {
+                title: 'DM Course Structure PDF',
+                description: 'Download the official digital marketing course structure document.',
+                duration: 'PDF',
+                isFree: true,
+                contentType: 'resource',
+                resourceUrl: '/course-assets/dm-course-structure.pdf',
+                assetSource: 'upload',
+                assetLabel: 'DM course structure',
+              },
+            ],
+          },
+        ],
+      },
+      ...course.curriculum,
+    ];
+
+    return course;
+  })(),
   createLegacyCourse({ order: 20, title: 'AWS Certified Solutions Architect', category: 'Cloud Computing', level: 'intermediate', price: 6999, originalPrice: 12999, duration: '45 hours', shortDescription: 'Cloud architecture and AWS certification preparation with practical labs and best practices.', description: 'A certification-oriented AWS track that covers infrastructure, architecture decisions, security, and exam readiness.' }),
 ];
 
