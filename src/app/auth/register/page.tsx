@@ -25,7 +25,7 @@ export default function RegisterPage() {
     agreeToTerms: false,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const role = searchParams.get('role') === 'instructor' ? 'instructor' : 'student';
+  const role = searchParams?.get('role') === 'instructor' ? 'instructor' : 'student';
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
