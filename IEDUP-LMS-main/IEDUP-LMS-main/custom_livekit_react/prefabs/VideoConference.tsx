@@ -34,11 +34,13 @@ export interface VideoConferenceProps extends React.HTMLAttributes<HTMLDivElemen
   /** @alpha */
   SettingsComponent?: React.ComponentType;
   onWhiteboardToggle?: () => void;
+  onWhiteboardAccessToggle?: () => void;
   /**
    * Array of participant identities who have raised their hand.
    */
   raisedHandIdentities?: string[];
   whiteboardOpen?: boolean;
+  whiteboardMembersCanUse?: boolean;
   canCloseWhiteboard?: boolean;
   /**
    * Callback for hand state changes from the local participant
@@ -71,8 +73,10 @@ export function VideoConference({
   SettingsComponent,
   raisedHandIdentities,
   whiteboardOpen,
+  whiteboardMembersCanUse,
   canCloseWhiteboard,
   onWhiteboardToggle,
+  onWhiteboardAccessToggle,
   onHandStateChange,
   ...props
 }: VideoConferenceProps) {
@@ -181,7 +185,9 @@ export function VideoConference({
               }}
               onHandStateChange={onHandStateChange}
               onWhiteboardToggle={onWhiteboardToggle}
+              onWhiteboardAccessToggle={onWhiteboardAccessToggle}
               whiteboardOpen={whiteboardOpen}
+              whiteboardMembersCanUse={whiteboardMembersCanUse}
               canCloseWhiteboard={canCloseWhiteboard}
             />
           </div>

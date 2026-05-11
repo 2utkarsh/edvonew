@@ -23,8 +23,10 @@ import { DeleteRoomButton } from '../components/controls/DeleteRoomButton';
 import { GiSpikyExplosion } from "react-icons/gi";
 import { RecordButton } from '../../components/RecordButton';
 import { RaiseHandButton } from '../components/controls/RaiseHandButton';
-import { FaPen } from 'react-icons/fa';
+import { FaPen, FaVolumeUp } from 'react-icons/fa';
 import { roomHref } from '@/lib/url';
+
+const AUDIO_OUTPUT_STORAGE_KEY = 'preferredAudioOutputDeviceId';
 
 /** @public */
 export type ControlBarControls = {
@@ -54,7 +56,9 @@ export interface ControlBarProps extends React.HTMLAttributes<HTMLDivElement> {
    */
   onHandStateChange?: (action: 'raise' | 'lower', identity: string) => void;
   onWhiteboardToggle?: () => void;
+  onWhiteboardAccessToggle?: () => void;
   whiteboardOpen?: boolean;
+  whiteboardMembersCanUse?: boolean;
   canCloseWhiteboard?: boolean;
 }
 
@@ -81,7 +85,9 @@ export function ControlBar({
   onDeviceError,
   onHandStateChange,
   onWhiteboardToggle,
+  onWhiteboardAccessToggle,
   whiteboardOpen = false,
+  whiteboardMembersCanUse = true,
   canCloseWhiteboard = true,
   ...props
 }: ControlBarProps) {
@@ -201,6 +207,7 @@ export function ControlBar({
   );
 
   const [isScreenShareEnabled, setIsScreenShareEnabled] = React.useState(false);
+  const [speakerSelectionAvailable, setSpeakerSelectionAvailable] = React.useState(false);
 
   const onScreenShareChange = React.useCallback(
     (enabled: boolean) => {
@@ -229,6 +236,57 @@ export function ControlBar({
       isUserInitiated ? saveVideoInputEnabled(enabled) : null,
     [saveVideoInputEnabled],
   );
+
+  React.useEffect(() => {
+    if (typeof navigator === 'undefined' || !navigator.mediaDevices?.enumerateDevices) {
+      setSpeakerSelectionAvailable(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const refreshAudioOutputs = async () => {
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        if (!cancelled) {
+          setSpeakerSelectionAvailable(devices.some((device) => device.kind === 'audiooutput'));
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setSpeakerSelectionAvailable(false);
+        }
+      }
+    };
+
+    void refreshAudioOutputs();
+
+    const handleDeviceChange = () => {
+      void refreshAudioOutputs();
+    };
+
+    navigator.mediaDevices.addEventListener?.('devicechange', handleDeviceChange);
+
+    return () => {
+      cancelled = true;
+      navigator.mediaDevices.removeEventListener?.('devicechange', handleDeviceChange);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined' || !speakerSelectionAvailable) {
+      return;
+    }
+
+    const savedDeviceId = window.localStorage.getItem(AUDIO_OUTPUT_STORAGE_KEY);
+    if (!savedDeviceId) {
+      return;
+    }
+
+    room.switchActiveDevice('audiooutput', savedDeviceId, false).catch((error) => {
+      console.warn('Unable to restore saved speaker/headphone device, falling back to default.', error);
+      window.localStorage.removeItem(AUDIO_OUTPUT_STORAGE_KEY);
+    });
+  }, [room, speakerSelectionAvailable]);
 
   return (
     <div 
@@ -278,6 +336,27 @@ export function ControlBar({
               onActiveDeviceChange={(_kind, deviceId) =>
                 saveVideoInputDeviceId(deviceId ?? 'default')
               }
+            />
+          </div>
+        </div>
+      )}
+      {speakerSelectionAvailable && (
+        <div className="lk-button-group">
+          <button type="button" className="lk-button" title="Choose speaker or Bluetooth output">
+            {showIcon && <FaVolumeUp />}
+            {'Speaker'}
+          </button>
+          <div className="lk-button-group-menu">
+            <MediaDeviceMenu
+              kind="audiooutput"
+              onActiveDeviceChange={(_kind, deviceId) => {
+                if (typeof window !== 'undefined') {
+                  window.localStorage.setItem(
+                    AUDIO_OUTPUT_STORAGE_KEY,
+                    deviceId ?? 'default',
+                  );
+                }
+              }}
             />
           </div>
         </div>
@@ -353,6 +432,25 @@ export function ControlBar({
         >
           {showIcon && <FaPen />}
           {'Whiteboard'}
+        </button>
+      )}
+      {isHost && onWhiteboardAccessToggle && (
+        <button
+          type="button"
+          className="lk-button"
+          onClick={onWhiteboardAccessToggle}
+          aria-pressed={!whiteboardMembersCanUse}
+          title={
+            whiteboardMembersCanUse
+              ? 'Disable whiteboard access for participants'
+              : 'Enable whiteboard access for participants'
+          }
+          style={{
+            border: !whiteboardMembersCanUse ? '2px solid rgba(255, 255, 255, 0.9)' : undefined,
+          }}
+        >
+          {showIcon && <FaPen />}
+          {whiteboardMembersCanUse ? 'Lock Whiteboard' : 'Unlock Whiteboard'}
         </button>
       )}
       <RaiseHandButton onHandStateChange={onHandStateChange} />

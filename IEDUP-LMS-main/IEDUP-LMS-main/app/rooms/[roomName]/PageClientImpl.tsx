@@ -33,7 +33,7 @@ import RoomWhiteboard from '@/components/RoomWhiteboard';
 import { apiUrl, roomPath } from '@/lib/url';
 
 const CONN_DETAILS_ENDPOINT = process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? apiUrl('/api/connection-details');
-const SHOW_SETTINGS_MENU = process.env.NEXT_PUBLIC_SHOW_SETTINGS_MENU == 'true';
+const SHOW_SETTINGS_MENU = process.env.NEXT_PUBLIC_SHOW_SETTINGS_MENU !== 'false';
 const EXIT_REDIRECT_URL = 'https://edvo.in';
 const encoder = new TextEncoder();
 
@@ -457,6 +457,7 @@ function VideoConferenceComponent(props: {
   const [raisedHandIdentities, setRaisedHandIdentities] = useState<string[]>([]);
   const [whiteboardOpen, setWhiteboardOpen] = useState(false);
   const [whiteboardOwnerIdentity, setWhiteboardOwnerIdentity] = useState<string | null>(null);
+  const [whiteboardMembersCanUse, setWhiteboardMembersCanUse] = useState(true);
   const [isLocalHost, setIsLocalHost] = useState(false);
 
   const refreshLocalRole = React.useCallback(() => {
@@ -477,7 +478,12 @@ function VideoConferenceComponent(props: {
   }, [refreshLocalRole, room]);
 
   const publishWhiteboardVisibility = React.useCallback(
-    async (nextOpen: boolean, destinationIdentities?: string[], ownerIdentity?: string | null) => {
+    async (
+      nextOpen: boolean,
+      destinationIdentities?: string[],
+      ownerIdentity?: string | null,
+      allowParticipants?: boolean,
+    ) => {
       try {
         await room.localParticipant.publishData(
           encoder.encode(
@@ -486,6 +492,7 @@ function VideoConferenceComponent(props: {
               action: nextOpen ? 'open' : 'close',
               actor: room.localParticipant.identity,
               ownerIdentity: nextOpen ? ownerIdentity ?? room.localParticipant.identity : null,
+              allowParticipants,
             }),
           ),
           {
@@ -500,7 +507,37 @@ function VideoConferenceComponent(props: {
     [room],
   );
 
+  const publishWhiteboardAccess = React.useCallback(
+    async (allowParticipants: boolean, destinationIdentities?: string[]) => {
+      try {
+        await room.localParticipant.publishData(
+          encoder.encode(
+            JSON.stringify({
+              type: 'whiteboard-control',
+              action: 'set-access',
+              actor: room.localParticipant.identity,
+              allowParticipants,
+            }),
+          ),
+          {
+            reliable: true,
+            destinationIdentities,
+          },
+        );
+      } catch (error) {
+        console.error('Failed to broadcast whiteboard access state:', error);
+      }
+    },
+    [room],
+  );
+
   const handleWhiteboardToggle = React.useCallback(() => {
+    if (!isLocalHost && !whiteboardMembersCanUse) {
+      setNotify(true);
+      setNotifyText('The admin has disabled whiteboard access for participants.');
+      return;
+    }
+
     setWhiteboardOpen((current) => {
       const canCloseCurrentBoard =
         isLocalHost || whiteboardOwnerIdentity === room.localParticipant.identity;
@@ -514,10 +551,39 @@ function VideoConferenceComponent(props: {
       const nextOpen = !current;
       const nextOwnerIdentity = nextOpen ? room.localParticipant.identity : null;
       setWhiteboardOwnerIdentity(nextOwnerIdentity);
-      void publishWhiteboardVisibility(nextOpen, undefined, nextOwnerIdentity);
+      void publishWhiteboardVisibility(
+        nextOpen,
+        undefined,
+        nextOwnerIdentity,
+        whiteboardMembersCanUse,
+      );
       return nextOpen;
     });
-  }, [isLocalHost, publishWhiteboardVisibility, room, whiteboardOwnerIdentity]);
+  }, [
+    isLocalHost,
+    publishWhiteboardVisibility,
+    room,
+    whiteboardMembersCanUse,
+    whiteboardOwnerIdentity,
+  ]);
+
+  const handleWhiteboardAccessToggle = React.useCallback(() => {
+    if (!isLocalHost) {
+      return;
+    }
+
+    setWhiteboardMembersCanUse((current) => {
+      const next = !current;
+      void publishWhiteboardAccess(next);
+      setNotify(true);
+      setNotifyText(
+        next
+          ? 'Participants can use the whiteboard again.'
+          : 'Participant whiteboard access has been disabled.',
+      );
+      return next;
+    });
+  }, [isLocalHost, publishWhiteboardAccess]);
 
   const handleWhiteboardClose = React.useCallback(() => {
     setWhiteboardOpen((current) => {
@@ -574,10 +640,23 @@ function VideoConferenceComponent(props: {
             setNotifyText(`${data.name || 'The host'} asked you to share your screen.`)
           }
         } else if (data.type === 'whiteboard-control') {
-          setWhiteboardOpen(data.action === 'open');
-          setWhiteboardOwnerIdentity(
-            data.action === 'open' ? data.ownerIdentity ?? data.actor ?? null : null,
-          );
+          if (typeof data.allowParticipants === 'boolean') {
+            setWhiteboardMembersCanUse(data.allowParticipants);
+          }
+
+          if (data.action === 'open' || data.action === 'close') {
+            setWhiteboardOpen(data.action === 'open');
+            setWhiteboardOwnerIdentity(
+              data.action === 'open' ? data.ownerIdentity ?? data.actor ?? null : null,
+            );
+          }
+
+          if (data.action === 'set-access' && data.allowParticipants === false) {
+            if (!isLocalHost) {
+              setNotify(true);
+              setNotifyText('The admin has disabled whiteboard access for participants.');
+            }
+          }
         }
       } catch (error) {
         console.error('Error handling data message:', error);
@@ -588,22 +667,36 @@ function VideoConferenceComponent(props: {
     return () => {
       room.off('dataReceived', handleData);
     };
-  }, [room]);
+  }, [isLocalHost, room]);
 
   React.useEffect(() => {
     const handleParticipantConnected = (participant: RemoteParticipant) => {
-      if (!whiteboardOpen) {
-        return;
+      if (whiteboardOpen) {
+        void publishWhiteboardVisibility(
+          true,
+          [participant.identity],
+          whiteboardOwnerIdentity,
+          whiteboardMembersCanUse,
+        );
       }
 
-      void publishWhiteboardVisibility(true, [participant.identity], whiteboardOwnerIdentity);
+      if (!whiteboardMembersCanUse) {
+        void publishWhiteboardAccess(false, [participant.identity]);
+      }
     };
 
     room.on(RoomEvent.ParticipantConnected, handleParticipantConnected);
     return () => {
       room.off(RoomEvent.ParticipantConnected, handleParticipantConnected);
     };
-  }, [publishWhiteboardVisibility, room, whiteboardOpen, whiteboardOwnerIdentity]);
+  }, [
+    publishWhiteboardAccess,
+    publishWhiteboardVisibility,
+    room,
+    whiteboardMembersCanUse,
+    whiteboardOpen,
+    whiteboardOwnerIdentity,
+  ]);
 
   const canCloseWhiteboard =
     !whiteboardOpen ||
@@ -612,7 +705,7 @@ function VideoConferenceComponent(props: {
   const canDrawWhiteboard =
     !whiteboardOpen ||
     isLocalHost ||
-    whiteboardOwnerIdentity === room.localParticipant.identity;
+    (whiteboardMembersCanUse && whiteboardOwnerIdentity === room.localParticipant.identity);
 
   return (
     <div className="lk-room-container" style={{ position: 'relative', minHeight: '100vh', height: '100svh' }}>
@@ -623,7 +716,9 @@ function VideoConferenceComponent(props: {
             raisedHandIdentities={raisedHandIdentities}
             onHandStateChange={handleLocalHandStateChange}
             onWhiteboardToggle={handleWhiteboardToggle}
+            onWhiteboardAccessToggle={handleWhiteboardAccessToggle}
             whiteboardOpen={whiteboardOpen}
+            whiteboardMembersCanUse={whiteboardMembersCanUse}
             canCloseWhiteboard={canCloseWhiteboard}
           />
         <RoomWhiteboard
