@@ -28,7 +28,6 @@ import {
 import React, { useState } from 'react';
 import Notification from '@/components/Notification';
 import { MassControl } from '@/components/MassControl';
-import FaceVerificationMonitor from '@/components/FaceVerificationMonitor';
 import RoomWhiteboard from '@/components/RoomWhiteboard';
 
 import { apiUrl, roomPath } from '@/lib/url';
@@ -633,7 +632,6 @@ function VideoConferenceComponent(props: {
           onClose={handleWhiteboardClose}
           room={room}
         />
-        <FaceVerificationMonitor room={room} />
         <MassControl/>
         <ParticipantList handVisible={handVisible} participantIdentityHand={participantIdentityHand} />
         <Notification visible={notify} setVisible={setNotify} text={notifyText}/>

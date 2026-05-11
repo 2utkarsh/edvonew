@@ -773,20 +773,9 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
               const metadata = participant.metadata ? JSON.parse(participant.metadata) : {};
               const role = metadata.role || 'participant';
               const isLocal = participant.isLocal;
-              const faceVerification = metadata.faceVerification || null;
-              const faceVerified = faceVerification?.verified === true;
-              const faceStatusLabel = faceVerification?.referenceCapturedAt
-                ? faceVerified
-                  ? 'Face verified'
-                  : 'Face check needed'
-                : null;
-              const faceStatusTime = faceVerification?.latestCheckAt
-                ? new Date(faceVerification.latestCheckAt).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })
-                : null;
-              
+              const faceVerified = false;
+              const faceStatusLabel = null;
+              const faceStatusTime = null;
               // Get the display name - use renamed name if available, otherwise use original
               const originalName = participant.identity.split('__')[0];
               const displayName = renamedParticipants[participant.identity] || originalName;
