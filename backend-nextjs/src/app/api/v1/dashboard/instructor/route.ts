@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { requireAuth } from '@/lib/auth';
-import { success, fail } from '@/lib/http';
+import { success, fail, toResponse } from '@/lib/http';
 import { CourseModel } from '@/models/Course';
 import { EnrollmentModel } from '@/models/Enrollment';
 import { Types } from 'mongoose';
@@ -12,13 +12,13 @@ export async function GET(request: NextRequest) {
     await connectToDatabase();
 
     const authResult = await requireAuth(['instructor']);
-    if (authResult.error) return authResult.error;
+    if ('error' in authResult) return toResponse(authResult.error);
 
     const userId = authResult.payload.sub;
     const isValidUserId = Types.ObjectId.isValid(userId);
 
     if (!isValidUserId) {
-      return success(
+      return toResponse(success(
         {
           courses: [],
           stats: {
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
           recentEnrollments: [],
         },
         'Instructor dashboard data retrieved successfully'
-      );
+      ));
     }
 
     // Get instructor's courses
@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
           .lean()
       : [];
 
-    return success(
+    return toResponse(success(
       {
         courses,
         stats: {
@@ -77,14 +77,14 @@ export async function GET(request: NextRequest) {
         recentEnrollments,
       },
       'Instructor dashboard data retrieved successfully'
-    );
+    ));
   } catch (error: any) {
     console.error('Instructor dashboard error:', error);
-    return fail(
+    return toResponse(fail(
       error.message || 'Failed to fetch dashboard data',
       'FETCH_DASHBOARD_FAILED',
       undefined,
       500
-    );
+    ));
   }
 }

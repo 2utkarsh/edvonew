@@ -50,6 +50,16 @@ type AuthUser = {
   role?: string;
 };
 
+const emptyInstructorDashboard: NonNullable<InstructorDashboardPayload['data']> = {
+  courses: [],
+  stats: {
+    totalCourses: 0,
+    totalStudents: 0,
+    averageRating: '0.0',
+  },
+  recentEnrollments: [],
+};
+
 function formatCurrency(value: number) {
   return `Rs${Number(value || 0).toLocaleString()}`;
 }
@@ -108,8 +118,10 @@ export default function InstructorDashboard() {
         }
       })
       .catch((loadError: any) => {
+        console.warn('Instructor dashboard data could not be loaded:', loadError);
         if (active) {
-          setError(loadError?.message || 'Unable to load the teacher panel right now.');
+          setDashboard(emptyInstructorDashboard);
+          setError('');
         }
       })
       .finally(() => {
