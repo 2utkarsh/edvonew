@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    .stack{display:flex;flex-direction:column;gap:24px}.panel,.stat{background:#fff;border:1px solid #e2e8f0;border-radius:20px;box-shadow:0 8px 30px rgba(15,23,42,.06);padding:24px}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}.label{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:#718096;margin-bottom:8px;font-weight:700}.value{font-size:2rem;font-weight:800}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.input,.textarea,.select,.file-input{width:100%;padding:12px 16px;border:1px solid #cbd5e0;border-radius:12px;font-size:.95rem;background:#fff}.textarea{min-height:120px;resize:vertical}.actions,.table-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.toolbar{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}.table-wrap{overflow:auto}.badge{display:inline-flex;align-items:center;border-radius:999px;padding:6px 12px;font-size:.78rem;font-weight:700}.badge-role{background:rgba(102,126,234,.12);color:#5a67d8}.badge-verified{background:rgba(34,197,94,.12);color:#15803d}.badge-featured{background:rgba(245,158,11,.16);color:#b45309}.btn{border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}.btn-primary{background:#667eea;color:#fff}.btn-secondary{background:#edf2f7;color:#1a202c}.btn-danger{background:#f56565;color:#fff}.help{color:#718096;font-size:.88rem}.inline-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.photo-upload{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}.photo-preview{width:96px;height:96px;border-radius:18px;object-fit:cover;border:1px solid #cbd5e0;background:#f8fafc}.photo-upload-meta{display:flex;flex-direction:column;gap:10px;min-width:220px}.share-card{display:grid;grid-template-columns:240px minmax(0,1fr);gap:20px;align-items:center}.qr-box{display:flex;align-items:center;justify-content:center;min-height:220px;border:1px dashed #cbd5e0;border-radius:20px;background:#f8fafc;padding:16px}.qr-box img,.qr-box canvas{max-width:220px;width:100%;height:auto;border-radius:18px;background:#fff;padding:12px;border:1px solid #e2e8f0}.share-link-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:16px}.share-link{word-break:break-all;color:#334155;font-size:.92rem}.share-note{font-size:.9rem;color:#64748b}.share-status{font-size:.9rem;font-weight:700;color:#5a67d8;min-height:20px}@media (max-width: 900px){.inline-grid,.share-card{grid-template-columns:1fr}}
+    .stack{display:flex;flex-direction:column;gap:24px}.panel,.stat{background:#fff;border:1px solid #e2e8f0;border-radius:20px;box-shadow:0 8px 30px rgba(15,23,42,.06);padding:24px}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}.label{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:#718096;margin-bottom:8px;font-weight:700}.value{font-size:2rem;font-weight:800}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.input,.textarea,.select,.file-input{width:100%;padding:12px 16px;border:1px solid #cbd5e0;border-radius:12px;font-size:.95rem;background:#fff}.textarea{min-height:120px;resize:vertical}.actions,.table-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.toolbar{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}.table-wrap{overflow:auto}.badge{display:inline-flex;align-items:center;border-radius:999px;padding:6px 12px;font-size:.78rem;font-weight:700}.badge-role{background:rgba(102,126,234,.12);color:#5a67d8}.badge-verified{background:rgba(34,197,94,.12);color:#15803d}.badge-featured{background:rgba(245,158,11,.16);color:#b45309}.btn{border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}.btn-primary{background:#667eea;color:#fff}.btn-secondary{background:#edf2f7;color:#1a202c}.btn-danger{background:#f56565;color:#fff}.help{color:#718096;font-size:.88rem}.inline-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.photo-upload{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}.photo-preview{width:96px;height:96px;border-radius:18px;object-fit:cover;border:1px solid #cbd5e0;background:#f8fafc}.photo-upload-meta{display:flex;flex-direction:column;gap:10px;min-width:220px}.instructor-photo{width:52px;height:52px;border-radius:16px;object-fit:cover;border:1px solid #e2e8f0;background:#f8fafc;box-shadow:0 8px 18px rgba(15,23,42,.08)}.share-card{display:grid;grid-template-columns:240px minmax(0,1fr);gap:20px;align-items:center}.qr-box{display:flex;align-items:center;justify-content:center;min-height:220px;border:1px dashed #cbd5e0;border-radius:20px;background:#f8fafc;padding:16px}.qr-box img,.qr-box canvas{max-width:220px;width:100%;height:auto;border-radius:18px;background:#fff;padding:12px;border:1px solid #e2e8f0}.share-link-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:16px}.share-link{word-break:break-all;color:#334155;font-size:.92rem}.share-note{font-size:.9rem;color:#64748b}.share-status{font-size:.9rem;font-weight:700;color:#5a67d8;min-height:20px}@media (max-width: 900px){.inline-grid,.share-card{grid-template-columns:1fr}}
   </style>
 <link rel="stylesheet" href="/backend/admin/styles.css" />
 </head>
@@ -155,6 +155,7 @@
             <table>
               <thead>
                 <tr>
+                  <th>Photo</th>
                   <th>Name</th>
                   <th>Headline</th>
                   <th>Expertise</th>
@@ -163,7 +164,7 @@
                 </tr>
               </thead>
               <tbody id="instructorRows">
-                <tr><td colspan="5" class="help">Loading instructors...</td></tr>
+                <tr><td colspan="6" class="help">Loading instructors...</td></tr>
               </tbody>
             </table>
           </div>
@@ -287,6 +288,7 @@
 
       refs.instructorRows.innerHTML = list.length ? list.map((item) => `
         <tr>
+          <td><img class="instructor-photo" src="${e(item.user?.photo || item.user?.avatar || '/images/edvo-official-logo-v10.png')}" alt="${e(item.user?.name || 'Instructor')} photo" loading="lazy" /></td>
           <td>
             <strong>${e(item.user?.name || 'Unknown')}</strong>
             <div class="help">${e(item.user?.email || '')}</div>
@@ -305,7 +307,7 @@
             </div>
           </td>
         </tr>
-      `).join('') : '<tr><td colspan="5" class="help">No instructors found.</td></tr>';
+      `).join('') : '<tr><td colspan="6" class="help">No instructors found.</td></tr>';
     }
 
     function fillForm(item) {
@@ -386,8 +388,8 @@
         bio: refs.bio.value.trim(),
         headline: refs.headline.value.trim(),
         skills: splitComma(refs.expertise.value),
-        photo: uploadedPhotoData || undefined,
-        avatar: uploadedPhotoData || undefined,
+        photo: uploadedPhotoData,
+        avatar: uploadedPhotoData,
       };
 
       const userResponse = await adminFetch('/backend/api/admin/users', {
@@ -431,8 +433,8 @@
           bio: refs.bio.value.trim(),
           headline: refs.headline.value.trim(),
           skills: splitComma(refs.expertise.value),
-          photo: uploadedPhotoData || undefined,
-          avatar: uploadedPhotoData || undefined,
+          photo: uploadedPhotoData,
+          avatar: uploadedPhotoData,
         }),
       });
 
