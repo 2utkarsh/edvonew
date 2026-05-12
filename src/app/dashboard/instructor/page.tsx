@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import {
   BookOpen,
   CalendarDays,
-  DollarSign,
   Eye,
   MessageSquare,
   Plus,
@@ -139,12 +138,6 @@ export default function InstructorDashboard() {
         tone: 'emerald',
       },
       {
-        label: 'Revenue',
-        value: formatCurrency(Number(dashboard?.stats?.totalRevenue || 0)),
-        icon: DollarSign,
-        tone: 'amber',
-      },
-      {
         label: 'Average Rating',
         value: String(dashboard?.stats?.averageRating || '0.0'),
         icon: Star,
@@ -191,7 +184,7 @@ export default function InstructorDashboard() {
           </div>
         </section>
 
-        <section className="mb-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <section className="mb-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {stats.map((item) => (
             <Card key={item.label} className="rounded-[1.6rem] border border-white/70 bg-white/90 p-5 shadow-[0_20px_50px_rgba(15,23,42,0.05)] dark:border-white/10 dark:bg-slate-900/80">
               <div className="flex items-start justify-between gap-4">
