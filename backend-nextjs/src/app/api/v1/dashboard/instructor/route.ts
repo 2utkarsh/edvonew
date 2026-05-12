@@ -4,6 +4,7 @@ import { requireAuth } from '@/lib/auth';
 import { success, fail, toResponse } from '@/lib/http';
 import { CourseModel } from '@/models/Course';
 import { EnrollmentModel } from '@/models/Enrollment';
+import { UserModel } from '@/models/User';
 import { Types } from 'mongoose';
 
 // GET instructor dashboard data
@@ -20,6 +21,12 @@ export async function GET(request: NextRequest) {
     if (!isValidUserId) {
       return toResponse(success(
         {
+          user: {
+            name: authResult.payload.name || 'Teacher',
+            email: authResult.payload.email || '',
+            photo: '',
+            avatar: '',
+          },
           courses: [],
           stats: {
             totalCourses: 0,
@@ -32,6 +39,8 @@ export async function GET(request: NextRequest) {
         'Instructor dashboard data retrieved successfully'
       ));
     }
+
+    const user = await UserModel.findById(userId).select('name email photo avatar headline').lean();
 
     // Get instructor's courses
     const courses = await CourseModel.find({ instructorId: new Types.ObjectId(userId) })
@@ -67,6 +76,13 @@ export async function GET(request: NextRequest) {
 
     return toResponse(success(
       {
+        user: {
+          name: user?.name || authResult.payload.name || 'Teacher',
+          email: user?.email || authResult.payload.email || '',
+          photo: user?.photo || '',
+          avatar: user?.avatar || '',
+          headline: user?.headline || '',
+        },
         courses,
         stats: {
           totalCourses: courses.length,

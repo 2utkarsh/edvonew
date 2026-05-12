@@ -19,6 +19,13 @@ import { authFetchJson, getStoredAuthToken, getStoredAuthUser } from '@/lib/back
 
 type InstructorDashboardPayload = {
   data?: {
+    user?: {
+      name?: string;
+      email?: string;
+      photo?: string;
+      avatar?: string;
+      headline?: string;
+    };
     courses?: Array<{
       _id?: string;
       title?: string;
@@ -48,6 +55,8 @@ type InstructorDashboardPayload = {
 type AuthUser = {
   name?: string;
   role?: string;
+  photo?: string;
+  avatar?: string;
 };
 
 const emptyInstructorDashboard: NonNullable<InstructorDashboardPayload['data']> = {
@@ -75,10 +84,21 @@ function formatDate(value?: string) {
   });
 }
 
+function initials(value: string) {
+  return value
+    .split(' ')
+    .map((part) => part.trim().charAt(0))
+    .filter(Boolean)
+    .slice(0, 2)
+    .join('')
+    .toUpperCase() || 'T';
+}
+
 export default function InstructorDashboard() {
   const router = useRouter();
   const [accessChecked, setAccessChecked] = useState(false);
   const [displayName, setDisplayName] = useState('Teacher');
+  const [profilePhoto, setProfilePhoto] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [dashboard, setDashboard] = useState<InstructorDashboardPayload['data'] | null>(null);
@@ -103,6 +123,7 @@ export default function InstructorDashboard() {
     }
 
     setDisplayName(user?.name || 'Teacher');
+    setProfilePhoto(user?.photo || user?.avatar || '');
     setAccessChecked(true);
   }, [router]);
 
@@ -115,6 +136,8 @@ export default function InstructorDashboard() {
       .then((payload) => {
         if (active) {
           setDashboard(payload.data || null);
+          setDisplayName((current) => payload.data?.user?.name || current);
+          setProfilePhoto((current) => payload.data?.user?.photo || payload.data?.user?.avatar || current);
         }
       })
       .catch((loadError: any) => {
@@ -176,12 +199,21 @@ export default function InstructorDashboard() {
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <section className="mb-10 rounded-[2rem] bg-[linear-gradient(135deg,#0f172a_0%,#1d4ed8_48%,#2563eb_100%)] px-8 py-10 text-white shadow-[0_30px_80px_rgba(15,23,42,0.22)]">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <Badge variant="gradient" className="mb-4 bg-white/10 text-white">Teacher Panel</Badge>
-              <h1 className="text-4xl font-black">Welcome back, {displayName}!</h1>
-              <p className="mt-3 max-w-2xl text-sm text-white/80 sm:text-base">
-                Manage your courses, track enrollments, and monitor student activity from the same EDVO login.
-              </p>
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+              <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-[1.5rem] border border-white/25 bg-white/10 text-3xl font-black uppercase shadow-[0_20px_45px_rgba(15,23,42,0.22)]">
+                {profilePhoto ? (
+                  <img src={profilePhoto} alt={displayName} className="h-full w-full object-cover" />
+                ) : (
+                  initials(displayName)
+                )}
+              </div>
+              <div>
+                <Badge variant="gradient" className="mb-4 bg-white/10 text-white">Teacher Panel</Badge>
+                <h1 className="text-4xl font-black">Welcome back, {displayName}!</h1>
+                <p className="mt-3 max-w-2xl text-sm text-white/80 sm:text-base">
+                  Manage your courses, track enrollments, and monitor student activity from the same EDVO login.
+                </p>
+              </div>
             </div>
             <div className="flex flex-wrap gap-3">
               <Button variant="secondary" className="rounded-full border-0 bg-white text-slate-950 hover:bg-white/90">
