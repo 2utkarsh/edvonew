@@ -25,8 +25,8 @@ const InstructorRegisterShare = () => {
    const [shareMessage, setShareMessage] = useState('');
 
    const registerUrl = useMemo(() => {
-      if (typeof window === 'undefined') return '/auth/register?role=instructor';
-      return `${window.location.origin}/auth/register?role=instructor`;
+      if (typeof window === 'undefined') return '/instructor/register';
+      return `${window.location.origin}/instructor/register`;
    }, []);
 
    useEffect(() => {

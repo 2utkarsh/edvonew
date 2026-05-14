@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
 import { buildApiUrl } from '@/lib/backend-api';
+import AuthPageChrome from '@/components/auth/AuthPageChrome';
 
 type PortalVariant = 'student' | 'instructor';
 
@@ -37,7 +38,7 @@ const COPY = {
     switchPrompt: 'Student portal?',
     switchHref: '/auth/login',
     switchLabel: 'Student login',
-    registerHref: '/auth/register?role=instructor',
+    registerHref: '/instructor/register',
     registerLabel: 'Create instructor account',
     submitLabel: 'Enter Instructor Portal',
   },
@@ -148,7 +149,9 @@ export default function LoginPageShell({ variant }: LoginPageShellProps) {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40 dark:from-slate-950 dark:via-slate-900 dark:to-primary-950/50 flex">
+    <AuthPageChrome>
+      <main className="bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40 dark:from-slate-950 dark:via-slate-900 dark:to-primary-950/50">
+        <div className="mx-auto flex min-h-[calc(100vh-64px)] max-w-7xl overflow-hidden lg:rounded-[2rem] lg:border lg:border-slate-200/70 lg:bg-white/70 lg:shadow-xl lg:shadow-slate-200/40 lg:backdrop-blur dark:lg:border-slate-800 dark:lg:bg-slate-950/60 dark:lg:shadow-black/20">
       <div className="hidden lg:flex lg:w-[45%] xl:w-[42%] flex-col items-center justify-center relative overflow-hidden bg-gradient-to-br from-slate-50 to-blue-50/50 dark:from-slate-900 dark:to-primary-950/50 px-12 border-r border-gray-100 dark:border-slate-800 transition-colors">
         <div className="absolute top-20 left-10 w-64 h-64 bg-blue-100/40 dark:bg-primary-900/20 rounded-full blur-3xl transition-colors" />
         <div className="absolute bottom-20 right-10 w-48 h-48 bg-indigo-100/40 dark:bg-indigo-950/20 rounded-full blur-3xl transition-colors" />
@@ -296,6 +299,8 @@ export default function LoginPageShell({ variant }: LoginPageShellProps) {
           </p>
         </motion.div>
       </div>
-    </main>
+        </div>
+      </main>
+    </AuthPageChrome>
   );
 }
