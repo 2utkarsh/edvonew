@@ -102,7 +102,7 @@ function RegisterPageContent() {
             : 'Account created successfully. Redirecting to login...')
       );
       setFormData({ fullName: '', mobile: '', email: '', password: '', confirmPassword: '', agreeToTerms: false });
-      setTimeout(() => router.push('/auth/login'), 500);
+      setTimeout(() => router.push(role === 'instructor' ? '/instructor' : '/auth/login'), 500);
     } catch (error: any) {
       console.error('Registration error:', error);
       setSubmitError(error?.message || 'Registration failed');
@@ -138,7 +138,7 @@ function RegisterPageContent() {
         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.1 }} className="w-full max-w-md">
           <div className="flex items-center justify-between mb-2">
             <p className="text-gray-600 dark:text-gray-400">Welcome to <span className="text-primary-600 dark:text-primary-400 font-semibold">EDVO</span></p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Have an Account? <Link href="/auth/login" className="text-primary-600 dark:text-primary-400 font-semibold hover:underline">Log in</Link></p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Have an Account? <Link href={role === 'instructor' ? '/instructor' : '/auth/login'} className="text-primary-600 dark:text-primary-400 font-semibold hover:underline">Log in</Link></p>
           </div>
 
           <div className="mb-6">
