@@ -5,14 +5,16 @@ import { Footer, Navbar } from '@/components/layout';
 
 type AuthPageChromeProps = {
   children: ReactNode;
+  showNavbar?: boolean;
+  showFooter?: boolean;
 };
 
-export default function AuthPageChrome({ children }: AuthPageChromeProps) {
+export default function AuthPageChrome({ children, showNavbar = true, showFooter = true }: AuthPageChromeProps) {
   return (
     <>
-      <Navbar />
+      {showNavbar ? <Navbar /> : null}
       {children}
-      <Footer />
+      {showFooter ? <Footer /> : null}
     </>
   );
 }
