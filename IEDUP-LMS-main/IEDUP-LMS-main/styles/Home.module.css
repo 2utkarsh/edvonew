@@ -20,7 +20,7 @@
   left: -80px;
   width: 360px;
   height: 360px;
-  background: radial-gradient(circle, rgba(83, 197, 177, 0.16), transparent 72%);
+  background: radial-gradient(circle, rgba(14, 98, 253, 0.16), transparent 72%);
 }
 
 .landing::after {
@@ -28,7 +28,7 @@
   bottom: -140px;
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, rgba(243, 165, 59, 0.16), transparent 72%);
+  background: radial-gradient(circle, rgba(91, 140, 255, 0.14), transparent 72%);
 }
 
 .shell {
@@ -46,9 +46,11 @@
 .heroPanel,
 .visualPanel {
   border-radius: 32px;
-  border: 1px solid rgba(248, 243, 232, 0.1);
-  background: linear-gradient(180deg, rgba(9, 26, 23, 0.92), rgba(11, 36, 32, 0.82));
-  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.24);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 251, 255, 0.92)),
+    radial-gradient(circle at top right, rgba(14, 98, 253, 0.07), transparent 30%);
+  box-shadow: 0 18px 54px rgba(15, 23, 42, 0.08);
   backdrop-filter: blur(18px);
 }
 
@@ -81,7 +83,7 @@
   padding: 0 18px;
   border-radius: 999px;
   border: 1px solid var(--border);
-  background: rgba(248, 243, 232, 0.05);
+  background: rgba(14, 98, 253, 0.07);
   color: var(--text);
 }
 
@@ -89,7 +91,7 @@
   letter-spacing: 0.16em;
   text-transform: uppercase;
   font-size: 0.74rem;
-  color: var(--accent-2);
+  color: var(--accent);
   font-weight: 700;
 }
 
@@ -116,6 +118,7 @@
   font-family: var(--font-display);
   font-size: clamp(3.6rem, 7vw, 6rem);
   line-height: 0.9;
+  color: #111827;
 }
 
 .description {
@@ -145,13 +148,14 @@
 }
 
 .primaryAction {
-  background: linear-gradient(135deg, var(--accent), var(--accent-3));
-  color: #09201c;
+  background: linear-gradient(135deg, #0e62fd, #3b82f6);
+  color: #ffffff;
+  box-shadow: 0 14px 32px rgba(14, 98, 253, 0.22);
 }
 
 .tertiaryAction {
   border: 1px solid var(--border);
-  background: rgba(248, 243, 232, 0.05);
+  background: #ffffff;
   color: var(--text);
 }
 
@@ -183,15 +187,15 @@
   width: 4px;
   height: 4px;
   border-radius: 999px;
-  background: rgba(248, 243, 232, 0.34);
+  background: rgba(14, 98, 253, 0.24);
   transform: translateY(-50%);
 }
 
 .imageFrame {
   overflow: hidden;
   border-radius: 24px;
-  border: 1px solid rgba(248, 243, 232, 0.1);
-  background: #f4ede0;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: linear-gradient(180deg, #ffffff, #eef4ff);
   min-height: 520px;
 }
 
@@ -205,14 +209,14 @@
 .sidePanel {
   display: grid;
   gap: 0;
-  border-top: 1px solid rgba(248, 243, 232, 0.08);
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
 }
 
 .sideRow {
   display: grid;
   gap: 6px;
   padding: 18px 4px;
-  border-bottom: 1px solid rgba(248, 243, 232, 0.08);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
 }
 
 .sideLabel {
@@ -226,6 +230,7 @@
 .sideValue {
   font-size: 1rem;
   line-height: 1.5;
+  color: #111827;
 }
 
 @media (max-width: 1080px) {
