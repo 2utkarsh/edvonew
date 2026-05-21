@@ -6,8 +6,8 @@ import type { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
   title: {
-    default: "Itech Learning Rooms",
-    template: "%s | Itech Learning Rooms",
+    default: "IEDUP LMS Dashboard",
+    template: "%s | IEDUP LMS Dashboard",
   },
   description:
     "A polished meeting workspace for hosts, participants, and recording review.",
