@@ -42,7 +42,7 @@ export const RaiseHandButton = ({ onHandStateChange }: RaiseHandButtonProps) => 
       className="lk-button"
       onClick={toggleHand}
       style={{
-        border: (handState === "lower") ? undefined : "white 2px solid"
+        boxShadow: (handState === "lower") ? undefined : "inset 0 0 0 2px rgba(255, 255, 255, 0.82)"
       }}
       aria-pressed={handState === "raise"}
       title={handState === "raise" ? "Lower hand" : "Raise hand"}

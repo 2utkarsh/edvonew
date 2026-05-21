@@ -2400,12 +2400,13 @@
 .lk-room-container .lk-video-conference-inner {
   position: relative;
   min-width: 0;
-  min-height: 100vh;
-  min-height: 100svh;
+  height: 100vh;
+  height: 100svh;
+  min-height: 0;
   display: grid;
-  grid-template-rows: 64px minmax(0, 1fr) 92px;
+  grid-template-rows: minmax(56px, auto) minmax(0, 1fr) auto;
   gap: 0;
-  padding: 0 14px;
+  padding: 0 14px 10px;
   background: #0b111c;
 }
 
@@ -2479,7 +2480,7 @@
 .lk-room-container .lk-grid-layout-wrapper,
 .lk-room-container .lk-focus-layout-wrapper {
   min-height: 0;
-  padding: 8px 0 12px;
+  padding: 4px 0 10px;
 }
 
 .lk-room-container .lk-grid-layout,
@@ -2595,16 +2596,19 @@
   position: relative;
   z-index: 90;
   align-self: end;
-  width: min(100%, 1180px);
-  min-height: 72px;
-  margin: 0 auto 14px;
+  width: min(calc(100% - 24px), 1200px);
+  min-height: 0;
+  max-height: min(150px, 32svh);
+  margin: 0 auto;
   display: flex;
   align-items: center;
+  align-content: center;
   justify-content: center;
-  gap: 8px;
-  padding: 10px 12px;
-  overflow-x: auto;
-  overflow-y: visible;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 10px;
+  overflow-x: hidden;
+  overflow-y: auto;
   border: 1px solid rgba(255, 255, 255, 0.11);
   border-radius: 14px;
   background: rgba(24, 31, 42, 0.94);
@@ -2618,14 +2622,21 @@
 }
 
 .lk-room-container .lk-button-group {
-  flex: 0 0 auto;
+  flex: 0 0 88px;
+  min-width: 0;
+  display: inline-grid;
+  grid-template-columns: minmax(0, 1fr) 22px;
+  align-items: stretch;
+  overflow: hidden;
+  border-radius: 10px;
 }
 
 .lk-room-container .lk-control-bar .lk-button,
 .lk-room-container .lk-control-bar button,
 .lk-room-container .lk-control-bar .lk-disconnect-button {
-  flex: 0 0 auto;
-  min-width: 74px;
+  flex: 0 0 68px;
+  width: 68px;
+  min-width: 0;
   min-height: 52px;
   display: inline-flex;
   flex-direction: column;
@@ -2634,13 +2645,16 @@
   gap: 5px;
   border: 0;
   border-radius: 10px;
-  padding: 7px 10px;
+  padding: 7px 6px;
   background: transparent;
   color: #e5ebf4;
-  font-size: 0.72rem;
+  font-size: 0.66rem;
   font-weight: 700;
-  line-height: 1.1;
-  white-space: nowrap;
+  line-height: 1.05;
+  text-align: center;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: anywhere;
   transition:
     background 0.16s ease,
     color 0.16s ease,
@@ -2666,11 +2680,14 @@
 .lk-room-container .lk-control-bar [data-lk-source="screen_share"][data-lk-enabled="true"],
 .lk-room-container .lk-control-bar [aria-pressed="true"] {
   background: rgba(14, 114, 237, 0.18);
+  outline: 1px solid rgba(219, 234, 254, 0.42);
+  outline-offset: -1px;
   color: #dbeafe;
 }
 
 .lk-room-container .lk-control-bar .lk-disconnect-button {
-  min-width: 86px;
+  width: 74px;
+  flex-basis: 74px;
   background: #ef4444;
   color: #ffffff;
 }
@@ -2680,8 +2697,24 @@
 }
 
 .lk-room-container .lk-button-group-menu {
+  min-width: 0;
   border-radius: 10px;
   overflow: hidden;
+}
+
+.lk-room-container .lk-button-group > .lk-button,
+.lk-room-container .lk-button-group > button {
+  width: 66px;
+  flex-basis: 66px;
+  border-radius: 10px 0 0 10px;
+}
+
+.lk-room-container .lk-button-group-menu .lk-button,
+.lk-room-container .lk-button-group-menu button {
+  width: 22px;
+  min-width: 0;
+  padding: 0;
+  border-radius: 0 10px 10px 0;
 }
 
 .lk-room-container .lk-chat {
@@ -2798,19 +2831,37 @@
   .lk-room-container .lk-control-bar {
     width: calc(100vw - 16px);
     justify-content: flex-start;
-    min-height: 68px;
+    max-height: min(144px, 36svh);
     margin-bottom: 8px;
     padding: 8px;
     border-radius: 12px;
   }
 
+  .lk-room-container .lk-button-group {
+    flex-basis: 80px;
+    grid-template-columns: minmax(0, 1fr) 20px;
+  }
+
   .lk-room-container .lk-control-bar .lk-button,
   .lk-room-container .lk-control-bar button,
   .lk-room-container .lk-control-bar .lk-disconnect-button {
-    min-width: 66px;
+    width: 60px;
+    flex-basis: 60px;
+    min-width: 0;
     min-height: 50px;
-    padding: 6px 8px;
-    font-size: 0.68rem;
+    padding: 6px 5px;
+    font-size: 0.62rem;
+  }
+
+  .lk-room-container .lk-button-group > .lk-button,
+  .lk-room-container .lk-button-group > button {
+    width: 60px;
+    flex-basis: 60px;
+  }
+
+  .lk-room-container .lk-button-group-menu .lk-button,
+  .lk-room-container .lk-button-group-menu button {
+    width: 20px;
   }
 
   .lk-room-container .lk-control-bar svg {

@@ -502,7 +502,7 @@ export function ControlBar({
                 : 'Show whiteboard'
           }
           style={{
-            border: whiteboardOpen ? '2px solid rgba(255, 255, 255, 0.9)' : undefined,
+            boxShadow: whiteboardOpen ? 'inset 0 0 0 2px rgba(255, 255, 255, 0.82)' : undefined,
             opacity: whiteboardOpen && !canCloseWhiteboard ? 0.65 : 1,
             cursor: whiteboardOpen && !canCloseWhiteboard ? 'not-allowed' : 'pointer',
           }}
@@ -523,7 +523,7 @@ export function ControlBar({
               : 'Enable whiteboard access for participants'
           }
           style={{
-            border: !whiteboardMembersCanUse ? '2px solid rgba(255, 255, 255, 0.9)' : undefined,
+            boxShadow: !whiteboardMembersCanUse ? 'inset 0 0 0 2px rgba(255, 255, 255, 0.82)' : undefined,
           }}
         >
           {showIcon && <FaPen />}
