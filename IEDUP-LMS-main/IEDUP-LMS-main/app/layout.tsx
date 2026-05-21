@@ -6,15 +6,15 @@ import type { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
   title: {
-    default: "IEDUP LMS Dashboard",
-    template: "%s | IEDUP LMS Dashboard",
+    default: "EDVO Dashboard",
+    template: "%s | EDVO Dashboard",
   },
   description:
     "A polished meeting workspace for hosts, participants, and recording review.",
   icons: {
     icon: {
       rel: "icon",
-      url: "/logo/favicon.png",
+      url: "/logo/edvo-official-logo-v10.webp",
     },
   },
 };

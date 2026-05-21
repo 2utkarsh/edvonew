@@ -28,7 +28,7 @@ export default function Page() {
       <section className={styles.shell}>
         <div className={styles.heroPanel}>
           <div className={styles.brandRow}>
-            <span className={styles.brandPill}>IEDUP LMS</span>
+            <span className={styles.brandPill}>EDVO Learning Rooms</span>
             {lastRoomRoute ? (
               <button
                 type="button"
@@ -74,8 +74,8 @@ export default function Page() {
         <aside className={styles.visualPanel}>
           <div className={styles.imageFrame}>
             <Image
-              src={withBasePath('/logo/logo.png')}
-              alt="IEDUP LMS"
+              src={withBasePath('/logo/edvo-official-logo-v10.webp')}
+              alt="EDVO"
               width={900}
               height={900}
               priority

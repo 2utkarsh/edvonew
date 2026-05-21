@@ -78,7 +78,7 @@ export default function Page() {
       <main className="auth-shell">
         <section className="auth-card">
           <span className="auth-badge">Preparing</span>
-          <h1 className="auth-title">IEDUP Host Sign In</h1>
+          <h1 className="auth-title">EDVO Host Sign In</h1>
         </section>
       </main>
     );
@@ -102,7 +102,7 @@ export default function Page() {
             Host Access
           </span>
           <div>
-            <h1 className="auth-title">IEDUP LMS Dashboard</h1>
+            <h1 className="auth-title">EDVO Dashboard</h1>
             <p className="auth-subtitle">Enter the host password to open your meetings workspace.</p>
           </div>
 
@@ -147,8 +147,8 @@ export default function Page() {
         >
           <div className="preview-media">
             <img
-              src={withBasePath('/logo/logo.png')}
-              alt="IEDUP LMS"
+              src={withBasePath('/logo/edvo-official-logo-v10.webp')}
+              alt="EDVO"
             />
           </div>
 
