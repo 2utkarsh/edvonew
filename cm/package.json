@@ -1,0 +1,52 @@
+{
+  "name": "livekit-meet",
+  "version": "0.2.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@aws-sdk/node-http-handler": "^3.370.0",
+    "@aws-sdk/s3-request-presigner": "^3.850.0",
+    "@livekit/components-core": "0.12.5",
+    "@livekit/components-styles": "1.1.5",
+    "@livekit/krisp-noise-filter": "0.2.16",
+    "@livekit/protocol": "^1.23.0",
+    "@livekit/track-processors": "^0.5.4",
+    "@mediapipe/tasks-vision": "0.10.14",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.23.12",
+    "jose": "^6.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
+    "livekit-client": "^2.11.4",
+    "livekit-server-sdk": "2.12.0",
+    "mongodb": "^6.20.0",
+    "next": "16.1.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-hot-toast": "^2.5.2",
+    "react-icons": "^5.5.0",
+    "tinykeys": "^3.0.0",
+    "usehooks-ts": "^3.1.1",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-s3": "^3.850.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^22.14.0",
+    "@types/react": "18.3.20",
+    "@types/react-dom": "18.3.6",
+    "eslint": "9.24.0",
+    "eslint-config-next": "16.1.1",
+    "source-map-loader": "^5.0.0",
+    "typescript": "5.8.3"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "pnpm@9.15.9"
+}
