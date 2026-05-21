@@ -36,6 +36,7 @@ const MODERATOR_ACTIONS = new Set([
   'make-cohost',
   'remove-cohost',
   'toggle-publishing',
+  'allow-publishing',
   'toggle-chat',
   'mass-toggle-publishing',
   'mass-mute-audio',
@@ -348,6 +349,13 @@ export async function POST(req: Request) {
         const permissions = {
           ...participant.permission,
           canPublish: !participant.permission?.canPublish,
+        };
+        await roomService.updateParticipant(roomName, participantIdentity, undefined, permissions);
+      } else if (action === 'allow-publishing') {
+        const permissions = {
+          ...participant.permission,
+          canPublish: true,
+          canSubscribe: true,
         };
         await roomService.updateParticipant(roomName, participantIdentity, undefined, permissions);
       } else if (action === 'toggle-chat') {

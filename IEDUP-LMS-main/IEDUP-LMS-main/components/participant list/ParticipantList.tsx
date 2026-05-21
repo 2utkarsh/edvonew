@@ -31,6 +31,15 @@ interface ParticipantListProps {
   participantIdentityHand: string;
 }
 
+type PermissionRequestSource = 'microphone' | 'camera' | 'screen_share';
+
+type PermissionRequest = {
+  id: string;
+  requesterIdentity: string;
+  requesterName: string;
+  source: PermissionRequestSource;
+};
+
 interface ComponentContextType {
   room: any;
   CONN_DETAILS_ENDPOINT: string;
@@ -61,6 +70,7 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
   const [renamedParticipants, setRenamedParticipants] = useState<{[key: string]: string}>({});
   const [isKickModalOpen, setIsKickModalOpen] = useState<boolean>(false);
   const [kickParticipantData, setKickParticipantData] = useState<RemoteParticipant | null>(null);
+  const [permissionRequests, setPermissionRequests] = useState<PermissionRequest[]>([]);
 
   // Ref for the participant list container
   const participantListRef = React.useRef<HTMLDivElement>(null);
@@ -166,6 +176,72 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
     [room],
   );
 
+  const publishPermissionResponse = React.useCallback(
+    async (request: PermissionRequest, approved: boolean) => {
+      await room.localParticipant.publishData(
+        new TextEncoder().encode(
+          JSON.stringify({
+            type: 'notify',
+            action: approved ? 'permission-approved' : 'permission-denied',
+            target: request.requesterIdentity,
+            source: request.source,
+            name: localParticipant.name || localParticipant.identity,
+          }),
+        ),
+        {
+          reliable: true,
+          destinationIdentities: [request.requesterIdentity],
+        },
+      );
+    },
+    [localParticipant, room],
+  );
+
+  const removePermissionRequest = React.useCallback((requestId: string) => {
+    setPermissionRequests((current) => current.filter((request) => request.id !== requestId));
+  }, []);
+
+  const approvePermissionRequest = React.useCallback(
+    async (request: PermissionRequest) => {
+      if (isProcessing) return;
+
+      try {
+        setIsProcessing(true);
+        await postParticipantAction(request.requesterIdentity, 'allow-publishing');
+        await publishPermissionResponse(request, true);
+        removePermissionRequest(request.id);
+      } catch (error) {
+        console.error('Error approving permission request:', error);
+      } finally {
+        setIsProcessing(false);
+      }
+    },
+    [
+      isProcessing,
+      postParticipantAction,
+      publishPermissionResponse,
+      removePermissionRequest,
+      setIsProcessing,
+    ],
+  );
+
+  const denyPermissionRequest = React.useCallback(
+    async (request: PermissionRequest) => {
+      if (isProcessing) return;
+
+      try {
+        setIsProcessing(true);
+        await publishPermissionResponse(request, false);
+        removePermissionRequest(request.id);
+      } catch (error) {
+        console.error('Error denying permission request:', error);
+      } finally {
+        setIsProcessing(false);
+      }
+    },
+    [isProcessing, publishPermissionResponse, removePermissionRequest, setIsProcessing],
+  );
+
   // Handle incoming data messages
   useEffect(() => {
     const handleData = (payload: Uint8Array, participant?: RemoteParticipant) => {
@@ -188,6 +264,24 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
             setIsHost(data.role === 'host');
             setIsCoHost(data.role === 'co-host');
           }
+        } else if (
+          data.type === 'permission-request' &&
+          data.action === 'request-publishing' &&
+          (isHost || isCoHost) &&
+          data.requesterIdentity !== room.localParticipant.identity &&
+          (data.source === 'microphone' || data.source === 'camera' || data.source === 'screen_share')
+        ) {
+          const request: PermissionRequest = {
+            id: `${data.requesterIdentity}-${data.source}`,
+            requesterIdentity: data.requesterIdentity,
+            requesterName: data.requesterName || data.requesterIdentity,
+            source: data.source,
+          };
+
+          setPermissionRequests((current) => {
+            const withoutDuplicate = current.filter((item) => item.id !== request.id);
+            return [request, ...withoutDuplicate].slice(0, 5);
+          });
         }
       } catch (error) {
         console.error('Error handling data message:', error);
@@ -198,7 +292,7 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
     return () => {
       room.off('dataReceived', handleData);
     };
-  }, [room]);
+  }, [isCoHost, isHost, room]);
 
 
 
@@ -691,6 +785,86 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
     <ParentContext.Provider value={contextValue}>
       <RenameDialogue isOpen={isOpenDialogue} setIsOpen={setIsOpenDialogue}/>
       <KickWarningModal isOpen={isKickModalOpen} setIsOpen={setIsKickModalOpen}/>
+
+      {(isHost || isCoHost) && permissionRequests.length > 0 && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '18px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 1100,
+            width: 'min(420px, calc(100vw - 24px))',
+            display: 'grid',
+            gap: '10px',
+          }}
+        >
+          {permissionRequests.map((request) => {
+            const sourceLabel =
+              request.source === 'camera'
+                ? 'camera'
+                : request.source === 'microphone'
+                  ? 'microphone'
+                  : 'screen sharing';
+
+            return (
+              <div
+                key={request.id}
+                style={{
+                  border: '1px solid rgba(255, 255, 255, 0.14)',
+                  borderRadius: '12px',
+                  padding: '14px',
+                  background: 'rgba(17, 24, 39, 0.96)',
+                  color: '#fff',
+                  boxShadow: '0 18px 44px rgba(0, 0, 0, 0.32)',
+                }}
+              >
+                <div style={{ fontSize: '0.92rem', fontWeight: 700, marginBottom: '4px' }}>
+                  Permission request
+                </div>
+                <div style={{ color: 'rgba(255, 255, 255, 0.78)', fontSize: '0.86rem' }}>
+                  {request.requesterName} wants to turn on {sourceLabel}.
+                </div>
+                <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '12px' }}>
+                  <button
+                    type="button"
+                    onClick={() => denyPermissionRequest(request)}
+                    disabled={isProcessing}
+                    style={{
+                      minHeight: '36px',
+                      padding: '0 12px',
+                      borderRadius: '8px',
+                      border: '1px solid rgba(255, 255, 255, 0.14)',
+                      background: 'transparent',
+                      color: '#fff',
+                      cursor: isProcessing ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    Deny
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => approvePermissionRequest(request)}
+                    disabled={isProcessing}
+                    style={{
+                      minHeight: '36px',
+                      padding: '0 12px',
+                      borderRadius: '8px',
+                      border: '0',
+                      background: '#0e72ed',
+                      color: '#fff',
+                      fontWeight: 700,
+                      cursor: isProcessing ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    Approve
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {state.participantListVisible && (
         <div

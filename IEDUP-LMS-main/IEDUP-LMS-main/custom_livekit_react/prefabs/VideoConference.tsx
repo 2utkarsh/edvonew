@@ -17,6 +17,7 @@ import {
   LayoutContextProvider,
   ParticipantTile,
   RoomAudioRenderer,
+  RoomName,
 } from '../components';
 import { useCreateLayoutContext } from '../context';
 import { usePinnedTracks, useTracks } from '../hooks';
@@ -159,6 +160,19 @@ export function VideoConference({
           onWidgetChange={widgetUpdate}
         >
           <div className="lk-video-conference-inner">
+            <div className="lk-meeting-topbar">
+              <div className="lk-meeting-title">
+                <span className="lk-meeting-status-dot" aria-hidden="true" />
+                <div>
+                  <span className="lk-meeting-kicker">Live meeting</span>
+                  <RoomName className="lk-meeting-room-name" />
+                </div>
+              </div>
+              <div className="lk-meeting-meta">
+                <span>{tracks.length} participant{tracks.length === 1 ? '' : 's'}</span>
+                <span>{screenShareTracks.length > 0 ? 'Screen sharing' : 'Gallery view'}</span>
+              </div>
+            </div>
             {!focusTrack ? (
               <div className="lk-grid-layout-wrapper">
                 <GridLayout tracks={tracks}>

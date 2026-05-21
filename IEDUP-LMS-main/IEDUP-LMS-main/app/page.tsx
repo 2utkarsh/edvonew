@@ -76,10 +76,16 @@ export default function Page() {
             <Image
               src={withBasePath('/logo/edvo-official-logo-v10.webp')}
               alt="EDVO"
-              width={900}
-              height={900}
+              width={520}
+              height={296}
               priority
               className={styles.image}
+              style={{
+                width: 'min(100%, 520px)',
+                height: 'auto',
+                maxHeight: '280px',
+                objectFit: 'contain',
+              }}
             />
           </div>
 

@@ -27,6 +27,7 @@ import { FaPen, FaVolumeUp } from 'react-icons/fa';
 import { roomHref } from '@/lib/url';
 
 const AUDIO_OUTPUT_STORAGE_KEY = 'preferredAudioOutputDeviceId';
+type PermissionRequestSource = 'microphone' | 'camera' | 'screen_share';
 
 /** @public */
 export type ControlBarControls = {
@@ -208,6 +209,9 @@ export function ControlBar({
 
   const [isScreenShareEnabled, setIsScreenShareEnabled] = React.useState(false);
   const [speakerSelectionAvailable, setSpeakerSelectionAvailable] = React.useState(false);
+  const [requestedPermissionSources, setRequestedPermissionSources] = React.useState<
+    PermissionRequestSource[]
+  >([]);
 
   const onScreenShareChange = React.useCallback(
     (enabled: boolean) => {
@@ -236,6 +240,67 @@ export function ControlBar({
       isUserInitiated ? saveVideoInputEnabled(enabled) : null,
     [saveVideoInputEnabled],
   );
+
+  const requestPublishingPermission = React.useCallback(
+    async (source: PermissionRequestSource) => {
+      if (requestedPermissionSources.includes(source)) {
+        return;
+      }
+
+      try {
+        await room.localParticipant.publishData(
+          new TextEncoder().encode(
+            JSON.stringify({
+              type: 'permission-request',
+              action: 'request-publishing',
+              source,
+              requesterIdentity: room.localParticipant.identity,
+              requesterName: room.localParticipant.name || room.localParticipant.identity,
+            }),
+          ),
+          { reliable: true },
+        );
+        setRequestedPermissionSources((current) =>
+          current.includes(source) ? current : [...current, source],
+        );
+      } catch (error) {
+        console.error('Failed to request publishing permission:', error);
+      }
+    },
+    [requestedPermissionSources, room],
+  );
+
+  React.useEffect(() => {
+    const handlePermissionMessage = (payload: Uint8Array) => {
+      try {
+        const data = JSON.parse(new TextDecoder().decode(payload));
+        if (
+          data.type !== 'notify' ||
+          data.target !== room.localParticipant.identity ||
+          (data.action !== 'permission-approved' && data.action !== 'permission-denied')
+        ) {
+          return;
+        }
+
+        if (
+          data.source === 'microphone' ||
+          data.source === 'camera' ||
+          data.source === 'screen_share'
+        ) {
+          setRequestedPermissionSources((current) =>
+            current.filter((source) => source !== data.source),
+          );
+        }
+      } catch (error) {
+        console.error('Error handling permission response:', error);
+      }
+    };
+
+    room.on('dataReceived', handlePermissionMessage);
+    return () => {
+      room.off('dataReceived', handlePermissionMessage);
+    };
+  }, [room]);
 
   React.useEffect(() => {
     if (typeof navigator === 'undefined' || !navigator.mediaDevices?.enumerateDevices) {
@@ -289,18 +354,8 @@ export function ControlBar({
   }, [room, speakerSelectionAvailable]);
 
   return (
-    <div 
-      style={{
-        position: "relative",
-        zIndex: 90,
-        justifyContent: "start",
-        overflowX: "auto",
-        overflowY: "visible"
-      }}
-
-      {...htmlProps}
-    >
-      {visibleControls.microphone && (
+    <div {...htmlProps}>
+      {visibleControls.microphone ? (
         <div className="lk-button-group">
           <TrackToggle
             source={Track.Source.Microphone}
@@ -319,8 +374,19 @@ export function ControlBar({
             />
           </div>
         </div>
+      ) : (
+        <button
+          type="button"
+          className="lk-button"
+          onClick={() => requestPublishingPermission('microphone')}
+          disabled={requestedPermissionSources.includes('microphone')}
+          title="Ask host to unlock microphone"
+        >
+          {showIcon && <FaVolumeUp />}
+          {requestedPermissionSources.includes('microphone') ? 'Mic Requested' : 'Ask Mic'}
+        </button>
       )}
-      {visibleControls.camera && (
+      {visibleControls.camera ? (
         <div className="lk-button-group">
           <TrackToggle
             source={Track.Source.Camera}
@@ -339,6 +405,17 @@ export function ControlBar({
             />
           </div>
         </div>
+      ) : (
+        <button
+          type="button"
+          className="lk-button"
+          onClick={() => requestPublishingPermission('camera')}
+          disabled={requestedPermissionSources.includes('camera')}
+          title="Ask host to unlock camera"
+        >
+          {showIcon && <IoMdPerson />}
+          {requestedPermissionSources.includes('camera') ? 'Cam Requested' : 'Ask Camera'}
+        </button>
       )}
       {speakerSelectionAvailable && (
         <div className="lk-button-group">
@@ -450,7 +527,7 @@ export function ControlBar({
           }}
         >
           {showIcon && <FaPen />}
-          {whiteboardMembersCanUse ? 'Lock Whiteboard' : 'Unlock Whiteboard'}
+          {whiteboardMembersCanUse ? 'Lock Board' : 'Unlock Board'}
         </button>
       )}
       <RaiseHandButton onHandStateChange={onHandStateChange} />

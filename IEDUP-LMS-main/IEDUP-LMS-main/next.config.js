@@ -5,6 +5,9 @@ const assetPrefix = process.env.NEXT_PUBLIC_ASSET_PREFIX || basePath;
 const nextConfig = {
   reactStrictMode: false,
   productionBrowserSourceMaps: true,
+  turbopack: {
+    root: __dirname,
+  },
   basePath,
   assetPrefix,
   images: {

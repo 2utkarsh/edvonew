@@ -636,6 +636,40 @@ function VideoConferenceComponent(props: {
           } else if (data.action === 'request-screen-share') {
             setNotify(true)
             setNotifyText(`${data.name || 'The host'} asked you to share your screen.`)
+          } else if (
+            data.action === 'permission-approved' &&
+            data.target === room.localParticipant.identity
+          ) {
+            setNotify(true);
+            setNotifyText(
+              data.source === 'camera'
+                ? 'Host approved your camera request.'
+                : data.source === 'microphone'
+                  ? 'Host approved your microphone request.'
+                  : 'Host approved your permission request.',
+            );
+
+            if (data.source === 'camera') {
+              room.localParticipant.setCameraEnabled(true).catch((error) => {
+                console.error('Failed to enable camera after host approval:', error);
+              });
+            } else if (data.source === 'microphone') {
+              enableMicrophoneWithFallback().catch((error) => {
+                console.error('Failed to enable microphone after host approval:', error);
+              });
+            }
+          } else if (
+            data.action === 'permission-denied' &&
+            data.target === room.localParticipant.identity
+          ) {
+            setNotify(true);
+            setNotifyText(
+              data.source === 'camera'
+                ? 'Host denied your camera request.'
+                : data.source === 'microphone'
+                  ? 'Host denied your microphone request.'
+                  : 'Host denied your permission request.',
+            );
           }
         } else if (data.type === 'whiteboard-control') {
           if (typeof data.allowParticipants === 'boolean') {
@@ -665,7 +699,7 @@ function VideoConferenceComponent(props: {
     return () => {
       room.off('dataReceived', handleData);
     };
-  }, [isLocalHost, room]);
+  }, [enableMicrophoneWithFallback, isLocalHost, room]);
 
   React.useEffect(() => {
     const handleParticipantConnected = (participant: RemoteParticipant) => {
