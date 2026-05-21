@@ -577,12 +577,12 @@ export default function EnhancedDashboard({
             <div className="workspace-brand-row">
               <div className="brand-mark">
                 <img
-                  src={withBasePath("/logo/lms.png")}
-                  alt="IEDUP LMS"
+                  src={withBasePath("/images/itech-innovation-foundation.jpeg")}
+                  alt="Itech Innovation Foundation"
                 />
               </div>
               <div className="brand-copy">
-                <span className="brand-overline">IEDUP LMS</span>
+                <span className="brand-overline">Itech Foundation</span>
                 <strong className="brand-name">Meetings</strong>
               </div>
             </div>
