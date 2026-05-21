@@ -2651,6 +2651,307 @@
   border-color: rgba(248, 243, 232, 0.18);
 }
 
+/* White and blue dashboard finish */
+
+.dashboard-container {
+  background:
+    radial-gradient(circle at top left, rgba(14, 98, 253, 0.12), transparent 24%),
+    linear-gradient(180deg, #eef3ff 0%, #f7f9fd 48%, #f4f7fb 100%);
+  color: #111827;
+}
+
+.auth-shell {
+  background:
+    radial-gradient(circle at top left, rgba(14, 98, 253, 0.14), transparent 28%),
+    linear-gradient(180deg, #edf2ff 0%, #f8faff 100%);
+}
+
+.auth-shell::before,
+.workspace-shell::before {
+  background: radial-gradient(circle, rgba(14, 98, 253, 0.16), transparent 72%);
+}
+
+.auth-shell::after,
+.workspace-shell::after {
+  background: radial-gradient(circle, rgba(91, 140, 255, 0.14), transparent 72%);
+}
+
+.auth-card,
+.workspace-sidebar,
+.workspace-hero,
+.content-panel,
+.modal-card {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 18px 54px rgba(15, 23, 42, 0.08);
+}
+
+.auth-title,
+.preview-title,
+.brand-name,
+.panel-header h2,
+.section-title,
+.hero-title,
+.modal-header h3,
+.hero-summary-row strong,
+.hero-next-details strong,
+.meeting-card-title,
+.overview-card h3,
+.quick-action-title,
+.recording-header h3 {
+  color: #111827;
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 700;
+}
+
+.auth-subtitle,
+.preview-copy,
+.preview-line,
+.brand-caption,
+.hero-copy,
+.panel-header p,
+.overview-card p,
+.meeting-card-description,
+.mini-card span,
+.profile-subtitle,
+.profile-note,
+.recording-date,
+.recording-details,
+.empty-panel p,
+.stat-copy,
+.hero-summary-row span,
+.hero-next-details span,
+.meeting-date-pill,
+.meta-chip,
+.hero-pill {
+  color: #667085;
+}
+
+.auth-badge {
+  background: rgba(14, 98, 253, 0.08);
+  border-color: rgba(14, 98, 253, 0.14);
+  color: #0e62fd;
+}
+
+.auth-input,
+.auth-select,
+.auth-textarea {
+  border-color: rgba(15, 23, 42, 0.08);
+  background: rgba(248, 250, 255, 0.95);
+  color: #111827;
+}
+
+.auth-input::placeholder,
+.auth-textarea::placeholder {
+  color: #98a2b3;
+}
+
+.auth-input:focus,
+.auth-select:focus,
+.auth-textarea:focus {
+  border-color: rgba(14, 98, 253, 0.28);
+  box-shadow: 0 0 0 4px rgba(14, 98, 253, 0.1);
+  background: #ffffff;
+}
+
+.auth-input-icon {
+  color: #98a2b3;
+}
+
+.auth-submit,
+.workspace-button--primary,
+.action-btn.play-btn,
+.content-tab.active {
+  background: linear-gradient(135deg, #0e62fd, #3b82f6);
+  color: #ffffff;
+  box-shadow: 0 14px 32px rgba(14, 98, 253, 0.22);
+}
+
+.workspace-button--secondary,
+.action-btn.download-btn,
+.retry-button {
+  background: rgba(14, 98, 253, 0.08);
+  border-color: rgba(14, 98, 253, 0.16);
+  color: #0e62fd;
+}
+
+.workspace-button--ghost,
+.action-btn,
+.content-tab,
+.hero-pill,
+.meta-chip,
+.meeting-date-pill,
+.modal-close,
+.close-btn {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.08);
+  color: #344054;
+}
+
+.workspace-button--danger {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.16);
+  color: #b42318;
+}
+
+.auth-secondary-link,
+.preview-kicker,
+.hero-kicker,
+.hero-next-label,
+.meeting-card-kicker,
+.spotlight-label,
+.brand-overline,
+.stat-label {
+  color: #0e62fd;
+}
+
+.auth-showcase {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 251, 255, 0.92)),
+    radial-gradient(circle at top right, rgba(14, 98, 253, 0.08), transparent 26%);
+}
+
+.preview-media {
+  background: linear-gradient(180deg, #ffffff, #eef4ff);
+  border-color: rgba(15, 23, 42, 0.06);
+  min-height: 360px;
+}
+
+.preview-media img {
+  object-fit: contain;
+  padding: 24px;
+  background: transparent;
+}
+
+.preview-list--plain,
+.preview-line,
+.mini-card {
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+.workspace-sidebar {
+  background:
+    linear-gradient(180deg, #0b57d0 0%, #0f6bff 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 22px 54px rgba(14, 98, 253, 0.18);
+}
+
+.workspace-brand,
+.workspace-sidebar .brand-name,
+.workspace-sidebar .profile-title {
+  color: #ffffff;
+}
+
+.brand-mark {
+  width: 92px;
+  height: 64px;
+  border-radius: 18px;
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 5px;
+  transform: none;
+}
+
+.workspace-sidebar .brand-overline,
+.workspace-sidebar .brand-caption,
+.workspace-sidebar .profile-subtitle,
+.workspace-sidebar .profile-note {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.side-nav-button {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.side-nav-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.side-nav-button.active {
+  background: rgba(255, 255, 255, 0.98);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #0e62fd;
+  box-shadow: 0 10px 24px rgba(9, 30, 66, 0.14);
+}
+
+.sidebar-profile {
+  border-top-color: rgba(255, 255, 255, 0.16);
+}
+
+.profile-avatar {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+}
+
+.workspace-hero {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(245, 249, 255, 0.94)),
+    radial-gradient(circle at top right, rgba(14, 98, 253, 0.08), transparent 26%);
+}
+
+.workspace-hero::before {
+  background: radial-gradient(circle, rgba(14, 98, 253, 0.1), transparent 70%);
+}
+
+.workspace-hero::after {
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.08), transparent 70%);
+}
+
+.hero-summary-row,
+.hero-next-row,
+.overview-card,
+.meeting-card,
+.stat-card,
+.quick-action,
+.recording-item,
+.preview-stat,
+.summary-stat {
+  border-color: rgba(15, 23, 42, 0.08);
+  background: #ffffff;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+}
+
+.stat-card,
+.quick-action {
+  background: linear-gradient(180deg, #ffffff, #f7faff);
+}
+
+.quick-action-icon {
+  background: rgba(14, 98, 253, 0.1);
+  color: #0e62fd;
+}
+
+.quick-action-icon.alt {
+  background: rgba(59, 130, 246, 0.12);
+  color: #2563eb;
+}
+
+.modal-overlay {
+  background: rgba(15, 23, 42, 0.42);
+}
+
+.modal-card {
+  background: rgba(255, 255, 255, 0.97);
+}
+
+.modal-close,
+.close-btn {
+  background: #f8faff;
+}
+
+.toast {
+  background: rgba(17, 24, 39, 0.94);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
 /* Live room redesign: Zoom-style meeting workspace */
 
 .lk-room-container {
