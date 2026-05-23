@@ -1,6 +1,10 @@
 .overlay {
-  position: absolute;
-  inset: 16px 16px calc(var(--lk-control-bar-height, 84px) + 16px) 16px;
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  bottom: calc(var(--lk-control-bar-height, 92px) + 16px);
+  left: auto;
+  width: var(--lk-whiteboard-width, min(920px, 64vw));
   z-index: 85;
   transition:
     opacity 0.2s ease,
@@ -163,7 +167,8 @@
 
 @media (max-width: 900px) {
   .overlay {
-    inset: 10px 10px calc(var(--lk-control-bar-height, 84px) + 10px) 10px;
+    inset: 10px 10px calc(var(--lk-control-bar-height, 96px) + 10px) 10px;
+    width: auto;
   }
 
   .panel {

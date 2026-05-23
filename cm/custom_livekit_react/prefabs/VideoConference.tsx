@@ -162,8 +162,12 @@ export function VideoConference({
           <div
             className="lk-video-conference-inner"
             style={
-              widgetState.showChat
-                ? { paddingRight: 'var(--lk-chat-width, min(360px, 36vw))' }
+              widgetState.showChat || whiteboardOpen
+                ? {
+                    paddingRight: whiteboardOpen
+                      ? 'var(--lk-whiteboard-width, min(920px, 64vw))'
+                      : 'var(--lk-chat-width, min(360px, 36vw))',
+                  }
                 : undefined
             }
           >
