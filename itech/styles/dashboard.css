@@ -3020,6 +3020,7 @@
   --zoom-border: rgba(255, 255, 255, 0.1);
   --zoom-text: #f8fafc;
   --zoom-muted: #aab3c2;
+  --lk-chat-width: min(360px, 36vw);
   --lk-control-bar-height: 92px;
   background:
     linear-gradient(180deg, #151b26 0%, #0b111c 100%);
@@ -3558,6 +3559,10 @@
 }
 
 @media (max-width: 1120px) {
+  .lk-room-container {
+    --lk-chat-width: min(360px, 92vw);
+  }
+
   .lk-room-container .lk-video-conference {
     grid-template-columns: 1fr;
   }

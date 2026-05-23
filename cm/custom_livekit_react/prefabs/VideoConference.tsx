@@ -159,7 +159,14 @@ export function VideoConference({
           // onPinChange={handleFocusStateChange}
           onWidgetChange={widgetUpdate}
         >
-          <div className="lk-video-conference-inner">
+          <div
+            className="lk-video-conference-inner"
+            style={
+              widgetState.showChat
+                ? { paddingRight: 'var(--lk-chat-width, min(360px, 36vw))' }
+                : undefined
+            }
+          >
             <div className="lk-meeting-topbar">
               <div className="lk-meeting-title">
                 <span className="lk-meeting-status-dot" aria-hidden="true" />
