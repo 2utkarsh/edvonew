@@ -3345,13 +3345,14 @@
 
 .lk-room-container .lk-chat-messages,
 .lk-room-container .lk-chat-form {
-  background: #f8fafc;
+  background: #ffffff;
 }
 
 .lk-room-container .lk-chat-messages {
   flex: 1 1 auto;
   min-height: 0;
   overflow: auto;
+  padding: 12px;
 }
 
 .lk-room-container .lk-chat-form {
@@ -3399,6 +3400,39 @@
 .lk-room-container .lk-chat-entry .lk-participant-name,
 .lk-room-container .lk-chat-entry .lk-timestamp {
   color: #111827;
+}
+
+.lk-room-container .lk-chat-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 10px 0;
+}
+
+.lk-room-container .lk-chat-entry .lk-meta-data {
+  font-size: 0.8rem;
+  color: rgba(17, 24, 39, 0.7);
+}
+
+.lk-room-container .lk-chat-entry .lk-message-body {
+  display: inline-block;
+  width: fit-content;
+  max-width: 100%;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #f1f5f9;
+  color: #111827;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.lk-room-container .lk-chat-entry[data-lk-message-origin="local"] {
+  align-items: flex-end;
+}
+
+.lk-room-container .lk-chat-entry[data-lk-message-origin="local"] .lk-message-body {
+  background: #0e72ed;
+  color: #ffffff;
+  border-color: rgba(14, 114, 237, 0.7);
 }
 
 .lk-room-container .lk-chat-form .lk-form-control {
