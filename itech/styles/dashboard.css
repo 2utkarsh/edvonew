@@ -3326,8 +3326,8 @@
 
 .lk-room-container .lk-chat {
   width: min(360px, 36vw);
-  height: 100vh;
-  height: 100svh;
+  height: calc(100vh - var(--lk-control-bar-height, 84px));
+  height: calc(100svh - var(--lk-control-bar-height, 84px));
   min-width: 320px;
   border-left: 1px solid var(--zoom-border);
   background: #f8fafc;
