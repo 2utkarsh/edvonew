@@ -2771,6 +2771,7 @@
   flex: 0 0 auto;
   border-top: 1px solid rgba(15, 23, 42, 0.08);
   padding: 12px;
+  background: #ffffff;
 }
 
 .lk-room-container .lk-chat-form .lk-form-control,
@@ -2778,7 +2779,7 @@
 .lk-room-container .lk-chat-form input.lk-form-control {
   background: #ffffff;
   color: #111827;
-  border-color: rgba(15, 23, 42, 0.18);
+  border-color: rgba(15, 23, 42, 0.3);
 }
 
 .lk-room-container .lk-chat-form .lk-form-control::placeholder {
@@ -2794,15 +2795,15 @@
 .lk-room-container .lk-chat-form .lk-button,
 .lk-room-container .lk-chat-form button.lk-button,
 .lk-room-container .lk-chat-form .lk-chat-form-button {
-  background: #ffffff;
-  color: #111827;
-  border: 1px solid rgba(15, 23, 42, 0.18);
+  background: #0e72ed;
+  color: #ffffff;
+  border: 1px solid rgba(14, 114, 237, 0.9);
 }
 
 .lk-room-container .lk-chat-form .lk-button:hover,
 .lk-room-container .lk-chat-form button.lk-button:hover,
 .lk-room-container .lk-chat-form .lk-chat-form-button:hover {
-  background: #f1f5f9;
+  background: #0b5fce;
 }
 
 .lk-room-container .lk-chat-entry,
