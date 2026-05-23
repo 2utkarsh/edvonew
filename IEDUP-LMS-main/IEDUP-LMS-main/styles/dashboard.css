@@ -2773,6 +2773,38 @@
   padding: 12px;
 }
 
+.lk-room-container .lk-chat-form .lk-form-control,
+.lk-room-container .lk-chat-form select.lk-form-control,
+.lk-room-container .lk-chat-form input.lk-form-control {
+  background: #ffffff;
+  color: #111827;
+  border-color: rgba(15, 23, 42, 0.18);
+}
+
+.lk-room-container .lk-chat-form .lk-form-control::placeholder {
+  color: rgba(17, 24, 39, 0.55);
+}
+
+.lk-room-container .lk-chat-form .lk-form-control:focus {
+  outline: none;
+  border-color: rgba(14, 114, 237, 0.55);
+  box-shadow: 0 0 0 3px rgba(14, 114, 237, 0.18);
+}
+
+.lk-room-container .lk-chat-form .lk-button,
+.lk-room-container .lk-chat-form button.lk-button,
+.lk-room-container .lk-chat-form .lk-chat-form-button {
+  background: #ffffff;
+  color: #111827;
+  border: 1px solid rgba(15, 23, 42, 0.18);
+}
+
+.lk-room-container .lk-chat-form .lk-button:hover,
+.lk-room-container .lk-chat-form button.lk-button:hover,
+.lk-room-container .lk-chat-form .lk-chat-form-button:hover {
+  background: #f1f5f9;
+}
+
 .lk-room-container .lk-chat-entry,
 .lk-room-container .lk-chat-entry .lk-message-body,
 .lk-room-container .lk-chat-entry .lk-meta-data,
