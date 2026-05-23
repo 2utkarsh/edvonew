@@ -2816,10 +2816,11 @@
 
   .lk-room-container .lk-chat {
     position: fixed;
-    inset: 0 0 0 auto;
+    inset: 0 0 var(--lk-control-bar-height, 84px) auto;
     z-index: 110;
     width: min(360px, 92vw);
     min-width: 0;
+    height: auto;
   }
 }
 
