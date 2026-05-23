@@ -167,7 +167,7 @@ export function Chat({
         position: "fixed",
         top: '0',
         right: "0",
-        bottom: 'var(--lk-control-bar-height, 84px)',
+        bottom: 'calc(var(--lk-control-bar-height, 92px) + env(safe-area-inset-bottom, 0px))',
         ...(props.style || {}),
       }}
     >

@@ -2964,6 +2964,7 @@
   --zoom-border: rgba(255, 255, 255, 0.1);
   --zoom-text: #f8fafc;
   --zoom-muted: #aab3c2;
+  --lk-control-bar-height: 92px;
   background:
     linear-gradient(180deg, #151b26 0%, #0b111c 100%);
   color: var(--zoom-text);
@@ -3326,8 +3327,8 @@
 
 .lk-room-container .lk-chat {
   width: min(360px, 36vw);
-  height: calc(100vh - var(--lk-control-bar-height, 84px));
-  height: calc(100svh - var(--lk-control-bar-height, 84px));
+  height: calc(100vh - (var(--lk-control-bar-height, 92px) + env(safe-area-inset-bottom, 0px)));
+  height: calc(100svh - (var(--lk-control-bar-height, 92px) + env(safe-area-inset-bottom, 0px)));
   min-width: 320px;
   border-left: 1px solid var(--zoom-border);
   background: #f8fafc;
@@ -3403,7 +3404,7 @@
 
   .lk-room-container .lk-chat {
     position: fixed;
-    inset: 0 0 var(--lk-control-bar-height, 84px) auto;
+    inset: 0 0 calc(var(--lk-control-bar-height, 92px) + env(safe-area-inset-bottom, 0px)) auto;
     z-index: 110;
     width: min(360px, 92vw);
     min-width: 0;
@@ -3412,6 +3413,10 @@
 }
 
 @media (max-width: 760px) {
+  .lk-room-container {
+    --lk-control-bar-height: 96px;
+  }
+
   .lk-room-container .lk-video-conference-inner {
     grid-template-rows: auto minmax(0, 1fr) auto;
     padding: 0 0 8px;
