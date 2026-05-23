@@ -3327,8 +3327,8 @@
 
 .lk-room-container .lk-chat {
   width: min(360px, 36vw);
-  height: calc(100vh - (var(--lk-control-bar-height, 92px) + env(safe-area-inset-bottom, 0px)));
-  height: calc(100svh - (var(--lk-control-bar-height, 92px) + env(safe-area-inset-bottom, 0px)));
+  display: flex;
+  flex-direction: column;
   min-width: 320px;
   border-left: 1px solid var(--zoom-border);
   background: #f8fafc;
@@ -3348,7 +3348,14 @@
   background: #f8fafc;
 }
 
+.lk-room-container .lk-chat-messages {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
 .lk-room-container .lk-chat-form {
+  flex: 0 0 auto;
   border-top: 1px solid rgba(15, 23, 42, 0.08);
   padding: 12px;
 }
