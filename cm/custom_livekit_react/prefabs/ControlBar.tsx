@@ -439,16 +439,29 @@ export function ControlBar({
         </div>
       )}
       {visibleControls.screenShare && browserSupportsScreenSharing && (
-        <TrackToggle
-          source={Track.Source.ScreenShare}
-          captureOptions={{ audio: true, selfBrowserSurface: 'include' }}
-          showIcon={showIcon}
-          onChange={onScreenShareChange}
-          disabled={localPermissions?.canPublish === false && !isHost}
-          onDeviceError={(error) => onDeviceError?.({ source: Track.Source.ScreenShare, error })}
-        >
-          {(isScreenShareEnabled ? 'Stop screen share' : 'Share screen')}
-        </TrackToggle>
+        localPermissions?.canPublish === false && !isHost ? (
+          <button
+            type="button"
+            className="lk-button"
+            onClick={() => requestPublishingPermission('screen_share')}
+            disabled={requestedPermissionSources.includes('screen_share')}
+            title="Ask host to unlock screen sharing"
+          >
+            {showIcon && <FaVolumeUp />}
+            {requestedPermissionSources.includes('screen_share') ? 'Share Requested' : 'Ask Share'}
+          </button>
+        ) : (
+          <TrackToggle
+            source={Track.Source.ScreenShare}
+            captureOptions={{ audio: true, selfBrowserSurface: 'include' }}
+            showIcon={showIcon}
+            onChange={onScreenShareChange}
+            disabled={localPermissions?.canPublish === false && !isHost}
+            onDeviceError={(error) => onDeviceError?.({ source: Track.Source.ScreenShare, error })}
+          >
+            {(isScreenShareEnabled ? 'Stop screen share' : 'Share screen')}
+          </TrackToggle>
+        )
       )}
       {visibleControls.chat && (
         <ChatToggle

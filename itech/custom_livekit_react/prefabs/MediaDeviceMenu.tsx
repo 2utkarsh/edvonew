@@ -1,5 +1,6 @@
 import { computeMenuPosition, wasClickOutside, log } from '@livekit/components-core';
 import * as React from 'react';
+import { createPortal } from 'react-dom';
 import { MediaDeviceSelect } from '../components/controls/MediaDeviceSelect';
 import type { LocalAudioTrack, LocalVideoTrack } from 'livekit-client';
 import { mergeProps } from '../mergeProps';
@@ -94,7 +95,7 @@ export function MediaDeviceMenu({
       if (!tooltip.current) {
         return;
       }
-      if (event.target === button.current) {
+      if (button.current && event.target instanceof Node && button.current.contains(event.target)) {
         return;
       }
       if (isOpen && wasClickOutside(tooltip.current, event)) {
@@ -111,59 +112,65 @@ export function MediaDeviceMenu({
     };
   }, [handleClickOutside]);
 
+  const menu =
+    !props.disabled && typeof document !== 'undefined'
+      ? createPortal(
+          <div
+            className="lk-device-menu"
+            ref={tooltip}
+            style={{
+              position: 'fixed',
+              zIndex: 1400,
+              maxHeight: 'min(22rem, calc(100vh - 1.5rem))',
+              overflowY: 'auto',
+              visibility: isOpen ? 'visible' : 'hidden',
+            }}
+          >
+            {kind ? (
+              <MediaDeviceSelect
+                initialSelection={initialSelection}
+                onActiveDeviceChange={(deviceId) => handleActiveDeviceChange(kind, deviceId)}
+                onDeviceListChange={setDevices}
+                kind={kind}
+                track={tracks?.[kind]}
+                requestPermissions={needPermissions}
+              />
+            ) : (
+              <>
+                <div className="lk-device-menu-heading">Audio inputs</div>
+                <MediaDeviceSelect
+                  kind="audioinput"
+                  onActiveDeviceChange={(deviceId) =>
+                    handleActiveDeviceChange('audioinput', deviceId)
+                  }
+                  onDeviceListChange={setDevices}
+                  track={tracks?.audioinput}
+                  requestPermissions={needPermissions}
+                />
+                <div className="lk-device-menu-heading">Video inputs</div>
+                <MediaDeviceSelect
+                  kind="videoinput"
+                  onActiveDeviceChange={(deviceId) =>
+                    handleActiveDeviceChange('videoinput', deviceId)
+                  }
+                  onDeviceListChange={setDevices}
+                  track={tracks?.videoinput}
+                  requestPermissions={needPermissions}
+                />
+              </>
+            )}
+          </div>,
+          document.body,
+        )
+      : null;
+
   return (
     <>
       <button {...buttonProps} ref={button}>
         {props.children}
       </button>
       {/** only render when enabled in order to make sure that the permissions are requested only if the menu is enabled */}
-      {!props.disabled && (
-        <div
-          className="lk-device-menu"
-          ref={tooltip}
-          style={{
-            position: 'fixed',
-            zIndex: 1400,
-            maxHeight: 'min(22rem, calc(100vh - 1.5rem))',
-            overflowY: 'auto',
-            visibility: isOpen ? 'visible' : 'hidden',
-          }}
-        >
-          {kind ? (
-            <MediaDeviceSelect
-              initialSelection={initialSelection}
-              onActiveDeviceChange={(deviceId) => handleActiveDeviceChange(kind, deviceId)}
-              onDeviceListChange={setDevices}
-              kind={kind}
-              track={tracks?.[kind]}
-              requestPermissions={needPermissions}
-            />
-          ) : (
-            <>
-              <div className="lk-device-menu-heading">Audio inputs</div>
-              <MediaDeviceSelect
-                kind="audioinput"
-                onActiveDeviceChange={(deviceId) =>
-                  handleActiveDeviceChange('audioinput', deviceId)
-                }
-                onDeviceListChange={setDevices}
-                track={tracks?.audioinput}
-                requestPermissions={needPermissions}
-              />
-              <div className="lk-device-menu-heading">Video inputs</div>
-              <MediaDeviceSelect
-                kind="videoinput"
-                onActiveDeviceChange={(deviceId) =>
-                  handleActiveDeviceChange('videoinput', deviceId)
-                }
-                onDeviceListChange={setDevices}
-                track={tracks?.videoinput}
-                requestPermissions={needPermissions}
-              />
-            </>
-          )}
-        </div>
-      )}
+      {menu}
     </>
   );
 }

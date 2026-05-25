@@ -31,7 +31,7 @@ interface ParticipantListProps {
   participantIdentityHand: string;
 }
 
-type PermissionRequestSource = 'microphone' | 'camera' | 'screen_share';
+type PermissionRequestSource = 'microphone' | 'camera' | 'screen_share' | 'whiteboard';
 
 type PermissionRequest = {
   id: string;
@@ -207,7 +207,26 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
 
       try {
         setIsProcessing(true);
-        await postParticipantAction(request.requesterIdentity, 'allow-publishing');
+        if (request.source === 'screen_share') {
+          await postParticipantAction(request.requesterIdentity, 'allow-screen-share');
+        } else if (request.source === 'whiteboard') {
+          await room.localParticipant.publishData(
+            new TextEncoder().encode(
+              JSON.stringify({
+                type: 'whiteboard-control',
+                action: 'set-access',
+                actor: room.localParticipant.identity,
+                allowParticipants: true,
+              }),
+            ),
+            {
+              reliable: true,
+              destinationIdentities: [request.requesterIdentity],
+            },
+          );
+        } else {
+          await postParticipantAction(request.requesterIdentity, 'allow-publishing');
+        }
         await publishPermissionResponse(request, true);
         removePermissionRequest(request.id);
       } catch (error) {
@@ -269,7 +288,10 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
           data.action === 'request-publishing' &&
           (isHost || isCoHost) &&
           data.requesterIdentity !== room.localParticipant.identity &&
-          (data.source === 'microphone' || data.source === 'camera' || data.source === 'screen_share')
+          (data.source === 'microphone' ||
+            data.source === 'camera' ||
+            data.source === 'screen_share' ||
+            data.source === 'whiteboard')
         ) {
           const request: PermissionRequest = {
             id: `${data.requesterIdentity}-${data.source}`,
@@ -805,7 +827,9 @@ export function ParticipantList({ handVisible, participantIdentityHand }: Partic
                 ? 'camera'
                 : request.source === 'microphone'
                   ? 'microphone'
-                  : 'screen sharing';
+                  : request.source === 'whiteboard'
+                    ? 'whiteboard'
+                    : 'screen sharing';
 
             return (
               <div

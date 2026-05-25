@@ -457,6 +457,9 @@ function VideoConferenceComponent(props: {
   const [whiteboardOwnerIdentity, setWhiteboardOwnerIdentity] = useState<string | null>(null);
   const [whiteboardMembersCanUse, setWhiteboardMembersCanUse] = useState(true);
   const [isLocalHost, setIsLocalHost] = useState(false);
+  const [requestedPermissionSources, setRequestedPermissionSources] = useState<
+    Array<'microphone' | 'camera' | 'screen_share' | 'whiteboard'>
+  >([]);
 
   const refreshLocalRole = React.useCallback(() => {
     const role = parseParticipantRole(room.localParticipant.metadata);
@@ -490,7 +493,7 @@ function VideoConferenceComponent(props: {
               action: nextOpen ? 'open' : 'close',
               actor: room.localParticipant.identity,
               ownerIdentity: nextOpen ? ownerIdentity ?? room.localParticipant.identity : null,
-              allowParticipants,
+              ...(typeof allowParticipants === 'boolean' ? { allowParticipants } : {}),
             }),
           ),
           {
@@ -529,10 +532,40 @@ function VideoConferenceComponent(props: {
     [room],
   );
 
+  const requestPermission = React.useCallback(
+    async (source: 'microphone' | 'camera' | 'screen_share' | 'whiteboard') => {
+      if (requestedPermissionSources.includes(source)) {
+        return;
+      }
+
+      try {
+        await room.localParticipant.publishData(
+          encoder.encode(
+            JSON.stringify({
+              type: 'permission-request',
+              action: 'request-publishing',
+              source,
+              requesterIdentity: room.localParticipant.identity,
+              requesterName: room.localParticipant.name || room.localParticipant.identity,
+            }),
+          ),
+          { reliable: true },
+        );
+        setRequestedPermissionSources((current) =>
+          current.includes(source) ? current : [...current, source],
+        );
+        setNotify(true);
+        setNotifyText('Request sent to admin.');
+      } catch (error) {
+        console.error('Failed to request permission:', error);
+      }
+    },
+    [encoder, requestedPermissionSources, room],
+  );
+
   const handleWhiteboardToggle = React.useCallback(() => {
     if (!isLocalHost && !whiteboardMembersCanUse) {
-      setNotify(true);
-      setNotifyText('The admin has disabled whiteboard access for participants.');
+      void requestPermission('whiteboard');
       return;
     }
 
@@ -553,13 +586,14 @@ function VideoConferenceComponent(props: {
         nextOpen,
         undefined,
         nextOwnerIdentity,
-        whiteboardMembersCanUse,
+        undefined,
       );
       return nextOpen;
     });
   }, [
     isLocalHost,
     publishWhiteboardVisibility,
+    requestPermission,
     room,
     whiteboardMembersCanUse,
     whiteboardOwnerIdentity,
@@ -649,6 +683,17 @@ function VideoConferenceComponent(props: {
                   : 'Host approved your permission request.',
             );
 
+            if (
+              data.source === 'microphone' ||
+              data.source === 'camera' ||
+              data.source === 'screen_share' ||
+              data.source === 'whiteboard'
+            ) {
+              setRequestedPermissionSources((current) =>
+                current.filter((source) => source !== data.source),
+              );
+            }
+
             if (data.source === 'camera') {
               room.localParticipant.setCameraEnabled(true).catch((error) => {
                 console.error('Failed to enable camera after host approval:', error);
@@ -657,17 +702,38 @@ function VideoConferenceComponent(props: {
               enableMicrophoneWithFallback().catch((error) => {
                 console.error('Failed to enable microphone after host approval:', error);
               });
+            } else if (data.source === 'screen_share') {
+              room.localParticipant.setScreenShareEnabled(true).catch((error) => {
+                console.error('Failed to enable screen share after host approval:', error);
+              });
+            } else if (data.source === 'whiteboard') {
+              setNotify(true);
+              setNotifyText('Host approved your whiteboard request.');
             }
           } else if (
             data.action === 'permission-denied' &&
             data.target === room.localParticipant.identity
           ) {
+            if (
+              data.source === 'microphone' ||
+              data.source === 'camera' ||
+              data.source === 'screen_share' ||
+              data.source === 'whiteboard'
+            ) {
+              setRequestedPermissionSources((current) =>
+                current.filter((source) => source !== data.source),
+              );
+            }
             setNotify(true);
             setNotifyText(
               data.source === 'camera'
                 ? 'Host denied your camera request.'
                 : data.source === 'microphone'
                   ? 'Host denied your microphone request.'
+                  : data.source === 'screen_share'
+                    ? 'Host denied your screen sharing request.'
+                    : data.source === 'whiteboard'
+                      ? 'Host denied your whiteboard request.'
                   : 'Host denied your permission request.',
             );
           }
@@ -708,7 +774,7 @@ function VideoConferenceComponent(props: {
           true,
           [participant.identity],
           whiteboardOwnerIdentity,
-          whiteboardMembersCanUse,
+          undefined,
         );
       }
 
