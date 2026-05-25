@@ -29,6 +29,7 @@ import React, { useState } from 'react';
 import Notification from '@/components/Notification';
 import { MassControl } from '@/components/MassControl';
 import RoomWhiteboard from '@/components/RoomWhiteboard';
+import PresentationPanel from '@/components/presentation/PresentationPanel';
 
 import { apiUrl, roomPath } from '@/lib/url';
 
@@ -64,6 +65,7 @@ export function PageClientImpl(props: {
     };
   }, []);
   const [connectionDetails, setConnectionDetails] = React.useState<ConnectionDetails | undefined>(undefined);
+  const [presentationFile, setPresentationFile] = React.useState<File | null>(null);
 
   const readErrorMessage = React.useCallback(async (response: Response, fallback: string) => {
     try {
@@ -159,6 +161,24 @@ export function PageClientImpl(props: {
               onError={handlePreJoinError}
               roomName={props.roomName}
             />
+            <div style={{ marginTop: '14px' }}>
+              <div style={{ color: 'rgba(255,255,255,0.78)', fontWeight: 700, marginBottom: '6px' }}>
+                Optional: Presentation PDF (host only)
+              </div>
+              <input
+                type="file"
+                accept="application/pdf"
+                onChange={(e) => setPresentationFile(e.target.files?.[0] ?? null)}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(255,255,255,0.14)',
+                  background: 'rgba(255,255,255,0.06)',
+                  color: '#fff',
+                }}
+              />
+            </div>
           </div>
         </div>
       ) : (
@@ -166,6 +186,8 @@ export function PageClientImpl(props: {
           connectionDetails={connectionDetails}
           userChoices={preJoinChoices}
           options={{ codec: props.codec, hq: props.hq }}
+          presentationFile={presentationFile}
+          onPresentationFileChange={setPresentationFile}
         />
       )}
     </main>
@@ -179,6 +201,8 @@ function VideoConferenceComponent(props: {
     hq: boolean;
     codec: VideoCodec;
   };
+  presentationFile: File | null;
+  onPresentationFileChange: (file: File | null) => void;
 }) {
   const e2eePassphrase =
     typeof window !== 'undefined' && decodePassphrase(location.hash.substring(1));
@@ -230,6 +254,7 @@ function VideoConferenceComponent(props: {
   const micRetryAttemptedRef = React.useRef(false);
   const audioUnlockAttemptRef = React.useRef(false);
   const [sessionEnded, setSessionEnded] = React.useState(false);
+  const [presentationOpen, setPresentationOpen] = React.useState(false);
   const connectionState = useConnectionState(room);
   const { canPlayAudio, startAudio } = useAudioPlayback(room);
 
@@ -874,15 +899,23 @@ function VideoConferenceComponent(props: {
             onWhiteboardToggle={handleWhiteboardToggle}
             onWhiteboardAccessToggle={handleWhiteboardAccessToggle}
             whiteboardOpen={whiteboardOpen}
+            presentationOpen={presentationOpen}
             whiteboardMembersCanUse={whiteboardMembersCanUse}
             canCloseWhiteboard={canCloseWhiteboard}
           />
-        <RoomWhiteboard
-          canDraw={canDrawWhiteboard}
-          isOpen={whiteboardOpen}
-          onClose={handleWhiteboardClose}
-          room={room}
-        />
+          <PresentationPanel
+            room={room}
+            isHost={isLocalHost}
+            selectedFile={props.presentationFile}
+            onSelectedFileChange={props.onPresentationFileChange}
+            onOpenChange={setPresentationOpen}
+          />
+          <RoomWhiteboard
+            canDraw={canDrawWhiteboard}
+            isOpen={whiteboardOpen}
+            onClose={handleWhiteboardClose}
+            room={room}
+          />
         <MassControl/>
         <ParticipantList handVisible={handVisible} participantIdentityHand={participantIdentityHand} />
         <Notification visible={notify} setVisible={setNotify} text={notifyText}/>

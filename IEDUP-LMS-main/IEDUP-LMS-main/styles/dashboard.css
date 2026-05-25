@@ -2441,6 +2441,7 @@
   --zoom-muted: #aab3c2;
   --lk-chat-width: min(360px, 36vw);
   --lk-whiteboard-width: min(920px, 64vw);
+  --lk-presentation-width: min(920px, 64vw);
   --lk-control-bar-height: 92px;
   background:
     linear-gradient(180deg, #151b26 0%, #0b111c 100%);

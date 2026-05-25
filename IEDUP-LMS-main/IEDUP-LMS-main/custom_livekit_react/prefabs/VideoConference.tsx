@@ -41,6 +41,7 @@ export interface VideoConferenceProps extends React.HTMLAttributes<HTMLDivElemen
    */
   raisedHandIdentities?: string[];
   whiteboardOpen?: boolean;
+  presentationOpen?: boolean;
   whiteboardMembersCanUse?: boolean;
   canCloseWhiteboard?: boolean;
   /**
@@ -74,6 +75,7 @@ export function VideoConference({
   SettingsComponent,
   raisedHandIdentities,
   whiteboardOpen,
+  presentationOpen,
   whiteboardMembersCanUse,
   canCloseWhiteboard,
   onWhiteboardToggle,
@@ -162,11 +164,13 @@ export function VideoConference({
           <div
             className="lk-video-conference-inner"
             style={
-              widgetState.showChat || whiteboardOpen
+              widgetState.showChat || whiteboardOpen || presentationOpen
                 ? {
-                    paddingRight: whiteboardOpen
-                      ? 'var(--lk-whiteboard-width, min(920px, 64vw))'
-                      : 'var(--lk-chat-width, min(360px, 36vw))',
+                    paddingRight: presentationOpen
+                      ? 'var(--lk-presentation-width, min(920px, 64vw))'
+                      : whiteboardOpen
+                        ? 'var(--lk-whiteboard-width, min(920px, 64vw))'
+                        : 'var(--lk-chat-width, min(360px, 36vw))',
                   }
                 : undefined
             }
