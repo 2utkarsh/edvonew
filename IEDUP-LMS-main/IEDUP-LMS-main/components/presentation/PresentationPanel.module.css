@@ -165,12 +165,13 @@
 
 .launcher {
   position: fixed;
+  top: 72px;
   right: 16px;
-  bottom: calc(var(--lk-control-bar-height, 92px) + 16px);
+  bottom: auto;
   z-index: 121;
   display: grid;
   gap: 10px;
-  width: min(420px, calc(100vw - 24px));
+  width: min(360px, calc(100vw - 24px));
   padding: 12px;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -178,6 +179,10 @@
   backdrop-filter: blur(18px);
   color: #fff;
   box-shadow: 0 22px 56px rgba(0, 0, 0, 0.45);
+}
+
+.launcherShifted {
+  right: calc(var(--lk-whiteboard-width, min(920px, 64vw)) + 24px);
 }
 
 .launcherTitle {
@@ -204,4 +209,14 @@
   opacity: 0.85;
   font-weight: 700;
   font-size: 0.86rem;
+}
+
+@media (max-width: 1120px) {
+  .launcher,
+  .launcherShifted {
+    top: auto;
+    right: 12px;
+    bottom: calc(var(--lk-control-bar-height, 92px) + 12px);
+    width: min(360px, calc(100vw - 24px));
+  }
 }

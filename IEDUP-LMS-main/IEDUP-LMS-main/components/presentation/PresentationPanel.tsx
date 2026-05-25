@@ -214,6 +214,7 @@ type Props = {
   selectedFile: File | null;
   onSelectedFileChange: (file: File | null) => void;
   onOpenChange?: (open: boolean) => void;
+  whiteboardOpen?: boolean;
 };
 
 export default function PresentationPanel({
@@ -222,6 +223,7 @@ export default function PresentationPanel({
   selectedFile,
   onSelectedFileChange,
   onOpenChange,
+  whiteboardOpen = false,
 }: Props) {
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -667,7 +669,10 @@ export default function PresentationPanel({
       }
 
       const bytes = await outPdf.save();
-      downloadBlob(new Blob([bytes], { type: 'application/pdf' }), `presentation-${room.name}.pdf`);
+      downloadBlob(
+        new Blob([new Uint8Array(bytes)], { type: 'application/pdf' }),
+        `presentation-${room.name}.pdf`,
+      );
     } finally {
       setLoading(false);
     }
@@ -817,7 +822,9 @@ export default function PresentationPanel({
 
   if (isHost && !open) {
     return (
-      <div className={styles.launcher}>
+      <div
+        className={`${styles.launcher} ${whiteboardOpen ? styles.launcherShifted : ''}`}
+      >
         <div className={styles.launcherTitle}>
           <span>Presentation</span>
           <button type="button" className={styles.smallBtn} onClick={() => setOpen(true)}>

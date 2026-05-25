@@ -27,7 +27,7 @@ export async function GET(
     }
 
     const bytes = await readFile(path.join(presentationDir(), safe));
-    return new NextResponse(bytes, {
+    return new NextResponse(new Uint8Array(bytes), {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',

@@ -908,12 +908,14 @@ function VideoConferenceComponent(props: {
             selectedFile={props.presentationFile}
             onSelectedFileChange={props.onPresentationFileChange}
             onOpenChange={setPresentationOpen}
+            whiteboardOpen={whiteboardOpen}
           />
           <RoomWhiteboard
             canDraw={canDrawWhiteboard}
             isOpen={whiteboardOpen}
             onClose={handleWhiteboardClose}
             room={room}
+            presentationOpen={presentationOpen}
           />
         <MassControl/>
         <ParticipantList handVisible={handVisible} participantIdentityHand={participantIdentityHand} />

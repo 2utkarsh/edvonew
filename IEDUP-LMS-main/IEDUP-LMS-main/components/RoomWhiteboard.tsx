@@ -57,6 +57,7 @@ type RoomWhiteboardProps = {
   isOpen: boolean;
   onClose: () => void;
   room: Room;
+  presentationOpen?: boolean;
 };
 
 const BOARD_COLORS = [
@@ -248,6 +249,7 @@ export default function RoomWhiteboard({
   isOpen,
   onClose,
   room,
+  presentationOpen = false,
 }: RoomWhiteboardProps) {
   const surfaceRef = React.useRef<HTMLDivElement | null>(null);
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
@@ -622,7 +624,9 @@ export default function RoomWhiteboard({
 
   return (
     <div
-      className={`${styles.overlay} ${isOpen ? styles.overlayOpen : styles.overlayClosed}`}
+      className={`${styles.overlay} ${
+        presentationOpen ? styles.overlayWithPresentation : ''
+      } ${isOpen ? styles.overlayOpen : styles.overlayClosed}`}
       aria-hidden={!isOpen}
     >
       <section className={styles.panel}>
