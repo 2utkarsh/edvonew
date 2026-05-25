@@ -77,7 +77,7 @@ Write-Log "Running git add"
 & git add -A
 
 Write-Log "Running git commit"
-& git commit -m 'Serve uploaded presentation PDFs via API'
+& git commit -m 'Fix presentation dropdown visibility'
 
 Write-Log "Running git push"
 & git push origin main

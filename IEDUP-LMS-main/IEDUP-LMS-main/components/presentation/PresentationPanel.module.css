@@ -86,12 +86,15 @@
 }
 
 .footer {
+  position: relative;
+  z-index: 3;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
   padding: 10px 12px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: visible;
 }
 
 .nav {
@@ -102,11 +105,14 @@
 }
 
 .toolRow {
+  position: relative;
+  z-index: 4;
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
   justify-content: flex-end;
+  overflow: visible;
 }
 
 .pill {
@@ -124,13 +130,21 @@
 }
 
 .select {
+  min-width: 82px;
   height: 34px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.06);
+  background: #121826;
   color: #fff;
   padding: 0 10px;
   font-weight: 700;
+  appearance: auto;
+  color-scheme: dark;
+}
+
+.select option {
+  background: #121826;
+  color: #fff;
 }
 
 .hint {
