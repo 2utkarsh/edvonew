@@ -130,8 +130,14 @@ async function renderPdfPageToCanvas(url: string, pageNumber: number, canvas: HT
   canvas.height = Math.floor(viewport.height);
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  await page.render({ canvasContext: ctx, viewport }).promise;
+  await page.render({
+    canvasContext: ctx,
+    viewport,
+    background: '#ffffff',
+  }).promise;
 }
 
 function buildInitialPages(numPages: number): PresentationPage[] {
