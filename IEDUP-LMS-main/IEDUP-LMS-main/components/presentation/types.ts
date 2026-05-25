@@ -45,6 +45,6 @@ export type PresentationMessage =
   | { type: 'presentation'; action: 'add-blank'; afterPageId: string | null; page: PresentationPage }
   | { type: 'presentation'; action: 'remove-page'; pageId: string }
   | { type: 'presentation'; action: 'stroke'; stroke: PresentationStroke }
+  | { type: 'presentation'; action: 'erase'; stroke: PresentationStroke }
   | { type: 'presentation'; action: 'text'; item: PresentationText }
   | { type: 'presentation'; action: 'clear-page'; pageId: string };
-

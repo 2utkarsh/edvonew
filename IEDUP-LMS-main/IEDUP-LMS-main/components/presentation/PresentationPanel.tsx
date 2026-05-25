@@ -41,6 +41,44 @@ function reducePoints(points: Array<{ x: number; y: number }>, maxPoints = 220) 
   return reduced;
 }
 
+function distanceToSegment(
+  point: { x: number; y: number },
+  start: { x: number; y: number },
+  end: { x: number; y: number },
+) {
+  const dx = end.x - start.x;
+  const dy = end.y - start.y;
+  if (dx === 0 && dy === 0) {
+    return Math.hypot(point.x - start.x, point.y - start.y);
+  }
+
+  const t = Math.max(
+    0,
+    Math.min(1, ((point.x - start.x) * dx + (point.y - start.y) * dy) / (dx * dx + dy * dy)),
+  );
+  const projectionX = start.x + t * dx;
+  const projectionY = start.y + t * dy;
+  return Math.hypot(point.x - projectionX, point.y - projectionY);
+}
+
+function textSizeToPixels(fontSize: number, height: number) {
+  if (fontSize <= 1) {
+    return Math.max(14, Math.min(72, fontSize * height));
+  }
+  return Math.max(10, Math.min(72, fontSize));
+}
+
+function ctxMeasureTextWidth(text: string, fontPx: number) {
+  if (typeof document === 'undefined') {
+    return text.length * fontPx * 0.6;
+  }
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return text.length * fontPx * 0.6;
+  ctx.font = `700 ${fontPx}px Arial, Helvetica, sans-serif`;
+  return ctx.measureText(text).width;
+}
+
 const TOOL_CONFIG: Record<
   Exclude<PresentationTool, 'text'>,
   { alpha: number; sizeMultiplier: number; composite: GlobalCompositeOperation }
@@ -90,11 +128,12 @@ function drawStroke(
 }
 
 function drawText(ctx: CanvasRenderingContext2D, item: PresentationText, width: number, height: number) {
+  const fontPx = textSizeToPixels(item.fontSize, height);
   ctx.save();
   ctx.globalAlpha = 1;
   ctx.globalCompositeOperation = 'source-over';
   ctx.fillStyle = item.color;
-  ctx.font = `700 ${Math.max(10, Math.min(48, item.fontSize))}px system-ui, -apple-system, Segoe UI, Roboto, Arial`;
+  ctx.font = `700 ${fontPx}px Arial, Helvetica, sans-serif`;
   ctx.textBaseline = 'top';
   ctx.fillText(item.text, item.x * width, item.y * height);
   ctx.restore();
@@ -412,6 +451,8 @@ export default function PresentationPanel({
       if (!state) return;
       const text = window.prompt('Type text');
       if (!text) return;
+      const overlayHeight = overlayCanvasRef.current?.height ?? 900;
+      const fontPx = Math.max(18, Math.min(72, size * 4));
       const item: PresentationText = {
         id: nowId('text'),
         pageId: state.currentPageId,
@@ -421,13 +462,63 @@ export default function PresentationPanel({
         x: clampUnit(x),
         y: clampUnit(y),
         text,
-        fontSize: 22,
+        fontSize: fontPx / overlayHeight,
       };
       const next: PresentationState = { ...state, texts: [...state.texts, item] };
       setState(next);
       await publish({ type: 'presentation', action: 'text', item });
     },
-    [color, publish, room.localParticipant.identity, state],
+    [color, publish, room.localParticipant.identity, size, state],
+  );
+
+  const eraseAt = React.useCallback(
+    async (draft: PresentationStroke) => {
+      if (!state) return;
+
+      const radius = Math.max(0.015, (draft.size * TOOL_CONFIG.eraser.sizeMultiplier) / 900);
+      const hitsStroke = (stroke: PresentationStroke) => {
+        if (stroke.pageId !== draft.pageId) return false;
+        if (stroke.points.length === 0) return false;
+        return draft.points.some((erasePoint) => {
+          if (stroke.points.length === 1) {
+            return Math.hypot(erasePoint.x - stroke.points[0].x, erasePoint.y - stroke.points[0].y) <= radius;
+          }
+          for (let i = 1; i < stroke.points.length; i += 1) {
+            if (distanceToSegment(erasePoint, stroke.points[i - 1], stroke.points[i]) <= radius) {
+              return true;
+            }
+          }
+          return false;
+        });
+      };
+
+      const hitsText = (item: PresentationText) => {
+        if (item.pageId !== draft.pageId) return false;
+        const overlay = overlayCanvasRef.current;
+        const width = overlay?.width ?? 1600;
+        const height = overlay?.height ?? 900;
+        const fontPx = textSizeToPixels(item.fontSize, height);
+        const textWidth = Math.max(fontPx * 0.6, ctxMeasureTextWidth(item.text, fontPx));
+        const left = item.x;
+        const top = item.y;
+        const right = item.x + textWidth / width;
+        const bottom = item.y + fontPx / height;
+        return draft.points.some((erasePoint) => {
+          const clampedX = Math.max(left, Math.min(right, erasePoint.x));
+          const clampedY = Math.max(top, Math.min(bottom, erasePoint.y));
+          return Math.hypot(erasePoint.x - clampedX, erasePoint.y - clampedY) <= radius;
+        });
+      };
+
+      const next: PresentationState = {
+        ...state,
+        strokes: state.strokes.filter((stroke) => !hitsStroke(stroke)),
+        texts: state.texts.filter((item) => !hitsText(item)),
+      };
+      setState(next);
+      await publish({ type: 'presentation', action: 'erase', stroke: draft });
+    },
+    [publish, state],
   );
 
   const pointerToUnit = React.useCallback((ev: PointerEvent) => {
@@ -468,8 +559,11 @@ export default function PresentationPanel({
         tool: strokeTool,
       };
       draftStrokeRef.current = stroke;
+      if (stroke.tool === 'eraser') {
+        void eraseAt({ ...stroke, points: [...stroke.points] });
+      }
     },
-    [addTextAt, color, isHost, pointerToUnit, room.localParticipant.identity, size, state, tool],
+    [addTextAt, color, eraseAt, isHost, pointerToUnit, room.localParticipant.identity, size, state, tool],
   );
 
   const onPointerMove = React.useCallback((ev: React.PointerEvent<HTMLCanvasElement>) => {
@@ -481,13 +575,18 @@ export default function PresentationPanel({
     if (!unit) return;
     draft.points.push(unit);
 
-    // optimistic draw
+    if (draft.tool === 'eraser') {
+      void eraseAt({ ...draft, points: [...draft.points] });
+      draft.points = [unit];
+      return;
+    }
+
     const overlay = overlayCanvasRef.current;
     const ctx = overlay?.getContext('2d');
     if (ctx && overlay) {
       drawStroke(ctx, draft, overlay.width, overlay.height);
     }
-  }, [isHost, pointerToUnit]);
+  }, [eraseAt, isHost, pointerToUnit]);
 
   const onPointerUp = React.useCallback(
     async (ev: React.PointerEvent<HTMLCanvasElement>) => {
@@ -497,6 +596,7 @@ export default function PresentationPanel({
       const draft = draftStrokeRef.current;
       draftStrokeRef.current = null;
       if (!draft || !state) return;
+      if (draft.tool === 'eraser') return;
       draft.points = reducePoints(draft.points);
       const next: PresentationState = { ...state, strokes: [...state.strokes, draft] };
       setState(next);
@@ -526,22 +626,33 @@ export default function PresentationPanel({
           outPage = outPdf.addPage([defaultSize.width, defaultSize.height]);
         }
 
-        // Render overlay for this page into an image by drawing into a temp canvas.
+        // Render only the annotations for this page into an image overlay.
         const tmp = document.createElement('canvas');
         tmp.width = 1400;
         tmp.height = Math.floor((tmp.width * defaultSize.height) / defaultSize.width);
         const ctx = tmp.getContext('2d');
         if (!ctx) continue;
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, tmp.width, tmp.height);
 
-        for (const stroke of state.strokes) {
-          if (stroke.pageId !== page.id) continue;
+        const pageStrokes = state.strokes.filter((stroke) => stroke.pageId === page.id);
+        const pageTexts = state.texts.filter((item) => item.pageId === page.id);
+        const hasOverlay = pageStrokes.length > 0 || pageTexts.length > 0;
+
+        if (page.kind === 'blank') {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, tmp.width, tmp.height);
+        } else {
+          ctx.clearRect(0, 0, tmp.width, tmp.height);
+        }
+
+        for (const stroke of pageStrokes) {
           drawStroke(ctx, stroke, tmp.width, tmp.height);
         }
-        for (const item of state.texts) {
-          if (item.pageId !== page.id) continue;
+        for (const item of pageTexts) {
           drawText(ctx, item, tmp.width, tmp.height);
+        }
+
+        if (!hasOverlay && page.kind === 'pdf') {
+          continue;
         }
 
         const pngDataUrl = tmp.toDataURL('image/png');
@@ -627,6 +738,45 @@ export default function PresentationPanel({
         });
       } else if (msg.action === 'stroke') {
         setState((current) => (current ? { ...current, strokes: [...current.strokes, msg.stroke] } : current));
+      } else if (msg.action === 'erase') {
+        setState((current) => {
+          if (!current) return current;
+          const eraseStroke = msg.stroke;
+          const radius = Math.max(0.015, (eraseStroke.size * TOOL_CONFIG.eraser.sizeMultiplier) / 900);
+          const filteredStrokes = current.strokes.filter((stroke) => {
+            if (stroke.pageId !== eraseStroke.pageId) return true;
+            return !eraseStroke.points.some((erasePoint) => {
+              if (stroke.points.length === 0) return false;
+              if (stroke.points.length === 1) {
+                return Math.hypot(erasePoint.x - stroke.points[0].x, erasePoint.y - stroke.points[0].y) <= radius;
+              }
+              for (let i = 1; i < stroke.points.length; i += 1) {
+                if (distanceToSegment(erasePoint, stroke.points[i - 1], stroke.points[i]) <= radius) {
+                  return true;
+                }
+              }
+              return false;
+            });
+          });
+          const filteredTexts = current.texts.filter((item) => {
+            if (item.pageId !== eraseStroke.pageId) return true;
+            const overlay = overlayCanvasRef.current;
+            const width = overlay?.width ?? 1600;
+            const height = overlay?.height ?? 900;
+            const fontPx = textSizeToPixels(item.fontSize, height);
+            const textWidth = Math.max(fontPx * 0.6, ctxMeasureTextWidth(item.text, fontPx));
+            const left = item.x;
+            const top = item.y;
+            const right = item.x + textWidth / width;
+            const bottom = item.y + fontPx / height;
+            return !eraseStroke.points.some((erasePoint) => {
+              const clampedX = Math.max(left, Math.min(right, erasePoint.x));
+              const clampedY = Math.max(top, Math.min(bottom, erasePoint.y));
+              return Math.hypot(erasePoint.x - clampedX, erasePoint.y - clampedY) <= radius;
+            });
+          });
+          return { ...current, strokes: filteredStrokes, texts: filteredTexts };
+        });
       } else if (msg.action === 'text') {
         setState((current) => (current ? { ...current, texts: [...current.texts, msg.item] } : current));
       }

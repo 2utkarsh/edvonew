@@ -77,7 +77,7 @@ Write-Log "Running git add"
 & git add -A
 
 Write-Log "Running git commit"
-& git commit -m 'Render presentation pages on white background'
+& git commit -m 'Fix presentation annotations and PDF export'
 
 Write-Log "Running git push"
 & git push origin main
