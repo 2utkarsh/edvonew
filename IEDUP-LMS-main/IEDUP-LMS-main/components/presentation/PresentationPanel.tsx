@@ -645,6 +645,33 @@ export default function PresentationPanel({
 
   if (!isHost && !open) return null;
 
+  if (isHost && !open) {
+    return (
+      <div className={styles.launcher}>
+        <div className={styles.launcherTitle}>
+          <span>Presentation</span>
+          <button type="button" className={styles.smallBtn} onClick={() => setOpen(true)}>
+            Open
+          </button>
+        </div>
+        <div className={styles.launcherRow}>
+          <div className={styles.fileName} title={selectedFile?.name ?? 'No PDF selected'}>
+            {selectedFile?.name ?? 'No PDF selected (choose one on the join screen)'}
+          </div>
+          <button
+            type="button"
+            className={styles.smallBtn}
+            onClick={handleUploadAndStart}
+            disabled={!selectedFile || loading}
+            title="Upload PDF and start presenting"
+          >
+            {loading ? 'Loading…' : 'Start'}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.panel} style={{ display: open ? 'grid' : 'none' }}>
       <div className={styles.header}>

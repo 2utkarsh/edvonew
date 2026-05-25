@@ -54,6 +54,7 @@ export interface PreJoinProps
   persistUserChoices?: boolean;
   videoProcessor?: TrackProcessor<Track.Kind.Video>;
   roomName?: string;
+  footerSlot?: React.ReactNode;
 }
 
 /** @public */
@@ -231,6 +232,7 @@ export function PreJoin({
   persistUserChoices = true,
   videoProcessor,
   roomName = '',
+  footerSlot,
   ...htmlProps
 }: PreJoinProps) {
   const {
@@ -445,6 +447,8 @@ export function PreJoin({
           Copy URL
         </button>
       </form>
+
+      {footerSlot}
 
       <div className="room-prejoin-legacy" aria-hidden="true">
       

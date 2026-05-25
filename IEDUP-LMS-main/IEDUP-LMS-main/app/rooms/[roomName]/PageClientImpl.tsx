@@ -160,22 +160,24 @@ export function PageClientImpl(props: {
               onSubmit={handlePreJoinSubmit}
               onError={handlePreJoinError}
               roomName={props.roomName}
+              footerSlot={
+                <div className="room-prejoin-pdf">
+                  <div className="room-prejoin-label">Presentation PDF (host only)</div>
+                  <label className="room-prejoin-pdf-picker">
+                    <input
+                      className="room-prejoin-pdf-input"
+                      type="file"
+                      accept="application/pdf"
+                      onChange={(e) => setPresentationFile(e.target.files?.[0] ?? null)}
+                    />
+                    <span className="room-prejoin-pdf-button">Choose PDF</span>
+                    <span className="room-prejoin-pdf-name">
+                      {presentationFile?.name ?? 'No file selected'}
+                    </span>
+                  </label>
+                </div>
+              }
             />
-            <div className="room-prejoin-pdf">
-              <div className="room-prejoin-label">Presentation PDF (host only)</div>
-              <label className="room-prejoin-pdf-picker">
-                <input
-                  className="room-prejoin-pdf-input"
-                  type="file"
-                  accept="application/pdf"
-                  onChange={(e) => setPresentationFile(e.target.files?.[0] ?? null)}
-                />
-                <span className="room-prejoin-pdf-button">Choose PDF</span>
-                <span className="room-prejoin-pdf-name">
-                  {presentationFile?.name ?? 'No file selected'}
-                </span>
-              </label>
-            </div>
           </div>
         </div>
       ) : (
