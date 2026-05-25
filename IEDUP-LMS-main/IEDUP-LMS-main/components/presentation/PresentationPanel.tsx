@@ -434,6 +434,7 @@ export default function PresentationPanel({
         return;
       }
 
+      const strokeTool = tool as Exclude<PresentationTool, 'text'>;
       const stroke: PresentationStroke = {
         id: nowId('stroke'),
         pageId: state.currentPageId,
@@ -442,7 +443,7 @@ export default function PresentationPanel({
         createdAt: Date.now(),
         points: [unit],
         size,
-        tool: tool === 'text' ? 'pen' : tool,
+        tool: strokeTool,
       };
       draftStrokeRef.current = stroke;
     },
