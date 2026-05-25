@@ -425,6 +425,7 @@ export function PreJoin({
             autoComplete="off"
           />
         </label>
+        {footerSlot ? <div className="room-prejoin-footer-slot">{footerSlot}</div> : null}
         <button
           className="lk-button lk-join-button room-prejoin-primary"
           type="submit"
@@ -447,8 +448,6 @@ export function PreJoin({
           Copy URL
         </button>
       </form>
-
-      {footerSlot}
 
       <div className="room-prejoin-legacy" aria-hidden="true">
       

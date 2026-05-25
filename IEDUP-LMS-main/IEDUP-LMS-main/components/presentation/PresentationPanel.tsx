@@ -185,7 +185,9 @@ export default function PresentationPanel({
 }: Props) {
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
   const [state, setState] = React.useState<PresentationState | null>(null);
+  const autoStartRef = React.useRef(false);
 
   const pageCanvasRef = React.useRef<HTMLCanvasElement | null>(null);
   const overlayCanvasRef = React.useRef<HTMLCanvasElement | null>(null);
@@ -305,6 +307,7 @@ export default function PresentationPanel({
   const handleUploadAndStart = React.useCallback(async () => {
     if (!selectedFile) return;
     setLoading(true);
+    setError(null);
     try {
       const form = new FormData();
       form.set('file', selectedFile);
@@ -314,7 +317,8 @@ export default function PresentationPanel({
       const { apiUrl } = await import('@/lib/url');
       const response = await fetch(apiUrl('/api/presentation/upload'), { method: 'POST', body: form });
       if (!response.ok) {
-        throw new Error('Upload failed');
+        const body = await response.text().catch(() => '');
+        throw new Error(body ? `Upload failed: ${body}` : 'Upload failed');
       }
       const data = (await response.json()) as { url: string };
       const count = await getPdfPageCount(data.url);
@@ -327,10 +331,25 @@ export default function PresentationPanel({
         texts: [],
       };
       await openPresentation(initial);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to start presentation';
+      setError(message);
     } finally {
       setLoading(false);
     }
   }, [openPresentation, room.name, selectedFile]);
+
+  React.useEffect(() => {
+    autoStartRef.current = false;
+  }, [selectedFile]);
+
+  React.useEffect(() => {
+    if (!isHost || !open || state || loading) return;
+    if (!selectedFile) return;
+    if (autoStartRef.current) return;
+    autoStartRef.current = true;
+    void handleUploadAndStart();
+  }, [handleUploadAndStart, isHost, loading, open, selectedFile, state]);
 
   const setCurrent = React.useCallback(
     async (pageId: string) => {
@@ -665,7 +684,7 @@ export default function PresentationPanel({
             disabled={!selectedFile || loading}
             title="Upload PDF and start presenting"
           >
-            {loading ? 'Loading…' : 'Start'}
+            {loading ? 'Loading...' : 'Start'}
           </button>
         </div>
       </div>
@@ -684,6 +703,7 @@ export default function PresentationPanel({
           ) : (
             <div className={styles.hint}>No presentation loaded</div>
           )}
+          {error ? <div className={styles.error}>{error}</div> : null}
         </div>
         <div className={styles.headerActions}>
           {isHost && (
@@ -695,7 +715,7 @@ export default function PresentationPanel({
                 disabled={!selectedFile || loading}
                 title="Upload PDF and start presentation"
               >
-                {loading ? 'Loading…' : 'Start'}
+                {loading ? 'Loading...' : 'Start'}
               </button>
               <button
                 type="button"

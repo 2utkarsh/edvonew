@@ -138,6 +138,17 @@
   font-size: 0.8rem;
 }
 
+.error {
+  margin-top: 6px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  background: rgba(127, 29, 29, 0.25);
+  color: rgba(254, 226, 226, 0.95);
+  font-size: 0.78rem;
+  max-width: 44ch;
+}
+
 .launcher {
   position: fixed;
   right: 16px;
