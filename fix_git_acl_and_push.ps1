@@ -77,7 +77,7 @@ Write-Log "Running git add"
 & git add -A
 
 Write-Log "Running git commit"
-& git commit -m 'Fix presentation auto-load + prejoin PDF UI'
+& git commit -m 'Use local pdf worker for presentation'
 
 Write-Log "Running git push"
 & git push origin main

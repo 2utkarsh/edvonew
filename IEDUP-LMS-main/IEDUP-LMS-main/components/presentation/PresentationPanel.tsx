@@ -4,6 +4,7 @@ import * as React from 'react';
 import type { Room, RemoteParticipant } from 'livekit-client';
 import { RoomEvent } from 'livekit-client';
 import { PDFDocument } from 'pdf-lib';
+import { withBasePath } from '@/lib/url';
 import styles from './PresentationPanel.module.css';
 import type {
   PresentationMessage,
@@ -103,10 +104,7 @@ async function getPdfPageCount(url: string) {
   // Use legacy build for better bundler compatibility in Next.js
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const pdfjs: any = await import('pdfjs-dist/legacy/build/pdf.mjs');
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${(pdfjs as any).version}/build/pdf.worker.min.js`;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (pdfjs as any).GlobalWorkerOptions.workerSrc = workerSrc;
+  pdfjs.GlobalWorkerOptions.workerSrc = withBasePath('/pdf.worker.min.mjs');
   const loadingTask = pdfjs.getDocument(url);
   const doc = await loadingTask.promise;
   return doc.numPages;
@@ -115,10 +113,7 @@ async function getPdfPageCount(url: string) {
 async function renderPdfPageToCanvas(url: string, pageNumber: number, canvas: HTMLCanvasElement) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const pdfjs: any = await import('pdfjs-dist/legacy/build/pdf.mjs');
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${(pdfjs as any).version}/build/pdf.worker.min.js`;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (pdfjs as any).GlobalWorkerOptions.workerSrc = workerSrc;
+  pdfjs.GlobalWorkerOptions.workerSrc = withBasePath('/pdf.worker.min.mjs');
   const loadingTask = pdfjs.getDocument(url);
   const doc = await loadingTask.promise;
   const page = await doc.getPage(pageNumber);
