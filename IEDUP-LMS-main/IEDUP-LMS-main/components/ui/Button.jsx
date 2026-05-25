@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 const Button = ({ 
   children, 
@@ -86,9 +87,11 @@ export function ConfirmModal({
 
   if (!isOpen) return null;
 
-  return (
-    <div className="modal-overlay" style={{ zIndex: 2000 }}>
-      <div className="modal-content">
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
+    <div className="modal-overlay" style={{ zIndex: 2000 }} onMouseDown={onCancel} role="presentation">
+      <div className="modal-content" onMouseDown={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
         <button className="modal-close" onClick={onCancel} aria-label="Close">×</button>
         <div className="modal-header">
           <h2>{title}</h2>
@@ -118,7 +121,8 @@ export function ConfirmModal({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
