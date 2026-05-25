@@ -310,7 +310,9 @@ export default function PresentationPanel({
       form.set('file', selectedFile);
       form.set('roomName', room.name);
 
-      const response = await fetch('/api/presentation/upload', { method: 'POST', body: form });
+      // Respect NEXT_PUBLIC_BASE_PATH (e.g. /live) via shared URL helper.
+      const { apiUrl } = await import('@/lib/url');
+      const response = await fetch(apiUrl('/api/presentation/upload'), { method: 'POST', body: form });
       if (!response.ok) {
         throw new Error('Upload failed');
       }
@@ -788,13 +790,7 @@ export default function PresentationPanel({
               style={{ padding: 0, width: 42 }}
             />
             <span className={styles.pill} title="PDF chosen for presentation">
-              PDF:
-              <input
-                type="file"
-                accept="application/pdf"
-                onChange={(e) => onSelectedFileChange(e.target.files?.[0] ?? null)}
-                style={{ width: 220 }}
-              />
+              PDF: {selectedFile?.name ?? 'Not selected'}
             </span>
           </div>
         ) : (
