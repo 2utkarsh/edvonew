@@ -59,6 +59,7 @@ export function MediaDeviceMenu({
           onClick: (e: React.MouseEvent<HTMLButtonElement>) => {
             e.preventDefault();
             e.stopPropagation();
+            ignoreOutsideClickOnce.current = true;
             setIsOpen((open) => !open);
           },
         },
@@ -74,6 +75,7 @@ export function MediaDeviceMenu({
 
   const button = React.useRef<HTMLButtonElement>(null);
   const tooltip = React.useRef<HTMLDivElement>(null);
+  const ignoreOutsideClickOnce = React.useRef(false);
 
   React.useLayoutEffect(() => {
     if (isOpen) {
@@ -99,6 +101,10 @@ export function MediaDeviceMenu({
   const handleClickOutside = React.useCallback(
     (event: MouseEvent) => {
       if (!tooltip.current) {
+        return;
+      }
+      if (ignoreOutsideClickOnce.current) {
+        ignoreOutsideClickOnce.current = false;
         return;
       }
       if (button.current && event.target instanceof Node && button.current.contains(event.target)) {
