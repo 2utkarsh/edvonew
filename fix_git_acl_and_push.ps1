@@ -77,7 +77,7 @@ Write-Log "Running git add"
 & git add -A
 
 Write-Log "Running git commit"
-& git commit -m 'Use local pdf worker for presentation'
+& git commit -m 'Serve uploaded presentation PDFs via API'
 
 Write-Log "Running git push"
 & git push origin main
