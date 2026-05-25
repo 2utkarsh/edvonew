@@ -53,9 +53,15 @@ export function MediaDeviceMenu({
   const buttonProps = React.useMemo(
     () =>
       mergeProps(
-        { className: 'lk-button lk-button-menu', 'aria-pressed': isOpen },
+        { className: 'lk-button lk-button-menu', 'aria-pressed': isOpen, type: 'button' },
         props,
-        { onClick: () => setIsOpen(!isOpen) },
+        {
+          onClick: (e: React.MouseEvent<HTMLButtonElement>) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsOpen((open) => !open);
+          },
+        },
       ),
     [isOpen, props],
   );
@@ -106,11 +112,12 @@ export function MediaDeviceMenu({
   );
 
   React.useEffect(() => {
+    if (!isOpen) return;
     document.addEventListener<'click'>('click', handleClickOutside);
     return () => {
       document.removeEventListener<'click'>('click', handleClickOutside);
     };
-  }, [handleClickOutside]);
+  }, [handleClickOutside, isOpen]);
 
   const menu =
     !props.disabled && typeof document !== 'undefined'
