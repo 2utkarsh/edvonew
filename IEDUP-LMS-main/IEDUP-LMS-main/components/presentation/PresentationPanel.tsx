@@ -102,7 +102,7 @@ function drawText(ctx: CanvasRenderingContext2D, item: PresentationText, width: 
 async function getPdfPageCount(url: string) {
   // Use legacy build for better bundler compatibility in Next.js
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const pdfjs: any = await import('pdfjs-dist/legacy/build/pdf');
+  const pdfjs: any = await import('pdfjs-dist/legacy/build/pdf.mjs');
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${(pdfjs as any).version}/build/pdf.worker.min.js`;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -114,7 +114,7 @@ async function getPdfPageCount(url: string) {
 
 async function renderPdfPageToCanvas(url: string, pageNumber: number, canvas: HTMLCanvasElement) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const pdfjs: any = await import('pdfjs-dist/legacy/build/pdf');
+  const pdfjs: any = await import('pdfjs-dist/legacy/build/pdf.mjs');
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${(pdfjs as any).version}/build/pdf.worker.min.js`;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
