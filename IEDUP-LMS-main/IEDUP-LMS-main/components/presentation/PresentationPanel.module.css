@@ -55,6 +55,7 @@
   overflow: hidden;
   display: grid;
   place-items: center;
+  min-height: 0;
 }
 
 .canvasWrap {
@@ -64,6 +65,7 @@
   padding: 12px;
   display: grid;
   place-items: center;
+  min-height: 0;
 }
 
 .pageCanvas {
@@ -218,5 +220,73 @@
     right: 12px;
     bottom: calc(var(--lk-control-bar-height, 92px) + 12px);
     width: min(360px, calc(100vw - 24px));
+  }
+}
+
+@media (max-width: 760px) {
+  .panel {
+    top: 8px;
+    right: 8px;
+    bottom: calc(var(--lk-control-bar-height, 96px) + env(safe-area-inset-bottom, 0px) + 8px);
+    left: 8px;
+    width: auto;
+    height: auto;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
+    overflow: hidden;
+  }
+
+  .header {
+    align-items: flex-start;
+    padding: 12px;
+  }
+
+  .headerActions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .canvasWrap {
+    width: 100%;
+    padding: 8px;
+  }
+
+  .pageCanvas {
+    max-width: 100%;
+    max-height: calc(100svh - 310px);
+  }
+
+  .overlayCanvas {
+    inset: 8px;
+    width: calc(100% - 16px);
+    height: calc(100% - 16px);
+    max-height: calc(100svh - 310px);
+  }
+
+  .footer {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+
+  .nav,
+  .toolRow {
+    width: 100%;
+  }
+
+  .toolRow {
+    justify-content: flex-start;
+  }
+
+  .pill {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .select {
+    min-width: 0;
   }
 }

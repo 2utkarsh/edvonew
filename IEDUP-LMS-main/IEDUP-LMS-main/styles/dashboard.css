@@ -2496,6 +2496,7 @@
   --lk-chat-width: min(360px, 36vw);
   --lk-whiteboard-width: min(920px, 64vw);
   --lk-presentation-width: min(920px, 64vw);
+  --lk-presentation-reserved-width: var(--lk-presentation-width);
   --lk-control-bar-height: 92px;
   background:
     linear-gradient(180deg, #151b26 0%, #0b111c 100%);
@@ -3037,6 +3038,8 @@
   .lk-room-container {
     --lk-chat-width: min(360px, 92vw);
     --lk-whiteboard-width: min(920px, 92vw);
+    --lk-presentation-width: min(920px, 92vw);
+    --lk-presentation-reserved-width: var(--lk-presentation-width);
   }
 
   .lk-room-container .lk-video-conference {
@@ -3056,6 +3059,8 @@
 @media (max-width: 760px) {
   .lk-room-container {
     --lk-control-bar-height: 96px;
+    --lk-presentation-width: calc(100vw - 16px);
+    --lk-presentation-reserved-width: 0px;
   }
 
   .lk-room-container .lk-video-conference-inner {

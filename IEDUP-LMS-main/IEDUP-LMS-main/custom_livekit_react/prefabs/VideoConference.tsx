@@ -167,7 +167,7 @@ export function VideoConference({
               widgetState.showChat || whiteboardOpen || presentationOpen
                 ? {
                     paddingRight: presentationOpen
-                      ? 'var(--lk-presentation-width, min(920px, 64vw))'
+                      ? 'var(--lk-presentation-reserved-width, var(--lk-presentation-width, min(920px, 64vw)))'
                       : whiteboardOpen
                         ? 'var(--lk-whiteboard-width, min(920px, 64vw))'
                         : 'var(--lk-chat-width, min(360px, 36vw))',
