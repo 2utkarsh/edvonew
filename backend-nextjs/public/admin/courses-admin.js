@@ -56,6 +56,8 @@ function syncCurriculumAssetUi(row) {
   const metaField = row.querySelector('[data-k="assetMeta"]');
   const linkWrap = row.querySelector('[data-role="asset-link"]');
   const fileWrap = row.querySelector('[data-role="asset-file"]');
+  const liveInstructorWrap = row.querySelector('[data-role="live-instructor"]');
+  const liveInstructorSelect = row.querySelector('[data-k="liveInstructorId"]');
 
   if (!contentTypeField || !assetSourceField || !linkField || !fileField || !metaField || !linkWrap || !fileWrap) return;
 
@@ -66,6 +68,14 @@ function syncCurriculumAssetUi(row) {
   const storedValue = String(row.dataset.assetValue || '').trim();
 
   if (contentType === 'live') {
+    if (liveInstructorWrap) liveInstructorWrap.hidden = false;
+    if (liveInstructorSelect) {
+      renderLiveInstructorRowPicker(row);
+      const current = String(byId('cInstructorId')?.value || '').trim();
+      if (current && !liveInstructorSelect.value) {
+        liveInstructorSelect.value = current;
+      }
+    }
     assetSourceField.value = 'link';
     assetSourceField.disabled = true;
     linkField.disabled = true;
@@ -78,6 +88,7 @@ function syncCurriculumAssetUi(row) {
     return;
   }
 
+  if (liveInstructorWrap) liveInstructorWrap.hidden = true;
   assetSourceField.disabled = false;
   linkField.disabled = false;
   fileField.disabled = false;
@@ -140,6 +151,26 @@ function renderInstructorPicker(selectedId = '') {
   select.value = selectedId || '';
 }
 
+function renderLiveInstructorRowPicker(row) {
+  const select = row?.querySelector?.('[data-k="liveInstructorId"]');
+  if (!select) return;
+
+  const instructors = Array.isArray(S.instructors) ? S.instructors : [];
+  const options = ["<option value=''>Select instructor</option>"].concat(
+    instructors
+      .map((item) => {
+        const user = item.user || {};
+        const userId = String(user.id || item.userId || '').trim();
+        const name = String(user.name || item.name || '').trim();
+        if (!userId || !name) return '';
+        return `<option value='${attr(userId)}'>${esc(name)}${user.email ? ` (${esc(user.email)})` : ''}</option>`;
+      })
+      .filter(Boolean)
+  ).join('');
+
+  select.innerHTML = options;
+}
+
 function bindInstructorPicker() {
   const select = byId('cInstructorId');
   if (!select || select.dataset.bound === 'true') return;
@@ -150,6 +181,10 @@ function bindInstructorPicker() {
     const match = (S.instructors || []).find((item) => String(item.user?.id || item.userId || '') === userId);
     const name = match?.user?.name || '';
     byId('cInstructor').value = name || '';
+
+    document.querySelectorAll('#currBody tr [data-k="liveInstructorId"]').forEach((node) => {
+      node.value = userId;
+    });
   });
 }
 
@@ -631,7 +666,7 @@ function addCurr(row = {}) {
 
   tr.dataset.assetValue = assetSource === 'upload' ? assetValue : '';
   tr.dataset.assetLabel = getCurriculumAssetLabel(row);
-  tr.innerHTML = `<td><input data-k='subject' value='${attr(row.subject || '')}'></td><td><input data-k='module' value='${attr(row.module || '')}'></td><td><input data-k='lecture' value='${attr(row.lecture || '')}'></td><td><input data-k='duration' value='${attr(row.duration || '')}'></td><td><select data-k='contentType' onchange='syncCurriculumAssetUi(this.closest("tr"))'><option value='recorded'>Recorded</option><option value='live'>Live</option><option value='resource'>Resource</option><option value='quiz'>Quiz</option></select></td><td><select data-k='isFree'><option value='false'>No</option><option value='true'>Yes</option></select></td><td><div class='asset-stack'><div data-role='asset-source'><select data-k='assetSource' onchange='syncCurriculumAssetUi(this.closest("tr"))'><option value='link'>Link</option><option value='upload'>Upload</option></select></div><div data-role='asset-link'><input data-k='assetLink' value='${attr(assetSource === 'link' ? assetValue : '')}'></div><div data-role='asset-file'><input data-k='assetFile' type='file'></div><div data-k='assetMeta' class='upload-meta'></div></div></td><td>${rowControls()}</td>`;
+  tr.innerHTML = `<td><input data-k='subject' value='${attr(row.subject || '')}'></td><td><input data-k='module' value='${attr(row.module || '')}'></td><td><input data-k='lecture' value='${attr(row.lecture || '')}'></td><td><input data-k='duration' value='${attr(row.duration || '')}'></td><td><select data-k='contentType' onchange='syncCurriculumAssetUi(this.closest("tr"))'><option value='recorded'>Recorded</option><option value='live'>Live</option><option value='resource'>Resource</option><option value='quiz'>Quiz</option></select></td><td><select data-k='isFree'><option value='false'>No</option><option value='true'>Yes</option></select></td><td><div class='asset-stack'><div data-role='asset-source'><select data-k='assetSource' onchange='syncCurriculumAssetUi(this.closest("tr"))'><option value='link'>Link</option><option value='upload'>Upload</option></select></div><div data-role='asset-link'><input data-k='assetLink' value='${attr(assetSource === 'link' ? assetValue : '')}'></div><div data-role='asset-file'><input data-k='assetFile' type='file'></div><div data-role='live-instructor' hidden><select data-k='liveInstructorId'></select></div><div data-k='assetMeta' class='upload-meta'></div></div></td><td>${rowControls()}</td>`;
   byId('currBody').appendChild(tr);
   tr.querySelector('[data-k="contentType"]').value = row.contentType || 'recorded';
   tr.querySelector('[data-k="isFree"]').value = String(Boolean(row.isFree));
@@ -639,6 +674,22 @@ function addCurr(row = {}) {
   const assetFileInput = tr.querySelector('[data-k="assetFile"]');
   assetFileInput.addEventListener('change', () => handleCurriculumFileChange(assetFileInput));
   syncCurriculumAssetUi(tr);
+
+  const liveInstructorSelect = tr.querySelector('[data-k="liveInstructorId"]');
+  if (liveInstructorSelect) {
+    liveInstructorSelect.addEventListener('change', () => {
+      const userId = String(liveInstructorSelect.value || '').trim();
+      if (!userId) return;
+      const globalSelect = byId('cInstructorId');
+      if (globalSelect) globalSelect.value = userId;
+      const match = (S.instructors || []).find((item) => String(item.user?.id || item.userId || '') === userId);
+      const name = match?.user?.name || '';
+      byId('cInstructor').value = name || '';
+      document.querySelectorAll('#currBody tr [data-k="liveInstructorId"]').forEach((node) => {
+        node.value = userId;
+      });
+    });
+  }
 }
 
 function addSession(session = {}) {
