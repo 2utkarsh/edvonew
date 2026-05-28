@@ -18,7 +18,51 @@ function normalizeRoomName(value: string, fallback = 'course-live-module') {
   return normalized || fallback;
 }
 
+function isLiveCourseItem(item: any) {
+  return String(item?.contentType || item?.deliveryMode || item?.type || '')
+    .trim()
+    .toLowerCase() === 'live';
+}
+
+function buildLiveCurriculumModuleFromRow(course: any, row: any, context: any = {}) {
+  const title = row.lecture || row.title || context.moduleTitle || row.module || 'Live module';
+  const roomName = normalizeRoomName(
+    row.roomName || `${course.slug || course.title || 'course'}-${title}`,
+    `course-${String(course._id || '').slice(-8) || 'live'}`
+  );
+
+  return {
+    _id: String(row._id || row.id || ''),
+    title,
+    description: row.lectureDescription || row.description || row.notes || context.moduleDescription || '',
+    hostName: course.instructorName || '',
+    roomName,
+    startTime: row.startTime || row.scheduledAt || course.startDate || '',
+    endTime: row.endTime || '',
+    duration: row.duration || '',
+    moduleTitle: row.module || context.moduleTitle || '',
+    subjectTitle: row.subject || context.subjectTitle || '',
+    meetingUrl: row.meetingUrl || row.videoUrl || row.resourceUrl || buildLiveSessionLaunchPath(
+      {
+        title,
+        hostName: course.instructorName,
+        roomName,
+        startTime: row.startTime || row.scheduledAt || course.startDate,
+      },
+      'student'
+    ),
+    recordingUrl: '',
+    attendanceRequired: true,
+    status: 'live-module',
+    source: 'curriculum',
+  };
+}
+
 function getLiveCurriculumModule(course: any) {
+  const curriculumRows = Array.isArray(course.curriculumRows) ? course.curriculumRows : [];
+  const liveRow = curriculumRows.find(isLiveCourseItem);
+  if (liveRow) return buildLiveCurriculumModuleFromRow(course, liveRow);
+
   const subjects = Array.isArray(course.curriculum) ? course.curriculum : [];
 
   for (const subject of subjects) {
@@ -26,40 +70,14 @@ function getLiveCurriculumModule(course: any) {
 
     for (const module of modules) {
       const lectures = Array.isArray(module.lectures) ? module.lectures : [];
-      const liveLecture = lectures.find((lecture: any) => String(lecture.contentType || '').toLowerCase() === 'live');
+      const liveLecture = lectures.find(isLiveCourseItem);
 
       if (liveLecture) {
-        const title = liveLecture.title || module.title || 'Live module';
-        const roomName = normalizeRoomName(
-          liveLecture.roomName || `${course.slug || course.title || 'course'}-${title}`,
-          `course-${String(course._id || '').slice(-8) || 'live'}`
-        );
-
-        return {
-          _id: String(liveLecture._id || liveLecture.id || ''),
-          title,
-          description: liveLecture.description || liveLecture.notes || module.description || '',
-          hostName: course.instructorName || '',
-          roomName,
-          startTime: course.startDate || '',
-          endTime: '',
-          duration: liveLecture.duration || '',
+        return buildLiveCurriculumModuleFromRow(course, liveLecture, {
           moduleTitle: module.title || '',
+          moduleDescription: module.description || '',
           subjectTitle: subject.name || '',
-          meetingUrl: liveLecture.videoUrl || liveLecture.resourceUrl || buildLiveSessionLaunchPath(
-            {
-              title,
-              hostName: course.instructorName,
-              roomName,
-              startTime: course.startDate,
-            },
-            'student'
-          ),
-          recordingUrl: '',
-          attendanceRequired: true,
-          status: 'live-module',
-          source: 'curriculum',
-        };
+        });
       }
     }
   }

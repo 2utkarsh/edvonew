@@ -60,7 +60,7 @@ export function buildLiveSessionLaunchPath(session: AnyObject, entry: 'host' | '
 export function buildCurriculumFromRows(rows: unknown) {
   const normalizedRows = asArray<AnyObject>(rows)
     .map((row) => {
-      const contentType = asString(row.contentType || 'recorded') || 'recorded';
+      const contentType = (asString(row.contentType || row.deliveryMode || 'recorded') || 'recorded').toLowerCase();
       const rawVideoUrl = asString(row.videoUrl);
       const rawResourceUrl = asString(row.resourceUrl);
       const primaryAsset = rawVideoUrl || rawResourceUrl;
@@ -80,6 +80,7 @@ export function buildCurriculumFromRows(rows: unknown) {
         notes: asString(row.notes),
         isFree: asBoolean(row.isFree),
         contentType,
+        deliveryMode: contentType,
       };
     })
     .filter((row) => row.subject && row.module && row.lecture);
@@ -120,6 +121,7 @@ export function buildCurriculumFromRows(rows: unknown) {
       notes: row.notes,
       isFree: row.isFree,
       contentType: row.contentType,
+      deliveryMode: row.contentType,
     });
   });
 
@@ -144,6 +146,8 @@ export function flattenCurriculumRows(curriculum: unknown) {
         const videoUrl = asString(lecture.videoUrl);
         const resourceUrl = asString(lecture.resourceUrl);
 
+        const contentType = (asString(lecture.contentType || lecture.deliveryMode || 'recorded') || 'recorded').toLowerCase();
+
         rows.push({
           id: lecture._id || createId('lecture'),
           subject: asString(subject.name),
@@ -159,7 +163,8 @@ export function flattenCurriculumRows(curriculum: unknown) {
           assetLabel: asString(lecture.assetLabel || lecture.assetName),
           notes: asString(lecture.notes),
           isFree: Boolean(lecture.isFree),
-          contentType: asString(lecture.contentType || 'recorded') || 'recorded',
+          contentType,
+          deliveryMode: contentType,
         });
       });
     });
@@ -179,7 +184,7 @@ export function normalizeLiveSessions(sessions: unknown) {
       startTime: asString(session.startTime),
       endTime: asString(session.endTime),
       timezone: asString(session.timezone || 'Asia/Kolkata') || 'Asia/Kolkata',
-      meetingUrl: asString(session.meetingUrl || buildLiveSessionLaunchPath(session, 'student')), 
+      meetingUrl: asString(session.meetingUrl || buildLiveSessionLaunchPath(session, 'student')),
       recordingUrl: asString(session.recordingUrl),
       attendanceRequired: session.attendanceRequired === undefined ? true : Boolean(session.attendanceRequired),
       status: asString(session.status || 'scheduled') || 'scheduled',
