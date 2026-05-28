@@ -58,6 +58,10 @@ function buildLiveCurriculumModuleFromRow(course: any, row: any, context: any = 
   };
 }
 
+function isFeaturedLiveModule(session: any) {
+  return ['live', 'scheduled', 'live-module'].includes(String(session?.status || '').toLowerCase());
+}
+
 function getLiveCurriculumModule(course: any) {
   const curriculumRows = Array.isArray(course.curriculumRows) ? course.curriculumRows : [];
   const liveRow = curriculumRows.find(isLiveCourseItem);
@@ -179,6 +183,14 @@ export async function GET(request: NextRequest) {
           ...course.nextLiveSession,
         }))
         .find((session: any) => session.status === 'scheduled')
+      || coursesWithLiveSessions
+        .map((course: any) => ({
+          courseId: String(course._id),
+          courseTitle: course.title,
+          courseSlug: course.slug,
+          ...course.nextLiveSession,
+        }))
+        .find(isFeaturedLiveModule)
       || null;
 
     // Get total students across all courses

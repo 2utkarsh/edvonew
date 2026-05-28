@@ -56,6 +56,27 @@ type InstructorDashboardPayload = {
         source?: string;
       } | null;
     }>;
+    liveModule?: {
+      courseId?: string;
+      courseTitle?: string;
+      courseSlug?: string;
+      _id?: string;
+      title?: string;
+      description?: string;
+      hostName?: string;
+      roomName?: string;
+      startTime?: string;
+      endTime?: string;
+      duration?: string;
+      moduleTitle?: string;
+      subjectTitle?: string;
+      timezone?: string;
+      meetingUrl?: string;
+      recordingUrl?: string;
+      attendanceRequired?: boolean;
+      status?: string;
+      source?: string;
+    } | null;
     stats?: {
       totalCourses?: number;
       totalStudents?: number;
@@ -159,6 +180,24 @@ function getCourseSessionLink(course: InstructorCourse) {
         host: session.hostName || 'EDVO Instructor',
         start: session.startTime,
         recordingUrl: session.recordingUrl,
+      },
+      'student'
+    )
+  );
+}
+
+function getFeaturedLiveModuleLink(module: NonNullable<NonNullable<InstructorDashboardPayload['data']>['liveModule']>) {
+  if (!module) return '';
+
+  return (
+    module.meetingUrl ||
+    buildLiveClassroomPath(
+      module.roomName || module.courseId || module.courseTitle || 'instructor-live-room',
+      {
+        title: module.title || module.courseTitle || 'Live module',
+        host: module.hostName || 'EDVO Instructor',
+        start: module.startTime,
+        recordingUrl: module.recordingUrl,
       },
       'student'
     )
@@ -279,6 +318,16 @@ export default function InstructorDashboard() {
     [dashboard]
   );
 
+  const firstCourseWithLiveSession = dashboard?.courses?.find((course) => course.nextLiveSession);
+  const featuredLiveModule = dashboard?.liveModule ||
+    (firstCourseWithLiveSession
+      ? {
+          ...firstCourseWithLiveSession.nextLiveSession,
+          courseId: firstCourseWithLiveSession._id,
+          courseTitle: firstCourseWithLiveSession.title,
+        }
+      : null);
+
   if (!accessChecked) {
     return (
       <main className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-8">
@@ -341,6 +390,107 @@ export default function InstructorDashboard() {
             </Card>
           ))}
         </section>
+
+        {featuredLiveModule ? (
+          <section className="mb-8">
+            <Card className="overflow-hidden rounded-[1.9rem] border border-blue-200/60 bg-[linear-gradient(135deg,#081120_0%,#0f172a_48%,#1d4ed8_100%)] p-0 text-white shadow-[0_24px_60px_rgba(15,23,42,0.18)]">
+              <div className="grid gap-0 lg:grid-cols-[minmax(0,1.7fr),minmax(280px,360px)]">
+                <div className="p-6 sm:p-8">
+                  <div className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-blue-100">
+                    Live Module
+                  </div>
+                  <div className="mt-4 text-sm uppercase tracking-[0.2em] text-white/65">
+                    {featuredLiveModule.courseTitle || 'Assigned course'}
+                  </div>
+                  <h2 className="mt-2 text-3xl font-black leading-tight sm:text-4xl">
+                    {featuredLiveModule.title || 'Live session'}
+                  </h2>
+                  <p className="mt-3 max-w-2xl text-sm text-white/80 sm:text-base">
+                    {featuredLiveModule.description ||
+                      [featuredLiveModule.subjectTitle, featuredLiveModule.moduleTitle].filter(Boolean).join(' / ') ||
+                      'This live module is configured in the course curriculum and is ready to launch.'}
+                  </p>
+
+                  <div className="mt-6 flex flex-wrap gap-2">
+                    <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-white/85">
+                      {featuredLiveModule.status || 'scheduled'}
+                    </span>
+                    {featuredLiveModule.startTime ? (
+                      <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-white/85">
+                        {formatDateTime(featuredLiveModule.startTime)}
+                      </span>
+                    ) : null}
+                    {featuredLiveModule.duration ? (
+                      <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-white/85">
+                        Duration {featuredLiveModule.duration}
+                      </span>
+                    ) : null}
+                  </div>
+
+                  <div className="mt-7 flex flex-wrap gap-3">
+                    <Button asChild className="rounded-full bg-white text-slate-950 hover:bg-blue-50">
+                      <a href={getFeaturedLiveModuleLink(featuredLiveModule)} target="_blank" rel="noreferrer">
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                        Join live module
+                      </a>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="rounded-full border-white/20 bg-white/10 text-white hover:bg-white/15"
+                      type="button"
+                      disabled={!getFeaturedLiveModuleLink(featuredLiveModule)}
+                      onClick={async () => {
+                        const link = getFeaturedLiveModuleLink(featuredLiveModule);
+                        if (!link) return;
+                        try {
+                          await navigator.clipboard.writeText(link);
+                        } catch {
+                          // ignore clipboard failures
+                        }
+                      }}
+                    >
+                      Copy link
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="border-t border-white/10 bg-white/5 p-6 sm:p-8 lg:border-l lg:border-t-0">
+                  <div className="rounded-[1.5rem] border border-white/10 bg-slate-950/40 p-5">
+                    <div className="text-xs font-semibold uppercase tracking-[0.22em] text-white/60">
+                      Session details
+                    </div>
+                    <div className="mt-4 space-y-4 text-sm text-white/85">
+                      <div>
+                        <div className="text-white/55">Course</div>
+                        <div className="mt-1 font-semibold text-white">
+                          {featuredLiveModule.courseTitle || 'Assigned course'}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-white/55">Room</div>
+                        <div className="mt-1 font-semibold text-white">
+                          {featuredLiveModule.roomName || 'Not assigned yet'}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-white/55">Host</div>
+                        <div className="mt-1 font-semibold text-white">
+                          {featuredLiveModule.hostName || 'EDVO Instructor'}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-white/55">Source</div>
+                        <div className="mt-1 font-semibold text-white">
+                          {featuredLiveModule.source || 'curriculum'}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </section>
+        ) : null}
 
         {error ? (
           <div className="mb-8 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
