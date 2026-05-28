@@ -76,6 +76,30 @@ type AuthUser = {
   avatar?: string;
 };
 
+type InstructorCourse = {
+  _id?: string;
+  title?: string;
+  status?: string;
+  studentsEnrolled?: number;
+  rating?: number;
+  price?: number;
+  updatedAt?: string;
+  nextLiveSession?: {
+    _id?: string;
+    title?: string;
+    description?: string;
+    hostName?: string;
+    roomName?: string;
+    startTime?: string;
+    endTime?: string;
+    timezone?: string;
+    meetingUrl?: string;
+    recordingUrl?: string;
+    attendanceRequired?: boolean;
+    status?: string;
+  } | null;
+};
+
 const emptyInstructorDashboard: NonNullable<InstructorDashboardPayload['data']> = {
   courses: [],
   stats: {
@@ -114,7 +138,7 @@ function formatDateTime(value?: string) {
   });
 }
 
-function getCourseSessionLink(course: NonNullable<InstructorDashboardPayload['data']>['courses'][number]) {
+function getCourseSessionLink(course: InstructorCourse) {
   const session = course.nextLiveSession;
   if (!session) return '';
 
@@ -130,7 +154,7 @@ function getCourseSessionLink(course: NonNullable<InstructorDashboardPayload['da
       },
       'student'
     )
-  );
+    );
 }
 
 function initials(value: string) {
