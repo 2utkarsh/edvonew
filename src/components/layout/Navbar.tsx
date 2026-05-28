@@ -42,7 +42,11 @@ function readStoredAuthUser(): AuthUser {
   }
 }
 
-export default function Navbar() {
+type NavbarProps = {
+  hideGuestAuthActions?: boolean;
+};
+
+export default function Navbar({ hideGuestAuthActions = false }: NavbarProps) {
   const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -292,7 +296,7 @@ export default function Navbar() {
                     )}
                   </button>
                 )}
-{(isAuthenticated || !!authUser) ? (
+                {(isAuthenticated || !!authUser) ? (
                   <>
                     <Link
                       href="/dashboard/student"
@@ -309,7 +313,7 @@ export default function Navbar() {
                       <span className="inline-flex items-center gap-1.5"><LogOut className="h-4 w-4" />Logout</span>
                     </button>
                   </>
-                ) : (
+                ) : hideGuestAuthActions ? null : (
                   <>
                     <Link
                       href="/auth/login"
@@ -388,7 +392,7 @@ export default function Navbar() {
                       </button>
                     </div>
                   </div>
-                ) : (
+                ) : hideGuestAuthActions ? null : (
                   <div className="mt-4 flex gap-3 border-t border-border pt-4 dark:border-white/10">
                     <Link
                       href="/auth/login"

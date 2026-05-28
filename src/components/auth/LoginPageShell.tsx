@@ -156,7 +156,10 @@ export default function LoginPageShell({ variant }: LoginPageShellProps) {
   };
 
   return (
-    <AuthPageChrome showNavbar={variant === 'student'}>
+    <AuthPageChrome
+      showNavbar={variant === 'student' || variant === 'instructor'}
+      hideGuestAuthActions={variant === 'instructor'}
+    >
       <main className="bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40 dark:from-slate-950 dark:via-slate-900 dark:to-primary-950/50">
         <div className={`mx-auto flex max-w-7xl overflow-hidden ${variant === 'student' ? 'min-h-[calc(100vh-64px)] lg:rounded-[2rem] lg:border lg:border-slate-200/70 lg:bg-white/70 lg:shadow-xl lg:shadow-slate-200/40 lg:backdrop-blur dark:lg:border-slate-800 dark:lg:bg-slate-950/60 dark:lg:shadow-black/20' : 'min-h-screen'}`}>
           <div className="hidden lg:flex lg:w-[45%] xl:w-[42%] flex-col items-center justify-center relative overflow-hidden bg-gradient-to-br from-slate-50 to-blue-50/50 dark:from-slate-900 dark:to-primary-950/50 px-12 border-r border-gray-100 dark:border-slate-800 transition-colors">
