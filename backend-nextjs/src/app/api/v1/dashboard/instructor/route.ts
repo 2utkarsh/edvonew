@@ -3,7 +3,7 @@ import { connectToDatabase } from '@/lib/db';
 import { requireAuth } from '@/lib/auth';
 import { success, fail, toResponse } from '@/lib/http';
 import { CourseModel } from '@/models/Course';
-import { EventModel } from '@/models/Event';
+import { buildLiveSessionLaunchPath, deriveLiveSessionStatus } from '@/lib/course-runtime';
 import { EnrollmentModel } from '@/models/Enrollment';
 import { UserModel } from '@/models/User';
 import { Types } from 'mongoose';
@@ -48,30 +48,60 @@ export async function GET(request: NextRequest) {
     const courses = await CourseModel.find({ instructorId: new Types.ObjectId(userId) })
       .sort({ createdAt: -1 })
       .lean();
+    const now = new Date();
 
-    const liveEvents = await EventModel.find({
-      instructorId: new Types.ObjectId(userId),
-      status: { $in: ['live', 'published'] },
-    })
-      .sort({ scheduledAt: 1 })
-      .lean();
+    const coursesWithLiveSessions = courses.map((course: any) => {
+      const liveSessions = Array.isArray(course.liveSessions)
+        ? course.liveSessions
+            .map((session: any) => {
+              const status = deriveLiveSessionStatus(session, now);
 
-    const liveModuleSource = liveEvents.find((event) => event.status === 'live') || liveEvents[0] || null;
-    const liveModule = liveModuleSource
-      ? {
-          _id: String(liveModuleSource._id),
-          title: liveModuleSource.title,
-          type: liveModuleSource.type,
-          status: liveModuleSource.status,
-          scheduledAt: liveModuleSource.scheduledAt,
-          duration: liveModuleSource.duration,
-          liveUrl: liveModuleSource.liveUrl || '',
-          instructorName: liveModuleSource.instructorName,
-          registeredCount: liveModuleSource.registeredCount || 0,
-          maxParticipants: liveModuleSource.maxParticipants || 0,
-          slug: liveModuleSource.slug,
-        }
-      : null;
+              return {
+                _id: String(session._id || session.id || ''),
+                title: session.title,
+                description: session.description,
+                hostName: session.hostName,
+                roomName: session.roomName,
+                startTime: session.startTime,
+                endTime: session.endTime,
+                timezone: session.timezone || 'Asia/Kolkata',
+                meetingUrl: session.meetingUrl || buildLiveSessionLaunchPath(session, 'student'),
+                recordingUrl: session.recordingUrl || '',
+                attendanceRequired: session.attendanceRequired !== false,
+                status,
+              };
+            })
+            .filter((session: any) => session.title && session.startTime)
+        : [];
+
+      const nextLiveSession = liveSessions.find((session: any) => session.status === 'live')
+        || liveSessions.find((session: any) => session.status === 'scheduled')
+        || null;
+
+      return {
+        ...course,
+        nextLiveSession,
+      };
+    });
+
+    const liveModule =
+      coursesWithLiveSessions
+        .map((course: any) => ({
+          courseId: String(course._id),
+          courseTitle: course.title,
+          courseSlug: course.slug,
+          ...course.nextLiveSession,
+        }))
+        .find((session: any) => session.status === 'live')
+      || coursesWithLiveSessions
+        .map((course: any) => ({
+          courseId: String(course._id),
+          courseTitle: course.title,
+          courseSlug: course.slug,
+          ...course.nextLiveSession,
+        }))
+        .find((session: any) => session.status === 'scheduled')
+      || null;
 
     // Get total students across all courses
     const totalStudents = courses.reduce(
@@ -109,7 +139,7 @@ export async function GET(request: NextRequest) {
           avatar: user?.avatar || '',
           headline: user?.headline || '',
         },
-        courses,
+        courses: coursesWithLiveSessions,
         liveModule,
         stats: {
           totalCourses: courses.length,

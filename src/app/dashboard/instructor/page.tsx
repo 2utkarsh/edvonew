@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   BookOpen,
-  CalendarDays,
   Clock,
   Eye,
   ExternalLink,
@@ -38,6 +37,20 @@ type InstructorDashboardPayload = {
       rating?: number;
       price?: number;
       updatedAt?: string;
+      nextLiveSession?: {
+        _id?: string;
+        title?: string;
+        description?: string;
+        hostName?: string;
+        roomName?: string;
+        startTime?: string;
+        endTime?: string;
+        timezone?: string;
+        meetingUrl?: string;
+        recordingUrl?: string;
+        attendanceRequired?: boolean;
+        status?: string;
+      } | null;
     }>;
     stats?: {
       totalCourses?: number;
@@ -45,19 +58,6 @@ type InstructorDashboardPayload = {
       totalRevenue?: number;
       averageRating?: string | number;
     };
-    liveModule?: {
-      _id?: string;
-      title?: string;
-      type?: string;
-      status?: string;
-      scheduledAt?: string;
-      duration?: number;
-      liveUrl?: string;
-      instructorName?: string;
-      registeredCount?: number;
-      maxParticipants?: number;
-      slug?: string;
-    } | null;
     recentEnrollments?: Array<{
       _id?: string;
       userId?: {
@@ -114,13 +114,23 @@ function formatDateTime(value?: string) {
   });
 }
 
-function formatDuration(minutes?: number) {
-  const totalMinutes = Number(minutes || 0);
-  if (!totalMinutes) return 'Duration not set';
-  if (totalMinutes < 60) return `${totalMinutes} min`;
-  const hours = Math.floor(totalMinutes / 60);
-  const mins = totalMinutes % 60;
-  return mins ? `${hours}h ${mins}m` : `${hours}h`;
+function getCourseSessionLink(course: NonNullable<InstructorDashboardPayload['data']>['courses'][number]) {
+  const session = course.nextLiveSession;
+  if (!session) return '';
+
+  return (
+    session.meetingUrl ||
+    buildLiveClassroomPath(
+      session.roomName || course._id || course.title || 'instructor-live-room',
+      {
+        title: session.title || course.title || 'Live module',
+        host: session.hostName || 'EDVO Instructor',
+        start: session.startTime,
+        recordingUrl: session.recordingUrl,
+      },
+      'student'
+    )
+  );
 }
 
 function initials(value: string) {
@@ -141,18 +151,6 @@ export default function InstructorDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [dashboard, setDashboard] = useState<InstructorDashboardPayload['data'] | null>(null);
-  const liveModule = dashboard?.liveModule || null;
-  const liveModuleJoinLink = liveModule
-    ? liveModule.liveUrl || buildLiveClassroomPath(
-        liveModule.slug || liveModule._id || 'instructor-live-room',
-        {
-          title: liveModule.title || 'Live Module',
-          host: liveModule.instructorName || displayName,
-          start: liveModule.scheduledAt,
-        },
-        'student'
-      )
-    : '';
 
   const handleLogout = () => {
     try {
@@ -360,6 +358,88 @@ export default function InstructorDashboard() {
                         </Button>
                       </div>
                     </div>
+
+                    {course.nextLiveSession ? (
+                      <div className="mt-5 rounded-[1.4rem] border border-blue-200/70 bg-blue-50/70 p-4 dark:border-blue-500/20 dark:bg-blue-500/10">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="inline-flex rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-white">
+                            Live Module
+                          </span>
+                          <span className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700 dark:bg-slate-900/80 dark:text-blue-200">
+                            {course.nextLiveSession.status || 'scheduled'}
+                          </span>
+                        </div>
+
+                        <div className="mt-4 text-lg font-black text-slate-950 dark:text-white">
+                          {course.nextLiveSession.title || 'Live session'}
+                        </div>
+                        <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                          {course.nextLiveSession.description || 'This live module is configured inside the course.'}
+                        </p>
+
+                        <div className="mt-4 grid gap-3 md:grid-cols-2">
+                          <div className="rounded-2xl bg-white px-4 py-3 shadow-sm dark:bg-slate-950/70">
+                            <div className="flex items-start gap-3">
+                              <Clock className="mt-0.5 h-4 w-4 text-blue-600 dark:text-blue-300" />
+                              <div>
+                                <div className="text-sm font-semibold text-slate-950 dark:text-white">Timing</div>
+                                <div className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                                  {formatDateTime(course.nextLiveSession.startTime)}
+                                </div>
+                                {course.nextLiveSession.endTime ? (
+                                  <div className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-400">
+                                    Ends {formatDateTime(course.nextLiveSession.endTime)}
+                                  </div>
+                                ) : null}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="rounded-2xl bg-white px-4 py-3 shadow-sm dark:bg-slate-950/70">
+                            <div className="flex items-start gap-3">
+                              <Link2 className="mt-0.5 h-4 w-4 text-blue-600 dark:text-blue-300" />
+                              <div className="min-w-0">
+                                <div className="text-sm font-semibold text-slate-950 dark:text-white">Joining link</div>
+                                <a
+                                  href={getCourseSessionLink(course)}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="mt-1 block break-all text-sm font-medium text-blue-700 underline decoration-blue-200 underline-offset-4 hover:text-blue-800 dark:text-blue-200 dark:decoration-blue-400/40"
+                                >
+                                  {getCourseSessionLink(course)}
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          <Button asChild className="rounded-full">
+                            <a href={getCourseSessionLink(course)} target="_blank" rel="noreferrer">
+                              <ExternalLink className="mr-2 h-4 w-4" />
+                              Join live module
+                            </a>
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="rounded-full"
+                            type="button"
+                            disabled={!getCourseSessionLink(course)}
+                            onClick={async () => {
+                              const link = getCourseSessionLink(course);
+                              if (!link) return;
+                              try {
+                                await navigator.clipboard.writeText(link);
+                              } catch {
+                                // ignore clipboard failures
+                              }
+                            }}
+                          >
+                            Copy link
+                          </Button>
+                        </div>
+                      </div>
+                    ) : null}
                   </div>
                 ))}
               </div>
@@ -371,104 +451,6 @@ export default function InstructorDashboard() {
           </Card>
 
           <div className="space-y-6">
-            <Card className="rounded-[1.8rem] border border-white/70 bg-white/90 p-6 shadow-[0_20px_50px_rgba(15,23,42,0.05)] dark:border-white/10 dark:bg-slate-900/80">
-              <div className="mb-5 flex items-start justify-between gap-4">
-                <div>
-                  <Badge variant="gradient" className="mb-3 inline-flex bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-200">
-                    Live Module
-                  </Badge>
-                  <h2 className="text-2xl font-black text-slate-950 dark:text-white">Upcoming live class</h2>
-                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                    Show the next live session, its timing, and the exact link participants should use to join.
-                  </p>
-                </div>
-                <CalendarDays className="h-6 w-6 text-blue-600 dark:text-blue-300" />
-              </div>
-
-              {liveModule ? (
-                <div className="rounded-[1.5rem] border border-slate-200/80 bg-slate-50/80 p-5 dark:border-white/10 dark:bg-slate-950/60">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700 dark:bg-blue-500/10 dark:text-blue-200">
-                      {liveModule.status || 'published'}
-                    </span>
-                    {liveModule.type ? (
-                      <span className="inline-flex rounded-full bg-slate-200/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-700 dark:bg-white/10 dark:text-slate-200">
-                        {liveModule.type}
-                      </span>
-                    ) : null}
-                  </div>
-
-                  <h3 className="mt-4 text-xl font-black text-slate-950 dark:text-white">{liveModule.title || 'Live module'}</h3>
-                  <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                    Hosted by {liveModule.instructorName || displayName}
-                  </p>
-
-                  <div className="mt-5 grid gap-3 text-sm text-slate-600 dark:text-slate-300">
-                    <div className="flex items-start gap-3 rounded-2xl bg-white px-4 py-3 shadow-sm dark:bg-slate-900/80">
-                      <Clock className="mt-0.5 h-4 w-4 text-blue-600 dark:text-blue-300" />
-                      <div>
-                        <div className="font-semibold text-slate-950 dark:text-white">Timing</div>
-                        <div className="mt-1">{formatDateTime(liveModule.scheduledAt)}</div>
-                        <div className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-400">
-                          Duration {formatDuration(liveModule.duration)}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-3 rounded-2xl bg-white px-4 py-3 shadow-sm dark:bg-slate-900/80">
-                      <Link2 className="mt-0.5 h-4 w-4 text-blue-600 dark:text-blue-300" />
-                      <div className="min-w-0">
-                        <div className="font-semibold text-slate-950 dark:text-white">Joining link</div>
-                        {liveModuleJoinLink ? (
-                          <a
-                            href={liveModuleJoinLink}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="mt-1 block break-all text-sm font-medium text-blue-700 underline decoration-blue-200 underline-offset-4 hover:text-blue-800 dark:text-blue-200 dark:decoration-blue-400/40"
-                          >
-                            {liveModuleJoinLink}
-                          </a>
-                        ) : (
-                          <div className="mt-1 text-slate-500 dark:text-slate-400">No join link configured yet.</div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-5 flex flex-wrap gap-2">
-                    {liveModuleJoinLink ? (
-                      <Button asChild className="rounded-full">
-                        <a href={liveModuleJoinLink} target="_blank" rel="noreferrer">
-                          <ExternalLink className="mr-2 h-4 w-4" />
-                          Open join link
-                        </a>
-                      </Button>
-                    ) : null}
-                    <Button
-                      variant="outline"
-                      className="rounded-full"
-                      type="button"
-                      disabled={!liveModuleJoinLink}
-                      onClick={async () => {
-                        if (!liveModuleJoinLink) return;
-                        try {
-                          await navigator.clipboard.writeText(liveModuleJoinLink);
-                        } catch {
-                          // ignore clipboard failures
-                        }
-                      }}
-                    >
-                      Copy link
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="rounded-2xl border border-dashed border-slate-200 px-4 py-10 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
-                  No live module scheduled yet. Add a published or live event to show the next session here.
-                </div>
-              )}
-            </Card>
-
             <Card className="rounded-[1.8rem] border border-white/70 bg-white/90 p-6 shadow-[0_20px_50px_rgba(15,23,42,0.05)] dark:border-white/10 dark:bg-slate-900/80">
               <div className="mb-6">
                 <h2 className="text-2xl font-black text-slate-950 dark:text-white">Recent Enrollments</h2>
