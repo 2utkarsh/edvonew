@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import {
   BookOpen,
   Eye,
+  LogOut,
   MessageSquare,
   Star,
   TrendingUp,
@@ -100,6 +101,16 @@ export default function InstructorDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [dashboard, setDashboard] = useState<InstructorDashboardPayload['data'] | null>(null);
+
+  const handleLogout = () => {
+    try {
+      window.localStorage.removeItem('auth_token');
+      window.localStorage.removeItem('auth_user');
+    } catch {
+      // ignore
+    }
+    router.push('/auth/login');
+  };
 
   useEffect(() => {
     const token = getStoredAuthToken();
@@ -213,7 +224,17 @@ export default function InstructorDashboard() {
                 </p>
               </div>
             </div>
-            <div />
+            <div className="flex w-full justify-end lg:w-auto">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleLogout}
+                className="rounded-full border-white/25 bg-white/10 text-white hover:bg-white/15"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </Button>
+            </div>
           </div>
         </section>
 
