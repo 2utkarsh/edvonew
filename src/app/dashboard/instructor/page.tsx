@@ -109,7 +109,7 @@ export default function InstructorDashboard() {
     } catch {
       // ignore
     }
-    router.push('/auth/login');
+    router.push('/instructor');
   };
 
   useEffect(() => {
