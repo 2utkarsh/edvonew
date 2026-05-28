@@ -33,6 +33,7 @@ type InstructorDashboardPayload = {
       _id?: string;
       title?: string;
       status?: string;
+      deliveryMode?: string;
       studentsEnrolled?: number;
       rating?: number;
       price?: number;
@@ -105,6 +106,7 @@ type InstructorCourse = {
   _id?: string;
   title?: string;
   status?: string;
+  deliveryMode?: string;
   studentsEnrolled?: number;
   rating?: number;
   price?: number;
@@ -202,6 +204,33 @@ function getFeaturedLiveModuleLink(module: NonNullable<NonNullable<InstructorDas
       'student'
     )
   );
+}
+
+function buildCourseLiveModule(course: InstructorCourse) {
+  const deliveryMode = String(course.deliveryMode || '').toLowerCase();
+  if (deliveryMode !== 'live' && deliveryMode !== 'hybrid') return null;
+
+  return {
+    courseId: course._id,
+    courseTitle: course.title || 'Assigned course',
+    title: `${course.title || 'Course'} live module`,
+    description:
+      deliveryMode === 'hybrid'
+        ? 'This course includes live classes alongside recorded lessons.'
+        : 'This course is delivered as a live program.',
+    hostName: 'EDVO Instructor',
+    roomName: course._id || course.title || 'instructor-live-room',
+    startTime: course.nextLiveSession?.startTime || '',
+    endTime: course.nextLiveSession?.endTime || '',
+    duration: course.nextLiveSession?.duration || '',
+    moduleTitle: 'Live module',
+    subjectTitle: course.title || '',
+    meetingUrl: course.nextLiveSession?.meetingUrl || '',
+    recordingUrl: course.nextLiveSession?.recordingUrl || '',
+    attendanceRequired: true,
+    status: course.nextLiveSession?.status || 'scheduled',
+    source: 'course',
+  };
 }
 
 function formatLiveTiming(session: NonNullable<InstructorCourse['nextLiveSession']>) {
@@ -319,14 +348,20 @@ export default function InstructorDashboard() {
   );
 
   const firstCourseWithLiveSession = dashboard?.courses?.find((course) => course.nextLiveSession);
-  const featuredLiveModule = dashboard?.liveModule ||
+  const firstLiveOrHybridCourse = dashboard?.courses?.find((course) => {
+    const mode = String(course.deliveryMode || '').toLowerCase();
+    return mode === 'live' || mode === 'hybrid';
+  });
+  const featuredLiveModule =
+    dashboard?.liveModule ||
     (firstCourseWithLiveSession
       ? {
           ...firstCourseWithLiveSession.nextLiveSession,
           courseId: firstCourseWithLiveSession._id,
           courseTitle: firstCourseWithLiveSession.title,
         }
-      : null);
+      : null) ||
+    (firstLiveOrHybridCourse ? buildCourseLiveModule(firstLiveOrHybridCourse) : null);
 
   if (!accessChecked) {
     return (
