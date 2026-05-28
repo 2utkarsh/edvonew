@@ -2861,6 +2861,10 @@ function applyAdminViewRouting(root = document) {
     return;
   }
 
+  if (route.mode !== 'edit' && document.body.dataset.adminEditKey) {
+    delete document.body.dataset.adminEditKey;
+  }
+
   const viewConfig = route.subsection && sectionConfig[route.subsection]
     ? sectionConfig[route.subsection]
     : sectionConfig.default;
@@ -2927,6 +2931,12 @@ function applyAdminViewRouting(root = document) {
     if (!id) {
       return;
     }
+
+    const editKey = `${route.section}|${route.subsection || ''}|${route.mode}|${id}`;
+    if (document.body.dataset.adminEditKey === editKey) {
+      return;
+    }
+    document.body.dataset.adminEditKey = editKey;
 
     window.requestAnimationFrame(() => {
       try {
