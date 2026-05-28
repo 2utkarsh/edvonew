@@ -8,6 +8,65 @@ import { EnrollmentModel } from '@/models/Enrollment';
 import { UserModel } from '@/models/User';
 import { Types } from 'mongoose';
 
+function normalizeRoomName(value: string, fallback = 'course-live-module') {
+  const normalized = String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+
+  return normalized || fallback;
+}
+
+function getLiveCurriculumModule(course: any) {
+  const subjects = Array.isArray(course.curriculum) ? course.curriculum : [];
+
+  for (const subject of subjects) {
+    const modules = Array.isArray(subject.modules) ? subject.modules : [];
+
+    for (const module of modules) {
+      const lectures = Array.isArray(module.lectures) ? module.lectures : [];
+      const liveLecture = lectures.find((lecture: any) => String(lecture.contentType || '').toLowerCase() === 'live');
+
+      if (liveLecture) {
+        const title = liveLecture.title || module.title || 'Live module';
+        const roomName = normalizeRoomName(
+          liveLecture.roomName || `${course.slug || course.title || 'course'}-${title}`,
+          `course-${String(course._id || '').slice(-8) || 'live'}`
+        );
+
+        return {
+          _id: String(liveLecture._id || liveLecture.id || ''),
+          title,
+          description: liveLecture.description || liveLecture.notes || module.description || '',
+          hostName: course.instructorName || '',
+          roomName,
+          startTime: course.startDate || '',
+          endTime: '',
+          duration: liveLecture.duration || '',
+          moduleTitle: module.title || '',
+          subjectTitle: subject.name || '',
+          meetingUrl: liveLecture.videoUrl || liveLecture.resourceUrl || buildLiveSessionLaunchPath(
+            {
+              title,
+              hostName: course.instructorName,
+              roomName,
+              startTime: course.startDate,
+            },
+            'student'
+          ),
+          recordingUrl: '',
+          attendanceRequired: true,
+          status: 'live-module',
+          source: 'curriculum',
+        };
+      }
+    }
+  }
+
+  return null;
+}
+
 // GET instructor dashboard data
 export async function GET(request: NextRequest) {
   try {
@@ -76,6 +135,7 @@ export async function GET(request: NextRequest) {
 
       const nextLiveSession = liveSessions.find((session: any) => session.status === 'live')
         || liveSessions.find((session: any) => session.status === 'scheduled')
+        || getLiveCurriculumModule(course)
         || null;
 
       return {

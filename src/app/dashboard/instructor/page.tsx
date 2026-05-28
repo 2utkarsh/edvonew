@@ -45,11 +45,15 @@ type InstructorDashboardPayload = {
         roomName?: string;
         startTime?: string;
         endTime?: string;
+        duration?: string;
+        moduleTitle?: string;
+        subjectTitle?: string;
         timezone?: string;
         meetingUrl?: string;
         recordingUrl?: string;
         attendanceRequired?: boolean;
         status?: string;
+        source?: string;
       } | null;
     }>;
     stats?: {
@@ -92,11 +96,15 @@ type InstructorCourse = {
     roomName?: string;
     startTime?: string;
     endTime?: string;
+    duration?: string;
+    moduleTitle?: string;
+    subjectTitle?: string;
     timezone?: string;
     meetingUrl?: string;
     recordingUrl?: string;
     attendanceRequired?: boolean;
     status?: string;
+    source?: string;
   } | null;
 };
 
@@ -154,7 +162,13 @@ function getCourseSessionLink(course: InstructorCourse) {
       },
       'student'
     )
-    );
+  );
+}
+
+function formatLiveTiming(session: NonNullable<InstructorCourse['nextLiveSession']>) {
+  if (session.startTime) return formatDateTime(session.startTime);
+  if (session.duration) return session.duration;
+  return 'Timing not set';
 }
 
 function initials(value: string) {
@@ -398,7 +412,9 @@ export default function InstructorDashboard() {
                           {course.nextLiveSession.title || 'Live session'}
                         </div>
                         <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-                          {course.nextLiveSession.description || 'This live module is configured inside the course.'}
+                          {course.nextLiveSession.description ||
+                            [course.nextLiveSession.subjectTitle, course.nextLiveSession.moduleTitle].filter(Boolean).join(' / ') ||
+                            'This live module is configured inside the course.'}
                         </p>
 
                         <div className="mt-4 grid gap-3 md:grid-cols-2">
@@ -408,11 +424,15 @@ export default function InstructorDashboard() {
                               <div>
                                 <div className="text-sm font-semibold text-slate-950 dark:text-white">Timing</div>
                                 <div className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-                                  {formatDateTime(course.nextLiveSession.startTime)}
+                                  {formatLiveTiming(course.nextLiveSession)}
                                 </div>
                                 {course.nextLiveSession.endTime ? (
                                   <div className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-400">
                                     Ends {formatDateTime(course.nextLiveSession.endTime)}
+                                  </div>
+                                ) : course.nextLiveSession.duration ? (
+                                  <div className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-400">
+                                    Duration {course.nextLiveSession.duration}
                                   </div>
                                 ) : null}
                               </div>
