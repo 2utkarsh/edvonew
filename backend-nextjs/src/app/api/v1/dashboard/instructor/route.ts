@@ -3,6 +3,7 @@ import { connectToDatabase } from '@/lib/db';
 import { requireAuth } from '@/lib/auth';
 import { success, fail, toResponse } from '@/lib/http';
 import { CourseModel } from '@/models/Course';
+import { EventModel } from '@/models/Event';
 import { EnrollmentModel } from '@/models/Enrollment';
 import { UserModel } from '@/models/User';
 import { Types } from 'mongoose';
@@ -28,6 +29,7 @@ export async function GET(request: NextRequest) {
             avatar: '',
           },
           courses: [],
+          liveModule: null,
           stats: {
             totalCourses: 0,
             totalStudents: 0,
@@ -46,6 +48,30 @@ export async function GET(request: NextRequest) {
     const courses = await CourseModel.find({ instructorId: new Types.ObjectId(userId) })
       .sort({ createdAt: -1 })
       .lean();
+
+    const liveEvents = await EventModel.find({
+      instructorId: new Types.ObjectId(userId),
+      status: { $in: ['live', 'published'] },
+    })
+      .sort({ scheduledAt: 1 })
+      .lean();
+
+    const liveModuleSource = liveEvents.find((event) => event.status === 'live') || liveEvents[0] || null;
+    const liveModule = liveModuleSource
+      ? {
+          _id: String(liveModuleSource._id),
+          title: liveModuleSource.title,
+          type: liveModuleSource.type,
+          status: liveModuleSource.status,
+          scheduledAt: liveModuleSource.scheduledAt,
+          duration: liveModuleSource.duration,
+          liveUrl: liveModuleSource.liveUrl || '',
+          instructorName: liveModuleSource.instructorName,
+          registeredCount: liveModuleSource.registeredCount || 0,
+          maxParticipants: liveModuleSource.maxParticipants || 0,
+          slug: liveModuleSource.slug,
+        }
+      : null;
 
     // Get total students across all courses
     const totalStudents = courses.reduce(
@@ -84,6 +110,7 @@ export async function GET(request: NextRequest) {
           headline: user?.headline || '',
         },
         courses,
+        liveModule,
         stats: {
           totalCourses: courses.length,
           totalStudents,
