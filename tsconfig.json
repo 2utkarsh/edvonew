@@ -39,7 +39,10 @@
     "node_modules",
     "backend/**",
     "backend-nextjs/**",
+    "cm/**",
     "deploy/**",
-    "IEDUP-LMS-main/**"
+    "IEDUP-LMS-main/**",
+    "itech/**",
+    "static-public/**"
   ]
 }
