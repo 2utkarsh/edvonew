@@ -1,4 +1,4 @@
-const S = { courses: [], cats: [], subs: [], selected: '' };
+const S = { courses: [], cats: [], subs: [], instructors: [], selected: '' };
 
 const byId = (id) => document.getElementById(id);
 const lines = (value) => String(value || '').split('\n').map((item) => item.trim()).filter(Boolean);
@@ -74,6 +74,7 @@ function syncCurriculumAssetUi(row) {
     fileWrap.hidden = true;
     metaField.className = 'upload-meta warn';
     metaField.textContent = 'Live rows do not use direct assets. Configure the live room, host URL, and schedule in the Live Sessions section below.';
+    syncLiveInstructorUi();
     return;
   }
 
@@ -96,6 +97,60 @@ function syncCurriculumAssetUi(row) {
       ? 'Link mode is best for full course videos hosted on Drive, Vimeo, YouTube, or your CDN.'
       : 'Link mode is best for PDFs, notes, and other hosted resources.';
   }
+
+  syncLiveInstructorUi();
+}
+
+function shouldShowLiveInstructorPicker() {
+  const curriculumHasLive = [...document.querySelectorAll('#currBody tr [data-k="contentType"]')]
+    .some((node) => String(node.value || '').toLowerCase() === 'live');
+  if (curriculumHasLive) return true;
+  const mode = String(byId('cMode')?.value || '').toLowerCase();
+  return mode === 'live';
+}
+
+function syncLiveInstructorUi() {
+  const liveField = byId('cInstructorLiveField');
+  const plainField = byId('cInstructorField');
+  if (!liveField || !plainField) return;
+
+  const shouldShow = shouldShowLiveInstructorPicker();
+  liveField.style.display = shouldShow ? '' : 'none';
+  plainField.style.display = shouldShow ? 'none' : '';
+}
+
+function renderInstructorPicker(selectedId = '') {
+  const select = byId('cInstructorId');
+  if (!select) return;
+
+  const instructors = Array.isArray(S.instructors) ? S.instructors : [];
+  const options = ["<option value=''>Select instructor</option>"].concat(
+    instructors
+      .map((item) => {
+        const user = item.user || {};
+        const userId = String(user.id || item.userId || '').trim();
+        const name = String(user.name || item.name || '').trim();
+        if (!userId || !name) return '';
+        return `<option value='${attr(userId)}'>${esc(name)}${user.email ? ` (${esc(user.email)})` : ''}</option>`;
+      })
+      .filter(Boolean)
+  ).join('');
+
+  select.innerHTML = options;
+  select.value = selectedId || '';
+}
+
+function bindInstructorPicker() {
+  const select = byId('cInstructorId');
+  if (!select || select.dataset.bound === 'true') return;
+  select.dataset.bound = 'true';
+
+  select.addEventListener('change', () => {
+    const userId = String(select.value || '').trim();
+    const match = (S.instructors || []).find((item) => String(item.user?.id || item.userId || '') === userId);
+    const name = match?.user?.name || '';
+    byId('cInstructor').value = name || '';
+  });
 }
 
 function handleCurriculumFileChange(input) {
@@ -259,27 +314,33 @@ byId('courseForm').addEventListener('submit', saveCourse);
 byId('catName').addEventListener('blur', () => { if (!byId('catSlug').value.trim()) byId('catSlug').value = slugify(byId('catName').value); });
 byId('cTitle').addEventListener('blur', () => { if (!byId('cSlug').value.trim()) byId('cSlug').value = slugify(byId('cTitle').value); });
 byId('cCategory').addEventListener('change', () => renderSubcategoryOptions());
+byId('cMode').addEventListener('change', () => syncLiveInstructorUi());
 
 async function fetchCatalogData() {
-  const [coursesPayload, categoriesPayload, subcategoriesPayload] = await Promise.all([
+  const [coursesPayload, categoriesPayload, subcategoriesPayload, instructorsPayload] = await Promise.all([
     adminFetch('/backend/api/admin/courses'),
     adminFetch('/backend/api/admin/course-categories'),
     adminFetch('/backend/api/admin/course-category-children').catch(() => ({ data: [] })),
+    adminFetch('/backend/api/admin/instructors').catch(() => ({ data: [] })),
   ]);
-  return { coursesPayload, categoriesPayload, subcategoriesPayload };
+  return { coursesPayload, categoriesPayload, subcategoriesPayload, instructorsPayload };
 }
 
-function applyCatalogData(coursesPayload, categoriesPayload, subcategoriesPayload) {
+function applyCatalogData(coursesPayload, categoriesPayload, subcategoriesPayload, instructorsPayload) {
   S.courses = (coursesPayload.data.courses || []).sort((a, b) => (a.order || 0) - (b.order || 0));
   S.cats = (categoriesPayload.data || []).sort((a, b) => (a.order || 0) - (b.order || 0));
   S.subs = (subcategoriesPayload.data || []).sort((a, b) => (a.sort || a.order || 0) - (b.sort || b.order || 0));
+  S.instructors = Array.isArray(instructorsPayload?.data) ? instructorsPayload.data : [];
 }
 
 async function boot() {
   try {
-    const { coursesPayload, categoriesPayload, subcategoriesPayload } = await fetchCatalogData();
+    const { coursesPayload, categoriesPayload, subcategoriesPayload, instructorsPayload } = await fetchCatalogData();
 
-    applyCatalogData(coursesPayload, categoriesPayload, subcategoriesPayload);
+    applyCatalogData(coursesPayload, categoriesPayload, subcategoriesPayload, instructorsPayload);
+    bindInstructorPicker();
+    renderInstructorPicker();
+    syncLiveInstructorUi();
 
     if (!S.courses.length || !S.cats.length) {
       try {
@@ -289,7 +350,8 @@ async function boot() {
           showToast('Earlier courses and categories added to admin', 'success');
         }
         const refreshed = await fetchCatalogData();
-        applyCatalogData(refreshed.coursesPayload, refreshed.categoriesPayload, refreshed.subcategoriesPayload);
+        applyCatalogData(refreshed.coursesPayload, refreshed.categoriesPayload, refreshed.subcategoriesPayload, refreshed.instructorsPayload);
+        renderInstructorPicker();
       } catch (importError) {
         console.error(importError);
       }
@@ -645,6 +707,7 @@ function editCourse(id) {
   renderSubcategoryOptions(course.subcategory || '');
   byId('cLevel').value = course.level || 'beginner';
   byId('cInstructor').value = course.instructorName || '';
+  renderInstructorPicker(course.instructorId ? String(course.instructorId) : '');
   byId('cMode').value = course.deliveryMode || 'recorded';
   byId('cJobAssist').value = String(course.jobAssistance !== false);
   byId('cLanguage').value = course.language || 'English';
@@ -679,6 +742,7 @@ function editCourse(id) {
   byId('notifLive').value = String(course.notificationSettings?.liveClassReminder !== false);
   byId('currBody').innerHTML = '';
   (course.curriculumRows || []).forEach(addCurr);
+  syncLiveInstructorUi();
   byId('sessionBody').innerHTML = '';
   (course.liveSessions || []).forEach(addSession);
   byId('planBody').innerHTML = '';
@@ -705,6 +769,12 @@ function readRows(bodyId, mapper) {
 }
 
 function payload() {
+  const instructorId = String(byId('cInstructorId')?.value || '').trim();
+  const instructorMatch = instructorId
+    ? (S.instructors || []).find((item) => String(item.user?.id || item.userId || '') === instructorId)
+    : null;
+  const instructorName = instructorMatch?.user?.name || byId('cInstructor').value.trim();
+
   return {
     order: Number(byId('cOrder').value || S.courses.length + 1),
     title: byId('cTitle').value.trim(),
@@ -713,7 +783,8 @@ function payload() {
     category: byId('cCategory').value,
     subcategory: byId('cSubcategory').value,
     level: byId('cLevel').value,
-    instructorName: byId('cInstructor').value.trim(),
+    instructorId: instructorId || undefined,
+    instructorName,
     deliveryMode: byId('cMode').value,
     jobAssistance: byId('cJobAssist').value === 'true',
     language: byId('cLanguage').value.trim(),

@@ -251,6 +251,7 @@ export function normalizeCoursePayload(input: AnyObject) {
     level: asString(input.level || 'beginner') || 'beginner',
     status: asString(input.status || 'draft') || 'draft',
     order: asNumber(input.order, 0),
+    instructorId: asString(input.instructorId) || undefined,
     instructorName: asString(input.instructorName),
     thumbnail: asString(input.thumbnail),
     banner: asString(input.banner),

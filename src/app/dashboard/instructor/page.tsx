@@ -4,10 +4,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   BookOpen,
-  CalendarDays,
   Eye,
   MessageSquare,
-  Plus,
   Star,
   TrendingUp,
   Users,
@@ -215,16 +213,7 @@ export default function InstructorDashboard() {
                 </p>
               </div>
             </div>
-            <div className="flex flex-wrap gap-3">
-              <Button variant="secondary" className="rounded-full border-0 bg-white text-slate-950 hover:bg-white/90">
-                <Plus className="mr-2 h-4 w-4" />
-                Create Course
-              </Button>
-              <Button variant="outline" className="rounded-full border-white/25 bg-white/10 text-white hover:bg-white/15">
-                <CalendarDays className="mr-2 h-4 w-4" />
-                Schedule Class
-              </Button>
-            </div>
+            <div />
           </div>
         </section>
 

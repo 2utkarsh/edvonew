@@ -319,9 +319,6 @@ export default function InstructorDashboardPage() {
             <button className="px-4 py-2 border border-gray-200 rounded-lg font-medium hover:bg-gray-50 transition-colors">
               View Schedule
             </button>
-            <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors flex items-center gap-2">
-              <Plus className="w-4 h-4" /> Create Course
-            </button>
           </div>
         </div>
 

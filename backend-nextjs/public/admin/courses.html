@@ -257,7 +257,17 @@
               <div class='field'><label>Sub Category</label><select id='cSubcategory'><option value=''>Select sub category</option></select></div>
               <div class='field'><label>Status</label><select id='cStatus'><option value='draft'>Draft</option><option value='published'>Published</option><option value='archived'>Archived</option></select></div>
               <div class='field'><label>Level</label><select id='cLevel'><option value='beginner'>Beginner</option><option value='intermediate'>Intermediate</option><option value='advanced'>Advanced</option></select></div>
-              <div class='field'><label>Instructor</label><input id='cInstructor'></div>
+              <div class='field' id='cInstructorField'>
+                <label>Instructor</label>
+                <input id='cInstructor' placeholder='Shown on course card (optional)'>
+              </div>
+              <div class='field' id='cInstructorLiveField' style='display:none'>
+                <label>Live Instructor</label>
+                <select id='cInstructorId'>
+                  <option value=''>Select instructor</option>
+                </select>
+                <small class='hint' style='margin-top:6px;display:block'>Shown only when a curriculum row is set to Live. Assigned instructor will see this course in their dashboard.</small>
+              </div>
               <div class='field'><label>Delivery</label><select id='cMode'><option value='recorded'>Recorded</option><option value='live'>Live</option><option value='hybrid'>Hybrid</option></select></div>
               <div class='field'><label>Job Assistance</label><select id='cJobAssist'><option value='true'>Yes</option><option value='false'>No</option></select></div>
               <div class='field'><label>Language</label><input id='cLanguage' value='English'></div>
