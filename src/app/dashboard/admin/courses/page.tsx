@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { type LearningDeliveryMode, getDeliveryLabel, resolveModuleDeliveryMode, summarizeDeliveryModes } from '@/lib/learning-delivery';
+import { buildLiveClassroomPath } from '@/lib/live-classroom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Plus, Search, Edit2, Trash2, Eye, ChevronDown, ChevronRight,
@@ -188,6 +189,20 @@ function getCurriculumOverview(curriculum: CurriculumSubject[], liveSessions: Co
 
 function getLaunchPath(roomName: string) {
   return `/live-classroom/${roomName}`;
+}
+
+function buildAutoLiveSessionUrl(session: CourseLiveSession) {
+  const roomName = session.roomName || session.title || 'edvo-live-room';
+  return buildLiveClassroomPath(
+    roomName,
+    {
+      title: session.title || 'Live session',
+      host: session.hostName || 'EDVO Instructor',
+      start: session.startTime || undefined,
+      recordingUrl: session.recordingUrl || undefined,
+    },
+    'student'
+  );
 }
 
 // ─── Mock Data ───
@@ -490,21 +505,23 @@ export default function AdminCoursesPage() {
   };
 
   const addLiveSession = () => {
+    const nextSession: CourseLiveSession = {
+      id: `live-${Date.now()}`,
+      title: 'New Live Session',
+      roomName: `edvo-room-${Date.now().toString().slice(-6)}`,
+      description: '',
+      hostName: '',
+      startTime: '2026-04-10T19:00',
+      duration: '60 mins',
+      status: 'scheduled',
+      meetingUrl: '',
+      recordingUrl: '',
+      attendanceRequired: true,
+    };
+
     setLiveSessions([
       ...liveSessions,
-      {
-        id: `live-${Date.now()}`,
-        title: 'New Live Session',
-        roomName: `edvo-room-${Date.now().toString().slice(-6)}`,
-        description: '',
-        hostName: '',
-        startTime: '2026-04-10T19:00',
-        duration: '60 mins',
-        status: 'scheduled',
-        meetingUrl: '',
-        recordingUrl: '',
-        attendanceRequired: true,
-      },
+      nextSession,
     ]);
   };
 
@@ -1142,7 +1159,13 @@ export default function AdminCoursesPage() {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Meeting URL</label>
-                        <input type="text" value={session.meetingUrl} onChange={(e) => updateLiveSession(session.id, 'meetingUrl', e.target.value)} placeholder="Paste the live classroom or Zoom link" className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white" />
+                        <input
+                          type="text"
+                          value={session.meetingUrl || buildAutoLiveSessionUrl(session)}
+                          onChange={(e) => updateLiveSession(session.id, 'meetingUrl', e.target.value)}
+                          placeholder="Auto-generated from room name and start time"
+                          className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                        />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Recording URL</label>
@@ -1156,7 +1179,7 @@ export default function AdminCoursesPage() {
                         Attendance required
                       </label>
                       <div className="text-xs text-gray-500 dark:text-slate-400">
-                        Suggested in-app launcher: <span className="font-medium text-gray-700 dark:text-slate-200">{getLaunchPath(session.roomName || 'room-name')}</span>
+                        Suggested in-app launcher: <span className="font-medium text-gray-700 dark:text-slate-200">{buildAutoLiveSessionUrl(session)}</span>
                       </div>
                     </div>
                   </div>
