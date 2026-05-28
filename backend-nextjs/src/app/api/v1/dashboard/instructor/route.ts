@@ -62,6 +62,46 @@ function isFeaturedLiveModule(session: any) {
   return ['live', 'scheduled', 'live-module'].includes(String(session?.status || '').toLowerCase());
 }
 
+function buildFallbackLiveModuleFromCourse(course: any) {
+  const deliveryMode = String(course.deliveryMode || course.delivery || '').trim().toLowerCase();
+  if (!['live', 'hybrid'].includes(deliveryMode)) return null;
+
+  const title = `${course.title || 'Course'} live module`;
+  const roomName = normalizeRoomName(
+    course.roomName || course.slug || course.title || 'course-live-module',
+    `course-${String(course._id || '').slice(-8) || 'live'}`
+  );
+
+  return {
+    _id: String(course._id || course.id || ''),
+    courseId: String(course._id || course.id || ''),
+    courseTitle: course.title || '',
+    courseSlug: course.slug || '',
+    title,
+    description: course.shortDescription || course.description || 'Live mentoring and class access for this course.',
+    hostName: course.instructorName || 'EDVO Instructor',
+    roomName,
+    startTime: course.startDate || '',
+    endTime: '',
+    duration: course.duration || '',
+    moduleTitle: 'Live module',
+    subjectTitle: course.category || '',
+    meetingUrl: buildLiveSessionLaunchPath(
+      {
+        title,
+        hostName: course.instructorName || 'EDVO Instructor',
+        roomName,
+        startTime: course.startDate || '',
+      },
+      'student'
+    ),
+    recordingUrl: '',
+    attendanceRequired: true,
+    status: 'scheduled',
+    source: 'course',
+  };
+}
+
 function getLiveCurriculumModule(course: any) {
   const curriculumRows = Array.isArray(course.curriculumRows) ? course.curriculumRows : [];
   const liveRow = curriculumRows.find(isLiveCourseItem);
@@ -191,6 +231,9 @@ export async function GET(request: NextRequest) {
           ...course.nextLiveSession,
         }))
         .find(isFeaturedLiveModule)
+      || coursesWithLiveSessions
+        .map((course: any) => buildFallbackLiveModuleFromCourse(course))
+        .find(Boolean)
       || null;
 
     // Get total students across all courses
