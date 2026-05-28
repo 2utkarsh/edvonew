@@ -35,9 +35,6 @@ const COPY: Record<PortalVariant, LoginCopy> = {
     heroTitle: 'Enabling Careers',
     heroBody:
       'Upscaling your career was never this easy. To stay updated with us, please log in with your information.',
-    switchPrompt: 'Teach with EDVO?',
-    switchHref: '/instructor',
-    switchLabel: 'Instructor login',
     registerHref: '/auth/register',
     registerLabel: 'Register',
     submitLabel: 'Login',
