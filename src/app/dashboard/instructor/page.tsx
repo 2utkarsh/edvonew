@@ -1,18 +1,12 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  BookOpen,
   Clock,
-  Eye,
   ExternalLink,
   LogOut,
-  MessageSquare,
   Link2,
-  Star,
-  TrendingUp,
-  Users,
 } from 'lucide-react';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
@@ -358,30 +352,6 @@ export default function InstructorDashboard() {
     };
   }, [accessChecked]);
 
-  const stats = useMemo(
-    () => [
-      {
-        label: 'Courses',
-        value: Number(dashboard?.stats?.totalCourses || 0).toLocaleString(),
-        icon: BookOpen,
-        tone: 'blue',
-      },
-      {
-        label: 'Students',
-        value: Number(dashboard?.stats?.totalStudents || 0).toLocaleString(),
-        icon: Users,
-        tone: 'emerald',
-      },
-      {
-        label: 'Average Rating',
-        value: String(dashboard?.stats?.averageRating || '0.0'),
-        icon: Star,
-        tone: 'violet',
-      },
-    ],
-    [dashboard]
-  );
-
   if (!accessChecked) {
     return (
       <main className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-8">
@@ -429,39 +399,19 @@ export default function InstructorDashboard() {
           </div>
         </section>
 
-        <section className="mb-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {stats.map((item) => (
-            <Card key={item.label} className="rounded-[1.6rem] border border-white/70 bg-white/90 p-5 shadow-[0_20px_50px_rgba(15,23,42,0.05)] dark:border-white/10 dark:bg-slate-900/80">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">{item.label}</div>
-                  <div className="mt-3 text-3xl font-black text-slate-950 dark:text-white">{item.value}</div>
-                </div>
-                <div className="rounded-2xl bg-slate-100 p-3 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
-                  <item.icon className="h-5 w-5" />
-                </div>
-              </div>
-            </Card>
-          ))}
-        </section>
-
         {error ? (
           <div className="mb-8 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
             {error}
           </div>
         ) : null}
 
-        <section className="grid gap-6 lg:grid-cols-[minmax(0,1.5fr),380px]">
+        <section className="grid gap-6">
           <Card className="rounded-[1.8rem] border border-white/70 bg-white/90 p-6 shadow-[0_20px_50px_rgba(15,23,42,0.05)] dark:border-white/10 dark:bg-slate-900/80">
             <div className="mb-6 flex items-center justify-between gap-4">
               <div>
                 <h2 className="text-2xl font-black text-slate-950 dark:text-white">My Courses</h2>
                 <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Published and draft courses assigned to your teacher account.</p>
               </div>
-              <Button variant="outline" className="rounded-full">
-                <TrendingUp className="mr-2 h-4 w-4" />
-                Analytics
-              </Button>
             </div>
 
             {loading ? (
@@ -487,16 +437,6 @@ export default function InstructorDashboard() {
                           <span>{formatCurrency(Number(course.price || 0))}</span>
                           <span>Updated {formatDate(course.updatedAt)}</span>
                         </div>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        <Button variant="outline" className="rounded-full">
-                          <Eye className="mr-2 h-4 w-4" />
-                          Preview
-                        </Button>
-                        <Button variant="outline" className="rounded-full">
-                          <MessageSquare className="mr-2 h-4 w-4" />
-                          Reviews
-                        </Button>
                       </div>
                     </div>
 
@@ -612,39 +552,6 @@ export default function InstructorDashboard() {
             )}
           </Card>
 
-          <div className="space-y-6">
-            <Card className="rounded-[1.8rem] border border-white/70 bg-white/90 p-6 shadow-[0_20px_50px_rgba(15,23,42,0.05)] dark:border-white/10 dark:bg-slate-900/80">
-              <div className="mb-6">
-                <h2 className="text-2xl font-black text-slate-950 dark:text-white">Recent Enrollments</h2>
-                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Latest student activity across your assigned programs.</p>
-              </div>
-
-              {loading ? (
-                <div className="rounded-2xl border border-dashed border-slate-200 px-4 py-10 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
-                  Loading enrollments...
-                </div>
-              ) : dashboard?.recentEnrollments?.length ? (
-                <div className="space-y-4">
-                  {dashboard.recentEnrollments.map((entry) => (
-                    <div
-                      key={entry._id || `${entry.userId?.email}-${entry.createdAt}`}
-                      className="rounded-[1.3rem] border border-slate-200/80 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-slate-950/60"
-                    >
-                      <div className="text-sm font-semibold text-slate-950 dark:text-white">{entry.userId?.name || 'Student'}</div>
-                      <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">{entry.userId?.email || 'No email available'}</div>
-                      <div className="mt-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                        Joined {formatDate(entry.createdAt)}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="rounded-2xl border border-dashed border-slate-200 px-4 py-10 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
-                  Recent enrollments will appear here once students join your courses.
-                </div>
-              )}
-            </Card>
-          </div>
         </section>
       </div>
     </main>
