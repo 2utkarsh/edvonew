@@ -623,6 +623,7 @@ function courseReset() {
   byId('courseForm').reset();
   byId('courseId').value = '';
   S.selected = '';
+  S.selectedInstructorId = '';
   byId('cOrder').value = String(S.courses.length + 1 || 1);
   byId('cSubcategory').innerHTML = "<option value=''>Select sub category</option>";
   byId('cSubcategory').disabled = true;
@@ -747,6 +748,7 @@ function editCourse(id) {
   const course = S.courses.find((item) => item.id === id);
   if (!course) return;
   S.selected = id;
+  S.selectedInstructorId = course.instructorId ? String(course.instructorId) : '';
   byId('editorTitle').textContent = `Edit ${course.title}`;
   byId('editorText').textContent = 'Frontend listing, restored single-course page, checkout, student dashboard, learner workspace, certificates, and career matches read these values.';
   byId('courseId').value = course.id || '';
@@ -759,6 +761,9 @@ function editCourse(id) {
   byId('cLevel').value = course.level || 'beginner';
   byId('cInstructor').value = course.instructorName || '';
   renderInstructorPicker(course.instructorId ? String(course.instructorId) : '');
+  if (byId('cInstructorId')) {
+    byId('cInstructorId').value = course.instructorId ? String(course.instructorId) : '';
+  }
   byId('cMode').value = course.deliveryMode || 'recorded';
   byId('cJobAssist').value = String(course.jobAssistance !== false);
   byId('cLanguage').value = course.language || 'English';
@@ -820,7 +825,18 @@ function readRows(bodyId, mapper) {
 }
 
 function payload() {
-  const instructorId = String(byId('cInstructorId')?.value || '').trim();
+  let instructorId = String(byId('cInstructorId')?.value || '').trim();
+  if (!instructorId && shouldShowLiveInstructorPicker()) {
+    const livePickers = [...document.querySelectorAll('#currBody tr')]
+      .filter((row) => String(row.querySelector('[data-k="contentType"]')?.value || '').toLowerCase() === 'live')
+      .map((row) => String(row.querySelector('[data-k="liveInstructorId"]')?.value || '').trim())
+      .filter(Boolean);
+    instructorId = livePickers[0] || '';
+  }
+  if (!instructorId && S.selectedInstructorId) {
+    instructorId = String(S.selectedInstructorId || '').trim();
+  }
+
   const instructorMatch = instructorId
     ? (S.instructors || []).find((item) => String(item.user?.id || item.userId || '') === instructorId)
     : null;
