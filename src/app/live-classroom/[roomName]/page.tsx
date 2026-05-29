@@ -6,7 +6,6 @@ import { useParams, useSearchParams } from 'next/navigation';
 import {
   ArrowUpRight,
   Calendar,
-  Copy,
   Mic,
   MonitorPlay,
   RadioTower,
@@ -14,7 +13,7 @@ import {
   Video,
 } from 'lucide-react';
 import { LiveKitRoom, VideoConference } from '@livekit/components-react';
-import { buildLiveClassroomPath, normalizeRoomName } from '@/lib/live-classroom';
+import { normalizeRoomName } from '@/lib/live-classroom';
 
 type LiveConnectionDetails = {
   roomName: string;
@@ -50,34 +49,8 @@ export default function LiveClassroomPage() {
     [searchParams],
   );
 
-  const backHref = entry === 'host' ? '/backend/admin/courses' : '/dashboard/student';
-  const backLabel = entry === 'host' ? 'Back to course control' : 'Back to dashboard';
-
-  const sharePaths = useMemo(
-    () => ({
-      student: buildLiveClassroomPath(
-        roomName,
-        {
-          title: details.title,
-          host: details.host,
-          start: details.start,
-          recordingUrl: details.recordingUrl,
-        },
-        'student',
-      ),
-      host: buildLiveClassroomPath(
-        roomName,
-        {
-          title: details.title,
-          host: details.host,
-          start: details.start,
-          recordingUrl: details.recordingUrl,
-        },
-        'host',
-      ),
-    }),
-    [details.host, details.recordingUrl, details.start, details.title, roomName],
-  );
+  const backHref = entry === 'host' ? '/dashboard/instructor' : '/dashboard/student';
+  const backLabel = entry === 'host' ? 'Back to instructor dashboard' : 'Back to dashboard';
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -148,22 +121,6 @@ export default function LiveClassroomPage() {
     void connectToRoom();
   }, [connectionDetails, connecting, entry, participantName]);
 
-  const copyLaunchLink = async (target: 'host' | 'student') => {
-    if (typeof window === 'undefined') return;
-
-    const absoluteUrl = new URL(
-      target === 'host' ? sharePaths.host : sharePaths.student,
-      window.location.origin,
-    ).toString();
-
-    try {
-      await navigator.clipboard.writeText(absoluteUrl);
-      setMessage(`${target === 'host' ? 'Host' : 'Student'} launch link copied.`);
-    } catch {
-      window.prompt(`Copy the ${target} link`, absoluteUrl);
-    }
-  };
-
   if (connectionDetails) {
     return (
       <main className="h-screen overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(14,165,233,0.12),_transparent_24%),linear-gradient(180deg,_#020617_0%,_#020617_100%)] text-white">
@@ -184,15 +141,6 @@ export default function LiveClassroomPage() {
               </div>
 
               <div className="flex flex-wrap gap-2">
-                {entry === 'host' ? (
-                  <button
-                    type="button"
-                    onClick={() => copyLaunchLink('student')}
-                    className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10"
-                  >
-                    Copy student link <Copy className="h-4 w-4" />
-                  </button>
-                ) : null}
                 {details.recordingUrl ? (
                   <a
                     className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10"
@@ -257,13 +205,6 @@ export default function LiveClassroomPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => copyLaunchLink('student')}
-              className="rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-sm text-white/80 transition hover:bg-white/10"
-            >
-              Copy student link
-            </button>
             <Link href={backHref} className="rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-sm text-white/80 transition hover:bg-white/10">
               {backLabel}
             </Link>
@@ -336,30 +277,10 @@ export default function LiveClassroomPage() {
                 <InfoRow icon={<RadioTower className="h-4 w-4" />} label="Host" value={details.host} />
               </div>
             </div>
-
-            <div className="rounded-[2rem] border border-white/10 bg-slate-900/85 p-5 shadow-[0_24px_80px_rgba(2,6,23,0.45)]">
-              <div className="text-lg font-bold">Launch options</div>
-              <div className="mt-4 space-y-3">
-                <div className="rounded-2xl border border-dashed border-white/10 px-4 py-4 text-sm text-white/60">
-                  Student link is now generated automatically from the room name. Admin host mode is protected by the admin login session and no longer depends on a pasted manual meeting URL.
-                </div>
-                <button
-                  type="button"
-                  onClick={() => copyLaunchLink('student')}
-                  className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10"
-                >
-                  Copy student launch <Copy className="h-4 w-4" />
-                </button>
-                {entry === 'host' ? (
-                  <button
-                    type="button"
-                    onClick={() => copyLaunchLink('host')}
-                    className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10"
-                  >
-                    Copy host launch <Copy className="h-4 w-4" />
-                  </button>
-                ) : null}
-                {details.recordingUrl ? (
+            {details.recordingUrl ? (
+              <div className="rounded-[2rem] border border-white/10 bg-slate-900/85 p-5 shadow-[0_24px_80px_rgba(2,6,23,0.45)]">
+                <div className="text-lg font-bold">Recording</div>
+                <div className="mt-4">
                   <a
                     className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10"
                     href={details.recordingUrl}
@@ -368,9 +289,9 @@ export default function LiveClassroomPage() {
                   >
                     Open recording <ArrowUpRight className="h-4 w-4" />
                   </a>
-                ) : null}
+                </div>
               </div>
-            </div>
+            ) : null}
           </aside>
         </div>
       </div>
