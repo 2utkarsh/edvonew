@@ -35,6 +35,7 @@ import { apiUrl, roomPath } from '@/lib/url';
 const CONN_DETAILS_ENDPOINT = process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? apiUrl('/api/connection-details');
 const SHOW_SETTINGS_MENU = process.env.NEXT_PUBLIC_SHOW_SETTINGS_MENU !== 'false';
 const encoder = new TextEncoder();
+const ACTIVE_ROOM_STORAGE_PREFIX = 'iedup-active-room';
 
 function parseParticipantRole(metadata?: string) {
   try {
@@ -64,6 +65,10 @@ export function PageClientImpl(props: {
     };
   }, []);
   const [connectionDetails, setConnectionDetails] = React.useState<ConnectionDetails | undefined>(undefined);
+  const roomSessionStorageKey = React.useMemo(
+    () => `${ACTIVE_ROOM_STORAGE_PREFIX}:${props.roomName}`,
+    [props.roomName],
+  );
 
   const readErrorMessage = React.useCallback(async (response: Response, fallback: string) => {
     try {
@@ -81,9 +86,13 @@ export function PageClientImpl(props: {
     }
   }, []);
 
-  const handlePreJoinSubmit = React.useCallback(async (values: LocalUserChoices) => {
+  const establishRoomConnection = React.useCallback(async (values: LocalUserChoices) => {
     setJoinError(null);
     setPreJoinChoices(values);
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(roomSessionStorageKey, JSON.stringify(values));
+    }
 
     const accessTokenURL = new URL(apiUrl("/api/auth/accessToken"), window.location.origin);
     accessTokenURL.searchParams.append('participantName', values.username);
@@ -121,7 +130,11 @@ export function PageClientImpl(props: {
     }
     const connectionDetailsData = await connectionDetailsResp.json();
     setConnectionDetails(connectionDetailsData);
-  }, [props.region, props.roomName, props.where, readErrorMessage]);
+  }, [props.region, props.roomName, props.where, readErrorMessage, roomSessionStorageKey]);
+
+  const handlePreJoinSubmit = React.useCallback(async (values: LocalUserChoices) => {
+    await establishRoomConnection(values);
+  }, [establishRoomConnection]);
 
   const handlePreJoinError = React.useCallback((e: any) => console.error(e), []);
 
@@ -132,6 +145,30 @@ export function PageClientImpl(props: {
       sessionStorage.setItem('lastRoute', pathname);
     }
   }, [props.roomName]);
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined' || preJoinChoices !== undefined || connectionDetails) {
+      return;
+    }
+
+    const savedSession = localStorage.getItem(roomSessionStorageKey);
+    if (!savedSession) {
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(savedSession) as LocalUserChoices;
+      if (typeof parsed?.username !== 'string' || !parsed.username.trim()) {
+        localStorage.removeItem(roomSessionStorageKey);
+        return;
+      }
+
+      void establishRoomConnection(parsed);
+    } catch (error) {
+      console.error('Failed to restore active room session:', error);
+      localStorage.removeItem(roomSessionStorageKey);
+    }
+  }, [connectionDetails, establishRoomConnection, preJoinChoices, roomSessionStorageKey]);
 
   return (
     <main data-lk-theme="default">
