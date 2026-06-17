@@ -295,6 +295,7 @@ function VideoConferenceComponent(props: {
   const room = React.useMemo(() => new Room(roomOptions), []);
   const micRetryAttemptedRef = React.useRef(false);
   const audioUnlockAttemptRef = React.useRef(false);
+  const isPageUnloadingRef = React.useRef(false);
   const connectionState = useConnectionState(room);
   const { canPlayAudio, startAudio } = useAudioPlayback(room);
 
@@ -343,6 +344,24 @@ function VideoConferenceComponent(props: {
       worker?.terminate();
     };
   }, [worker]);
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const markPageUnloading = () => {
+      isPageUnloadingRef.current = true;
+    };
+
+    window.addEventListener('beforeunload', markPageUnloading);
+    window.addEventListener('pagehide', markPageUnloading);
+
+    return () => {
+      window.removeEventListener('beforeunload', markPageUnloading);
+      window.removeEventListener('pagehide', markPageUnloading);
+    };
+  }, []);
 
   const connectOptions = React.useMemo((): RoomConnectOptions => {
     return {
@@ -418,7 +437,9 @@ function VideoConferenceComponent(props: {
         );
 
         if (!isActive) {
-          room.disconnect();
+          if (!isPageUnloadingRef.current) {
+            room.disconnect();
+          }
           return;
         }
 
@@ -449,7 +470,9 @@ function VideoConferenceComponent(props: {
       room.off(RoomEvent.EncryptionError, handleEncryptionError);
       room.off(RoomEvent.MediaDevicesError, handleMediaDevicesError);
       room.off(RoomEvent.Connected, markAttendance);
-      room.disconnect();
+      if (!isPageUnloadingRef.current) {
+        room.disconnect();
+      }
     };
   }, [
     e2eeSetupComplete,

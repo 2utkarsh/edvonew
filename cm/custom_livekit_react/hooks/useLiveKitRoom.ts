@@ -58,6 +58,7 @@ export function useLiveKitRoom<T extends HTMLElement>(
   const [room, setRoom] = React.useState<Room | undefined>();
 
   const shouldConnect = React.useRef(connect);
+  const isPageUnloadingRef = React.useRef(false);
 
   React.useEffect(() => {
     setRoom(passedRoom ?? new Room(options));
@@ -67,6 +68,19 @@ export function useLiveKitRoom<T extends HTMLElement>(
     const { className } = setupLiveKitRoom();
     return mergeProps(rest, { className }) as HTMLAttributes<T>;
   }, [rest]);
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const markPageUnloading = () => {
+      isPageUnloadingRef.current = true;
+    };
+    window.addEventListener('beforeunload', markPageUnloading);
+    window.addEventListener('pagehide', markPageUnloading);
+    return () => {
+      window.removeEventListener('beforeunload', markPageUnloading);
+      window.removeEventListener('pagehide', markPageUnloading);
+    };
+  }, []);
 
   React.useEffect(() => {
     if (!room) return;
@@ -162,7 +176,9 @@ export function useLiveKitRoom<T extends HTMLElement>(
     } else {
       log.debug('disconnecting because connect is false');
       shouldConnect.current = false;
-      room.disconnect();
+      if (!isPageUnloadingRef.current) {
+        room.disconnect();
+      }
     }
   }, [
     connect,
@@ -178,7 +194,9 @@ export function useLiveKitRoom<T extends HTMLElement>(
     if (!room) return;
     return () => {
       log.info('disconnecting on onmount');
-      room.disconnect();
+      if (!isPageUnloadingRef.current) {
+        room.disconnect();
+      }
     };
   }, [room]);
 
