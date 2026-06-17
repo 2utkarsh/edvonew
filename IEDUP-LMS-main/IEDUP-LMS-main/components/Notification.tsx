@@ -1,12 +1,26 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 interface NotificationProps {
     visible: boolean;
     setVisible: React.Dispatch<React.SetStateAction<boolean>>;
     text: string;
   }
+
+const AUTO_DISMISS_MS = 3000;
   
   const Notification: React.FC<NotificationProps> = ({ visible, setVisible, text }) => {
+  React.useEffect(() => {
+    if (!visible) return;
+
+    const timeoutId = window.setTimeout(() => {
+      setVisible(false);
+    }, AUTO_DISMISS_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [setVisible, text, visible]);
+
   if (!visible) return null;
 
   return (
