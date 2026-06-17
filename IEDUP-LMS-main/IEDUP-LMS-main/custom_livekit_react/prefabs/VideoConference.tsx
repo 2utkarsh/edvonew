@@ -133,8 +133,9 @@ export function VideoConference({
       lastAutoFocusedScreenShareTrack.current &&
       !screenShareTracks.some(
         (track) =>
+          isTrackReference(track) &&
           track.publication.trackSid ===
-          lastAutoFocusedScreenShareTrack.current?.publication?.trackSid,
+            lastAutoFocusedScreenShareTrack.current?.publication?.trackSid,
       )
     ) {
       log.debug('Auto clearing screen share focus.');
