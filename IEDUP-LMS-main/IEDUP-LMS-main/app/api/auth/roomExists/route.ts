@@ -112,8 +112,6 @@ export async function GET(request: NextRequest) {
         process.env.LIVEKIT_API_SECRET
       );
       try {
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        
         const rooms = await roomService.listRooms([roomName]);
         if (rooms && rooms.length > 0) {
           return NextResponse.json({ message: 'Room exists', metadata }, { status: 200 });

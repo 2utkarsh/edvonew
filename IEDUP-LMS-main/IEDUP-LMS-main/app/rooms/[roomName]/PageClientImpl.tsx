@@ -140,6 +140,32 @@ export function PageClientImpl(props: {
 
   const handlePreJoinError = React.useCallback((e: any) => console.error(e), []);
 
+  const restoreRoomConnection = React.useCallback(
+    async (values: LocalUserChoices) => {
+      setJoinError(null);
+      setPreJoinChoices(values);
+
+      const url = new URL(CONN_DETAILS_ENDPOINT, window.location.origin);
+      url.searchParams.append('roomName', (props.roomName).split('$')[0]);
+      url.searchParams.append('participantName', values.username);
+      if (props.where) {
+        url.searchParams.append('where', props.where);
+      }
+      if (props.region) {
+        url.searchParams.append('region', props.region);
+      }
+
+      const connectionDetailsResp = await fetch(url.toString());
+      if (connectionDetailsResp.status !== 200) {
+        throw new Error(await readErrorMessage(connectionDetailsResp, 'Failed to restore room access.'));
+      }
+
+      const connectionDetailsData = await connectionDetailsResp.json();
+      setConnectionDetails(connectionDetailsData);
+    },
+    [props.region, props.roomName, props.where, readErrorMessage],
+  );
+
   React.useEffect(() => {
     // Store the current room route in sessionStorage as 'lastRoute'
     if (typeof window !== 'undefined') {
@@ -165,7 +191,10 @@ export function PageClientImpl(props: {
         return;
       }
 
-      void establishRoomConnection(parsed);
+      void restoreRoomConnection(parsed).catch(async (error) => {
+        console.warn('Fast room restore failed, falling back to full reconnection.', error);
+        await establishRoomConnection(parsed);
+      });
     } catch (error) {
       console.error('Failed to restore active room session:', error);
       localStorage.removeItem(roomSessionStorageKey);
@@ -346,8 +375,6 @@ function VideoConferenceComponent(props: {
   }, []);
 
   const markAttendance = React.useCallback(async () => {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
     const CONN_DETAILS_ENDPOINT = apiUrl('/api/participant-control');
 
     const url = new URL(CONN_DETAILS_ENDPOINT, window.location.origin);
