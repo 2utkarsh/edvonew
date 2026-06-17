@@ -253,7 +253,7 @@ export function PageClientImpl(props: {
                 lineHeight: 1.7,
               }}
             >
-              You left this live session. You can close this page or join again when needed.
+              This live session has ended. You can close this page or join again when a new session is available.
             </p>
           </div>
         </div>
@@ -936,6 +936,9 @@ function VideoConferenceComponent(props: {
               setNotifyText('The admin has disabled whiteboard access for participants.');
             }
           }
+        } else if (data.type === 'room-ended') {
+          props.onDeleteRoom();
+          return;
         }
       } catch (error) {
         console.error('Error handling data message:', error);
