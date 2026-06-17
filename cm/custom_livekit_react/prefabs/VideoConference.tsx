@@ -111,7 +111,8 @@ export function VideoConference({
     .filter(isTrackReference)
     .filter((track) => track.publication.source === Track.Source.ScreenShare);
 
-  const focusTrack = usePinnedTracks(layoutContext)?.[0];
+  const pinnedTrack = usePinnedTracks(layoutContext)?.[0];
+  const focusTrack = screenShareTracks[0] ?? pinnedTrack;
   const carouselTracks = tracks.filter((track) => !isEqualTrackRef(track, focusTrack));
 
   React.useEffect(() => {
@@ -146,7 +147,7 @@ export function VideoConference({
     screenShareTracks
       .map((ref) => `${ref.publication.trackSid}_${ref.publication.isSubscribed}`)
       .join(),
-    focusTrack?.publication?.trackSid,
+    pinnedTrack?.publication?.trackSid,
     tracks,
   ]);
 
