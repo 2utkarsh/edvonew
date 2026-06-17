@@ -2,7 +2,9 @@ import * as React from 'react';
 import { useDeleteRoomButton } from '../../hooks';
 import { ConfirmModal } from '../../../components/ui/Button';
 
-export interface DeleteRoomButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
+export interface DeleteRoomButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  onDeleteComplete?: () => void;
+}
 
 export const DeleteRoomButton = React.forwardRef<HTMLButtonElement, DeleteRoomButtonProps>(
   function DeleteRoomButton(props, ref) {

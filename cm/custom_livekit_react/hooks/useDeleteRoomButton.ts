@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { useRoomContext } from '../context';
 import { mergeProps } from '../mergeProps';
+import type { DeleteRoomButtonProps } from '../components/controls/DeleteRoomButton';
 
-export function useDeleteRoomButton(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+export function useDeleteRoomButton(props: DeleteRoomButtonProps) {
   const room = useRoomContext();
   const [loading, setLoading] = React.useState(false);
 
@@ -19,9 +20,8 @@ export function useDeleteRoomButton(props: React.ButtonHTMLAttributes<HTMLButton
           roomName: room.name,
         }),
       });
-      // Optionally disconnect or redirect
+      props.onDeleteComplete?.();
       room.disconnect();
-      // window.location.href = '/'; // Uncomment to redirect after deletion
     } catch (e) {
       alert('Failed to delete room');
     } finally {
@@ -29,7 +29,9 @@ export function useDeleteRoomButton(props: React.ButtonHTMLAttributes<HTMLButton
     }
   };
 
-  const buttonProps = mergeProps(props, {
+  const { onDeleteComplete: _onDeleteComplete, ...buttonHtmlProps } = props;
+
+  const buttonProps = mergeProps(buttonHtmlProps, {
     onClick: handleDelete,
     disabled: loading,
     className: 'lk-disconnect-button'

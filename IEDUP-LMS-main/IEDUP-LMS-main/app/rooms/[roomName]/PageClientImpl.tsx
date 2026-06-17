@@ -322,6 +322,14 @@ export function PageClientImpl(props: {
             setPreJoinChoices(undefined);
             setSessionEnded(true);
           }}
+          onDeleteRoom={() => {
+            if (typeof window !== 'undefined') {
+              localStorage.removeItem(roomSessionStorageKey);
+            }
+            setConnectionDetails(undefined);
+            setPreJoinChoices(undefined);
+            setSessionEnded(true);
+          }}
         />
       )}
     </main>
@@ -338,6 +346,7 @@ function VideoConferenceComponent(props: {
   presentationFile: File | null;
   onPresentationFileChange: (file: File | null) => void;
   onLeave: () => void;
+  onDeleteRoom: () => void;
 }) {
   const e2eePassphrase =
     typeof window !== 'undefined' && decodePassphrase(location.hash.substring(1));
@@ -987,6 +996,7 @@ function VideoConferenceComponent(props: {
             chatMessageFormatter={formatChatMessageLinks}
             SettingsComponent={SHOW_SETTINGS_MENU ? SettingsMenu : undefined}
             onLeave={props.onLeave}
+            onDeleteRoom={props.onDeleteRoom}
             raisedHandIdentities={raisedHandIdentities}
             onHandStateChange={handleLocalHandStateChange}
             onWhiteboardToggle={handleWhiteboardToggle}

@@ -46,6 +46,7 @@ export interface ControlBarProps extends React.HTMLAttributes<HTMLDivElement> {
   variation?: 'minimal' | 'verbose' | 'textOnly';
   controls?: ControlBarControls;
   onLeave?: () => void;
+  onDeleteRoom?: () => void;
   /**
    * If `true`, the user's device choices will be persisted.
    * This will enable the user to have the same device choices when they rejoin the room.
@@ -86,6 +87,7 @@ export function ControlBar({
   saveUserChoices = true,
   onDeviceError,
   onLeave,
+  onDeleteRoom,
   onHandStateChange,
   onWhiteboardToggle,
   onWhiteboardAccessToggle,
@@ -491,7 +493,7 @@ export function ControlBar({
         </DisconnectButton>
       )}
       {isHost && (
-        <DeleteRoomButton>
+        <DeleteRoomButton onDeleteComplete={onDeleteRoom}>
           {showIcon && <GiSpikyExplosion />}
           {'Delete Room'}
         </DeleteRoomButton>
