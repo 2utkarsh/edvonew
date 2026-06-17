@@ -18,6 +18,7 @@ import {
   ParticipantTile,
   RoomAudioRenderer,
   RoomName,
+  TrackLoop,
 } from '../components';
 import { useCreateLayoutContext } from '../context';
 import { usePinnedTracks, useTracks } from '../hooks';
@@ -202,6 +203,29 @@ export function VideoConference({
                 <GridLayout tracks={tracks}>
                   <ParticipantTile raisedHandIdentities={raisedHandIdentities} />
                 </GridLayout>
+              </div>
+            ) : hasScreenShare ? (
+              <div className="lk-focus-layout-wrapper">
+                <div
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    minHeight: 0,
+                    display: 'grid',
+                    gridTemplateColumns: '228px minmax(0, 1fr)',
+                    gap: '8px',
+                    paddingBottom: '8px',
+                  }}
+                >
+                  <aside style={{ minWidth: 0, minHeight: 0, overflow: 'auto' }}>
+                    <TrackLoop tracks={carouselTracks}>
+                      <ParticipantTile raisedHandIdentities={raisedHandIdentities} />
+                    </TrackLoop>
+                  </aside>
+                  <div style={{ minWidth: 0, minHeight: 0 }}>
+                    <ParticipantTile trackRef={focusTrack} raisedHandIdentities={raisedHandIdentities} />
+                  </div>
+                </div>
               </div>
             ) : (
               <div className="lk-focus-layout-wrapper">
