@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import { isKicked } from '@/lib/blackList';
 import { JWT_SECRET, hasJwtSecret } from '@/lib/jwtSecret';
 import { getConfiguredLiveKitUrls } from '@/lib/livekit-url';
+import { isRoomClosed } from '@/lib/room-closure';
 
 // Constants
 const API_KEY = process.env.LIVEKIT_API_KEY;
@@ -207,6 +208,9 @@ function createConnectionResponse(
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const { roomName, participantName, region } = validateQueryParams(request);
+    if (await isRoomClosed(roomName)) {
+      throw new LiveKitAPIError('This live session has ended.', 410);
+    }
     const livekitUrls = validateEnvironment(region);
 
     const accessTokenFromCookie = request.cookies.get("accessToken")?.value || "";

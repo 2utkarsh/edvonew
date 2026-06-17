@@ -4,6 +4,7 @@ import { RoomServiceClient } from 'livekit-server-sdk';
 import { JWT_SECRET, hasJwtSecret } from '@/lib/jwtSecret';
 import { getConfiguredLiveKitUrls } from '@/lib/livekit-url';
 import clientPromise, { isMongoConfigured } from '@/lib/mongodb';
+import { isRoomClosed } from '@/lib/room-closure';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -94,6 +95,10 @@ export async function GET(request: NextRequest) {
     const roomName = request.nextUrl.searchParams.get('roomName');
     if (!roomName) {
       return NextResponse.json({ error: 'Missing roomName query param' }, { status: 400 });
+    }
+
+    if (await isRoomClosed(roomName)) {
+      return NextResponse.json({ error: 'This live session has ended.' }, { status: 410 });
     }
 
     if (role === 'host') {

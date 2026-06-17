@@ -6,6 +6,7 @@ import { cookies } from 'next/headers';
 import { getConfiguredLiveKitUrls } from '@/lib/livekit-url';
 import { jwtVerify } from 'jose';
 import { getJwtSecretBytes, hasJwtSecret } from '@/lib/jwtSecret';
+import { closeRoom } from '@/lib/room-closure';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -434,6 +435,7 @@ export async function POST(req: Request) {
       } else if (action === 'destroy-room') {
         console.log('Destroying room:', roomName);
         await roomService.deleteRoom(roomName);
+        await closeRoom(roomName);
       } else {
         console.error('Invalid action:', action);
         return NextResponse.json(
