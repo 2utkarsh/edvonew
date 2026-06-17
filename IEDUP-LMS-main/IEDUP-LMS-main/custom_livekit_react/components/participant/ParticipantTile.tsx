@@ -192,11 +192,14 @@ export const ParticipantTile: (
                         minWidth: '240px',
                         textAlign: 'center',
                         flexDirection: 'column',
+                        padding: '1rem',
+                        lineHeight: 1.35,
+                        wordBreak: 'break-word',
                         zIndex: 2,
                       }}
                     >
                       <ScreenShareIcon style={{ fontSize: '2rem', marginBottom: '0.5rem' }} />
-                      You are sharing your screen
+                      Sharing screen
                     </div>
                   ) : (
                     <VideoTrack

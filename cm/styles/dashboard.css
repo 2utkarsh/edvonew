@@ -2630,6 +2630,15 @@
   background: var(--zoom-tile);
 }
 
+.lk-room-container .lk-participant-tile[data-lk-source="screen_share"] video,
+.lk-room-container .lk-participant-tile[data-lk-source="screen_share"] .lk-video-track,
+.lk-room-container .lk-focus-layout > .lk-participant-tile[data-lk-source="screen_share"] video,
+.lk-room-container .lk-focus-layout > .lk-participant-tile[data-lk-source="screen_share"] .lk-video-track {
+  object-fit: contain;
+  object-position: center;
+  background: #050816;
+}
+
 .lk-room-container .lk-participant-placeholder {
   background: transparent;
 }
