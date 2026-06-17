@@ -34,6 +34,7 @@ export interface VideoConferenceProps extends React.HTMLAttributes<HTMLDivElemen
   chatMessageDecoder?: MessageDecoder;
   /** @alpha */
   SettingsComponent?: React.ComponentType;
+  onLeave?: () => void;
   onWhiteboardToggle?: () => void;
   onWhiteboardAccessToggle?: () => void;
   /**
@@ -80,6 +81,7 @@ export function VideoConference({
   canCloseWhiteboard,
   onWhiteboardToggle,
   onWhiteboardAccessToggle,
+  onLeave,
   onHandStateChange,
   ...props
 }: VideoConferenceProps) {
@@ -212,6 +214,7 @@ export function VideoConference({
                 microphone: false,
                 screenShare: false,
               }}
+              onLeave={onLeave}
               onHandStateChange={onHandStateChange}
               onWhiteboardToggle={onWhiteboardToggle}
               onWhiteboardAccessToggle={onWhiteboardAccessToggle}

@@ -45,6 +45,7 @@ export interface ControlBarProps extends React.HTMLAttributes<HTMLDivElement> {
   onDeviceError?: (error: { source: Track.Source; error: Error }) => void;
   variation?: 'minimal' | 'verbose' | 'textOnly';
   controls?: ControlBarControls;
+  onLeave?: () => void;
   /**
    * If `true`, the user's device choices will be persisted.
    * This will enable the user to have the same device choices when they rejoin the room.
@@ -84,6 +85,7 @@ export function ControlBar({
   controls,
   saveUserChoices = true,
   onDeviceError,
+  onLeave,
   onHandStateChange,
   onWhiteboardToggle,
   onWhiteboardAccessToggle,
@@ -483,7 +485,7 @@ export function ControlBar({
         </SettingsMenuToggle>
       )}
       {visibleControls.leave && (
-        <DisconnectButton>
+        <DisconnectButton onClick={onLeave}>
           {showIcon && <LeaveIcon />}
           {'Leave'}
         </DisconnectButton>

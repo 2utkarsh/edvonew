@@ -57,6 +57,7 @@ export function PageClientImpl(props: {
   const [preJoinChoices, setPreJoinChoices] = React.useState<LocalUserChoices | undefined>(
     undefined,
   );
+  const [sessionEnded, setSessionEnded] = React.useState(false);
   const [joinError, setJoinError] = React.useState<string | null>(null);
   const preJoinDefaults = React.useMemo(() => {
     return {
@@ -201,6 +202,66 @@ export function PageClientImpl(props: {
     }
   }, [connectionDetails, establishRoomConnection, preJoinChoices, roomSessionStorageKey]);
 
+  if (sessionEnded) {
+    return (
+      <main data-lk-theme="default">
+        <div
+          style={{
+            minHeight: '100vh',
+            display: 'grid',
+            placeItems: 'center',
+            padding: '2rem',
+            background:
+              'radial-gradient(circle at top, rgba(41, 87, 255, 0.18), transparent 32%), linear-gradient(180deg, #081613 0%, #030807 100%)',
+            color: '#f8f3e8',
+          }}
+        >
+          <div
+            style={{
+              width: 'min(32rem, 100%)',
+              borderRadius: '1.5rem',
+              padding: '2rem',
+              border: '1px solid rgba(248, 243, 232, 0.12)',
+              background: 'rgba(8, 22, 19, 0.88)',
+              boxShadow: '0 24px 60px rgba(0, 0, 0, 0.35)',
+              textAlign: 'center',
+            }}
+          >
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '4rem',
+                height: '4rem',
+                borderRadius: '999px',
+                background: 'rgba(248, 243, 232, 0.08)',
+                fontSize: '1.6rem',
+                fontWeight: 700,
+                marginBottom: '1.25rem',
+              }}
+            >
+              LK
+            </div>
+            <h1 style={{ margin: 0, fontSize: 'clamp(2rem, 4vw, 2.6rem)', fontWeight: 800 }}>
+              Live ended
+            </h1>
+            <p
+              style={{
+                margin: '0.9rem 0 0',
+                color: 'rgba(248, 243, 232, 0.72)',
+                fontSize: '1rem',
+                lineHeight: 1.7,
+              }}
+            >
+              You left this live session. You can close this page or join again when needed.
+            </p>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main data-lk-theme="default">
       {(!connectionDetails || preJoinChoices === undefined) ? (
@@ -253,6 +314,14 @@ export function PageClientImpl(props: {
           options={{ codec: props.codec, hq: props.hq }}
           presentationFile={presentationFile}
           onPresentationFileChange={setPresentationFile}
+          onLeave={() => {
+            if (typeof window !== 'undefined') {
+              localStorage.removeItem(roomSessionStorageKey);
+            }
+            setConnectionDetails(undefined);
+            setPreJoinChoices(undefined);
+            setSessionEnded(true);
+          }}
         />
       )}
     </main>
@@ -268,6 +337,7 @@ function VideoConferenceComponent(props: {
   };
   presentationFile: File | null;
   onPresentationFileChange: (file: File | null) => void;
+  onLeave: () => void;
 }) {
   const e2eePassphrase =
     typeof window !== 'undefined' && decodePassphrase(location.hash.substring(1));
@@ -916,6 +986,7 @@ function VideoConferenceComponent(props: {
           <VideoConference
             chatMessageFormatter={formatChatMessageLinks}
             SettingsComponent={SHOW_SETTINGS_MENU ? SettingsMenu : undefined}
+            onLeave={props.onLeave}
             raisedHandIdentities={raisedHandIdentities}
             onHandStateChange={handleLocalHandStateChange}
             onWhiteboardToggle={handleWhiteboardToggle}
