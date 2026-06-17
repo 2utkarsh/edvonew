@@ -66,6 +66,7 @@ export function PageClientImpl(props: {
     };
   }, []);
   const [connectionDetails, setConnectionDetails] = React.useState<ConnectionDetails | undefined>(undefined);
+  const explicitExitRef = React.useRef(false);
   const roomSessionStorageKey = React.useMemo(
     () => `${ACTIVE_ROOM_STORAGE_PREFIX}:${props.roomName}`,
     [props.roomName],
@@ -293,7 +294,9 @@ export function PageClientImpl(props: {
           connectionDetails={connectionDetails}
           userChoices={preJoinChoices}
           options={{ codec: props.codec, hq: props.hq }}
+          explicitExitRef={explicitExitRef}
           onLeave={() => {
+            explicitExitRef.current = true;
             if (typeof window !== 'undefined') {
               localStorage.removeItem(roomSessionStorageKey);
             }
@@ -302,6 +305,7 @@ export function PageClientImpl(props: {
             setSessionEnded(true);
           }}
           onDeleteRoom={() => {
+            explicitExitRef.current = true;
             if (typeof window !== 'undefined') {
               localStorage.removeItem(roomSessionStorageKey);
             }
@@ -322,6 +326,7 @@ function VideoConferenceComponent(props: {
     hq: boolean;
     codec: VideoCodec;
   };
+  explicitExitRef: React.MutableRefObject<boolean>;
   onLeave: () => void;
   onDeleteRoom: () => void;
 }) {
@@ -375,6 +380,7 @@ function VideoConferenceComponent(props: {
   const micRetryAttemptedRef = React.useRef(false);
   const audioUnlockAttemptRef = React.useRef(false);
   const isPageUnloadingRef = React.useRef(false);
+  const reloadTriggeredRef = React.useRef(false);
   const connectionState = useConnectionState(room);
   const { canPlayAudio, startAudio } = useAudioPlayback(room);
 
@@ -495,6 +501,19 @@ function VideoConferenceComponent(props: {
     [enableMicrophoneWithFallback, handleError],
   );
 
+  const handleDisconnected = React.useCallback(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    if (isPageUnloadingRef.current || props.explicitExitRef.current || reloadTriggeredRef.current) {
+      return;
+    }
+
+    reloadTriggeredRef.current = true;
+    window.location.reload();
+  }, [props.explicitExitRef]);
+
 
   React.useEffect(() => {
     let isActive = true;
@@ -502,6 +521,7 @@ function VideoConferenceComponent(props: {
     room.on(RoomEvent.EncryptionError, handleEncryptionError);
     room.on(RoomEvent.MediaDevicesError, handleMediaDevicesError);
     room.on(RoomEvent.Connected, markAttendance);
+    room.on(RoomEvent.Disconnected, handleDisconnected);
 
     const connectToRoom = async () => {
       if (!e2eeSetupComplete) {
@@ -549,6 +569,7 @@ function VideoConferenceComponent(props: {
       room.off(RoomEvent.EncryptionError, handleEncryptionError);
       room.off(RoomEvent.MediaDevicesError, handleMediaDevicesError);
       room.off(RoomEvent.Connected, markAttendance);
+      room.off(RoomEvent.Disconnected, handleDisconnected);
       if (!isPageUnloadingRef.current) {
         room.disconnect();
       }
@@ -563,6 +584,7 @@ function VideoConferenceComponent(props: {
     handleError,
     handleEncryptionError,
     handleMediaDevicesError,
+    handleDisconnected,
     markAttendance,
   ]);
 
