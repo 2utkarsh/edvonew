@@ -559,7 +559,7 @@ function VideoConferenceComponent(props: {
   const [raisedHandIdentities, setRaisedHandIdentities] = useState<string[]>([]);
   const [whiteboardOpen, setWhiteboardOpen] = useState(false);
   const [whiteboardOwnerIdentity, setWhiteboardOwnerIdentity] = useState<string | null>(null);
-  const [whiteboardMembersCanUse, setWhiteboardMembersCanUse] = useState(true);
+  const [whiteboardMembersCanUse, setWhiteboardMembersCanUse] = useState(false);
   const [isLocalHost, setIsLocalHost] = useState(false);
   const [requestedPermissionSources, setRequestedPermissionSources] = useState<
     Array<'microphone' | 'camera' | 'screen_share' | 'whiteboard'>
@@ -907,7 +907,8 @@ function VideoConferenceComponent(props: {
   const canDrawWhiteboard =
     !whiteboardOpen ||
     isLocalHost ||
-    (whiteboardMembersCanUse && whiteboardOwnerIdentity === room.localParticipant.identity);
+    whiteboardOwnerIdentity === room.localParticipant.identity ||
+    whiteboardMembersCanUse;
 
   return (
     <div className="lk-room-container" style={{ position: 'relative', minHeight: '100vh', height: '100svh' }}>

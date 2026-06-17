@@ -88,7 +88,7 @@ export function ControlBar({
   onWhiteboardToggle,
   onWhiteboardAccessToggle,
   whiteboardOpen = false,
-  whiteboardMembersCanUse = true,
+  whiteboardMembersCanUse = false,
   canCloseWhiteboard = true,
   ...props
 }: ControlBarProps) {
