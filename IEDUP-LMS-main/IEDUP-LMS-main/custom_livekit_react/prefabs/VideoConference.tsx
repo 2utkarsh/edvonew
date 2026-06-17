@@ -109,9 +109,7 @@ export function VideoConference({
 
   const layoutContext = useCreateLayoutContext();
 
-  const screenShareTracks = tracks
-    .filter(isTrackReference)
-    .filter((track) => track.publication.source === Track.Source.ScreenShare);
+  const screenShareTracks = tracks.filter((track) => track.source === Track.Source.ScreenShare);
 
   const pinnedTrack = usePinnedTracks(layoutContext)?.[0];
   const hasScreenShare = screenShareTracks.length > 0;
@@ -127,8 +125,10 @@ export function VideoConference({
     // If screen share tracks are published, and no pin is set explicitly, auto set the screen share.
     if (screenShareTracks.length > 0 && lastAutoFocusedScreenShareTrack.current === null) {
       log.debug('Auto set screen share focus:', { newScreenShareTrack: screenShareTracks[0] });
-      layoutContext.pin.dispatch?.({ msg: 'set_pin', trackReference: screenShareTracks[0] });
-      lastAutoFocusedScreenShareTrack.current = screenShareTracks[0];
+      if (isTrackReference(screenShareTracks[0])) {
+        layoutContext.pin.dispatch?.({ msg: 'set_pin', trackReference: screenShareTracks[0] });
+        lastAutoFocusedScreenShareTrack.current = screenShareTracks[0];
+      }
     } else if (
       lastAutoFocusedScreenShareTrack.current &&
       !screenShareTracks.some(
@@ -153,7 +153,11 @@ export function VideoConference({
     }
   }, [
     screenShareTracks
-      .map((ref) => `${ref.publication.trackSid}_${ref.publication.isSubscribed}`)
+      .map((ref) =>
+        isTrackReference(ref)
+          ? `${ref.publication.trackSid}_${ref.publication.isSubscribed}`
+          : `${ref.participant.identity}_${ref.source}_placeholder`,
+      )
       .join(),
     pinnedTrack?.publication?.trackSid,
     tracks,
