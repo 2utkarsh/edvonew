@@ -114,8 +114,14 @@ export function VideoConference({
     .filter((track) => track.publication.source === Track.Source.ScreenShare);
 
   const pinnedTrack = usePinnedTracks(layoutContext)?.[0];
-  const focusTrack = screenShareTracks[0] ?? pinnedTrack;
-  const carouselTracks = tracks.filter((track) => !isEqualTrackRef(track, focusTrack));
+  const hasScreenShare = screenShareTracks.length > 0;
+  const focusTrack = hasScreenShare ? screenShareTracks[0] : pinnedTrack;
+  const carouselTracks = hasScreenShare
+    ? tracks.filter(
+        (track) =>
+          !isTrackReference(track) || track.publication.source !== Track.Source.ScreenShare,
+      )
+    : tracks.filter((track) => !isEqualTrackRef(track, focusTrack));
 
   React.useEffect(() => {
     // If screen share tracks are published, and no pin is set explicitly, auto set the screen share.
@@ -199,9 +205,11 @@ export function VideoConference({
             ) : (
               <div className="lk-focus-layout-wrapper">
                 <FocusLayoutContainer>
-                  <CarouselLayout tracks={carouselTracks}>
-                    <ParticipantTile raisedHandIdentities={raisedHandIdentities} />
-                  </CarouselLayout>
+                  {carouselTracks.length > 0 && (
+                    <CarouselLayout tracks={carouselTracks}>
+                      <ParticipantTile raisedHandIdentities={raisedHandIdentities} />
+                    </CarouselLayout>
+                  )}
                   {focusTrack && <FocusLayout trackRef={focusTrack} raisedHandIdentities={raisedHandIdentities} />}
                 </FocusLayoutContainer>
               </div>
