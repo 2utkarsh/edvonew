@@ -46,6 +46,10 @@ export const AudioTrack: (
     const trackReference = useEnsureTrackRef(trackRef);
 
     const mediaEl = React.useRef<HTMLAudioElement>(null);
+    const audioContextRef = React.useRef<AudioContext | null>(null);
+    const mediaSourceRef = React.useRef<MediaElementAudioSourceNode | null>(null);
+    const gainNodeRef = React.useRef<GainNode | null>(null);
+    const compressorRef = React.useRef<DynamicsCompressorNode | null>(null);
     React.useImperativeHandle(ref, () => mediaEl.current as HTMLAudioElement);
 
     const {
@@ -67,11 +71,80 @@ export const AudioTrack: (
         return;
       }
       if (track instanceof RemoteAudioTrack) {
-        track.setVolume(volume);
+        track.setVolume(Math.min(volume, 1));
       } else {
         log.warn('Volume can only be set on remote audio tracks.');
       }
     }, [volume, track]);
+
+    React.useEffect(() => {
+      const mediaElement = mediaEl.current;
+      if (!mediaElement || typeof window === 'undefined') {
+        return;
+      }
+
+      const requestedVolume = volume ?? 1;
+      mediaElement.volume = Math.min(requestedVolume, 1);
+
+      if (requestedVolume <= 1) {
+        gainNodeRef.current?.gain.setValueAtTime(
+          1,
+          audioContextRef.current?.currentTime ?? 0,
+        );
+        return;
+      }
+
+      const AudioContextCtor = window.AudioContext ?? (window as typeof window & {
+        webkitAudioContext?: typeof AudioContext;
+      }).webkitAudioContext;
+
+      if (!AudioContextCtor) {
+        return;
+      }
+
+      if (!audioContextRef.current) {
+        audioContextRef.current = new AudioContextCtor();
+      }
+
+      const audioContext = audioContextRef.current;
+
+      if (!mediaSourceRef.current) {
+        mediaSourceRef.current = audioContext.createMediaElementSource(mediaElement);
+      }
+
+      if (!gainNodeRef.current) {
+        gainNodeRef.current = audioContext.createGain();
+      }
+
+      if (!compressorRef.current) {
+        compressorRef.current = audioContext.createDynamicsCompressor();
+        compressorRef.current.threshold.value = -24;
+        compressorRef.current.knee.value = 18;
+        compressorRef.current.ratio.value = 3;
+        compressorRef.current.attack.value = 0.003;
+        compressorRef.current.release.value = 0.2;
+      }
+
+      mediaSourceRef.current.disconnect();
+      gainNodeRef.current.disconnect();
+      compressorRef.current.disconnect();
+
+      mediaSourceRef.current.connect(gainNodeRef.current);
+      gainNodeRef.current.connect(compressorRef.current);
+      compressorRef.current.connect(audioContext.destination);
+      gainNodeRef.current.gain.setValueAtTime(
+        Math.min(requestedVolume, 2.5),
+        audioContext.currentTime,
+      );
+
+      void audioContext.resume().catch(() => undefined);
+
+      return () => {
+        mediaSourceRef.current?.disconnect();
+        gainNodeRef.current?.disconnect();
+        compressorRef.current?.disconnect();
+      };
+    }, [volume]);
 
     React.useEffect(() => {
       if (pub === undefined || props.muted === undefined) {
@@ -83,6 +156,17 @@ export const AudioTrack: (
         log.warn('Can only call setEnabled on remote track publications.');
       }
     }, [props.muted, pub, track]);
+
+    React.useEffect(() => {
+      return () => {
+        gainNodeRef.current?.disconnect();
+        compressorRef.current?.disconnect();
+        mediaSourceRef.current?.disconnect();
+        if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+          void audioContextRef.current.close().catch(() => undefined);
+        }
+      };
+    }, []);
 
     return <audio ref={mediaEl} autoPlay playsInline {...elementProps} />;
   },

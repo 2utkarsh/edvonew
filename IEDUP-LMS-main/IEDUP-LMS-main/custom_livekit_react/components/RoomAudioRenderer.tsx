@@ -4,6 +4,8 @@ import * as React from 'react';
 import { useTracks } from '../hooks';
 import { AudioTrack } from './participant/AudioTrack';
 
+const DEFAULT_REMOTE_AUDIO_VOLUME = 1.8;
+
 /** @public */
 export interface RoomAudioRendererProps {
   /** Sets the volume for all audio tracks rendered by this component. By default, the range is between `0.0` and `1.0`. */
@@ -44,7 +46,7 @@ export function RoomAudioRenderer({ volume, muted }: RoomAudioRendererProps) {
         <AudioTrack
           key={getTrackReferenceId(trackRef)}
           trackRef={trackRef}
-          volume={volume}
+          volume={volume ?? DEFAULT_REMOTE_AUDIO_VOLUME}
           muted={muted}
         />
       ))}
