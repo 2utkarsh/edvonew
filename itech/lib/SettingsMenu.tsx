@@ -21,7 +21,7 @@ export function SettingsMenu(props: SettingsMenuProps) {
   const layoutContext = useMaybeLayoutContext();
   const room = useRoomContext();
   const [isHost, setIsHost] = React.useState(false);
-  const { error, isProcessing, isRecording, startRecording, stopRecording } = useLocalRecording(room.name);
+  const { error, isProcessing, isRecording, startRecording, stopRecording } = useLocalRecording(room);
 
   React.useEffect(() => {
     const checkHostStatus = () => {
@@ -47,17 +47,13 @@ export function SettingsMenu(props: SettingsMenuProps) {
   const [activeTab, setActiveTab] = React.useState(tabs[0]);
 
   const toggleRoomRecording = React.useCallback(async () => {
-    if (room.isE2EEEnabled) {
-      return;
-    }
-
     if (isRecording) {
       await stopRecording();
       return;
     }
 
     await startRecording();
-  }, [isRecording, room.isE2EEEnabled, startRecording, stopRecording]);
+  }, [isRecording, startRecording, stopRecording]);
 
   return (
     <div className="settings-menu" style={{
@@ -137,8 +133,8 @@ export function SettingsMenu(props: SettingsMenuProps) {
             <section>
               <p style={{ margin: '0 0 16px 0', color: 'var(--lk-text-secondary)' }}>
                 {isRecording
-                  ? 'Local browser recording is active. Stop recording to download the file.'
-                  : 'Start a local browser recording by choosing a tab, window, or screen.'}
+                  ? 'Meeting recording is active. Stop recording to download the file.'
+                  : 'Start direct meeting recording without screen-share permission.'}
               </p>
               {error && (
                 <p style={{ margin: '0 0 16px 0', color: '#f87171', fontSize: '13px' }}>
@@ -149,7 +145,6 @@ export function SettingsMenu(props: SettingsMenuProps) {
                 disabled={isProcessing}
                 onClick={() => toggleRoomRecording()}
                 className="lk-button"
-                title={room.isE2EEEnabled ? 'Recording of encrypted meetings is not supported.' : undefined}
                 style={{
                   width: '100%',
                   padding: '10px',
