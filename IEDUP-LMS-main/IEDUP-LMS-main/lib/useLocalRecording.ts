@@ -19,8 +19,17 @@ type ActiveRecordingResources = {
   audioContext: AudioContext | null;
   canvas: HTMLCanvasElement | null;
   canvasStream: MediaStream | null;
+  outputStream: MediaStream | null;
   tiles: TileSource[];
   animationFrameId: number | null;
+};
+
+type RecordingStreamBundle = {
+  canvas?: HTMLCanvasElement | null;
+  canvasStream?: MediaStream | null;
+  outputStream: MediaStream;
+  tiles?: TileSource[];
+  usedCanvas: boolean;
 };
 
 const listeners = new Set<() => void>();
@@ -40,6 +49,7 @@ let activeResources: ActiveRecordingResources = {
   animationFrameId: null,
   canvas: null,
   canvasStream: null,
+  outputStream: null,
   tiles: [],
 };
 
@@ -74,10 +84,10 @@ function downloadRecording(blob: Blob, roomName: string, mimeType: string) {
 
 function pickMimeType() {
   const mimeTypes = [
+    'video/mp4',
     'video/webm;codecs=vp9,opus',
     'video/webm;codecs=vp8,opus',
     'video/webm',
-    'video/mp4',
   ];
 
   if (typeof MediaRecorder === 'undefined') {
@@ -97,12 +107,22 @@ function stopTracks(stream?: MediaStream | null) {
   }
 }
 
+function isSafariBrowser() {
+  if (typeof navigator === 'undefined') {
+    return false;
+  }
+
+  const ua = navigator.userAgent;
+  return /Safari/i.test(ua) && !/Chrome|Chromium|Android/i.test(ua);
+}
+
 function cleanupResources() {
   if (activeResources.animationFrameId !== null) {
     window.cancelAnimationFrame(activeResources.animationFrameId);
   }
 
   stopTracks(activeResources.canvasStream);
+  stopTracks(activeResources.outputStream);
 
   for (const tile of activeResources.tiles) {
     if (tile.video) {
@@ -120,6 +140,7 @@ function cleanupResources() {
     animationFrameId: null,
     canvas: null,
     canvasStream: null,
+    outputStream: null,
     tiles: [],
   };
 
@@ -180,6 +201,29 @@ function getParticipantAudioTracks(participants: Participant[]) {
         .map((publication) => (publication.track as any)?.mediaStreamTrack as MediaStreamTrack | undefined),
     )
     .filter((track): track is MediaStreamTrack => Boolean(track));
+}
+
+function getPrimaryVideoTrack(participants: Participant[]) {
+  for (const participant of participants) {
+    const publications = participant
+      .getTrackPublications()
+      .filter((publication) => publication.kind === Track.Kind.Video && publication.track);
+
+    const preferredPublication =
+      publications.find((publication) => publication.source === Track.Source.ScreenShare) ||
+      publications.find((publication) => publication.source === Track.Source.Camera) ||
+      publications[0];
+
+    const mediaStreamTrack = (preferredPublication?.track as any)?.mediaStreamTrack as
+      | MediaStreamTrack
+      | undefined;
+
+    if (mediaStreamTrack) {
+      return mediaStreamTrack;
+    }
+  }
+
+  return null;
 }
 
 function drawTiles(context: CanvasRenderingContext2D, canvas: HTMLCanvasElement, tiles: TileSource[]) {
@@ -254,6 +298,70 @@ function resolveRoomDetails(roomOrName?: Room | string) {
   };
 }
 
+function buildSafariFriendlyStream(participants: Participant[], audioContext: AudioContext): RecordingStreamBundle {
+  const outputStream = new MediaStream();
+  const primaryVideoTrack = getPrimaryVideoTrack(participants);
+
+  if (!primaryVideoTrack) {
+    throw new Error('No active participant video is available to record right now.');
+  }
+
+  outputStream.addTrack(primaryVideoTrack.clone());
+
+  const destination = audioContext.createMediaStreamDestination();
+  const audioTracks = getParticipantAudioTracks(participants);
+
+  for (const audioTrack of audioTracks) {
+    const sourceStream = new MediaStream([audioTrack]);
+    const source = audioContext.createMediaStreamSource(sourceStream);
+    source.connect(destination);
+  }
+
+  const mixedAudioTrack = destination.stream.getAudioTracks()[0];
+  if (mixedAudioTrack) {
+    outputStream.addTrack(mixedAudioTrack);
+  }
+
+  return {
+    canvas: null,
+    canvasStream: null,
+    outputStream,
+    tiles: [],
+    usedCanvas: false,
+  };
+}
+
+function buildCompositeStream(participants: Participant[], audioContext: AudioContext): RecordingStreamBundle {
+  const tiles = getParticipantTiles(participants);
+  const canvas = document.createElement('canvas');
+  canvas.width = 1280;
+  canvas.height = 720;
+  startCanvasLoop(canvas, tiles);
+
+  const canvasStream = canvas.captureStream(24);
+  const destination = audioContext.createMediaStreamDestination();
+  const audioTracks = getParticipantAudioTracks(participants);
+
+  for (const audioTrack of audioTracks) {
+    const sourceStream = new MediaStream([audioTrack]);
+    const source = audioContext.createMediaStreamSource(sourceStream);
+    source.connect(destination);
+  }
+
+  const mixedAudioTrack = destination.stream.getAudioTracks()[0];
+  if (mixedAudioTrack) {
+    canvasStream.addTrack(mixedAudioTrack);
+  }
+
+  return {
+    canvas,
+    canvasStream,
+    outputStream: canvasStream,
+    tiles,
+    usedCanvas: true,
+  };
+}
+
 async function startLocalRecording(roomOrName?: Room | string) {
   if (state.isProcessing || state.isRecording) {
     return;
@@ -285,44 +393,29 @@ async function startLocalRecording(roomOrName?: Room | string) {
 
   try {
     const participants = [room.localParticipant, ...Array.from(room.remoteParticipants.values())];
-    const tiles = getParticipantTiles(participants);
-    const audioTracks = getParticipantAudioTracks(participants);
-
-    const canvas = document.createElement('canvas');
-    canvas.width = 1280;
-    canvas.height = 720;
-    startCanvasLoop(canvas, tiles);
-
-    const canvasStream = canvas.captureStream(24);
     const audioContext = new AudioContext();
-    const destination = audioContext.createMediaStreamDestination();
-
-    for (const audioTrack of audioTracks) {
-      const sourceStream = new MediaStream([audioTrack]);
-      const source = audioContext.createMediaStreamSource(sourceStream);
-      source.connect(destination);
-    }
-
     await audioContext.resume().catch(() => undefined);
 
-    const mixedAudioTrack = destination.stream.getAudioTracks()[0];
-    if (mixedAudioTrack) {
-      canvasStream.addTrack(mixedAudioTrack);
-    }
+    const shouldUseSimpleFallback = isSafariBrowser() || typeof HTMLCanvasElement === 'undefined' || typeof HTMLCanvasElement.prototype.captureStream !== 'function';
+
+    const streamBundle = shouldUseSimpleFallback
+      ? buildSafariFriendlyStream(participants, audioContext)
+      : buildCompositeStream(participants, audioContext);
 
     activeResources = {
       audioContext,
       animationFrameId: activeResources.animationFrameId,
-      canvas,
-      canvasStream,
-      tiles,
+      canvas: streamBundle.usedCanvas ? streamBundle.canvas ?? null : null,
+      canvasStream: streamBundle.usedCanvas ? streamBundle.canvasStream ?? null : null,
+      outputStream: streamBundle.outputStream,
+      tiles: streamBundle.usedCanvas ? streamBundle.tiles ?? [] : [],
     };
 
     activeRoomName = roomName;
     activeMimeType = mimeType;
     recordedChunks = [];
 
-    const recorder = new MediaRecorder(canvasStream, { mimeType });
+    const recorder = new MediaRecorder(streamBundle.outputStream, { mimeType });
     mediaRecorder = recorder;
 
     recorder.ondataavailable = (event) => {
@@ -398,3 +491,6 @@ export function useLocalRecording(roomOrName?: Room | string) {
     stopRecording,
   };
 }
+
+
+
