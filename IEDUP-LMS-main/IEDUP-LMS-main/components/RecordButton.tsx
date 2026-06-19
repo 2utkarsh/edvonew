@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { apiUrl } from '@/lib/url';
 import { useIsRecording, useRoomContext } from '../custom_livekit_react';
 
 export function RecordButton() {
@@ -9,7 +10,7 @@ export function RecordButton() {
   const [processing, setProcessing] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const recordingEndpoint =
-    process.env.NEXT_PUBLIC_LK_RECORD_ENDPOINT ?? '/api/recordings/livekit';
+    process.env.NEXT_PUBLIC_LK_RECORD_ENDPOINT ?? apiUrl('/api/recordings/livekit');
 
   React.useEffect(() => {
     if (processing) {

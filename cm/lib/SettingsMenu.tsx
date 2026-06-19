@@ -10,6 +10,7 @@ import {
 } from '../custom_livekit_react'
 import styles from '../styles/SettingsMenu.module.css';
 import { CameraSettings } from './CameraSettings';
+import { apiUrl } from '@/lib/url';
 // import { MicrophoneSettings } from './MicrophoneSettings';
 /**
  * @alpha
@@ -23,7 +24,7 @@ export function SettingsMenu(props: SettingsMenuProps) {
   const layoutContext = useMaybeLayoutContext();
   const room = useRoomContext();
   const recordingEndpoint =
-    process.env.NEXT_PUBLIC_LK_RECORD_ENDPOINT ?? '/api/recordings/livekit';
+    process.env.NEXT_PUBLIC_LK_RECORD_ENDPOINT ?? apiUrl('/api/recordings/livekit');
   const [isHost, setIsHost] = React.useState(false);
 
   React.useEffect(() => {
