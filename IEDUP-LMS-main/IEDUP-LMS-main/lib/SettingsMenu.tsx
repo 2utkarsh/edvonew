@@ -1,17 +1,14 @@
 'use client';
 import * as React from 'react';
-import { Track } from 'livekit-client';
 import {
   useMaybeLayoutContext,
   MediaDeviceMenu,
-  TrackToggle,
   useRoomContext,
-  useIsRecording,
-} from '../custom_livekit_react'
+} from '../custom_livekit_react';
 import styles from '../styles/SettingsMenu.module.css';
 import { CameraSettings } from './CameraSettings';
-import { apiUrl } from '@/lib/url';
-// import { MicrophoneSettings } from './MicrophoneSettings';
+import { useLocalRecording } from '@/lib/useLocalRecording';
+
 /**
  * @alpha
  */
@@ -23,12 +20,10 @@ export interface SettingsMenuProps extends React.HTMLAttributes<HTMLDivElement> 
 export function SettingsMenu(props: SettingsMenuProps) {
   const layoutContext = useMaybeLayoutContext();
   const room = useRoomContext();
-  const recordingEndpoint =
-    process.env.NEXT_PUBLIC_LK_RECORD_ENDPOINT ?? apiUrl('/api/recordings/livekit');
   const [isHost, setIsHost] = React.useState(false);
+  const { error, isProcessing, isRecording, startRecording, stopRecording } = useLocalRecording(room.name);
 
   React.useEffect(() => {
-    // Check if the current user is the host
     const checkHostStatus = () => {
       const localParticipant = room.localParticipant;
       const metadata = localParticipant.metadata ? JSON.parse(localParticipant.metadata) : {};
@@ -41,9 +36,9 @@ export function SettingsMenu(props: SettingsMenuProps) {
   const settings = React.useMemo(() => {
     return {
       media: { camera: true, microphone: true, label: 'Media Devices', speaker: true },
-      recording: recordingEndpoint && isHost ? { label: 'Recording' } : undefined,
+      recording: isHost ? { label: 'Recording' } : undefined,
     };
-  }, [recordingEndpoint, isHost]);
+  }, [isHost]);
 
   const tabs = React.useMemo(
     () => Object.keys(settings).filter((t) => t !== undefined) as Array<keyof typeof settings>,
@@ -51,41 +46,18 @@ export function SettingsMenu(props: SettingsMenuProps) {
   );
   const [activeTab, setActiveTab] = React.useState(tabs[0]);
 
-  const isRecording = useIsRecording();
-  const [initialRecStatus, setInitialRecStatus] = React.useState(isRecording);
-  const [processingRecRequest, setProcessingRecRequest] = React.useState(false);
-
-  React.useEffect(() => {
-    if (initialRecStatus !== isRecording) {
-      setProcessingRecRequest(false);
-    }
-  }, [isRecording, initialRecStatus]);
-
-  const toggleRoomRecording = async () => {
-    if (!recordingEndpoint) {
-      throw TypeError('No recording endpoint specified');
-    }
+  const toggleRoomRecording = React.useCallback(async () => {
     if (room.isE2EEEnabled) {
-      throw Error('Recording of encrypted meetings is currently not supported');
+      return;
     }
-    setProcessingRecRequest(true);
-    setInitialRecStatus(isRecording);
-    let response: Response;
+
     if (isRecording) {
-      response = await fetch(recordingEndpoint + `/stop?roomName=${room.name}`);
-    } else {
-      response = await fetch(recordingEndpoint + `/start?roomName=${room.name}`);
+      await stopRecording();
+      return;
     }
-    if (response.ok) {
-    } else {
-      console.error(
-        'Error handling recording request, check server logs:',
-        response.status,
-        response.statusText,
-      );
-      setProcessingRecRequest(false);
-    }
-  };
+
+    await startRecording();
+  }, [isRecording, room.isE2EEEnabled, startRecording, stopRecording]);
 
   return (
     <div className="settings-menu" style={{
@@ -143,9 +115,7 @@ export function SettingsMenu(props: SettingsMenuProps) {
             {settings.media && settings.media.microphone && (
               <div>
                 <h3 style={{ margin: '0 0 12px 0', fontSize: '16px' }}>Microphone</h3>
-                <section>
-                  {/* <MicrophoneSettings /> */}
-                </section>
+                <section />
               </div>
             )}
             {settings.media && settings.media.speaker && (
@@ -167,21 +137,28 @@ export function SettingsMenu(props: SettingsMenuProps) {
             <section>
               <p style={{ margin: '0 0 16px 0', color: 'var(--lk-text-secondary)' }}>
                 {isRecording
-                  ? 'Meeting is currently being recorded'
-                  : 'No active recordings for this meeting'}
+                  ? 'Local browser recording is active. Stop recording to download the file.'
+                  : 'Start a local browser recording by choosing a tab, window, or screen.'}
               </p>
-              <button 
-                disabled={processingRecRequest} 
+              {error && (
+                <p style={{ margin: '0 0 16px 0', color: '#f87171', fontSize: '13px' }}>
+                  {error}
+                </p>
+              )}
+              <button
+                disabled={isProcessing}
                 onClick={() => toggleRoomRecording()}
                 className="lk-button"
+                title={room.isE2EEEnabled ? 'Recording of encrypted meetings is not supported.' : undefined}
                 style={{
                   width: '100%',
                   padding: '10px',
                   background: isRecording ? 'var(--lk-danger)' : 'var(--lk-bg3)',
-                  transition: 'background-color 0.2s'
+                  transition: 'background-color 0.2s',
+                  opacity: isProcessing ? 0.6 : 1,
                 }}
               >
-                {isRecording ? 'Stop' : 'Start'} Recording
+                {isProcessing ? 'Preparing...' : isRecording ? 'Stop Recording' : 'Start Recording'}
               </button>
             </section>
           </div>

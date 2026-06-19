@@ -1,19 +1,19 @@
 import React from 'react';
-import { useIsRecording } from '../custom_livekit_react';
+import { useLocalRecording } from '@/lib/useLocalRecording';
 
 interface RecordingIndicatorProps {
   className?: string;
 }
 
 export function RecordingIndicator({ className = '' }: RecordingIndicatorProps) {
-  const isRecording = useIsRecording();
+  const { isRecording } = useLocalRecording();
 
   if (!isRecording) {
     return null;
   }
 
   return (
-    <div 
+    <div
       className={`recording-indicator ${className}`}
       style={{
         position: 'fixed',
@@ -46,17 +46,19 @@ export function RecordingIndicator({ className = '' }: RecordingIndicatorProps) 
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
         }}
       >
-        <span style={{ fontSize: '12px' }}>⏺️</span>
+        <span style={{ fontSize: '12px' }}>REC</span>
         RECORDING
       </div>
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          @keyframes recording-pulse {
-            0% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
-            100% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.8); }
-          }
-        `
-      }} />
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            @keyframes recording-pulse {
+              0% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
+              100% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.8); }
+            }
+          `,
+        }}
+      />
     </div>
   );
-} 
+}
