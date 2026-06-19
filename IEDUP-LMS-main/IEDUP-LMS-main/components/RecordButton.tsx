@@ -8,7 +8,8 @@ export function RecordButton() {
   const isRecording = useIsRecording();
   const [processing, setProcessing] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
-  const recordingEndpoint = process.env.NEXT_PUBLIC_LK_RECORD_ENDPOINT;
+  const recordingEndpoint =
+    process.env.NEXT_PUBLIC_LK_RECORD_ENDPOINT ?? '/api/recordings/livekit';
 
   React.useEffect(() => {
     if (processing) {
